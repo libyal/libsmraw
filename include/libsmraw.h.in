@@ -1,0 +1,244 @@
+/*
+ * Library to support the storage media (SM) RAW format
+ *
+ * Copyright (c) 2008-2010, Joachim Metz <forensics@hoffmannbv.nl>,
+ * Hoffmann Investigations.
+ *
+ * Refer to AUTHORS for acknowledgements.
+ *
+ * This software is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#if !defined( _LIBSMRAW_H )
+#define _LIBSMRAW_H
+
+#include <libsmraw/codepage.h>
+#include <libsmraw/definitions.h>
+#include <libsmraw/error.h>
+#include <libsmraw/extern.h>
+#include <libsmraw/features.h>
+#include <libsmraw/types.h>
+
+#include <stdio.h>
+
+#if defined( __cplusplus )
+extern "C" {
+#endif
+
+/* -------------------------------------------------------------------------
+ * Support functions
+ * ------------------------------------------------------------------------- */
+
+/* Returns the library version
+ */
+LIBSMRAW_EXTERN const char *libsmraw_get_version(
+                             void );
+
+/* -------------------------------------------------------------------------
+ * Notify functions
+ * ------------------------------------------------------------------------- */
+
+/* Set the verbose notification
+ */
+LIBSMRAW_EXTERN void libsmraw_notify_set_verbose(
+                      int verbose );
+
+/* Set the notification stream
+ * Returns 1 if successful or -1 on error
+ */
+LIBSMRAW_EXTERN int libsmraw_notify_set_stream(
+                     FILE *stream,
+                     libsmraw_error_t **error );
+
+/* Opens the notification stream using a filename
+ * The stream is opened in append mode
+ * Returns 1 if successful or -1 on error
+ */
+LIBSMRAW_EXTERN int libsmraw_notify_stream_open(
+                     const char *filename,
+                     libsmraw_error_t **error );
+
+/* Closes the notification stream if opened using a filename
+ * Returns 0 if successful or -1 on error
+ */
+LIBSMRAW_EXTERN int libsmraw_notify_stream_close(
+                     libsmraw_error_t **error );
+
+/* -------------------------------------------------------------------------
+ * Error functions
+ * ------------------------------------------------------------------------- */
+
+/* Frees the error including elements
+ */
+LIBSMRAW_EXTERN void libsmraw_error_free(
+                      libsmraw_error_t **error );
+
+/* Prints a descriptive string of the error to the stream
+ * Returns the amount of printed characters if successful or -1 on error
+ */
+LIBSMRAW_EXTERN int libsmraw_error_fprint(
+                     libsmraw_error_t *error,
+                     FILE *stream );
+
+/* Prints a descriptive string of the error to the string
+ * Returns the amount of printed characters if successful or -1 on error
+ */
+LIBSMRAW_EXTERN int libsmraw_error_sprint(
+                     libsmraw_error_t *error,
+                     char *string,
+                     size_t size );
+
+/* Prints a backtrace of the error to the stream
+ * Returns the amount of printed characters if successful or -1 on error
+ */
+LIBSMRAW_EXTERN int libsmraw_error_backtrace_fprint(
+                     libsmraw_error_t *error,
+                     FILE *stream );
+
+/* Prints a backtrace of the error to the string
+ * Returns the amount of printed characters if successful or -1 on error
+ */
+LIBSMRAW_EXTERN int libsmraw_error_backtrace_sprint(
+                     libsmraw_error_t *error,
+                     char *string,
+                     size_t size );
+
+/* -------------------------------------------------------------------------
+ * Handle functions
+ * ------------------------------------------------------------------------- */
+
+/* Initializes the handle
+ * Make sure the value handle is pointing to is set to NULL
+ * Returns 1 if successful or -1 on error
+ */
+LIBSMRAW_EXTERN int libsmraw_handle_initialize(
+                     libsmraw_handle_t **handle,
+                     libsmraw_error_t **error );
+
+/* Frees an exisisting handle
+ * Returns 1 if successful or -1 on error
+ */
+LIBSMRAW_EXTERN int libsmraw_handle_free(
+                     libsmraw_handle_t **handle,
+                     libsmraw_error_t **error );
+
+/* Signals the libsmraw handle to abort its current activity
+ * Returns 1 if successful or -1 on error
+ */
+LIBSMRAW_EXTERN int libsmraw_handle_signal_abort(
+                     libsmraw_handle_t *handle,
+                     libsmraw_error_t **error );
+
+/* Globs the filenames for the handle
+ * Returns 1 if successful or -1 on error
+ */
+LIBSMRAW_EXTERN int libsmraw_handle_glob(
+                     libsmraw_handle_t *handle,
+                     const char *filename,
+                     size_t filename_length,
+                     char **filenames[],
+                     int *amount_of_filenames,
+                     libsmraw_error_t **error );
+
+#if defined( LIBSMRAW_WIDE_CHARACTER_TYPE )
+/* Globs the filenames for the handle
+ * Returns 1 if successful or -1 on error
+ */
+LIBSMRAW_EXTERN int libsmraw_handle_glob_wide(
+                     libsmraw_handle_t *handle,
+                     const wchar_t *filename,
+                     size_t filename_length,
+                     wchar_t **filenames[],
+                     int *amount_of_filenames,
+                     libsmraw_error_t **error );
+#endif
+
+/* Opens a handle
+ * Returns 1 if successful or -1 on error
+ */
+LIBSMRAW_EXTERN int libsmraw_handle_open(
+                     libsmraw_handle_t *handle,
+                     char * const filenames[],
+                     int amount_of_filenames,
+                     int flags,
+                     libsmraw_error_t **error );
+
+#if defined( LIBSMRAW_WIDE_CHARACTER_TYPE )
+/* Opens a handle
+ * Returns 1 if successful or -1 on error
+ */
+LIBSMRAW_EXTERN int libsmraw_handle_open_wide(
+                     libsmraw_handle_t *handle,
+                     wchar_t * const filenames[],
+                     int amount_of_filenames,
+                     int flags,
+                     libsmraw_error_t **error );
+#endif
+
+/* Prepares a buffer after reading it from the handle
+ * Returns the amount of bytes in the buffer or -1 on error
+ */
+LIBSMRAW_EXTERN ssize_t libsmraw_handle_prepare_read_buffer(
+                         libsmraw_handle_t *handle,
+                         libsmraw_buffer_t *buffer,
+                         libsmraw_error_t **error );
+
+/* Reads a buffer from the handle
+ * Returns the amount of bytes read or -1 on error
+ */
+LIBSMRAW_EXTERN ssize_t libsmraw_handle_read_buffer(
+                         libsmraw_handle_t *handle,
+                         libsmraw_buffer_t *buffer,
+                         size_t read_size,
+                         libsmraw_error_t **error );
+
+/* Prepares a buffer before writing to the handle
+ * Returns the resulting buffer size or -1 on error
+ */
+LIBSMRAW_EXTERN ssize_t libsmraw_handle_prepare_write_buffer(
+                         libsmraw_handle_t *handle,
+                         libsmraw_buffer_t *buffer,
+                         libsmraw_error_t **error );
+
+/* Writes a buffer to the handle
+ * Returns the amount of bytes written or -1 on error
+ */
+LIBSMRAW_EXTERN ssize_t libsmraw_handle_write_buffer(
+                         libsmraw_handle_t *handle,
+                         libsmraw_buffer_t *buffer,
+                         size_t write_size,
+                         libsmraw_error_t **error );
+
+/* Seeks an offset in the handle
+ * Returns the amount of bytes in the buffer or -1 on error
+ */
+LIBSMRAW_EXTERN off64_t libsmraw_handle_seek_offset(
+                         libsmraw_handle_t *handle,
+                         off64_t offset,
+                         int whence,
+                         libsmraw_error_t **error );
+
+/* Closes the handle
+ * Returns the 0 if succesful or -1 on error
+ */
+LIBSMRAW_EXTERN int libsmraw_handle_close(
+                     libsmraw_handle_t *handle,
+                     libsmraw_error_t **error );
+
+#if defined( __cplusplus )
+}
+#endif
+
+#endif
+

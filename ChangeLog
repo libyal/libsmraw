@@ -1,0 +1,13 @@
+TODO
+* implement libsmio_raw_get_maximum_segment_size ?
+* retrieve data from the information file on open
+* implement write resume
+* implemented libsmio_handle_get_filename_size_wide, libsmio_handle_get_filename_wide
+  needs support in handle
+* make sure the data is in the right buffer
+* make sure certain values cannot be changed if writing/reading from raw files
+* check on write when data is in compression buffer
+
+20100108
+* Created initial version based on earlier media input/output code
+

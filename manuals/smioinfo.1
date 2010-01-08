@@ -1,0 +1,57 @@
+.Dd January 18, 2009
+.Dt smioinfo
+.Os libsmio
+.Sh NAME
+.Nm smioinfo
+.Nd shows media information using libsmio
+.Sh SYNOPSIS
+.Nm smioinfo
+.Op Fl hvV
+.Va Ar source
+.Sh DESCRIPTION
+.Nm smioinfo
+is a utility to show media information using libsmio
+.Pp
+.Nm smioinfo
+is part of the
+.Nm libsmio
+package.
+.Nm libsmio
+is a library that provides a Media Abstraction Layer (MAL)
+.Pp
+.Ar source
+is the source device to read from.
+.Pp
+The options are as follows:
+.Bl -tag -width Ds
+.It Fl h
+shows this help
+.It Fl v
+verbose output to stderr
+.It Fl V
+print version
+.El
+.Sh ENVIRONMENT
+None
+.Sh FILES
+None
+.Sh EXAMPLES
+.Bd -literal
+# smioinfo /dev/sdg
+smioinfo 20080426 (libsmio 20080426)
+
+TODO
+
+.Ed
+.Sh DIAGNOSTICS
+Errors, verbose and debug output are printed to stderr when verbose output \-v is enabled.
+Verbose and debug output are only printed when enabled at compilation.
+.Sh BUGS
+Please report bugs of any kind to <forensics@hoffmannbv.nl> or on the project website:
+https://www.uitwisselplatform.nl/projects/libsmio/
+.Sh AUTHOR
+These man pages were written by Joachim Metz.
+.Sh COPYRIGHT
+Copyright 2008-2009 Joachim Metz, Hoffmann Investigations <forensics@hoffmannbv.nl> and contributors.
+This is free software; see the source for copying conditions. There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+.Sh SEE ALSO
