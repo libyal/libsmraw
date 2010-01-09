@@ -24,10 +24,10 @@
 #define _LIBSMRAW_SUPPORT_H
 
 #include <common.h>
+#include <types.h>
 
-#include <stdio.h>
+#include <liberror.h>
 
-#include "libsmraw_error.h"
 #include "libsmraw_extern.h"
 
 #if defined( __cplusplus )
@@ -37,10 +37,31 @@ extern "C" {
 LIBSMRAW_EXTERN const char *libsmraw_get_version(
                             void );
 
-LIBSMRAW_EXTERN int libsmraw_detect_type(
-                    const char *filename,
-                    int *type,
-                    liberror_error_t **error );
+LIBSMRAW_EXTERN int libsmraw_glob(
+                     const char *filename,
+                     size_t filename_length,
+                     char **filenames[],
+                     int *amount_of_filenames,
+                     liberror_error_t **error );
+
+LIBSMRAW_EXTERN int libsmraw_glob_free(
+                     char *filenames[],
+                     int amount_of_filenames,
+                     liberror_error_t **error );
+
+#if defined( HAVE_WIDE_CHARACTER_TYPE )
+LIBSMRAW_EXTERN int libsmraw_glob_wide(
+                     const wchar_t *filename,
+                     size_t filename_length,
+                     wchar_t **filenames[],
+                     int *amount_of_filenames,
+                     liberror_error_t **error );
+
+LIBSMRAW_EXTERN int libsmraw_glob_free_wide(
+                     wchar_t *filenames[],
+                     int amount_of_filenames,
+                     liberror_error_t **error );
+#endif
 
 #if defined( __cplusplus )
 }

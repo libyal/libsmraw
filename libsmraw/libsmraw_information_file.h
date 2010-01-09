@@ -65,17 +65,9 @@ int libsmraw_information_file_free(
 
 int libsmraw_information_file_set_name(
      libsmraw_information_file_t *information_file,
-     const char *name,
+     const libsmraw_system_character_t *name,
      size_t name_length,
      liberror_error_t **error );
-
-#if defined( HAVE_WIDE_CHARACTER )
-int libsmraw_information_file_set_name_wide(
-     libsmraw_information_file_t *information_file,
-     const wchar_t *name,
-     size_t name_length,
-     liberror_error_t **error );
-#endif
 
 int libsmraw_information_file_open(
      libsmraw_information_file_t *information_file,

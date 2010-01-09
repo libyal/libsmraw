@@ -1,5 +1,5 @@
 /*
- * Output functions
+ * System character type string functions
  *
  * Copyright (c) 2006-2010, Joachim Metz <forensics@hoffmannbv.nl>,
  * Hoffmann Investigations.
@@ -20,28 +20,19 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _SMIOOUTPUT_H )
-#define _SMIOOUTPUT_H
-
 #include <common.h>
 #include <types.h>
 
-#include <libsystem.h>
+#include "libsmraw_codepage.h"
+#include "libsmraw_system_string.h"
 
-#if defined( __cplusplus )
+#if defined( _cplusplus )
 extern "C" {
 #endif
 
-void smiooutput_version_fprint(
-      FILE *stream,
-      const libsystem_character_t *program );
-
-void smiooutput_copyright_fprint(
-      FILE *stream );
-
-#if defined( __cplusplus )
-}
-#endif
-
+#if defined( WINAPI )
+int libsmraw_system_narrow_string_codepage = LIBBFIO_CODEPAGE_WINDOWS_1252;
+#else
+int libsmraw_system_narrow_string_codepage = 0;
 #endif
 

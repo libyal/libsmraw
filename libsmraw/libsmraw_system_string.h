@@ -34,12 +34,16 @@
 extern "C" {
 #endif
 
+extern int libsmraw_system_narrow_string_codepage;
+
 /* Detect if the code is being compiled with Windows Unicode support
  */
 #if defined( WINAPI ) && ( defined( _UNICODE ) || defined( UNICODE ) )
 #define LIBSMRAW_HAVE_WIDE_SYSTEM_CHARACTER		1
 #endif
 
+/* The system string type is either UTF-16 or UTF-32
+ */
 #if defined( LIBSMRAW_HAVE_WIDE_SYSTEM_CHARACTER )
 
 typedef wchar_t libsmraw_system_character_t;
@@ -62,50 +66,10 @@ typedef wchar_t libsmraw_system_character_t;
 #define libsmraw_system_string_length( string ) \
 	wide_string_length( string )
 
-#define libsmraw_system_string_snprintf( target, size, format, ... ) \
-	wide_string_snprintf( target, size, format, __VA_ARGS__ )
+#define libsmraw_system_string_snprintf( target, size, ... ) \
+	wide_string_swprintf( target, size, __VA_ARGS__ )
 
-/* The wide character string type contains UTF-32
- */
-#if SIZEOF_WCHAR_T == 4
-
-/* narrow string conversion functions
- */
-#define libsmraw_system_string_size_from_narrow_string( narrow_string, narrow_string_size, system_string_size, error ) \
-	libuna_utf32_string_size_from_utf8( (libuna_utf8_character_t *) narrow_string, narrow_string_size, system_string_size, error )
-
-#define libsmraw_system_string_copy_from_narrow_string( system_string, system_string_size, narrow_string, narrow_string_size, error ) \
-	libuna_utf32_string_copy_from_utf8( (libuna_utf32_character_t *) system_string, system_string_size, (libuna_utf8_character_t *) narrow_string, narrow_string_size, error )
-
-#define narrow_string_size_from_libsmraw_system_string( system_string, system_string_size, narrow_string_size, error ) \
-	libuna_utf8_string_size_from_utf32( (libuna_utf32_character_t *) system_string, system_string_size, narrow_string_size, error )
-
-#define narrow_string_copy_from_libsmraw_system_string( narrow_string, narrow_string_size, system_string, system_string_size, error ) \
-	libuna_utf8_string_copy_from_utf32( (libuna_utf8_character_t *) narrow_string, narrow_string_size, (libuna_utf32_character_t *) system_string, system_string_size, error )
-
-/* The wide character string type contains UTF-16
- */
-#elif SIZEOF_WCHAR_T == 2
-
-/* narrow string conversion functions
- */
-#define libsmraw_system_string_size_from_narrow_string( narrow_string, narrow_string_size, system_string_size, error ) \
-	libuna_utf16_string_size_from_utf8( (libuna_utf8_character_t *) narrow_string, narrow_string_size, system_string_size, error )
-
-#define libsmraw_system_string_copy_from_narrow_string( system_string, system_string_size, narrow_string, narrow_string_size, error ) \
-	libuna_utf16_string_copy_from_utf8( (libuna_utf16_character_t *) system_string, system_string_size, (libuna_utf8_character_t *) narrow_string, narrow_string_size, error )
-
-#define narrow_string_size_from_libsmraw_system_string( system_string, system_string_size, narrow_string_size, error ) \
-	libuna_utf8_string_size_from_utf16( (libuna_utf16_character_t *) system_string, system_string_size, narrow_string_size, error )
-
-#define narrow_string_copy_from_libsmraw_system_string( narrow_string, narrow_string_size, system_string, system_string_size, error ) \
-	libuna_utf8_string_copy_from_utf16( (libuna_utf8_character_t *) narrow_string, narrow_string_size, (libuna_utf16_character_t *) system_string, system_string_size, error )
-
-#else
-#error Unsupported size of wchar_t
-#endif
-
-/* The system string type contains UTF-8 or ASCII with a codepage
+/* The system string type is either UTF-8 or extended ASCII with a codepage
  */
 #else
 
@@ -123,52 +87,8 @@ typedef char libsmraw_system_character_t;
 #define libsmraw_system_string_length( string ) \
 	narrow_string_length( string )
 
-#define libsmraw_system_string_snprintf( target, size, format, ... ) \
-	narrow_string_snprintf( target, size, format, __VA_ARGS__ )
-
-#if defined( HAVE_WIDE_CHARACTER_TYPE )
-
-/* The wide character string type contains UTF-32
- */
-#if SIZEOF_WCHAR_T == 4
-
-/* wide string conversion functions
- */
-#define libsmraw_system_string_size_from_wide_string( wide_string, wide_string_size, system_string_size, error ) \
-	libuna_utf8_string_size_from_utf32( (libuna_utf32_character_t *) wide_string, wide_string_size, system_string_size, error )
-
-#define libsmraw_system_string_copy_from_wide_string( system_string, system_string_size, wide_string, wide_string_size, error ) \
-	libuna_utf8_string_copy_from_utf32( (libuna_utf8_character_t *) system_string, system_string_size, (libuna_utf32_character_t *) wide_string, wide_string_size, error )
-
-#define wide_string_size_from_libsmraw_system_string( system_string, system_string_size, wide_string_size, error ) \
-	libuna_utf32_string_size_from_utf8( (libuna_utf8_character_t *) system_string, system_string_size, wide_string_size, error )
-
-#define wide_string_copy_from_libsmraw_system_string( wide_string, wide_string_size, system_string, system_string_size, error ) \
-	libuna_utf32_string_copy_from_utf8( (libuna_utf32_character_t *) wide_string, wide_string_size, (libuna_utf8_character_t *) system_string, system_string_size, error )
-
-/* The wide character string type contains UTF-16
- */
-#elif SIZEOF_WCHAR_T == 2
-
-/* wide string conversion functions
- */
-#define libsmraw_system_string_size_from_wide_string( wide_string, wide_string_size, system_string_size, error ) \
-	libuna_utf8_string_size_from_utf16( (libuna_utf16_character_t *) wide_string, wide_string_size, system_string_size, error )
-
-#define libsmraw_system_string_copy_from_wide_string( system_string, system_string_size, wide_string, wide_string_size, error ) \
-	libuna_utf8_string_copy_from_utf16( (libuna_utf8_character_t *) system_string, system_string_size, (libuna_utf16_character_t *) wide_string, wide_string_size, error )
-
-#define wide_string_size_from_libsmraw_system_string( system_string, system_string_size, wide_string_size, error ) \
-	libuna_utf16_string_size_from_utf8( (libuna_utf8_character_t *) system_string, system_string_size, wide_string_size, error )
-
-#define wide_string_copy_from_libsmraw_system_string( wide_string, wide_string_size, system_string, system_string_size, error ) \
-	libuna_utf16_string_copy_from_utf8( (libuna_utf16_character_t *) wide_string, wide_string_size, (libuna_utf8_character_t *) system_string, system_string_size, error )
-
-#else
-#error Unsupported size of wchar_t
-#endif
-
-#endif
+#define libsmraw_system_string_snprintf( target, size, ... ) \
+	narrow_string_snprintf( target, size, __VA_ARGS__ )
 
 #endif
 

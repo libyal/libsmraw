@@ -7,25 +7,21 @@ SUBDIRS = \
 	libnotify \
 	libuna \
 	libbfio \
-	libewf \
-	libsystem \
-	libsmio \
-	smiotools \
-	manuals \
-	macosx
+	libsmraw \
+	manuals
 
 REDHAT_FILES = \
-	libsmio.spec \
-	libsmio.spec.in
+	libsmraw.spec \
+	libsmraw.spec.in
 
 EXTRA_DIST = \
         $(REDHAT_FILES) \
-	libsmio.pc.in
+	libsmraw.pc.in
 
 pkgconfigdir = $(libdir)/pkgconfig
 
 pkgconfig_DATA = \
-	libsmio.pc
+	libsmraw.pc
 
 libtool: @LIBTOOL_DEPS@
 	cd $(srcdir) && $(SHELL) ./config.status --recheck
@@ -38,16 +34,15 @@ library:
 	(cd $(srcdir)/libnotify && $(MAKE) $(AM_MAKEFLAGS))
 	(cd $(srcdir)/libuna && $(MAKE) $(AM_MAKEFLAGS))
 	(cd $(srcdir)/libbfio && $(MAKE) $(AM_MAKEFLAGS))
-	(cd $(srcdir)/libewf && $(MAKE) $(AM_MAKEFLAGS))
-	(cd $(srcdir)/libsmio && $(MAKE) $(AM_MAKEFLAGS))
+	(cd $(srcdir)/libsmraw && $(MAKE) $(AM_MAKEFLAGS))
 
 distclean: clean
 	/bin/rm -f Makefile
 	/bin/rm -f config.status
 	/bin/rm -f config.cache
 	/bin/rm -f config.log
-	/bin/rm -f libsmio.pc
-	/bin/rm -f libsmio.spec
+	/bin/rm -f libsmraw.pc
+	/bin/rm -f libsmraw.spec
 	@for dir in ${subdirs}; do \
 		(cd $$dir && $(MAKE) distclean) \
 		|| case "$(MFLAGS)" in *k*) fail=yes;; *) exit 1;; esac; \
@@ -58,8 +53,5 @@ splint:
 	(cd $(srcdir)/libnotify && $(MAKE) splint $(AM_MAKEFLAGS))
 	(cd $(srcdir)/libuna && $(MAKE) splint $(AM_MAKEFLAGS))
 	(cd $(srcdir)/libbfio && $(MAKE) splint $(AM_MAKEFLAGS))
-	(cd $(srcdir)/libewf && $(MAKE) splint $(AM_MAKEFLAGS))
-	(cd $(srcdir)/libsmio && $(MAKE) splint $(AM_MAKEFLAGS))
-	(cd $(srcdir)/libsystem && $(MAKE) splint $(AM_MAKEFLAGS))
-	(cd $(srcdir)/smiotools && $(MAKE) splint $(AM_MAKEFLAGS))
+	(cd $(srcdir)/libsmraw && $(MAKE) splint $(AM_MAKEFLAGS))
 

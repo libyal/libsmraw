@@ -25,11 +25,11 @@
 
 #include <libsmraw/types.h>
 
-#define LIBSMRAW_VERSION			@VERSION@
+#define LIBSMRAW_VERSION				@VERSION@
 
 /* The libsmraw version string
  */
-#define LIBSMRAW_VERSION_STRING			"@VERSION@"
+#define LIBSMRAW_VERSION_STRING				"@VERSION@"
 
 /* The libsmraw file access
  * bit 1        set to 1 for read access
@@ -37,17 +37,21 @@
  * bit 3        set to 1 to truncate an existing file on write
  * bit 4-8      not used
  */
-#define LIBSMRAW_FLAG_READ			(uint8_t) 0x01
-#define LIBSMRAW_FLAG_WRITE			(uint8_t) 0x02
-#define LIBSMRAW_FLAG_TRUNCATE			(uint8_t) 0x04
+#define LIBSMRAW_FLAG_READ				(uint8_t) 0x01
+#define LIBSMRAW_FLAG_WRITE				(uint8_t) 0x02
+#define LIBSMRAW_FLAG_TRUNCATE				(uint8_t) 0x04
 
 /* The libsmraw file access macros
  */
-#define LIBSMRAW_OPEN_READ			( LIBSMRAW_FLAG_READ )
-#define LIBSMRAW_OPEN_WRITE			( LIBSMRAW_FLAG_WRITE )
-#define LIBSMRAW_OPEN_READ_WRITE		( LIBSMRAW_FLAG_READ | LIBSMRAW_FLAG_WRITE )
-#define LIBSMRAW_OPEN_WRITE_TRUNCATE		( LIBSMRAW_FLAG_WRITE | LIBSMRAW_FLAG_TRUNCATE )
-#define LIBSMRAW_OPEN_READ_WRITE_TRUNCATE	( LIBSMRAW_FLAG_READ | LIBSMRAW_FLAG_WRITE | LIBSMRAW_FLAG_TRUNCATE )
+#define LIBSMRAW_OPEN_READ				( LIBSMRAW_FLAG_READ )
+#define LIBSMRAW_OPEN_WRITE				( LIBSMRAW_FLAG_WRITE )
+#define LIBSMRAW_OPEN_READ_WRITE			( LIBSMRAW_FLAG_READ | LIBSMRAW_FLAG_WRITE )
+#define LIBSMRAW_OPEN_WRITE_TRUNCATE			( LIBSMRAW_FLAG_WRITE | LIBSMRAW_FLAG_TRUNCATE )
+#define LIBSMRAW_OPEN_READ_WRITE_TRUNCATE		( LIBSMRAW_FLAG_READ | LIBSMRAW_FLAG_WRITE | LIBSMRAW_FLAG_TRUNCATE )
+
+/* The default maximum segment size
+ */
+#define LIBSMRAW_DEFAULT_MAXIMUM_SEGMENT_SIZE		( 1500 * 1024 * 1024 )
 
 #endif
 

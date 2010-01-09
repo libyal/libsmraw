@@ -23,8 +23,12 @@
 #if !defined( _LIBSMRAW_FEATURES_H )
 #define _LIBSMRAW_FEATURES_H
 
-#if defined( WINAPI ) ||  @HAVE_WIDE_CHARACTER_TYPE@
-#define LIBSMRAW_WIDE_CHARACTER_TYPE      1
+#if defined( WINAPI ) || @HAVE_WIDE_CHARACTER_TYPE@
+#define LIBSMRAW_HAVE_WIDE_CHARACTER_TYPE	1
+#endif
+
+#if defined( HAVE_LIBBFIO ) || ( !defined( WINAPI ) && @HAVE_LIBBFIO@ )
+#define LIBSMRAW_HAVE_BFIO			1
 #endif
 
 #endif

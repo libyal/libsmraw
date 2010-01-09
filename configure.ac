@@ -27,11 +27,6 @@ LIBSMRAW_TEST_ENABLE(
  [enable wide character type support],
  [no])
 LIBSMRAW_TEST_ENABLE(
- [static-executables],
- [static_executables],
- [build the smrawtools as static executables],
- [no])
-LIBSMRAW_TEST_ENABLE(
  [verbose-output],
  [verbose_output],
  [enable verbose output],
@@ -855,7 +850,27 @@ AS_IF(
 	 [ac_libsmraw_have_libbfio=no])
 	AC_CHECK_LIB(
 	 bfio,
+	 libbfio_handle_open,
+	 [ac_libsmraw_dummy=yes],
+	 [ac_libsmraw_have_libbfio=no])
+	AC_CHECK_LIB(
+	 bfio,
+	 libbfio_handle_close,
+	 [ac_libsmraw_dummy=yes],
+	 [ac_libsmraw_have_libbfio=no])
+	AC_CHECK_LIB(
+	 bfio,
 	 libbfio_handle_exists,
+	 [ac_libsmraw_dummy=yes],
+	 [ac_libsmraw_have_libbfio=no])
+	AC_CHECK_LIB(
+	 bfio,
+	 libbfio_handle_read,
+	 [ac_libsmraw_dummy=yes],
+	 [ac_libsmraw_have_libbfio=no])
+	AC_CHECK_LIB(
+	 bfio,
+	 libbfio_handle_set_track_offsets_read,
 	 [ac_libsmraw_dummy=yes],
 	 [ac_libsmraw_have_libbfio=no])
 
@@ -979,14 +994,8 @@ AS_IF(
 	 [libsmraw_pc_libs_private_libbfio],
 	 [-lbfio])
 	AC_SUBST(
-	 [libsmraw_spec_requires],
-	 [Requires:])
-	AC_SUBST(
 	 [libsmraw_spec_requires_libbfio],
 	 [libbfio])
-	AC_SUBST(
-	 [libsmraw_spec_build_requires],
-	 [BuildRequires:])
 	AC_SUBST(
 	 [libsmraw_spec_build_requires_libbfio],
 	 [libbfio-devel])
@@ -995,7 +1004,10 @@ AS_IF(
 	 [])
 	AC_SUBST(
 	 [LIBBFIO_LIBADD],
-	 []) ],
+	 [])
+	AC_SUBST(
+	 [HAVE_LIBBFIO],
+	 [1]) ],
 	[dnl If libbfio is not available use the (local) version that came with libsmraw
 	AC_DEFINE(
 	 [HAVE_LOCAL_LIBBFIO],
@@ -1008,13 +1020,7 @@ AS_IF(
 	 [libsmraw_pc_libs_private_libbfio],
 	 [])
 	AC_SUBST(
-	 [libsmraw_spec_requires],
-	 [])
-	AC_SUBST(
 	 [libsmraw_spec_requires_libbfio],
-	 [])
-	AC_SUBST(
-	 [libsmraw_spec_build_requires],
 	 [])
 	AC_SUBST(
 	 [libsmraw_spec_build_requires_libbfio],
@@ -1025,157 +1031,14 @@ AS_IF(
 	AC_SUBST(
 	 [LIBBFIO_LIBADD],
 	 [../libbfio/libbfio.la])
+	AC_SUBST(
+	 [HAVE_LIBBFIO],
+	 [0])
 	ac_libsmraw_have_libbfio=local])
 
 AM_CONDITIONAL(
  [HAVE_LOCAL_LIBBFIO],
  [test "x$ac_libsmraw_have_libbfio" = xlocal])
-
-dnl Check for enabling libcrypto EVP support
-AC_CHECK_HEADERS(
- [openssl/evp.h],
- [AC_LANG_PUSH(C)
- AC_MSG_CHECKING(
-  [if openssl/evp.h can be used in combination with zlib.h])
- AC_LINK_IFELSE(
-	AC_LANG_PROGRAM(
-	 [[#include <zlib.h>
-#include <openssl/evp.h>]],
-	 [[ ]]),
-	 [AC_MSG_RESULT(
-	  [yes])
-	 AC_DEFINE(
-	  [HAVE_OPENSSL_EVP_H],
-	  [1],
-	  [Define to 1 if you have the <openssl/evp.h> header file.])
-	 AC_SUBST(
-	  [HAVE_OPENSSL_EVP_H],
-	  [1])
-	 ac_libsmraw_have_libcrypto_evp=yes],
-	[AC_MSG_RESULT(
-	 [no])
-	ac_libsmraw_have_libcrypto_evp=no])
- AC_LANG_POP(C)],
- [ac_libsmraw_have_libcrypto_evp=no])
-
-AS_IF(
-	[test "x$ac_libsmraw_have_libcrypto_evp" != xno],
-	[ac_libsmraw_have_libcrypto_evp=yes
-	AC_CHECK_LIB(
-	 crypto,
-	 EVP_md5,
-	 [],
-	 [ac_libsmraw_have_libcrypto_evp=no])
-	AC_CHECK_LIB(
-	 crypto,
-	 EVP_sha1,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libcrypto_evp=no])
-	AC_CHECK_LIB(
-	 crypto,
-	 EVP_MD_CTX_init,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libcrypto_evp=no])
-	AC_CHECK_LIB(
-	 crypto,
-	 EVP_MD_CTX_cleanup,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libcrypto_evp=no])
-	AC_CHECK_LIB(
-	 crypto,
-	 EVP_DigestInit_ex,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libcrypto_evp=no])
-	AC_CHECK_LIB(
-	 crypto,
-	 EVP_DigestUpdate,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libcrypto_evp=no])
-	AC_CHECK_LIB(
-	 crypto,
-	 EVP_DigestFinal_ex,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libcrypto_evp=no])
-	])
-
-AS_IF(
-	[test "x$ac_libsmraw_have_libcrypto_evp" = xno],
-	[AC_SUBST(
-	 [HAVE_OPENSSL_EVP_H],
-	 [0])] )
-
-AS_IF(
-	[test "x$ac_libsmraw_have_libcrypto_evp" = xyes],
-	[ac_libsmraw_have_libcrypto_md5=evp
-	ac_libsmraw_have_libcrypto_sha1=evp])
-
-dnl Check for libcrypto MD5 support
-AS_IF(
-	[test "x$ac_libsmraw_have_libcrypto_md5" != xevp ],
-	[AC_CHECK_HEADERS(
-	 [openssl/md5.h],
-	 [],
-	 [ac_libsmraw_have_libcrypto_md5=no]) ])
-
-AS_IF(
-	[test "x$ac_libsmraw_have_libcrypto_md5" != xno && test "x$ac_libsmraw_have_libcrypto_md5" != xevp ],
-	[ac_libsmraw_have_libcrypto_md5=yes
-	AC_CHECK_LIB(
-	 crypto,
-	 MD5_Init,
-	 [],
-	 [ac_libsmraw_have_libcrypto_md5=no])
-	AC_CHECK_LIB(
-	 crypto,
-	 MD5_Update,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libcrypto_md5=no])
-	AC_CHECK_LIB(
-	 crypto,
-	 MD5_Final,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libcrypto_md5=no])
-	])
-
-AS_IF(
-	[test "x$ac_libsmraw_have_libcrypto_md5" = xno],
-	[AC_MSG_NOTICE(
-	 [No support for calculating MD5 hashes, if required install (openssl) libcrypto with MD5 support.])
-	])
-
-dnl Check for libcrypto SHA1 support
-AS_IF(
-	[test "x$ac_libsmraw_have_libcrypto_sha1" != xevp ],
-	[AC_CHECK_HEADERS(
-	 [openssl/sha.h],
-	 [],
-	 [ac_libsmraw_have_libcrypto_sha1=no]) ])
-
-AS_IF(
-	[test "x$ac_libsmraw_have_libcrypto_sha1" != xno && test "x$ac_libsmraw_have_libcrypto_sha1" != xevp ],
-	[ac_libsmraw_have_libcrypto_sha1=yes
-	AC_CHECK_LIB(
-	 crypto,
-	 SHA1_Init,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libcrypto_sha1=no])
-	AC_CHECK_LIB(
-	 crypto,
-	 SHA1_Update,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libcrypto_sha1=no])
-	AC_CHECK_LIB(
-	 crypto,
-	 SHA1_Final,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libcrypto_sha1=no])
-	])
-
-AS_IF(
-	[test "x$ac_libsmraw_have_libcrypto_sha1" = xno],
-	[AC_MSG_NOTICE(
-	 [No support for calculating SHA1 hashes, if required install (openssl) libcrypto with SHA1 support.])
-	])
 
 dnl Check if libsmraw should be build with wide character type support
 AS_IF(
@@ -1333,14 +1196,6 @@ AC_SUBST(
  [HAVE_WIDE_CHARACTER_SUPPORT_FUNCTIONS],
  [0])
 
-dnl Check if smrawtools should be build as static executables
-AS_IF(
-	[test "x$ac_cv_libsmraw_enable_static_executables" != xno],
-	[STATIC_LDFLAGS="-all-static";
-	AC_SUBST(
-	 [STATIC_LDFLAGS])
-	ac_cv_libsmraw_enable_static_executables=yes])
-
 dnl Check if libsmraw should be build with verbose output
 AS_IF(
 	[test "x$ac_cv_libsmraw_enable_verbose_output" != xno],
@@ -1399,10 +1254,7 @@ AC_CONFIG_FILES([libnotify/Makefile])
 AC_CONFIG_FILES([libuna/Makefile])
 AC_CONFIG_FILES([libbfio/Makefile])
 AC_CONFIG_FILES([libsmraw/Makefile])
-AC_CONFIG_FILES([libsystem/Makefile])
-AC_CONFIG_FILES([smrawtools/Makefile])
 AC_CONFIG_FILES([manuals/Makefile])
-AC_CONFIG_FILES([macosx/Makefile])
 dnl Have configure make the include files
 AC_CONFIG_FILES([include/libsmraw.h])
 AC_CONFIG_FILES([include/libsmraw/definitions.h])
@@ -1411,7 +1263,6 @@ AC_CONFIG_FILES([include/libsmraw/types.h])
 AC_CONFIG_FILES([libsmraw/libsmraw_definitions.h])
 dnl Have configure make distribution specific files
 AC_CONFIG_FILES([common/types.h])
-AC_CONFIG_FILES([macosx/Introduction.rtf])
 AC_CONFIG_FILES([libsmraw.pc])
 AC_CONFIG_FILES([libsmraw.spec])
 dnl Have configure write its configuration
@@ -1424,13 +1275,9 @@ AC_MSG_NOTICE([
 Building:
    libuna support:                             $ac_libsmraw_have_libuna
    libbfio support:                            $ac_libsmraw_have_libbfio
-   libcrypto EVP support:                      $ac_libsmraw_have_libcrypto_evp
-   libcrypto MD5 support:                      $ac_libsmraw_have_libcrypto_md5
-   libcrypto SHA1 support:                     $ac_libsmraw_have_libcrypto_sha1
 
 Features:
    Wide character type support:                $ac_cv_libsmraw_enable_wide_character_type
-   smrawtools are build as static executables: $ac_cv_libsmraw_enable_static_executables
    Verbose output:                             $ac_cv_libsmraw_enable_verbose_output
    Debug output:                               $ac_cv_libsmraw_enable_debug_output
 ]);

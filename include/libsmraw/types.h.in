@@ -129,7 +129,7 @@ typedef unsigned __int32	intptr_t;
 #error Missing integer type definitions (inttypes.h, stdint.h)
 #endif
 
-#if defined( LIBSMRAW_WIDE_CHARACTER_TYPE )
+#if defined( LIBSMRAW_HAVE_WIDE_CHARACTER_TYPE )
 
 #if defined( _MSC_VER )
 #include <wchar.h>

@@ -60,7 +60,7 @@ int libsmraw_information_file_initialize(
 	if( *information_file == NULL )
 	{
 		*information_file = (libsmraw_information_file_t *) memory_allocate(
-		                                                    sizeof( libsmraw_information_file_t ) );
+		                                                     sizeof( libsmraw_information_file_t ) );
 
 		if( *information_file == NULL )
 		{
@@ -119,6 +119,11 @@ int libsmraw_information_file_free(
 	}
 	if( *information_file != NULL )
 	{
+		if( ( *information_file )->name != NULL )
+		{
+			memory_free(
+			 ( *information_file )->name );
+		}
 		memory_free(
 		 *information_file );
 
@@ -132,7 +137,7 @@ int libsmraw_information_file_free(
  */
 int libsmraw_information_file_set_name(
      libsmraw_information_file_t *information_file,
-     const char *name,
+     const libsmraw_system_character_t *name,
      size_t name_length,
      liberror_error_t **error )
 {
@@ -172,7 +177,7 @@ int libsmraw_information_file_set_name(
 		return( -1 );
 	}
 	information_file->name = (libsmraw_system_character_t *) memory_allocate(
-	                                                         sizeof( libsmraw_system_character_t ) * ( name_length + 1 ) );
+	                                                          sizeof( libsmraw_system_character_t ) * ( name_length + 1 ) );
 
 	if( information_file->name == NULL )
 	{
@@ -185,7 +190,7 @@ int libsmraw_information_file_set_name(
 
 		return( -1 );
 	}
-	if( narrow_string_copy(
+	if( libsmraw_system_string_copy(
 	     information_file->name,
 	     name,
 	     name_length ) == NULL )
@@ -669,50 +674,6 @@ int libsmraw_information_file_write_section(
 
 		return( -1 );
 	}
-	if( values_table->identifier == NULL )
-	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid values table - missing identifiers.",
-		 function );
-
-		return( -1 );
-	}
-	if( values_table->identifier_length == NULL )
-	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid values table - missing identifier lengths.",
-		 function );
-
-		return( -1 );
-	}
-	if( values_table->value == NULL )
-	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid values table - missing values.",
-		 function );
-
-		return( -1 );
-	}
-	if( values_table->value_length == NULL )
-	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid values table - missing value lengths.",
-		 function );
-
-		return( -1 );
-	}
 	/* Write section start
 	 */
 	print_count = fprintf(
@@ -748,88 +709,135 @@ int libsmraw_information_file_write_section(
 
 		return( -1 );
 	}
-	for( value_iterator = 0;
-	     value_iterator < amount_of_values;
-	     value_iterator++ )
+	if( amount_of_values > 0 )
 	{
-		if( values_table->identifier[ value_iterator ] == NULL )
+		if( values_table->identifier == NULL )
 		{
 			liberror_error_set(
 			 error,
 			 LIBERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
-			 "%s: missing identifier for value: %d.",
-			 function,
-			 value_iterator );
+			 "%s: invalid values table - missing identifiers.",
+			 function );
 
-			result = -1;
-
-			continue;
+			return( -1 );
 		}
-		/* Write the section value start
-		 */
-		print_count = fprintf(
-			       information_file->file_stream,
-			       "\t<%s>",
-			       values_table->identifier[ value_iterator ] );
-
-		if( ( print_count < 0 )
-		 || ( (size_t) print_count > ( values_table->identifier_length[ value_iterator ] + 3 ) ) )
+		if( values_table->identifier_length == NULL )
 		{
 			liberror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_IO,
-			 LIBERROR_IO_ERROR_WRITE_FAILED,
-			 "%s: unable to write section value start to file stream for value: %d.",
-			 function,
-			 value_iterator );
+			 LIBERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+			 "%s: invalid values table - missing identifier lengths.",
+			 function );
 
-			result = -1;
-
-			continue;
+			return( -1 );
 		}
-		/* Write the section value data
-		 */
-		if( values_table->value[ value_iterator ] != NULL )
+		if( values_table->value == NULL )
 		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+			 "%s: invalid values table - missing values.",
+			 function );
+
+			return( -1 );
+		}
+		if( values_table->value_length == NULL )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+			 "%s: invalid values table - missing value lengths.",
+			 function );
+
+			return( -1 );
+		}
+		for( value_iterator = 0;
+		     value_iterator < amount_of_values;
+		     value_iterator++ )
+		{
+			if( values_table->identifier[ value_iterator ] == NULL )
+			{
+				liberror_error_set(
+				 error,
+				 LIBERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+				 "%s: missing identifier for value: %d.",
+				 function,
+				 value_iterator );
+
+				result = -1;
+
+				continue;
+			}
+			/* Write the section value start
+			 */
 			print_count = fprintf(
 				       information_file->file_stream,
-				       "%s",
-				       values_table->value[ value_iterator ] );
+				       "\t<%s>",
+				       values_table->identifier[ value_iterator ] );
 
 			if( ( print_count < 0 )
-			 || ( (size_t) print_count > ( values_table->value_length[ value_iterator ] + 2 ) ) )
+			 || ( (size_t) print_count > ( values_table->identifier_length[ value_iterator ] + 3 ) ) )
 			{
 				liberror_error_set(
 				 error,
 				 LIBERROR_ERROR_DOMAIN_IO,
 				 LIBERROR_IO_ERROR_WRITE_FAILED,
-				 "%s: unable to write section value data to file stream for value: %d.",
+				 "%s: unable to write section value start to file stream for value: %d.",
+				 function,
+				 value_iterator );
+
+				result = -1;
+
+				continue;
+			}
+			/* Write the section value data
+			 */
+			if( values_table->value[ value_iterator ] != NULL )
+			{
+				print_count = fprintf(
+					       information_file->file_stream,
+					       "%s",
+					       values_table->value[ value_iterator ] );
+
+				if( ( print_count < 0 )
+				 || ( (size_t) print_count > ( values_table->value_length[ value_iterator ] + 2 ) ) )
+				{
+					liberror_error_set(
+					 error,
+					 LIBERROR_ERROR_DOMAIN_IO,
+					 LIBERROR_IO_ERROR_WRITE_FAILED,
+					 "%s: unable to write section value data to file stream for value: %d.",
+					 function,
+					 value_iterator );
+
+					result = -1;
+				}
+			}
+			/* Write the section value end
+			 */
+			print_count = fprintf(
+				       information_file->file_stream,
+				       "</%s>\n",
+				       values_table->identifier[ value_iterator ] );
+
+			if( ( print_count < 0 )
+			 || ( (size_t) print_count > ( values_table->identifier_length[ value_iterator ] + 4 ) ) )
+			{
+				liberror_error_set(
+				 error,
+				 LIBERROR_ERROR_DOMAIN_IO,
+				 LIBERROR_IO_ERROR_WRITE_FAILED,
+				 "%s: unable to write section value end to file stream for value: %d.",
 				 function,
 				 value_iterator );
 
 				result = -1;
 			}
-		}
-		/* Write the section value end
-		 */
-		print_count = fprintf(
-			       information_file->file_stream,
-			       "</%s>\n",
-			       values_table->identifier[ value_iterator ] );
-
-		if( ( print_count < 0 )
-		 || ( (size_t) print_count > ( values_table->identifier_length[ value_iterator ] + 4 ) ) )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_IO,
-			 LIBERROR_IO_ERROR_WRITE_FAILED,
-			 "%s: unable to write section value end to file stream for value: %d.",
-			 function,
-			 value_iterator );
-
-			result = -1;
 		}
 	}
 	/* Write section end

@@ -32,6 +32,10 @@
 
 #include <stdio.h>
 
+#if defined( LIBSMRAW_HAVE_BFIO )
+#include <libbfio.h>
+#endif
+
 #if defined( __cplusplus )
 extern "C" {
 #endif
@@ -44,6 +48,45 @@ extern "C" {
  */
 LIBSMRAW_EXTERN const char *libsmraw_get_version(
                              void );
+
+/* Globs the files according to common (split) RAW naming schemas
+ * Returns 1 if successful or -1 on error
+ */
+LIBSMRAW_EXTERN int libsmraw_glob(
+                     const char *filename,
+                     size_t filename_length,
+                     char **filenames[],
+                     int *amount_of_filenames,
+                     libsmraw_error_t **error );
+
+/* Frees the globbed filenames
+ * Returns 1 if successful or -1 on error
+ */
+LIBSMRAW_EXTERN int libsmraw_glob_free(
+                     char *filenames[],
+                     int amount_of_filenames,
+                     libsmraw_error_t **error );
+
+#if defined( HAVE_WIDE_CHARACTER_TYPE )
+/* Globs the files according to common (split) RAW naming schemas
+ * Returns 1 if successful or -1 on error
+ */
+LIBSMRAW_EXTERN int libsmraw_glob_wide(
+                     const wchar_t *filename,
+                     size_t filename_length,
+                     wchar_t **filenames[],
+                     int *amount_of_filenames,
+                     libsmraw_error_t **error );
+
+/* Frees the globbed filenames
+ * Returns 1 if successful or -1 on error
+ */
+LIBSMRAW_EXTERN int libsmraw_glob_free_wide(
+                     char *filenames[],
+                     int amount_of_filenames,
+                     libsmraw_error_t **error );
+#endif
+
 
 /* -------------------------------------------------------------------------
  * Notify functions
@@ -140,31 +183,7 @@ LIBSMRAW_EXTERN int libsmraw_handle_signal_abort(
                      libsmraw_handle_t *handle,
                      libsmraw_error_t **error );
 
-/* Globs the filenames for the handle
- * Returns 1 if successful or -1 on error
- */
-LIBSMRAW_EXTERN int libsmraw_handle_glob(
-                     libsmraw_handle_t *handle,
-                     const char *filename,
-                     size_t filename_length,
-                     char **filenames[],
-                     int *amount_of_filenames,
-                     libsmraw_error_t **error );
-
-#if defined( LIBSMRAW_WIDE_CHARACTER_TYPE )
-/* Globs the filenames for the handle
- * Returns 1 if successful or -1 on error
- */
-LIBSMRAW_EXTERN int libsmraw_handle_glob_wide(
-                     libsmraw_handle_t *handle,
-                     const wchar_t *filename,
-                     size_t filename_length,
-                     wchar_t **filenames[],
-                     int *amount_of_filenames,
-                     libsmraw_error_t **error );
-#endif
-
-/* Opens a handle
+/* Opens a set of storage media RAW files
  * Returns 1 if successful or -1 on error
  */
 LIBSMRAW_EXTERN int libsmraw_handle_open(
@@ -174,8 +193,8 @@ LIBSMRAW_EXTERN int libsmraw_handle_open(
                      int flags,
                      libsmraw_error_t **error );
 
-#if defined( LIBSMRAW_WIDE_CHARACTER_TYPE )
-/* Opens a handle
+#if defined( LIBSMRAW_HAVE_WIDE_CHARACTER_TYPE )
+/* Opens a set of storage media RAW files
  * Returns 1 if successful or -1 on error
  */
 LIBSMRAW_EXTERN int libsmraw_handle_open_wide(
@@ -186,29 +205,31 @@ LIBSMRAW_EXTERN int libsmraw_handle_open_wide(
                      libsmraw_error_t **error );
 #endif
 
-/* Prepares a buffer after reading it from the handle
- * Returns the amount of bytes in the buffer or -1 on error
+#if defined( LIBSMRAW_HAVE_BFIO )
+/* Opens a set of storage media RAW files using a Basic File IO (bfio) pool
+ * Returns 1 if successful or -1 on error
  */
-LIBSMRAW_EXTERN ssize_t libsmraw_handle_prepare_read_buffer(
-                         libsmraw_handle_t *handle,
-                         libsmraw_buffer_t *buffer,
-                         libsmraw_error_t **error );
+LIBSMRAW_EXTERN int libsmraw_handle_open_file_io_pool(
+                     libsmraw_handle_t *handle,
+                     libbfio_pool_t *file_io_pool,
+                     uint8_t flags,
+                     libsmraw_error_t **error );
+#endif
+
+/* Closes the handle
+ * Returns the 0 if succesful or -1 on error
+ */
+LIBSMRAW_EXTERN int libsmraw_handle_close(
+                     libsmraw_handle_t *handle,
+                     libsmraw_error_t **error );
 
 /* Reads a buffer from the handle
  * Returns the amount of bytes read or -1 on error
  */
 LIBSMRAW_EXTERN ssize_t libsmraw_handle_read_buffer(
                          libsmraw_handle_t *handle,
-                         libsmraw_buffer_t *buffer,
-                         size_t read_size,
-                         libsmraw_error_t **error );
-
-/* Prepares a buffer before writing to the handle
- * Returns the resulting buffer size or -1 on error
- */
-LIBSMRAW_EXTERN ssize_t libsmraw_handle_prepare_write_buffer(
-                         libsmraw_handle_t *handle,
-                         libsmraw_buffer_t *buffer,
+                         void *buffer,
+                         size_t buffer_size,
                          libsmraw_error_t **error );
 
 /* Writes a buffer to the handle
@@ -216,8 +237,8 @@ LIBSMRAW_EXTERN ssize_t libsmraw_handle_prepare_write_buffer(
  */
 LIBSMRAW_EXTERN ssize_t libsmraw_handle_write_buffer(
                          libsmraw_handle_t *handle,
-                         libsmraw_buffer_t *buffer,
-                         size_t write_size,
+                         void *buffer,
+                         size_t buffer_size,
                          libsmraw_error_t **error );
 
 /* Seeks an offset in the handle
@@ -229,11 +250,289 @@ LIBSMRAW_EXTERN off64_t libsmraw_handle_seek_offset(
                          int whence,
                          libsmraw_error_t **error );
 
-/* Closes the handle
- * Returns the 0 if succesful or -1 on error
+/* Retrieves the current offset of the (media) data
+ * Returns the offset if successful or -1 on error
  */
-LIBSMRAW_EXTERN int libsmraw_handle_close(
+LIBSMRAW_EXTERN int libsmraw_handle_get_offset(
                      libsmraw_handle_t *handle,
+                     off64_t *offset,
+                     libsmraw_error_t **error );
+
+/* Retrieves the segment filename size
+ * The filename size includes the end of string character
+ * Returns 1 if successful, 0 if value not present or -1 on error
+ */
+LIBSMRAW_EXTERN int libsmraw_handle_get_segment_filename_size(
+                     libsmraw_handle_t *handle,
+                     size_t *filename_size,
+                     libsmraw_error_t **error );
+
+/* Retrieves the segment filename
+ * The filename size should include the end of string character
+ * Returns 1 if successful, 0 if value not present or -1 on error
+ */
+LIBSMRAW_EXTERN int libsmraw_handle_get_segment_filename(
+                     libsmraw_handle_t *handle,
+                     char *filename,
+                     size_t filename_size,
+                     libsmraw_error_t **error );
+
+/* Sets the segment filename
+ * Returns 1 if successful or -1 on error
+ */
+LIBSMRAW_EXTERN int libsmraw_handle_set_segment_filename(
+                     libsmraw_handle_t *handle,
+                     const char *filename,
+                     size_t filename_length,
+                     libsmraw_error_t **error );
+
+#if defined( LIBSMRAW_HAVE_WIDE_CHARACTER_TYPE )
+/* Retrieves the segment filename size
+ * The filename size includes the end of string character
+ * Returns 1 if successful, 0 if value not present or -1 on error
+ */
+LIBSMRAW_EXTERN int libsmraw_handle_get_segment_filename_size_wide(
+                     libsmraw_handle_t *handle,
+                     size_t *filename_size,
+                     libsmraw_error_t **error );
+
+/* Retrieves the segment filename
+ * The filename size should include the end of string character
+ * Returns 1 if successful, 0 if value not present or -1 on error
+ */
+LIBSMRAW_EXTERN int libsmraw_handle_get_segment_filename_wide(
+                     libsmraw_handle_t *handle,
+                     wchar_t *filename,
+                     size_t filename_size,
+                     libsmraw_error_t **error );
+
+/* Sets the segment filename
+ * Returns 1 if successful or -1 on error
+ */
+LIBSMRAW_EXTERN int libsmraw_handle_set_segment_filename_wide(
+                     libsmraw_handle_t *handle,
+                     const wchar_t *filename,
+                     size_t filename_length,
+                     libsmraw_error_t **error );
+#endif
+
+/* Retrieves the segment file size
+ * Returns 1 if successful or -1 on error
+ */
+LIBSMRAW_EXTERN int libsmraw_handle_get_segment_file_size(
+                     libsmraw_handle_t *handle,
+                     size64_t *segment_file_size,
+                     libsmraw_error_t **error );
+
+/* Sets the segment file size
+ * 0 represents the maximum possible segment file size
+ * Returns 1 if successful or -1 on error
+ */
+LIBSMRAW_EXTERN int libsmraw_handle_set_segment_file_size(
+                     libsmraw_handle_t *handle,
+                     size64_t segment_file_size,
+                     libsmraw_error_t **error );
+
+/* Retrieves the filename size of the segment file of the current offset
+ * The filename size includes the end of string character
+ * Returns 1 if successful or -1 on error
+ */
+LIBSMRAW_EXTERN int libsmraw_handle_get_filename_size(
+                     libsmraw_handle_t *handle,
+                     size_t *filename_size,
+                     libsmraw_error_t **error );
+
+/* Retrieves the filename of the segment file of the current offset
+ * The filename size should include the end of string character
+ * Returns 1 if successful or -1 on error
+ */
+LIBSMRAW_EXTERN int libsmraw_handle_get_filename(
+                     libsmraw_handle_t *handle,
+                     char *filename,
+                     size_t filename_size,
+                     libsmraw_error_t **error );
+
+#if defined( LIBSMRAW_HAVE_WIDE_CHARACTER_TYPE )
+/* Retrieves the filename size of the segment file of the current offset
+ * The filename size includes the end of string character
+ * Returns 1 if successful or -1 on error
+ */
+LIBSMRAW_EXTERN int libsmraw_handle_get_filename_size_wide(
+                     libsmraw_handle_t *handle,
+                     size_t *filename_size,
+                     libsmraw_error_t **error );
+
+/* Retrieves the filename of the segment file of the current offset
+ * The filename size should include the end of string character
+ * Returns 1 if successful or -1 on error
+ */
+LIBSMRAW_EXTERN int libsmraw_handle_get_filename_wide(
+                     libsmraw_handle_t *handle,
+                     wchar_t *filename,
+                     size_t filename_size,
+                     libsmraw_error_t **error );
+#endif
+
+#if defined( LIBSMRAW_HAVE_BFIO )
+/* Retrieves the file io handle of the segment file of the current offset
+ * Returns 1 if successful or -1 on error
+ */
+LIBSMRAW_EXTERN int libsmraw_handle_get_file_io_handle(
+                     libsmraw_handle_t *handle,
+                     libbfio_handle_t **file_io_handle,
+                     libsmraw_error_t **error );
+#endif
+
+/* -------------------------------------------------------------------------
+ * Meta data functions
+ * ------------------------------------------------------------------------- */
+
+/* Retrieves the media size
+ * Returns the 1 if succesful or -1 on error
+ */
+LIBSMRAW_EXTERN int libsmraw_handle_get_media_size(
+                     libsmraw_handle_t *handle,
+                     size64_t *media_size,
+                     libsmraw_error_t **error );
+
+/* Sets the media size
+ * Returns the 1 if succesful or -1 on error
+ */
+LIBSMRAW_EXTERN int libsmraw_handle_set_media_size(
+                     libsmraw_handle_t *handle,
+                     size64_t media_size,
+                     libsmraw_error_t **error );
+
+/* Retrieves the amount of information values
+ * Returns 1 if successful or -1 on error
+ */
+LIBSMRAW_EXTERN int libsmraw_handle_get_amount_of_information_values(
+                     libsmraw_handle_t *handle,
+                     int *amount_of_information_values,
+                     libsmraw_error_t **error );
+
+/* Retrieves an information value identifier size
+ * The identifier size includes the end of string character
+ * Returns 1 if successful or -1 on error
+ */
+LIBSMRAW_EXTERN int libsmraw_handle_get_information_value_identifier_size(
+                     libsmraw_handle_t *handle,
+                     int information_value_index,
+                     size_t *identifier_size,
+                     libsmraw_error_t **error );
+
+/* Retrieves an information value identifier
+ * The strings are encoded in UTF-8
+ * The identifier size should include the end of string character
+ * Returns 1 if successful or -1 on error
+ */
+LIBSMRAW_EXTERN int libsmraw_handle_get_information_value_identifier(
+                     libsmraw_handle_t *handle,
+                     int information_value_index,
+                     uint8_t *identifier,
+                     size_t identifier_size,
+                     libsmraw_error_t **error );
+
+/* Retrieves an information value size
+ * The value size includes the end of string character
+ * Returns 1 if successful, 0 if value not present or -1 on error
+ */
+LIBSMRAW_EXTERN int libsmraw_handle_get_information_value_size(
+                     libsmraw_handle_t *handle,
+                     const uint8_t *identifier,
+                     size_t identifier_length,
+                     size_t *value_size,
+                     libsmraw_error_t **error );
+
+/* Retrieves an information value
+ * The strings are encoded in UTF-8
+ * The value size should include the end of string character
+ * Returns 1 if successful, 0 if value not present or -1 on error
+ */
+LIBSMRAW_EXTERN int libsmraw_handle_get_information_value(
+                     libsmraw_handle_t *handle,
+                     const uint8_t *identifier,
+                     size_t identifier_length,
+                     uint8_t *value,
+                     size_t value_size,
+                     libsmraw_error_t **error );
+
+/* Sets an information value
+ * The strings are encoded in UTF-8
+ * Returns the 1 if succesful or -1 on error
+ */
+LIBSMRAW_EXTERN int libsmraw_handle_set_information_value(
+                     libsmraw_handle_t *handle,
+                     const uint8_t *identifier,
+                     size_t identifier_length,
+                     const uint8_t *value,
+                     size_t value_length,
+                     libsmraw_error_t **error );
+
+/* Retrieves the amount of integrity hash values
+ * Returns 1 if successful or -1 on error
+ */
+LIBSMRAW_EXTERN int libsmraw_handle_get_amount_of_integrity_hash_values(
+                     libsmraw_handle_t *handle,
+                     int *amount_of_integrity_hash_values,
+                     libsmraw_error_t **error );
+
+/* Retrieves an integrity hash value identifier size
+ * The identifier size includes the end of string character
+ * Returns 1 if successful or -1 on error
+ */
+LIBSMRAW_EXTERN int libsmraw_handle_get_integrity_hash_value_identifier_size(
+                     libsmraw_handle_t *handle,
+                     int integrity_hash_value_index,
+                     size_t *identifier_size,
+                     libsmraw_error_t **error );
+
+/* Retrieves an integrity hash value identifier
+ * The strings are encoded in UTF-8
+ * The identifier size should include the end of string character
+ * Returns 1 if successful or -1 on error
+ */
+LIBSMRAW_EXTERN int libsmraw_handle_get_integrity_hash_value_identifier(
+                     libsmraw_handle_t *handle,
+                     int integrity_hash_value_index,
+                     uint8_t *identifier,
+                     size_t identifier_length,
+                     libsmraw_error_t **error );
+
+/* Retrieves an integrity hash value size
+ * The value size includes the end of string character
+ * Returns 1 if successful, 0 if value not present or -1 on error
+ */
+LIBSMRAW_EXTERN int libsmraw_handle_get_integrity_hash_value_size(
+                     libsmraw_handle_t *handle,
+                     const uint8_t *identifier,
+                     size_t identifier_length,
+                     size_t *value_size,
+                     libsmraw_error_t **error );
+
+/* Retrieves an integrity hash value
+ * The strings are encoded in UTF-8
+ * The value size should include the end of string character
+ * Returns 1 if successful, 0 if value not present or -1 on error
+ */
+LIBSMRAW_EXTERN int libsmraw_handle_get_integrity_hash_value(
+                     libsmraw_handle_t *handle,
+                     const uint8_t *identifier,
+                     size_t identifier_length,
+                     uint8_t *value,
+                     size_t value_size,
+                     libsmraw_error_t **error );
+
+/* Sets an integrity hash value
+ * The strings are encoded in UTF-8
+ * Returns the 1 if succesful or -1 on error
+ */
+LIBSMRAW_EXTERN int libsmraw_handle_set_integrity_hash_value(
+                     libsmraw_handle_t *handle,
+                     const uint8_t *identifier,
+                     size_t identifier_length,
+                     const uint8_t *value,
+                     size_t value_length,
                      libsmraw_error_t **error );
 
 #if defined( __cplusplus )

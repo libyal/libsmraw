@@ -10,10 +10,12 @@ AM_CPPFLAGS = \
 lib_LTLIBRARIES = libsmraw.la
 
 libsmraw_la_SOURCES = \
+	libsmraw.c \
 	libsmraw_codepage.h \
 	libsmraw_definitions.h \
 	libsmraw_error.c libsmraw_error.h \
 	libsmraw_extern.h \
+	libsmraw_filename.c libsmraw_filename.h \
 	libsmraw_handle.c libsmraw_handle.h \
 	libsmraw_information_file.c libsmraw_information_file.h \
 	libsmraw_libbfio.h \
@@ -23,7 +25,7 @@ libsmraw_la_SOURCES = \
 	libsmraw_notify.c libsmraw_notify.h \
 	libsmraw_string.h \
 	libsmraw_support.c libsmraw_support.h \
-	libsmraw_system_string.h \
+	libsmraw_system_string.c libsmraw_system_string.h \
 	libsmraw_types.h \
 	libsmraw_values_table.c libsmraw_values_table.h
 
