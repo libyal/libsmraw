@@ -31,7 +31,7 @@ extern "C" {
 #endif
 
 #if defined( WINAPI )
-int libsmraw_system_narrow_string_codepage = LIBBFIO_CODEPAGE_WINDOWS_1252;
+int libsmraw_system_narrow_string_codepage = LIBSMRAW_CODEPAGE_WINDOWS_1252;
 #else
 int libsmraw_system_narrow_string_codepage = 0;
 #endif

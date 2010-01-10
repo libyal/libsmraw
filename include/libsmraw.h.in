@@ -87,7 +87,6 @@ LIBSMRAW_EXTERN int libsmraw_glob_free_wide(
                      libsmraw_error_t **error );
 #endif
 
-
 /* -------------------------------------------------------------------------
  * Notify functions
  * ------------------------------------------------------------------------- */
@@ -169,14 +168,14 @@ LIBSMRAW_EXTERN int libsmraw_handle_initialize(
                      libsmraw_handle_t **handle,
                      libsmraw_error_t **error );
 
-/* Frees an exisisting handle
+/* Frees the handle
  * Returns 1 if successful or -1 on error
  */
 LIBSMRAW_EXTERN int libsmraw_handle_free(
                      libsmraw_handle_t **handle,
                      libsmraw_error_t **error );
 
-/* Signals the libsmraw handle to abort its current activity
+/* Signals the handle to abort its current activity
  * Returns 1 if successful or -1 on error
  */
 LIBSMRAW_EXTERN int libsmraw_handle_signal_abort(
@@ -190,7 +189,7 @@ LIBSMRAW_EXTERN int libsmraw_handle_open(
                      libsmraw_handle_t *handle,
                      char * const filenames[],
                      int amount_of_filenames,
-                     int flags,
+                     uint8_t flags,
                      libsmraw_error_t **error );
 
 #if defined( LIBSMRAW_HAVE_WIDE_CHARACTER_TYPE )
@@ -201,7 +200,7 @@ LIBSMRAW_EXTERN int libsmraw_handle_open_wide(
                      libsmraw_handle_t *handle,
                      wchar_t * const filenames[],
                      int amount_of_filenames,
-                     int flags,
+                     uint8_t flags,
                      libsmraw_error_t **error );
 #endif
 

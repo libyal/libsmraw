@@ -31,15 +31,15 @@
 #include <libnotify.h>
 
 #include "libsmraw_definitions.h"
-#include "libsmraw_handle.h"
 #include "libsmraw_information_file.h"
-#include "libsmraw_libbfio.h"
 #include "libsmraw_filename.h"
 #include "libsmraw_handle.h"
+#include "libsmraw_libbfio.h"
 #include "libsmraw_system_string.h"
 #include "libsmraw_types.h"
+#include "libsmraw_values_table.h"
 
-/* Initializes the (split) RAW handle
+/* Initializes the handle
  * Returns 1 if successful or -1 on error
  */
 int libsmraw_handle_initialize(
@@ -138,7 +138,7 @@ int libsmraw_handle_initialize(
 	return( 1 );
 }
 
-/* Frees the (split) RAW handle
+/* Frees the handle
  * Returns 1 if succesful or -1 on error
  */
 int libsmraw_handle_free(
@@ -243,7 +243,7 @@ int libsmraw_handle_free(
 	return( result );
 }
 
-/* Signals the libsmraw handle to abort its current activity
+/* Signals the handle to abort its current activity
  * Returns 1 if successful or -1 on error
  */
 int libsmraw_handle_signal_abort(
@@ -302,7 +302,7 @@ int libsmraw_internal_handle_initialize_write_values(
 	if( ( internal_handle->media_size > 0 )
 	 && ( internal_handle->maximum_segment_size > 0 ) )
 	{
-		internal_handle->maximum_file_io_pool_entry = internal_handle->media_size / internal_handle->maximum_segment_size;
+		internal_handle->maximum_file_io_pool_entry = (int) ( internal_handle->media_size / internal_handle->maximum_segment_size );
 
 		if( ( internal_handle->media_size % internal_handle->maximum_segment_size ) != 0 )
 		{
@@ -321,7 +321,7 @@ int libsmraw_handle_open(
      libsmraw_handle_t *handle,
      char * const filenames[],
      int amount_of_filenames,
-     int flags,
+     uint8_t flags,
      liberror_error_t **error )
 {
 	libbfio_handle_t *file_io_handle            = NULL;
@@ -372,8 +372,7 @@ int libsmraw_handle_open(
 
 		return( -1 );
 	}
-	if( ( amount_of_filenames == 0 )
-	 && ( amount_of_filenames > (int) INT_MAX ) )
+	if( amount_of_filenames <= 0 )
 	{
 		liberror_error_set(
 		 error,
@@ -858,7 +857,7 @@ int libsmraw_handle_open_wide(
      libsmraw_handle_t *handle,
      wchar_t * const filenames[],
      int amount_of_filenames,
-     int flags,
+     uint8_t flags,
      liberror_error_t **error )
 {
 	libbfio_handle_t *file_io_handle            = NULL;
@@ -909,8 +908,7 @@ int libsmraw_handle_open_wide(
 
 		return( -1 );
 	}
-	if( ( amount_of_filenames == 0 )
-	 && ( amount_of_filenames > (int) INT_MAX ) )
+	if( amount_of_filenames <= 0 )
 	{
 		liberror_error_set(
 		 error,
@@ -1796,7 +1794,7 @@ ssize_t libsmraw_handle_read_buffer(
 
 		if( ( (size64_t) read_size + (size64_t) file_offset ) > file_size )
 		{
-			read_size = file_size - file_offset;
+			read_size = (size_t) ( file_size - file_offset );
 		}
 		if( read_size == 0 )
 		{
@@ -2089,7 +2087,7 @@ ssize_t libsmraw_handle_write_buffer(
 		if( ( internal_handle->maximum_segment_size != 0 )
 		 && ( ( (size64_t) write_size + (size64_t) file_offset ) >= internal_handle->maximum_segment_size ) )
 		{
-			write_size = internal_handle->maximum_segment_size - file_offset;
+			write_size = (size_t) ( internal_handle->maximum_segment_size - file_offset );
 		}
 		if( write_size == 0 )
 		{

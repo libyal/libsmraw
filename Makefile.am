@@ -8,7 +8,9 @@ SUBDIRS = \
 	libuna \
 	libbfio \
 	libsmraw \
-	manuals
+	manuals \
+	borlandc \
+	msvscpp
 
 REDHAT_FILES = \
 	libsmraw.spec \

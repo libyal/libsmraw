@@ -20,7 +20,6 @@ libsmraw_la_SOURCES = \
 	libsmraw_information_file.c libsmraw_information_file.h \
 	libsmraw_libbfio.h \
 	libsmraw_libuna.h \
-	libsmraw_list_type.c libsmraw_list_type.h \
 	libsmraw_metadata.c libsmraw_metadata.h \
 	libsmraw_notify.c libsmraw_notify.h \
 	libsmraw_string.h \

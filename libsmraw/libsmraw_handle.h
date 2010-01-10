@@ -29,7 +29,6 @@
 #include <liberror.h>
 
 #include "libsmraw_extern.h"
-#include "libsmraw_handle.h"
 #include "libsmraw_information_file.h"
 #include "libsmraw_libbfio.h"
 #include "libsmraw_system_string.h"
@@ -130,7 +129,7 @@ LIBSMRAW_EXTERN int libsmraw_handle_open(
                      libsmraw_handle_t *handle,
                      char * const filenames[],
                      int amount_of_filenames,
-                     int flags,
+                     uint8_t flags,
                      liberror_error_t **error );
 
 #if defined( HAVE_WIDE_CHARACTER_TYPE )
@@ -138,7 +137,7 @@ LIBSMRAW_EXTERN int libsmraw_handle_open_wide(
                      libsmraw_handle_t *handle,
                      wchar_t * const filenames[],
                      int amount_of_filenames,
-                     int flags,
+                     uint8_t flags,
                      liberror_error_t **error );
 #endif
 

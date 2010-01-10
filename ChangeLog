@@ -1,14 +1,20 @@
 TODO
 * add read and write random functions
+* allow set of segment filename during write (as alternative writing locations)
 
 * retrieve data from the information file on open (check)
 * make sure certain values cannot be changed if writing/reading from raw files
 
 * detect maximum possible segment size on file system (e.g. FAT)
-* implement write resume
+* implement write resume?
+
+20100110
+* added msvscpp and borland project files
+* fixes for Windows build
 
 20100109
 * Worked on initial version
+* Tested write with ewfexport
 
 20100108
 * Created initial version based on earlier media input/output code

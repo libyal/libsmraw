@@ -2,7 +2,7 @@ AC_PREREQ( 2.59 )
 
 AC_INIT(
  [libsmraw],
-  [20100108],
+  [20100110],
   [forensics@hoffmannbv.nl])
 
 AC_CONFIG_SRCDIR(
@@ -10,7 +10,7 @@ AC_CONFIG_SRCDIR(
 
 AM_INIT_AUTOMAKE(
  [libsmraw],
- [20100108])
+ [20100110])
 
 AC_CONFIG_MACRO_DIR([m4])
 
@@ -109,48 +109,12 @@ AC_CHECK_HEADERS([varargs.h])
 dnl Headers included in libnotify/libnotify.c and libbfio/libbfio_file.c
 AC_CHECK_HEADERS([errno.h])
 
-dnl Headers included in libbfio/libbfio_file.c and libsystem/libsystem_file_io.h
+dnl Headers included in libbfio/libbfio_file.c
 AC_CHECK_HEADERS([sys/stat.h])
 AC_CHECK_HEADERS([fcntl.h])
 AC_CHECK_HEADERS([unistd.h])
 
-dnl Headers included in libsmraw/libsmraw_device.h
-AC_CHECK_HEADERS([cygwin/fs.h])
-AC_CHECK_HEADERS([linux/fs.h])
-AC_CHECK_HEADERS([sys/disk.h])
-AC_CHECK_HEADERS([sys/disklabel.h])
-AC_CHECK_HEADERS([sys/ioctl.h])
-
-dnl Headers included in libsmraw/libsmraw_device_ata.h
-AC_CHECK_HEADERS([cygwin/hdreg.h])
-AC_CHECK_HEADERS([linux/hdreg.h])
-
-AC_CHECK_HEADERS([linux/cdrom.h])
-
-dnl Headers included in libsmraw/libsmraw_device_scsi.h
-AC_CHECK_HEADERS([scsi/scsi.h])
-AC_CHECK_HEADERS([scsi/scsi_ioctl.h])
-AC_CHECK_HEADERS([scsi/sg.h])
-
-dnl Headers included in libsmraw/libsmraw_device_usb.h
-AC_CHECK_HEADERS([linux/usbdevice_fs.h])
-AC_CHECK_HEADERS([linux/usb/ch9.h])
-
-dnl Headers included in libsystem/libsystem_glob.h
-AC_CHECK_HEADERS([glob.h])
-
-dnl Headers included in libsystem/libsystem_signal.h
-AC_CHECK_HEADERS([signal.h])
-AC_CHECK_HEADERS([sys/signal.h])
-
-dnl Headers included in libsystem/libsystem_support.h
-AC_CHECK_HEADERS([langinfo.h])
-AC_CHECK_HEADERS([locale.h])
-
 dnl Other headers
-AC_CHECK_HEADERS([sys/utsname.h])
-
-AC_CHECK_HEADERS([openssl/opensslv.h])
 
 dnl Check for declarations and type definitions
 AC_TYPE_OFF_T
@@ -454,59 +418,6 @@ AC_CHECK_FUNCS(
  [AC_MSG_FAILURE(
   [Missing function: fstat],
   [1]) ])
-
-dnl Date and time functions used in libsystem/libsystem_date_time.h
-LIBSMRAW_CHECK_FUNC_CTIME
-
-AC_CHECK_FUNCS(
- [gmtime_r],
- [],
- [AC_CHECK_FUNCS(
-  [gmtime],
-  [],
-  [AC_MSG_FAILURE(
-   [Missing functions: gmtime_r and gmtime],
-   [1]) ]) ])
-
-AC_CHECK_FUNCS(
- [localtime_r],
- [],
- [AC_CHECK_FUNCS(
-  [localtime],
-  [],
-  [AC_MSG_FAILURE(
-   [Missing functions: localtime_r and localtime],
-   [1]) ]) ])
-
-AC_CHECK_FUNCS(
- [mktime],
- [],
- [AC_MSG_FAILURE(
-  [Missing function: mktime],
-  [1]) ])
-
-AC_CHECK_FUNCS(
- [time],
- [],
- [AC_MSG_FAILURE(
-  [Missing function: time],
-  [1]) ])
-
-dnl Check for getopt functions used in libsystem/libsystem_getopt.h
-AC_CHECK_FUNCS([getopt])
-
-dnl Check for locale functions used in libsystem/libsystem_support.h
-AC_CHECK_FUNCS(
- [setlocale],
- [],
- [AC_MSG_FAILURE(
-  [Missing function: setlocale],
-  [1]) ])
-
-LIBSMRAW_LANGINFO_CODESET
-
-dnl System functions
-AC_CHECK_FUNCS([uname])
 
 dnl Check for printf conversion specifier support
 LIBSMRAW_CHECK_PRINTF_JD
@@ -1215,7 +1126,7 @@ AS_IF(
 	ac_cv_libsmraw_enable_debug_output=yes])
 
 dnl Set memwatch support
-ac_libsmraw_have_memwatch=yes
+ac_libsmraw_have_memwatch=no
 
 AS_IF(
 	[test "x$ac_libsmraw_have_memwatch" != xno ],
@@ -1255,6 +1166,8 @@ AC_CONFIG_FILES([libuna/Makefile])
 AC_CONFIG_FILES([libbfio/Makefile])
 AC_CONFIG_FILES([libsmraw/Makefile])
 AC_CONFIG_FILES([manuals/Makefile])
+AC_CONFIG_FILES([borlandc/Makefile])
+AC_CONFIG_FILES([msvscpp/Makefile])
 dnl Have configure make the include files
 AC_CONFIG_FILES([include/libsmraw.h])
 AC_CONFIG_FILES([include/libsmraw/definitions.h])
