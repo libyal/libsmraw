@@ -55,9 +55,9 @@ struct libsmraw_internal_handle
 	 */
 	int current_file_io_pool_entry;
 
-	/* The maximum pool entry
+	/* The total amount of pool entries
 	 */
-	int maximum_file_io_pool_entry;
+	int total_amount_of_file_io_pool_entries;
 
 	/* A pool of file io handles
 	 */

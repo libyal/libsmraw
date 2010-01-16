@@ -130,8 +130,7 @@ int libsmraw_handle_initialize(
 
 			return( -1 );
 		}
-		internal_handle->maximum_file_io_pool_entry = 1;
-		internal_handle->maximum_segment_size       = LIBSMRAW_DEFAULT_MAXIMUM_SEGMENT_SIZE;
+		internal_handle->maximum_segment_size = LIBSMRAW_DEFAULT_MAXIMUM_SEGMENT_SIZE;
 
 		*handle = (libsmraw_handle_t *) internal_handle;
 	}
@@ -302,11 +301,11 @@ int libsmraw_internal_handle_initialize_write_values(
 	if( ( internal_handle->media_size > 0 )
 	 && ( internal_handle->maximum_segment_size > 0 ) )
 	{
-		internal_handle->maximum_file_io_pool_entry = (int) ( internal_handle->media_size / internal_handle->maximum_segment_size );
+		internal_handle->total_amount_of_file_io_pool_entries = (int) ( internal_handle->media_size / internal_handle->maximum_segment_size );
 
 		if( ( internal_handle->media_size % internal_handle->maximum_segment_size ) != 0 )
 		{
-			internal_handle->maximum_file_io_pool_entry += 1;
+			internal_handle->total_amount_of_file_io_pool_entries += 1;
 		}
 	}
 	internal_handle->write_values_initialized = 1;
@@ -389,11 +388,11 @@ int libsmraw_handle_open(
 	{
 		if( ( flags & LIBSMRAW_FLAG_WRITE ) == LIBSMRAW_FLAG_WRITE )
 		{
-			file_io_flags = LIBSMRAW_OPEN_READ_WRITE;
+			file_io_flags = LIBBFIO_OPEN_READ_WRITE;
 		}
 		else
 		{
-			file_io_flags = LIBSMRAW_OPEN_READ;
+			file_io_flags = LIBBFIO_OPEN_READ;
 		}
 		/* Set the basename
 		 */
@@ -430,7 +429,7 @@ int libsmraw_handle_open(
 		 */
 		if( libbfio_pool_initialize(
 		     &file_io_pool,
-		     amount_of_filenames,
+		     0,
 		     LIBBFIO_POOL_UNLIMITED_AMOUNT_OF_OPEN_HANDLES,
 		     error ) != 1 )
 		{
@@ -466,8 +465,6 @@ int libsmraw_handle_open(
 
 				return( -1 );
 			}
-			file_io_handle = NULL;
-
 			if( libbfio_file_initialize(
 			     &file_io_handle,
 			     error ) != 1 )
@@ -485,6 +482,29 @@ int libsmraw_handle_open(
 
 				return( -1 );
 			}
+#if defined( HAVE_DEBUG_OUTPUT )
+			if( libbfio_handle_set_track_offsets_read(
+			     file_io_handle,
+			     1,
+			     error ) != 1 )
+			{
+		                liberror_error_set(
+		                 error,
+		                 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		                 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+		                 "%s: unable to set track offsets read in file io handle.",
+		                 function );
+
+				libbfio_handle_free(
+				 &file_io_handle,
+				 NULL );
+				libbfio_pool_free(
+				 &file_io_pool,
+				 NULL );
+
+		                return( -1 );
+			}
+#endif
 			if( libbfio_file_set_name(
 			     file_io_handle,
 			     filenames[ filename_iterator ],
@@ -530,6 +550,7 @@ int libsmraw_handle_open(
 
 				return( -1 );
 			}
+			file_io_handle = NULL;
 		}
 	}
 	/* Open for write only
@@ -684,8 +705,6 @@ int libsmraw_handle_open(
 		}
 		if( ( flags & LIBSMRAW_FLAG_READ ) == LIBSMRAW_FLAG_READ )
 		{
-			file_io_handle = NULL;
-
 			if( libbfio_file_initialize(
 			     &file_io_handle,
 			     error ) != 1 )
@@ -836,6 +855,7 @@ int libsmraw_handle_open(
 					return( -1 );
 				}
 			}
+			file_io_handle = NULL;
 		}
 		memory_free(
 		 information_filename );
@@ -925,11 +945,11 @@ int libsmraw_handle_open_wide(
 	{
 		if( ( flags & LIBSMRAW_FLAG_WRITE ) == LIBSMRAW_FLAG_WRITE )
 		{
-			file_io_flags = LIBSMRAW_OPEN_READ_WRITE;
+			file_io_flags = LIBBFIO_OPEN_READ_WRITE;
 		}
 		else
 		{
-			file_io_flags = LIBSMRAW_OPEN_READ;
+			file_io_flags = LIBBFIO_OPEN_READ;
 		}
 		/* Set the basename
 		 */
@@ -966,7 +986,7 @@ int libsmraw_handle_open_wide(
 		 */
 		if( libbfio_pool_initialize(
 		     &file_io_pool,
-		     amount_of_filenames,
+		     0,
 		     LIBBFIO_POOL_UNLIMITED_AMOUNT_OF_OPEN_HANDLES,
 		     error ) != 1 )
 		{
@@ -1002,8 +1022,6 @@ int libsmraw_handle_open_wide(
 
 				return( -1 );
 			}
-			file_io_handle = NULL;
-
 			if( libbfio_file_initialize(
 			     &file_io_handle,
 			     error ) != 1 )
@@ -1021,6 +1039,29 @@ int libsmraw_handle_open_wide(
 
 				return( -1 );
 			}
+#if defined( HAVE_DEBUG_OUTPUT )
+			if( libbfio_handle_set_track_offsets_read(
+			     file_io_handle,
+			     1,
+			     error ) != 1 )
+			{
+		                liberror_error_set(
+		                 error,
+		                 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		                 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+		                 "%s: unable to set track offsets read in file io handle.",
+		                 function );
+
+				libbfio_handle_free(
+				 &file_io_handle,
+				 NULL );
+				libbfio_pool_free(
+				 &file_io_pool,
+				 NULL );
+
+		                return( -1 );
+			}
+#endif
 			if( libbfio_file_set_name_wide(
 			     file_io_handle,
 			     filenames[ filename_iterator ],
@@ -1066,6 +1107,7 @@ int libsmraw_handle_open_wide(
 
 				return( -1 );
 			}
+			file_io_handle = NULL;
 		}
 	}
 	/* Open for write only
@@ -1220,8 +1262,6 @@ int libsmraw_handle_open_wide(
 		}
 		if( ( flags & LIBSMRAW_FLAG_READ ) == LIBSMRAW_FLAG_READ )
 		{
-			file_io_handle = NULL;
-
 			if( libbfio_file_initialize(
 			     &file_io_handle,
 			     error ) != 1 )
@@ -1372,6 +1412,7 @@ int libsmraw_handle_open_wide(
 					return( -1 );
 				}
 			}
+			file_io_handle = NULL;
 		}
 		memory_free(
 		 information_filename );
@@ -1464,24 +1505,20 @@ int libsmraw_handle_open_file_io_pool(
 
 		return( -1 );
 	}
-	internal_handle->file_io_pool = file_io_pool;
-
 	if( ( flags & LIBSMRAW_FLAG_READ ) == LIBSMRAW_FLAG_READ )
 	{
 		if( ( flags & LIBSMRAW_FLAG_WRITE ) == LIBSMRAW_FLAG_WRITE )
 		{
-			file_io_flags = LIBSMRAW_OPEN_READ_WRITE;
+			file_io_flags = LIBBFIO_OPEN_READ_WRITE;
 		}
 		else
 		{
-			file_io_flags = LIBSMRAW_OPEN_READ;
+			file_io_flags = LIBBFIO_OPEN_READ;
 		}
 		for( file_io_handle_iterator = 0;
 		     file_io_handle_iterator < amount_of_handles;
 		     file_io_handle_iterator++ )
 		{
-			file_io_handle = NULL;
-
 			if( libbfio_pool_get_handle(
 			     file_io_pool,
 			     file_io_handle_iterator,
@@ -1496,8 +1533,6 @@ int libsmraw_handle_open_file_io_pool(
 				 function,
 				 file_io_handle_iterator );
 
-				internal_handle->file_io_pool = NULL;
-
 				return( -1 );
 			}
 #if defined( HAVE_VERBOSE_OUTPUT )
@@ -1510,7 +1545,7 @@ int libsmraw_handle_open_file_io_pool(
 			}
 #endif
 			if( libbfio_pool_open(
-			     internal_handle->file_io_pool,
+			     file_io_pool,
 			     file_io_handle_iterator,
 			     file_io_flags,
 			     error ) != 1 )
@@ -1526,7 +1561,7 @@ int libsmraw_handle_open_file_io_pool(
 				return( -1 );
 			}
 			if( libbfio_pool_get_size(
-			     internal_handle->file_io_pool,
+			     file_io_pool,
 			     file_io_handle_iterator,
 			     &file_size,
 			     error ) != 1 )
@@ -1541,10 +1576,14 @@ int libsmraw_handle_open_file_io_pool(
 
 				return( -1 );
 			}
+			file_io_handle = NULL;
+
 			internal_handle->media_size += file_size;
 		}
 		internal_handle->read_values_initialized = 1;
 	}
+	internal_handle->file_io_pool = file_io_pool;
+
 	return( 1 );
 }
 
@@ -1634,34 +1673,40 @@ int libsmraw_handle_close(
 			return( -1 );
 		}
 	}
-	if( ( internal_handle->file_io_pool_created_in_library != 0 )
-	 && ( internal_handle->file_io_pool != NULL )
-	 && ( libbfio_pool_close_all(
-	       internal_handle->file_io_pool,
-	       error ) != 0 ) )
+	if( internal_handle->file_io_pool_created_in_library != 0 )
 	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_IO,
-		 LIBERROR_IO_ERROR_GENERIC,
-		 "%s: unable close file io pool.",
-		 function );
+		if( internal_handle->file_io_pool != NULL )
+		{
+			if( libbfio_pool_close_all(
+			     internal_handle->file_io_pool,
+			     error ) != 0 )
+			{
+				liberror_error_set(
+				 error,
+				 LIBERROR_ERROR_DOMAIN_IO,
+				 LIBERROR_IO_ERROR_GENERIC,
+				 "%s: unable close file io pool.",
+				 function );
 
-		result = -1;
+				result = -1;
+			}
+		}
 	}
-	if( ( internal_handle->information_file != NULL )
-	 && ( libsmraw_information_file_close(
-	       internal_handle->information_file,
-	       error ) != 0 ) )
+	if( internal_handle->information_file != NULL )
 	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_IO,
-		 LIBERROR_IO_ERROR_CLOSE_FAILED,
-		 "%s: unable to close information file.",
-		 function );
+		if( libsmraw_information_file_close(
+		     internal_handle->information_file,
+		     error ) != 0 )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_IO,
+			 LIBERROR_IO_ERROR_CLOSE_FAILED,
+			 "%s: unable to close information file.",
+			 function );
 
-		result = -1;
+			result = -1;
+		}
 	}
 	return( result );
 }
@@ -1703,18 +1748,6 @@ ssize_t libsmraw_handle_read_buffer(
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
 		 "%s: invalid handle - missing file io pool.",
-		 function );
-
-		return( -1 );
-	}
-	if( ( internal_handle->current_file_io_pool_entry < 0 )
-	 || ( internal_handle->current_file_io_pool_entry > internal_handle->maximum_file_io_pool_entry ) )
-	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_VALUE_OUT_OF_RANGE,
-		 "%s: invalid handle - current pool entry value out of range.",
 		 function );
 
 		return( -1 );
@@ -1878,7 +1911,7 @@ ssize_t libsmraw_handle_write_buffer(
 		return( -1 );
 	}
 	if( ( internal_handle->current_file_io_pool_entry < 0 )
-	 || ( internal_handle->current_file_io_pool_entry > internal_handle->maximum_file_io_pool_entry ) )
+	 || ( internal_handle->current_file_io_pool_entry >= internal_handle->total_amount_of_file_io_pool_entries ) )
 	{
 		liberror_error_set(
 		 error,
@@ -1955,7 +1988,7 @@ ssize_t libsmraw_handle_write_buffer(
 			     &segment_filename_size,
 			     internal_handle->basename,
 			     internal_handle->basename_size,
-			     internal_handle->maximum_file_io_pool_entry,
+			     internal_handle->total_amount_of_file_io_pool_entries,
 			     internal_handle->current_file_io_pool_entry,
 			     error ) != 1 )
 			{
@@ -1969,8 +2002,6 @@ ssize_t libsmraw_handle_write_buffer(
 
 				return( -1 );
 			}
-			file_io_handle = NULL;
-
 			if( libbfio_file_initialize(
 			     &file_io_handle,
 			     error ) != 1 )
@@ -2049,6 +2080,7 @@ ssize_t libsmraw_handle_write_buffer(
 
 				return( -1 );
 			}
+			file_io_handle = NULL;
 		}
 		if( libbfio_pool_get_size(
 		     internal_handle->file_io_pool,

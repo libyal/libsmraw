@@ -55,6 +55,17 @@ int libsmraw_handle_get_media_size(
 	}
 	internal_handle = (libsmraw_internal_handle_t *) handle;
 
+	if( internal_handle->file_io_pool == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid handle - missing file io pool.",
+		 function );
+
+		return( -1 );
+	}
 	if( media_size == NULL )
 	{
 		liberror_error_set(
@@ -137,6 +148,17 @@ int libsmraw_handle_get_bytes_per_sector(
 	}
 	internal_handle = (libsmraw_internal_handle_t *) handle;
 
+	if( internal_handle->file_io_pool == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid handle - missing file io pool.",
+		 function );
+
+		return( -1 );
+	}
 	/* TODO */
 
 	*bytes_per_sector = 0;
@@ -168,6 +190,17 @@ int libsmraw_handle_set_bytes_per_sector(
 	}
 	internal_handle = (libsmraw_internal_handle_t *) handle;
 
+	if( internal_handle->read_values_initialized != 0 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: media size cannot be changed.",
+		 function );
+
+		return( -1 );
+	}
 	if( bytes_per_sector > (size_t) UINT32_MAX )
 	{
 		liberror_error_set(
@@ -211,6 +244,17 @@ int libsmraw_handle_get_media_values(
 	}
 	internal_handle = (libsmraw_internal_handle_t *) handle;
 
+	if( internal_handle->file_io_pool == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid handle - missing file io pool.",
+		 function );
+
+		return( -1 );
+	}
 	if( media_type == NULL )
 	{
 		liberror_error_set(
@@ -265,6 +309,17 @@ int libsmraw_handle_set_media_values(
 	}
 	internal_handle = (libsmraw_internal_handle_t *) handle;
 
+	if( internal_handle->read_values_initialized != 0 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: media size cannot be changed.",
+		 function );
+
+		return( -1 );
+	}
 	switch( media_type )
 	{
 		case LIBSMRAW_MEDIA_TYPE_FIXED:
@@ -340,6 +395,17 @@ int libsmraw_handle_get_amount_of_information_values(
 	}
 	internal_handle = (libsmraw_internal_handle_t *) handle;
 
+	if( internal_handle->file_io_pool == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid handle - missing file io pool.",
+		 function );
+
+		return( -1 );
+	}
 	if( internal_handle->information_values_table == NULL )
 	{
 		liberror_error_set(
@@ -394,6 +460,17 @@ int libsmraw_handle_get_information_value_identifier_size(
 	}
 	internal_handle = (libsmraw_internal_handle_t *) handle;
 
+	if( internal_handle->file_io_pool == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid handle - missing file io pool.",
+		 function );
+
+		return( -1 );
+	}
 	if( internal_handle->information_values_table == NULL )
 	{
 		liberror_error_set(
@@ -452,6 +529,17 @@ int libsmraw_handle_get_information_value_identifier(
 	}
 	internal_handle = (libsmraw_internal_handle_t *) handle;
 
+	if( internal_handle->file_io_pool == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid handle - missing file io pool.",
+		 function );
+
+		return( -1 );
+	}
 	if( internal_handle->information_values_table == NULL )
 	{
 		liberror_error_set(
@@ -511,6 +599,17 @@ int libsmraw_handle_get_information_value_size(
 	}
 	internal_handle = (libsmraw_internal_handle_t *) handle;
 
+	if( internal_handle->file_io_pool == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid handle - missing file io pool.",
+		 function );
+
+		return( -1 );
+	}
 	if( internal_handle->information_values_table == NULL )
 	{
 		liberror_error_set(
@@ -585,6 +684,17 @@ int libsmraw_handle_get_information_value(
 	}
 	internal_handle = (libsmraw_internal_handle_t *) handle;
 
+	if( internal_handle->file_io_pool == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid handle - missing file io pool.",
+		 function );
+
+		return( -1 );
+	}
 	if( internal_handle->information_values_table == NULL )
 	{
 		liberror_error_set(
@@ -658,6 +768,17 @@ int libsmraw_handle_set_information_value(
 	}
 	internal_handle = (libsmraw_internal_handle_t *) handle;
 
+	if( internal_handle->read_values_initialized != 0 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: media size cannot be changed.",
+		 function );
+
+		return( -1 );
+	}
 	if( internal_handle->information_values_table == NULL )
 	{
 		liberror_error_set(
@@ -725,6 +846,17 @@ int libsmraw_handle_get_amount_of_integrity_hash_values(
 	}
 	internal_handle = (libsmraw_internal_handle_t *) handle;
 
+	if( internal_handle->file_io_pool == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid handle - missing file io pool.",
+		 function );
+
+		return( -1 );
+	}
 	if( internal_handle->integrity_hash_values_table == NULL )
 	{
 		liberror_error_set(
@@ -779,6 +911,17 @@ int libsmraw_handle_get_integrity_hash_value_identifier_size(
 	}
 	internal_handle = (libsmraw_internal_handle_t *) handle;
 
+	if( internal_handle->file_io_pool == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid handle - missing file io pool.",
+		 function );
+
+		return( -1 );
+	}
 	if( internal_handle->integrity_hash_values_table == NULL )
 	{
 		liberror_error_set(
@@ -837,6 +980,17 @@ int libsmraw_handle_get_integrity_hash_value_identifier(
 	}
 	internal_handle = (libsmraw_internal_handle_t *) handle;
 
+	if( internal_handle->file_io_pool == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid handle - missing file io pool.",
+		 function );
+
+		return( -1 );
+	}
 	if( internal_handle->integrity_hash_values_table == NULL )
 	{
 		liberror_error_set(
@@ -896,6 +1050,17 @@ int libsmraw_handle_get_integrity_hash_value_size(
 	}
 	internal_handle = (libsmraw_internal_handle_t *) handle;
 
+	if( internal_handle->file_io_pool == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid handle - missing file io pool.",
+		 function );
+
+		return( -1 );
+	}
 	if( internal_handle->integrity_hash_values_table == NULL )
 	{
 		liberror_error_set(
@@ -970,6 +1135,17 @@ int libsmraw_handle_get_integrity_hash_value(
 	}
 	internal_handle = (libsmraw_internal_handle_t *) handle;
 
+	if( internal_handle->file_io_pool == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid handle - missing file io pool.",
+		 function );
+
+		return( -1 );
+	}
 	if( internal_handle->integrity_hash_values_table == NULL )
 	{
 		liberror_error_set(
@@ -1043,6 +1219,17 @@ int libsmraw_handle_set_integrity_hash_value(
 	}
 	internal_handle = (libsmraw_internal_handle_t *) handle;
 
+	if( internal_handle->read_values_initialized != 0 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: media size cannot be changed.",
+		 function );
+
+		return( -1 );
+	}
 	if( internal_handle->integrity_hash_values_table == NULL )
 	{
 		liberror_error_set(

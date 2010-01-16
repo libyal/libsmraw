@@ -8,6 +8,10 @@ TODO
 * detect maximum possible segment size on file system (e.g. FAT)
 * implement write resume?
 
+20100116
+* media values no longer returned if no file io pool available
+* worked on read
+
 20100110
 * added msvscpp and borland project files
 * fixes for Windows build

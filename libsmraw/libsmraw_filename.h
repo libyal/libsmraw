@@ -39,7 +39,7 @@ int libsmraw_filename_create(
      size_t *filename_size,
      libsmraw_system_character_t *basename,
      size_t basename_size,
-     int maximum_file_io_pool_entry,
+     int total_amount_of_file_io_pool_entries,
      int current_file_io_pool_entry,
      liberror_error_t **error );
 

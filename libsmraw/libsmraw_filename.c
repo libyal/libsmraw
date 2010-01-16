@@ -46,7 +46,7 @@ int libsmraw_filename_create(
      size_t *filename_size,
      libsmraw_system_character_t *basename,
      size_t basename_size,
-     int maximum_file_io_pool_entry,
+     int total_amount_of_file_io_pool_entries,
      int current_file_io_pool_entry,
      liberror_error_t **error )
 {
@@ -109,8 +109,8 @@ int libsmraw_filename_create(
 
 		return( -1 );
 	}
-	if( ( maximum_file_io_pool_entry <= 0 )
-	 || ( maximum_file_io_pool_entry >= 1000 ) )
+	if( ( total_amount_of_file_io_pool_entries <= 0 )
+	 || ( total_amount_of_file_io_pool_entries >= 1000 ) )
 	{
 		liberror_error_set(
 		 error,
@@ -122,7 +122,7 @@ int libsmraw_filename_create(
 		return( -1 );
 	}
 	if( ( current_file_io_pool_entry < 0 )
-	 || ( current_file_io_pool_entry > maximum_file_io_pool_entry ) )
+	 || ( current_file_io_pool_entry > total_amount_of_file_io_pool_entries ) )
 	{
 		liberror_error_set(
 		 error,
@@ -133,7 +133,7 @@ int libsmraw_filename_create(
 
 		return( -1 );
 	}
-	if( maximum_file_io_pool_entry > 1 )
+	if( total_amount_of_file_io_pool_entries > 1 )
 	{
 		additional_length = 8;
 	}
@@ -153,7 +153,7 @@ int libsmraw_filename_create(
 
 		return( -1 );
 	}
-	if( maximum_file_io_pool_entry == 1 )
+	if( total_amount_of_file_io_pool_entries == 1 )
 	{
 		print_count = libsmraw_system_string_snprintf(
 		               *filename,
