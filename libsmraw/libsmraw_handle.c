@@ -1752,6 +1752,18 @@ ssize_t libsmraw_handle_read_buffer(
 
 		return( -1 );
 	}
+	if( ( internal_handle->offset < 0 )
+	 || ( internal_handle->offset >(off64_t) internal_handle->media_size ) )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBERROR_ARGUMENT_ERROR_VALUE_OUT_OF_RANGE,
+		 "%s: invalid handle - offset value out of range.",
+		 function );
+
+		return( -1 );
+	}
 	if( buffer == NULL )
 	{
 		liberror_error_set(
@@ -1910,14 +1922,14 @@ ssize_t libsmraw_handle_write_buffer(
 
 		return( -1 );
 	}
-	if( ( internal_handle->current_file_io_pool_entry < 0 )
-	 || ( internal_handle->current_file_io_pool_entry >= internal_handle->total_amount_of_file_io_pool_entries ) )
+	if( ( internal_handle->offset < 0 )
+	 || ( internal_handle->offset > (off64_t) internal_handle->media_size ) )
 	{
 		liberror_error_set(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBERROR_ARGUMENT_ERROR_VALUE_OUT_OF_RANGE,
-		 "%s: invalid handle - current pool entry value out of range.",
+		 "%s: invalid handle - offset value out of range.",
 		 function );
 
 		return( -1 );
@@ -1937,6 +1949,18 @@ ssize_t libsmraw_handle_write_buffer(
 
 			return( -1 );
 		}
+	}
+	if( ( internal_handle->current_file_io_pool_entry < 0 )
+	 || ( internal_handle->current_file_io_pool_entry >= internal_handle->total_amount_of_file_io_pool_entries ) )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBERROR_ARGUMENT_ERROR_VALUE_OUT_OF_RANGE,
+		 "%s: invalid handle - current pool entry value out of range.",
+		 function );
+
+		return( -1 );
 	}
 	if( buffer == NULL )
 	{
@@ -2197,8 +2221,28 @@ off64_t libsmraw_handle_seek_offset(
 
 		return( -1 );
 	}
-	if( ( offset < 0 )
-	 || ( offset > (off64_t) internal_handle->media_size ) )
+	if( ( whence != SEEK_CUR )
+	 && ( whence != SEEK_END )
+	 && ( whence != SEEK_SET ) )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
+		 "%s: unsupported whence.",
+		 function );
+
+		return( -1 );
+	}
+	if( whence == SEEK_CUR )
+	{
+		offset += internal_handle->offset;
+	}
+	else if( whence == SEEK_END )
+	{
+		offset += (off64_t) internal_handle->media_size;
+	}
+	if( offset < 0 )
 	{
 		liberror_error_set(
 		 error,
@@ -2209,32 +2253,12 @@ off64_t libsmraw_handle_seek_offset(
 
 		return( -1 );
 	}
-	if( libbfio_pool_get_amount_of_handles(
-	    internal_handle->file_io_pool,
-	    &amount_of_handles,
-	    error ) != 1 )
+	if( offset < (off64_t) internal_handle->media_size )
 	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve file size from entry: %d.",
-		 function,
-		 file_io_pool_entry );
-
-		return( -1 );
-	}
-	file_offset = offset;
-
-	for( file_io_pool_entry = 0;
-	     file_io_pool_entry < amount_of_handles;
-	     file_io_pool_entry++ )
-	{
-		if( libbfio_pool_get_size(
-		     internal_handle->file_io_pool,
-		     file_io_pool_entry,
-		     &file_size,
-		     error ) != 1 )
+		if( libbfio_pool_get_amount_of_handles(
+		    internal_handle->file_io_pool,
+		    &amount_of_handles,
+		    error ) != 1 )
 		{
 			liberror_error_set(
 			 error,
@@ -2246,45 +2270,66 @@ off64_t libsmraw_handle_seek_offset(
 
 			return( -1 );
 		}
-		if( file_offset > (off64_t) file_size )
+		file_offset = offset;
+
+		for( file_io_pool_entry = 0;
+		     file_io_pool_entry < amount_of_handles;
+		     file_io_pool_entry++ )
 		{
-			break;
+			if( libbfio_pool_get_size(
+			     internal_handle->file_io_pool,
+			     file_io_pool_entry,
+			     &file_size,
+			     error ) != 1 )
+			{
+				liberror_error_set(
+				 error,
+				 LIBERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+				 "%s: unable to retrieve file size from entry: %d.",
+				 function,
+				 file_io_pool_entry );
+
+				return( -1 );
+			}
+			if( file_offset > (off64_t) file_size )
+			{
+				break;
+			}
+			file_offset -= (off64_t) file_size;
 		}
-		file_offset -= (off64_t) file_size;
-	}
-	if( file_io_pool_entry >= amount_of_handles )
-	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_VALUE_OUT_OF_RANGE,
-		 "%s: invalid pool entry value out of range.",
-		 function );
+		if( file_io_pool_entry >= amount_of_handles )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBERROR_RUNTIME_ERROR_VALUE_OUT_OF_RANGE,
+			 "%s: invalid pool entry value out of range.",
+			 function );
 
-		return( -1 );
-	}
-	offset = libbfio_pool_seek_offset(
-	          internal_handle->file_io_pool,
-	          file_io_pool_entry,
-	          file_offset,
-	          whence,
-	          error );
+			return( -1 );
+		}
+		if( libbfio_pool_seek_offset(
+		     internal_handle->file_io_pool,
+		     file_io_pool_entry,
+		     file_offset,
+		     whence,
+		     error ) == -1 )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_IO,
+			 LIBERROR_IO_ERROR_SEEK_FAILED,
+			 "%s: unable to seek offset: %" PRIu64 " in entry: %d.",
+			 function,
+			 file_offset,
+			 file_io_pool_entry );
 
-	if( offset == -1 )
-	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_IO,
-		 LIBERROR_IO_ERROR_SEEK_FAILED,
-		 "%s: unable to seek offset: %" PRIu64 " in entry: %d.",
-		 function,
-		 file_offset,
-		 file_io_pool_entry );
-
-		return( -1 );
+			return( -1 );
+		}
+		internal_handle->current_file_io_pool_entry = file_io_pool_entry;
 	}
-	internal_handle->current_file_io_pool_entry = file_io_pool_entry;
-	internal_handle->offset                     = offset;
+	internal_handle->offset = offset;
 
 	return( offset );
 }
@@ -2689,7 +2734,7 @@ int libsmraw_handle_set_segment_filename(
 
 		return( -1 );
 	}
-	if( filename_length >= (size_t) SSIZE_MAX )
+	if( filename_length > (size_t) SSIZE_MAX )
 	{
 		liberror_error_set(
 		 error,
@@ -3224,7 +3269,7 @@ int libsmraw_handle_set_segment_filename_wide(
 
 		return( -1 );
 	}
-	if( filename_length >= (size_t) SSIZE_MAX )
+	if( filename_length > (size_t) SSIZE_MAX )
 	{
 		liberror_error_set(
 		 error,

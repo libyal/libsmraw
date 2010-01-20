@@ -8,6 +8,11 @@ TODO
 * detect maximum possible segment size on file system (e.g. FAT)
 * implement write resume?
 
+20100120
+* updated libbfio
+* fix for write value initialization
+* fix for seek offset
+
 20100116
 * media values no longer returned if no file io pool available
 * worked on read
