@@ -71,7 +71,7 @@ int libsmraw_information_file_set_name(
 
 int libsmraw_information_file_open(
      libsmraw_information_file_t *information_file,
-     const char *mode,
+     const libsmraw_system_character_t *mode,
      liberror_error_t **error );
 
 int libsmraw_information_file_close(

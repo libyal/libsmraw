@@ -158,7 +158,7 @@ int libsmraw_filename_create(
 		print_count = libsmraw_system_string_snprintf(
 		               *filename,
 		               *filename_size,
-		               "%" PRIs_LIBSMRAW_SYSTEM ".raw",
+		               _LIBSMRAW_SYSTEM_STRING( "%" ) _LIBSMRAW_SYSTEM_STRING( PRIs_LIBSMRAW_SYSTEM ) _LIBSMRAW_SYSTEM_STRING( ".raw" ),
 		               basename );
 	}
 	else
@@ -166,7 +166,7 @@ int libsmraw_filename_create(
 		print_count = libsmraw_system_string_snprintf(
 		               *filename,
 		               *filename_size,
-		               "%" PRIs_LIBSMRAW_SYSTEM ".raw.%03d",
+		               _LIBSMRAW_SYSTEM_STRING( "%" ) _LIBSMRAW_SYSTEM_STRING( PRIs_LIBSMRAW_SYSTEM ) _LIBSMRAW_SYSTEM_STRING( ".raw.%03d" ),
 		               basename,
 		               current_file_io_pool_entry );
 	}

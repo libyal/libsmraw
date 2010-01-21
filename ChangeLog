@@ -8,6 +8,9 @@ TODO
 * detect maximum possible segment size on file system (e.g. FAT)
 * implement write resume?
 
+20100121
+* worked on Windows support
+
 20100120
 * updated libbfio
 * fix for write value initialization

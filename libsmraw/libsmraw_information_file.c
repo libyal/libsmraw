@@ -216,7 +216,7 @@ int libsmraw_information_file_set_name(
  */
 int libsmraw_information_file_open(
      libsmraw_information_file_t *information_file,
-     const char *mode,
+     const libsmraw_system_character_t *mode,
      liberror_error_t **error )
 {
 	static char *function = "libsmraw_information_file_open";
@@ -265,9 +265,15 @@ int libsmraw_information_file_open(
 
 		return( -1 );
 	}
+#if defined( LIBSMRAW_HAVE_WIDE_SYSTEM_CHARACTER )
+	information_file->file_stream = file_stream_open_wide(
+	                                 information_file->name,
+	                                 mode );
+#else
 	information_file->file_stream = file_stream_open(
 	                                 information_file->name,
 	                                 mode );
+#endif
 
 	if( information_file->file_stream == NULL )
 	{

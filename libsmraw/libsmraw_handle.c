@@ -323,18 +323,18 @@ int libsmraw_handle_open(
      uint8_t flags,
      liberror_error_t **error )
 {
-	libbfio_handle_t *file_io_handle            = NULL;
-	libbfio_pool_t *file_io_pool                = NULL;
-	libsmraw_internal_handle_t *internal_handle = NULL;
-	char *information_filename                  = NULL;
-	static char *function                       = "libsmraw_handle_open";
-	size_t filename_length                      = 0;
-	size_t information_filename_length          = 0;
-	ssize_t print_count                         = 0;
-	int filename_iterator                       = 0;
-	int file_io_flags                           = 0;
-	int pool_entry                              = 0;
-	int result                                  = 0;
+	libbfio_handle_t *file_io_handle                  = NULL;
+	libbfio_pool_t *file_io_pool                      = NULL;
+	libsmraw_internal_handle_t *internal_handle       = NULL;
+	libsmraw_system_character_t *information_filename = NULL;
+	static char *function                             = "libsmraw_handle_open";
+	size_t filename_length                            = 0;
+	size_t information_filename_length                = 0;
+	ssize_t print_count                               = 0;
+	int filename_iterator                             = 0;
+	int file_io_flags                                 = 0;
+	int pool_entry                                    = 0;
+	int result                                        = 0;
 
 	if( handle == NULL )
 	{
@@ -791,7 +791,7 @@ int libsmraw_handle_open(
 			{
 				if( libsmraw_information_file_open(
 				     internal_handle->information_file,
-				     FILE_STREAM_OPEN_READ,
+				     _LIBSMRAW_SYSTEM_STRING( FILE_STREAM_OPEN_READ ),
 				     error ) != 1 )
 				{
 					liberror_error_set(
@@ -880,18 +880,18 @@ int libsmraw_handle_open_wide(
      uint8_t flags,
      liberror_error_t **error )
 {
-	libbfio_handle_t *file_io_handle            = NULL;
-	libbfio_pool_t *file_io_pool                = NULL;
-	libsmraw_internal_handle_t *internal_handle = NULL;
-	char *information_filename                  = NULL;
-	static char *function                       = "libsmraw_handle_open";
-	size_t filename_length                      = 0;
-	size_t information_filename_length          = 0;
-	ssize_t print_count                         = 0;
-	int filename_iterator                       = 0;
-	int file_io_flags                           = 0;
-	int pool_entry                              = 0;
-	int result                                  = 0;
+	libbfio_handle_t *file_io_handle                  = NULL;
+	libbfio_pool_t *file_io_pool                      = NULL;
+	libsmraw_internal_handle_t *internal_handle       = NULL;
+	libsmraw_system_character_t *information_filename = NULL;
+	static char *function                             = "libsmraw_handle_open_wide";
+	size_t filename_length                            = 0;
+	size_t information_filename_length                = 0;
+	ssize_t print_count                               = 0;
+	int filename_iterator                             = 0;
+	int file_io_flags                                 = 0;
+	int pool_entry                                    = 0;
+	int result                                        = 0;
 
 	if( handle == NULL )
 	{
@@ -1348,7 +1348,7 @@ int libsmraw_handle_open_wide(
 			{
 				if( libsmraw_information_file_open(
 				     internal_handle->information_file,
-				     FILE_STREAM_OPEN_READ,
+				     _LIBSMRAW_SYSTEM_STRING( FILE_STREAM_OPEN_READ ),
 				     error ) != 1 )
 				{
 					liberror_error_set(
@@ -1615,7 +1615,7 @@ int libsmraw_handle_close(
 	{
 		if( libsmraw_information_file_open(
 		     internal_handle->information_file,
-		     FILE_STREAM_OPEN_WRITE,
+		     _LIBSMRAW_SYSTEM_STRING( FILE_STREAM_OPEN_WRITE ),
 		     error ) != 1 )
 		{
 			liberror_error_set(
@@ -2042,11 +2042,19 @@ ssize_t libsmraw_handle_write_buffer(
 
 				return( -1 );
 			}
+#if defined( LIBSMRAW_HAVE_WIDE_SYSTEM_CHARACTER )
+			if( libbfio_file_set_name_wide(
+			     file_io_handle,
+			     segment_filename,
+			     segment_filename_size,
+			     error ) != 1 )
+#else
 			if( libbfio_file_set_name(
 			     file_io_handle,
 			     segment_filename,
 			     segment_filename_size,
 			     error ) != 1 )
+#endif
 			{
 				liberror_error_set(
 				 error,
