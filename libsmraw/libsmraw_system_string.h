@@ -66,8 +66,14 @@ typedef wchar_t libsmraw_system_character_t;
 #define libsmraw_system_string_length( string ) \
 	wide_string_length( string )
 
+#if defined( __BORLANDC__ ) && ( __BORLANDC__ < 0x0560 )
+#define libsmraw_system_string_snprintf \
+	wide_string_snwprintf
+
+#else
 #define libsmraw_system_string_snprintf( target, size, ... ) \
-	wide_string_swprintf( target, size, __VA_ARGS__ )
+	wide_string_snwprintf( target, size, __VA_ARGS__ )
+#endif
 
 /* The system string type is either UTF-8 or extended ASCII with a codepage
  */
@@ -87,8 +93,14 @@ typedef char libsmraw_system_character_t;
 #define libsmraw_system_string_length( string ) \
 	narrow_string_length( string )
 
+#if defined( __BORLANDC__ ) && ( __BORLANDC__ < 0x0560 )
+#define libsmraw_system_string_snprintf \
+	narrow_string_snprintf
+
+#else
 #define libsmraw_system_string_snprintf( target, size, ... ) \
 	narrow_string_snprintf( target, size, __VA_ARGS__ )
+#endif
 
 #endif
 

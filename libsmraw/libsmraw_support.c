@@ -786,7 +786,7 @@ int libsmraw_glob_wide(
 
 				return( -1 );
 			}
-			print_count = wide_string_swprintf(
+			print_count = wide_string_snwprintf(
 				       segment_filename,
 				       segment_filename_length,
 				       L"%s.raw",
@@ -936,7 +936,7 @@ int libsmraw_glob_wide(
 		}
 		else
 		{
-			print_count = wide_string_swprintf(
+			print_count = wide_string_snwprintf(
 				       segment_filename,
 				       segment_filename_length,
 				       L"%s.raw.%03d",

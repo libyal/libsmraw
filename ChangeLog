@@ -8,6 +8,10 @@ TODO
 * detect maximum possible segment size on file system (e.g. FAT)
 * implement write resume?
 
+20100124
+* updated common, liberror (snwprintf fix)
+* update for missing varadic macro support in Borland C++ Builder 5.5
+
 20100121
 * worked on Windows support
 
