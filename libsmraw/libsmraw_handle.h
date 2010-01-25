@@ -67,6 +67,10 @@ struct libsmraw_internal_handle
 	 */
 	uint8_t file_io_pool_created_in_library;
 
+	/* The maximum amount of open handles in the pool
+	 */
+	int maximum_amount_of_open_handles;
+ 
 	/* A value to indicate if the read values have been initialized
 	 */
 	uint8_t read_values_initialized;
@@ -172,6 +176,11 @@ LIBSMRAW_EXTERN off64_t libsmraw_handle_seek_offset(
 LIBSMRAW_EXTERN int libsmraw_handle_get_offset(
                      libsmraw_handle_t *handle,
                      off64_t *offset,
+                     liberror_error_t **error );
+
+LIBSMRAW_EXTERN int libsmraw_handle_set_maximum_amount_of_open_handles(
+                     libsmraw_handle_t *handle,
+                     int maximum_amount_of_open_handles,
                      liberror_error_t **error );
 
 LIBSMRAW_EXTERN int libsmraw_handle_get_segment_filename_size(

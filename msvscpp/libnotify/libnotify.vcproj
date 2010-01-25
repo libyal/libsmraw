@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="libnotify"
 	ProjectGUID="{9381BD88-C1D2-4573-9567-5A9D705AE74E}"
 	RootNamespace="libnotify"
@@ -20,6 +20,7 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="4"
+			CharacterSet="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"

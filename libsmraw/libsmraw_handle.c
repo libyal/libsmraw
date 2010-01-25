@@ -130,7 +130,8 @@ int libsmraw_handle_initialize(
 
 			return( -1 );
 		}
-		internal_handle->maximum_segment_size = LIBSMRAW_DEFAULT_MAXIMUM_SEGMENT_SIZE;
+		internal_handle->maximum_segment_size           = LIBSMRAW_DEFAULT_MAXIMUM_SEGMENT_SIZE;
+		internal_handle->maximum_amount_of_open_handles = LIBBFIO_POOL_UNLIMITED_AMOUNT_OF_OPEN_HANDLES;
 
 		*handle = (libsmraw_handle_t *) internal_handle;
 	}
@@ -430,7 +431,7 @@ int libsmraw_handle_open(
 		if( libbfio_pool_initialize(
 		     &file_io_pool,
 		     0,
-		     LIBBFIO_POOL_UNLIMITED_AMOUNT_OF_OPEN_HANDLES,
+		     internal_handle->maximum_amount_of_open_handles,
 		     error ) != 1 )
 		{
 			liberror_error_set(
@@ -593,7 +594,7 @@ int libsmraw_handle_open(
 		if( libbfio_pool_initialize(
 		     &file_io_pool,
 		     0,
-		     LIBBFIO_POOL_UNLIMITED_AMOUNT_OF_OPEN_HANDLES,
+		     internal_handle->maximum_amount_of_open_handles,
 		     error ) != 1 )
 		{
 			liberror_error_set(
@@ -987,7 +988,7 @@ int libsmraw_handle_open_wide(
 		if( libbfio_pool_initialize(
 		     &file_io_pool,
 		     0,
-		     LIBBFIO_POOL_UNLIMITED_AMOUNT_OF_OPEN_HANDLES,
+		     internal_handle->maximum_amount_of_open_handles,
 		     error ) != 1 )
 		{
 			liberror_error_set(
@@ -1150,7 +1151,7 @@ int libsmraw_handle_open_wide(
 		if( libbfio_pool_initialize(
 		     &file_io_pool,
 		     0,
-		     LIBBFIO_POOL_UNLIMITED_AMOUNT_OF_OPEN_HANDLES,
+		     internal_handle->maximum_amount_of_open_handles,
 		     error ) != 1 )
 		{
 			liberror_error_set(
@@ -2378,6 +2379,52 @@ int libsmraw_handle_get_offset(
 		return( -1 );
 	}
 	*offset = internal_handle->offset;
+
+	return( 1 );
+}
+
+/* Sets the maximum amount of (concurrent) open file handles
+ * Returns 1 if successful or -1 on error
+ */
+int libsmraw_handle_set_maximum_amount_of_open_handles(
+     libsmraw_handle_t *handle,
+     int maximum_amount_of_open_handles,
+     liberror_error_t **error )
+{
+	libsmraw_internal_handle_t *internal_handle = NULL;
+	static char *function                       = "libsmraw_handle_set_maximum_amount_of_open_handles";
+
+	if( handle == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid handle.",
+		 function );
+
+		return( -1 );
+	}
+	internal_handle = (libsmraw_internal_handle_t *) handle;
+
+	if( internal_handle->file_io_pool != NULL )
+	{
+		if( libbfio_pool_set_maximum_amount_of_open_handles(
+		     internal_handle->file_io_pool,
+		     maximum_amount_of_open_handles,
+		     error ) != 1 )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+			 "%s: unable to set maximum amount of open handles in file io handle.",
+			 function );
+
+			return( -1 );
+		}
+	}
+	internal_handle->maximum_amount_of_open_handles = maximum_amount_of_open_handles;
 
 	return( 1 );
 }

@@ -1,12 +1,21 @@
 TODO
-* add read and write random functions
-* allow set of segment filename during write (as alternative writing locations)
 
-* retrieve data from the information file on open (check)
+Features
+* allow set of segment filename during write (as alternative writing locations)
+* add read and write random functions
+* implement write resume
+
+Tooling
+* detect maximum possible segment size on file system (e.g. FAT)
+
+Test
+* retrieve data from the information file on open
 * make sure certain values cannot be changed if writing/reading from raw files
 
-* detect maximum possible segment size on file system (e.g. FAT)
-* implement write resume?
+20100125
+* updated libbfio
+* added libsmraw_handle_set_maximum_amount_of_open_handles
+* updated msvscpp files
 
 20100124
 * updated common, liberror (snwprintf fix)

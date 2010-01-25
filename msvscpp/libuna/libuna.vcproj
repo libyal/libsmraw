@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="libuna"
 	ProjectGUID="{BC27FF34-C859-4A1A-95D6-FC89952E1910}"
 	RootNamespace="libuna"
@@ -20,6 +20,7 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="4"
+			CharacterSet="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
