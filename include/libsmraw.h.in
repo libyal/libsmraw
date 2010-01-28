@@ -323,21 +323,22 @@ LIBSMRAW_EXTERN int libsmraw_handle_set_segment_filename_wide(
                      libsmraw_error_t **error );
 #endif
 
-/* Retrieves the segment file size
+/* Retrieves the maximum segment file size
+ * 0 represents the maximum possible segment file size
  * Returns 1 if successful or -1 on error
  */
-LIBSMRAW_EXTERN int libsmraw_handle_get_segment_file_size(
+LIBSMRAW_EXTERN int libsmraw_handle_get_maximum_segment_size(
                      libsmraw_handle_t *handle,
-                     size64_t *segment_file_size,
+                     size64_t *maximum_segment_size,
                      libsmraw_error_t **error );
 
 /* Sets the segment file size
  * 0 represents the maximum possible segment file size
  * Returns 1 if successful or -1 on error
  */
-LIBSMRAW_EXTERN int libsmraw_handle_set_segment_file_size(
+LIBSMRAW_EXTERN int libsmraw_handle_set_maximum_segment_size(
                      libsmraw_handle_t *handle,
-                     size64_t segment_file_size,
+                     size64_t maximum_segment_size,
                      libsmraw_error_t **error );
 
 /* Retrieves the filename size of the segment file of the current offset

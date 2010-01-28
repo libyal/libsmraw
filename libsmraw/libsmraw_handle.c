@@ -3513,15 +3513,16 @@ int libsmraw_handle_set_segment_filename_wide(
 #endif /* defined( HAVE_WIDE_CHARACTER_TYPE ) */
 
 /* Retrieves the segment file size
+ * 0 represents the maximum possible segment file size
  * Returns 1 if successful or -1 on error
  */
-int libsmraw_handle_get_segment_file_size(
+int libsmraw_handle_get_maximum_segment_size(
      libsmraw_handle_t *handle,
-     size64_t *segment_file_size,
+     size64_t *maximum_segment_size,
      liberror_error_t **error )
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
-	static char *function                       = "libsmraw_handle_get_segment_file_size";
+	static char *function                       = "libsmraw_handle_get_maximum_segment_size";
 
 	if( handle == NULL )
 	{
@@ -3536,7 +3537,7 @@ int libsmraw_handle_get_segment_file_size(
 	}
 	internal_handle = (libsmraw_internal_handle_t *) handle;
 
-	if( segment_file_size == NULL )
+	if( maximum_segment_size == NULL )
 	{
 		liberror_error_set(
 		 error,
@@ -3547,7 +3548,7 @@ int libsmraw_handle_get_segment_file_size(
 
 		return( -1 );
 	}
-	*segment_file_size = internal_handle->maximum_segment_size;
+	*maximum_segment_size = internal_handle->maximum_segment_size;
 
 	return( 1 );
 }
@@ -3556,13 +3557,13 @@ int libsmraw_handle_get_segment_file_size(
  * 0 represents the maximum possible segment file size
  * Returns 1 if successful or -1 on error
  */
-int libsmraw_handle_set_segment_file_size(
+int libsmraw_handle_set_maximum_segment_size(
      libsmraw_handle_t *handle,
-     size64_t segment_file_size,
+     size64_t maximum_segment_size,
      liberror_error_t **error )
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
-	static char *function                       = "libsmraw_handle_set_segment_file_size";
+	static char *function                       = "libsmraw_handle_set_maximum_segment_size";
 
 	if( handle == NULL )
 	{
@@ -3588,7 +3589,7 @@ int libsmraw_handle_set_segment_file_size(
 
 		return( -1 );
 	}
-	if( segment_file_size > (size64_t) INT64_MAX )
+	if( maximum_segment_size > (size64_t) INT64_MAX )
 	{
 		liberror_error_set(
 		 error,
@@ -3599,7 +3600,7 @@ int libsmraw_handle_set_segment_file_size(
 
 		return( -1 );
 	}
-	internal_handle->maximum_segment_size = segment_file_size;
+	internal_handle->maximum_segment_size = maximum_segment_size;
 
 	return( 1 );
 }

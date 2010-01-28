@@ -219,14 +219,14 @@ LIBSMRAW_EXTERN int libsmraw_handle_set_segment_filename_wide(
                      liberror_error_t **error );
 #endif
 
-LIBSMRAW_EXTERN int libsmraw_handle_get_segment_file_size(
+LIBSMRAW_EXTERN int libsmraw_handle_get_maximum_segment_size(
                      libsmraw_handle_t *handle,
-                     size64_t *segment_file_size,
+                     size64_t *maximum_segment_size,
                      liberror_error_t **error );
 
-LIBSMRAW_EXTERN int libsmraw_handle_set_segment_file_size(
+LIBSMRAW_EXTERN int libsmraw_handle_set_maximum_segment_size(
                      libsmraw_handle_t *handle,
-                     size64_t segment_file_size,
+                     size64_t maximum_segment_size,
                      liberror_error_t **error );
 
 LIBSMRAW_EXTERN int libsmraw_handle_get_filename_size(
