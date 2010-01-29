@@ -29,6 +29,7 @@
 #include "libsmraw_definitions.h"
 #include "libsmraw_handle.h"
 #include "libsmraw_libbfio.h"
+#include "libsmraw_string.h"
 #include "libsmraw_types.h"
 
 /* Retrieves the media size
@@ -122,18 +123,20 @@ int libsmraw_handle_set_media_size(
 	return( 1 );
 }
 
-#ifdef TODO
-
 /* Retrieves the bytes per sector
  * Returns the 1 if succesful or -1 on error
  */
 int libsmraw_handle_get_bytes_per_sector(
      libsmraw_handle_t *handle,
-     size_t *bytes_per_sector,
+     uint32_t *bytes_per_sector,
      liberror_error_t **error )
 {
+	libsmraw_character_t value_string[ 11 ];
+
 	libsmraw_internal_handle_t *internal_handle = NULL;
 	static char *function                       = "libsmraw_handle_get_bytes_per_sector";
+	int result                                  = 0;
+	uint64_t value_64bit                        = 0;
 
 	if( handle == NULL )
 	{
@@ -159,10 +162,57 @@ int libsmraw_handle_get_bytes_per_sector(
 
 		return( -1 );
 	}
-	/* TODO */
+	result = libsmraw_values_table_get_value(
+	          internal_handle->information_values_table,
+	          (libsmraw_character_t *) "bytes_per_sector",
+	          12,
+	          value_string,
+	          11,
+	          error );
 
+	if( result == -1 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve information value size for identifier: bytes_per_sector.",
+		 function );
+
+		return( -1 );
+	}
 	*bytes_per_sector = 0;
 
+	if( result != 0 )
+	{
+		if( libsmraw_string_copy_to_64bit_hexadecimal(
+		     value_string,
+		     11,
+		     &value_64bit,
+		     error ) != 1 )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBERROR_RUNTIME_ERROR_COPY_FAILED,
+			 "%s: unable to copy string to 64-bit value.",
+			 function );
+
+			return( -1 );
+		}
+		if( value_64bit > (uint64_t) UINT32_MAX )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBERROR_RUNTIME_ERROR_VALUE_OUT_OF_RANGE,
+			 "%s: 64-bit bytes per sector value out of range.",
+			 function );
+
+			return( -1 );
+		}
+		*bytes_per_sector = (size_t) value_64bit;
+	}
 	return( 1 );
 }
 
@@ -171,11 +221,14 @@ int libsmraw_handle_get_bytes_per_sector(
  */
 int libsmraw_handle_set_bytes_per_sector(
      libsmraw_handle_t *handle,
-     size_t bytes_per_sector,
+     uint32_t bytes_per_sector,
      liberror_error_t **error )
 {
+	libsmraw_character_t value_string[ 11 ];
+
 	libsmraw_internal_handle_t *internal_handle = NULL;
 	static char *function                       = "libsmraw_handle_set_bytes_per_sector";
+	int print_count                             = 0;
 
 	if( handle == NULL )
 	{
@@ -190,32 +243,57 @@ int libsmraw_handle_set_bytes_per_sector(
 	}
 	internal_handle = (libsmraw_internal_handle_t *) handle;
 
-	if( internal_handle->read_values_initialized != 0 )
+	if( ( internal_handle->read_values_initialized != 0 )
+	 || ( internal_handle->write_values_initialized != 0 ) )
 	{
 		liberror_error_set(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_SET_FAILED,
-		 "%s: media size cannot be changed.",
+		 "%s: bytes per sector cannot be changed.",
 		 function );
 
 		return( -1 );
 	}
-	if( bytes_per_sector > (size_t) UINT32_MAX )
+	print_count = libsmraw_string_snprintf(
+	               value_string,
+	               11,
+	               _LIBSMRAW_STRING( "0x%08" ) _LIBSMRAW_STRING( PRIx32 ) _LIBSMRAW_STRING( "" ),
+	               bytes_per_sector );
+
+	if( ( print_count < 0 )
+	 || ( print_count > 11 ) )
 	{
 		liberror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
-		 "%s: invalid bytes per sector value exceeds maximum.",
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to set bytes per sector value string.",
 		 function );
 
 		return( -1 );
 	}
-	/* TODO */
+	if( libsmraw_values_table_set_value(
+	     internal_handle->information_values_table,
+	     (libsmraw_character_t *) "bytes_per_sector",
+	     16,
+	     value_string,
+	     11,
+	     error ) != 1 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to set media value for identifier: bytes_per_sector.",
+		 function );
 
+		return( -1 );
+	}
 	return( 1 );
 }
+
+#ifdef TODO
 
 /* Retrieves the media values
  * Returns the 1 if succesful or -1 on error

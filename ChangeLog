@@ -12,6 +12,10 @@ Test
 * retrieve data from the information file on open
 * make sure certain values cannot be changed if writing/reading from raw files
 
+20100129
+* worked on metadata functions for libsmio
+* refactored common code
+
 20100128
 * renamed get/set_segment_size to get/set_maximum_segment_size
 

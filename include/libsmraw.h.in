@@ -411,6 +411,22 @@ LIBSMRAW_EXTERN int libsmraw_handle_set_media_size(
                      size64_t media_size,
                      libsmraw_error_t **error );
 
+/* Retrieves the amount of bytes per sector
+ * Returns the 1 if succesful or -1 on error
+ */
+LIBSMRAW_EXTERN int libsmraw_handle_get_bytes_per_sector(
+                     libsmraw_handle_t *handle,
+                     uint32_t *bytes_per_sector,
+                     libsmraw_error_t **error );
+
+/* Sets the amount of bytes per sector
+ * Returns the 1 if succesful or -1 on error
+ */
+LIBSMRAW_EXTERN int libsmraw_handle_set_bytes_per_sector(
+                     libsmraw_handle_t *handle,
+                     uint32_t bytes_per_sector,
+                     libsmraw_error_t **error );
+
 /* Retrieves the amount of information values
  * Returns 1 if successful or -1 on error
  */

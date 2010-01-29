@@ -1,4 +1,4 @@
-.Dd January 25, 2010
+.Dd January 29, 2010
 .Dt libsmraw 3
 .Os libsmraw
 .Sh NAME
@@ -110,6 +110,10 @@ Meta data functions
 .Fn libsmraw_handle_get_media_size "libsmraw_handle_t *handle, size64_t *media_size, libsmraw_error_t **error"
 .Ft int
 .Fn libsmraw_handle_set_media_size "libsmraw_handle_t *handle, size64_t media_size, libsmraw_error_t **error"
+.Ft int
+.Fn libsmraw_handle_get_bytes_per_sector "libsmraw_handle_t *handle, uint32_t *bytes_per_sector, libsmraw_error_t **error"
+.Ft int
+.Fn libsmraw_handle_set_bytes_per_sector "libsmraw_handle_t *handle, uint32_t bytes_per_sector, libsmraw_error_t **error"
 .Ft int
 .Fn libsmraw_handle_get_amount_of_information_values "libsmraw_handle_t *handle, uint32_t *amount_of_values, libsmraw_error_t **error"
 .Ft int

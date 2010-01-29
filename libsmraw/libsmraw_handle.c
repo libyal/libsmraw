@@ -94,6 +94,23 @@ int libsmraw_handle_initialize(
 			return( -1 );
 		}
 		if( libsmraw_values_table_initialize(
+		     &( internal_handle->media_values_table ),
+		     0,
+		     error ) != 1 )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+			 "%s: unable to create media values table.",
+			 function );
+
+			memory_free(
+			 internal_handle );
+
+			return( -1 );
+		}
+		if( libsmraw_values_table_initialize(
 		     &( internal_handle->information_values_table ),
 		     0,
 		     error ) != 1 )
@@ -105,6 +122,9 @@ int libsmraw_handle_initialize(
 			 "%s: unable to create information values table.",
 			 function );
 
+			libsmraw_values_table_free(
+			 &( internal_handle->media_values_table ),
+			 NULL );
 			memory_free(
 			 internal_handle );
 
@@ -124,6 +144,9 @@ int libsmraw_handle_initialize(
 
 			libsmraw_values_table_free(
 			 &( internal_handle->information_values_table ),
+			 NULL );
+			libsmraw_values_table_free(
+			 &( internal_handle->media_values_table ),
 			 NULL );
 			memory_free(
 			 internal_handle );
@@ -195,6 +218,22 @@ int libsmraw_handle_free(
 				 LIBERROR_ERROR_DOMAIN_RUNTIME,
 				 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
 				 "%s: unable to free information file.",
+				 function );
+
+				result = -1;
+			}
+		}
+		if( internal_handle->media_values_table != NULL )
+		{
+			if( libsmraw_values_table_free(
+			     &( internal_handle->media_values_table ),
+			     error ) != 1 )
+			{
+				liberror_error_set(
+				 error,
+				 LIBERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+				 "%s: unable to free media values table.",
 				 function );
 
 				result = -1;
@@ -335,7 +374,6 @@ int libsmraw_handle_open(
 	int filename_iterator                             = 0;
 	int file_io_flags                                 = 0;
 	int pool_entry                                    = 0;
-	int result                                        = 0;
 
 	if( handle == NULL )
 	{
@@ -706,81 +744,15 @@ int libsmraw_handle_open(
 		}
 		if( ( flags & LIBSMRAW_FLAG_READ ) == LIBSMRAW_FLAG_READ )
 		{
-			if( libbfio_file_initialize(
-			     &file_io_handle,
+			if( libsmraw_handle_read_information_file(
+			     internal_handle,
 			     error ) != 1 )
-			{
-				liberror_error_set(
-				 error,
-				 LIBERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-				 "%s: unable to create file IO handle.",
-				 function );
-
-				memory_free(
-				 information_filename );
-
-				return( -1 );
-			}
-#if defined( LIBSMRAW_HAVE_WIDE_SYSTEM_CHARACTER )
-			if( libbfio_file_set_name_wide(
-			     file_io_handle,
-			     information_filename,
-			     information_filename_length,
-			     error ) != 1 )
-#else
-			if( libbfio_file_set_name(
-			     file_io_handle,
-			     information_filename,
-			     information_filename_length,
-			     error ) != 1 )
-#endif
-			{
-				liberror_error_set(
-				 error,
-				 LIBERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBERROR_RUNTIME_ERROR_SET_FAILED,
-				 "%s: unable to set name in file IO handle.",
-				 function );
-
-				libbfio_handle_free(
-				 &file_io_handle,
-				 NULL );
-				memory_free(
-				 information_filename );
-
-				return( -1 );
-			}
-			result = libbfio_handle_exists(
-				  file_io_handle,
-				  error );
-
-			if( result == -1 )
 			{
 				liberror_error_set(
 				 error,
 				 LIBERROR_ERROR_DOMAIN_IO,
-				 LIBERROR_IO_ERROR_GENERIC,
-				 "%s: unable to determine if information filename exists.",
-				 function );
-
-				libbfio_handle_free(
-				 &file_io_handle,
-				 NULL );
-				memory_free(
-				 information_filename );
-
-				return( -1 );
-			}
-			if( libbfio_handle_free(
-			     &file_io_handle,
-			     error ) != 1 )
-			{
-				liberror_error_set(
-				 error,
-				 LIBERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-				 "%s: unable to free file io handle.",
+				 LIBERROR_IO_ERROR_READ_FAILED,
+				 "%s: unable to read information file.",
 				 function );
 
 				memory_free(
@@ -788,75 +760,6 @@ int libsmraw_handle_open(
 
 				return( -1 );
 			}
-			if( result == 1 )
-			{
-				if( libsmraw_information_file_open(
-				     internal_handle->information_file,
-				     _LIBSMRAW_SYSTEM_STRING( FILE_STREAM_OPEN_READ ),
-				     error ) != 1 )
-				{
-					liberror_error_set(
-					 error,
-					 LIBERROR_ERROR_DOMAIN_IO,
-					 LIBERROR_IO_ERROR_OPEN_FAILED,
-					 "%s: unable to open information file.",
-					 function );
-
-					memory_free(
-					 information_filename );
-
-					return( -1 );
-				}
-				if( libsmraw_information_file_read_section(
-				     internal_handle->information_file,
-				     (uint8_t *) "information_values",
-				     18,
-				     internal_handle->information_values_table,
-				     error ) != 1 )
-				{
-					liberror_error_set(
-					 error,
-					 LIBERROR_ERROR_DOMAIN_IO,
-					 LIBERROR_IO_ERROR_READ_FAILED,
-					 "%s: unable to read information values from information file.",
-					 function );
-
-					return( -1 );
-				}
-				if( libsmraw_information_file_read_section(
-				     internal_handle->information_file,
-				     (uint8_t *) "integrity_hash_values",
-				     21,
-				     internal_handle->integrity_hash_values_table,
-				     error ) != 1 )
-				{
-					liberror_error_set(
-					 error,
-					 LIBERROR_ERROR_DOMAIN_IO,
-					 LIBERROR_IO_ERROR_READ_FAILED,
-					 "%s: unable to read integrity hash values from information file.",
-					 function );
-
-					return( -1 );
-				}
-				if( libsmraw_information_file_close(
-				     internal_handle->information_file,
-				     error ) != 0 )
-				{
-					liberror_error_set(
-					 error,
-					 LIBERROR_ERROR_DOMAIN_IO,
-					 LIBERROR_IO_ERROR_OPEN_FAILED,
-					 "%s: unable to close information file.",
-					 function );
-
-					memory_free(
-					 information_filename );
-
-					return( -1 );
-				}
-			}
-			file_io_handle = NULL;
 		}
 		memory_free(
 		 information_filename );
@@ -892,7 +795,6 @@ int libsmraw_handle_open_wide(
 	int filename_iterator                             = 0;
 	int file_io_flags                                 = 0;
 	int pool_entry                                    = 0;
-	int result                                        = 0;
 
 	if( handle == NULL )
 	{
@@ -1263,81 +1165,15 @@ int libsmraw_handle_open_wide(
 		}
 		if( ( flags & LIBSMRAW_FLAG_READ ) == LIBSMRAW_FLAG_READ )
 		{
-			if( libbfio_file_initialize(
-			     &file_io_handle,
+			if( libsmraw_handle_read_information_file(
+			     internal_handle,
 			     error ) != 1 )
-			{
-				liberror_error_set(
-				 error,
-				 LIBERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-				 "%s: unable to create file IO handle.",
-				 function );
-
-				memory_free(
-				 information_filename );
-
-				return( -1 );
-			}
-#if defined( LIBSMRAW_HAVE_WIDE_SYSTEM_CHARACTER )
-			if( libbfio_file_set_name_wide(
-			     file_io_handle,
-			     information_filename,
-			     information_filename_length,
-			     error ) != 1 )
-#else
-			if( libbfio_file_set_name(
-			     file_io_handle,
-			     information_filename,
-			     information_filename_length,
-			     error ) != 1 )
-#endif
-			{
-				liberror_error_set(
-				 error,
-				 LIBERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBERROR_RUNTIME_ERROR_SET_FAILED,
-				 "%s: unable to set name in file IO handle.",
-				 function );
-
-				libbfio_handle_free(
-				 &file_io_handle,
-				 NULL );
-				memory_free(
-				 information_filename );
-
-				return( -1 );
-			}
-			result = libbfio_handle_exists(
-				  file_io_handle,
-				  error );
-
-			if( result == -1 )
 			{
 				liberror_error_set(
 				 error,
 				 LIBERROR_ERROR_DOMAIN_IO,
-				 LIBERROR_IO_ERROR_GENERIC,
-				 "%s: unable to determine if information filename exists.",
-				 function );
-
-				libbfio_handle_free(
-				 &file_io_handle,
-				 NULL );
-				memory_free(
-				 information_filename );
-
-				return( -1 );
-			}
-			if( libbfio_handle_free(
-			     &file_io_handle,
-			     error ) != 1 )
-			{
-				liberror_error_set(
-				 error,
-				 LIBERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-				 "%s: unable to free file io handle.",
+				 LIBERROR_IO_ERROR_READ_FAILED,
+				 "%s: unable to read information file.",
 				 function );
 
 				memory_free(
@@ -1345,75 +1181,6 @@ int libsmraw_handle_open_wide(
 
 				return( -1 );
 			}
-			if( result == 1 )
-			{
-				if( libsmraw_information_file_open(
-				     internal_handle->information_file,
-				     _LIBSMRAW_SYSTEM_STRING( FILE_STREAM_OPEN_READ ),
-				     error ) != 1 )
-				{
-					liberror_error_set(
-					 error,
-					 LIBERROR_ERROR_DOMAIN_IO,
-					 LIBERROR_IO_ERROR_OPEN_FAILED,
-					 "%s: unable to open information file.",
-					 function );
-
-					memory_free(
-					 information_filename );
-
-					return( -1 );
-				}
-				if( libsmraw_information_file_read_section(
-				     internal_handle->information_file,
-				     (uint8_t *) "information_values",
-				     18,
-				     internal_handle->information_values_table,
-				     error ) != 1 )
-				{
-					liberror_error_set(
-					 error,
-					 LIBERROR_ERROR_DOMAIN_IO,
-					 LIBERROR_IO_ERROR_READ_FAILED,
-					 "%s: unable to read information values from information file.",
-					 function );
-
-					return( -1 );
-				}
-				if( libsmraw_information_file_read_section(
-				     internal_handle->information_file,
-				     (uint8_t *) "integrity_hash_values",
-				     21,
-				     internal_handle->integrity_hash_values_table,
-				     error ) != 1 )
-				{
-					liberror_error_set(
-					 error,
-					 LIBERROR_ERROR_DOMAIN_IO,
-					 LIBERROR_IO_ERROR_READ_FAILED,
-					 "%s: unable to read integrity hash values from information file.",
-					 function );
-
-					return( -1 );
-				}
-				if( libsmraw_information_file_close(
-				     internal_handle->information_file,
-				     error ) != 0 )
-				{
-					liberror_error_set(
-					 error,
-					 LIBERROR_ERROR_DOMAIN_IO,
-					 LIBERROR_IO_ERROR_OPEN_FAILED,
-					 "%s: unable to close information file.",
-					 function );
-
-					memory_free(
-					 information_filename );
-
-					return( -1 );
-				}
-			}
-			file_io_handle = NULL;
 		}
 		memory_free(
 		 information_filename );
@@ -1585,6 +1352,194 @@ int libsmraw_handle_open_file_io_pool(
 	}
 	internal_handle->file_io_pool = file_io_pool;
 
+	return( 1 );
+}
+
+/* Read an information file using a Basic File IO (bfio) handle
+ * Returns 1 if successful or -1 on error
+ */
+int libsmraw_handle_read_information_file(
+     libsmraw_internal_handle_t *internal_handle,
+     liberror_error_t **error )
+{
+	libbfio_handle_t *file_io_handle = NULL;
+	static char *function            = "libsmraw_handle_read_information_file";
+	int result                       = 0;
+
+	if( internal_handle == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid internal handle.",
+		 function );
+
+		return( -1 );
+	}
+	if( internal_handle->information_file == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid handle - missing information file.",
+		 function );
+
+		return( -1 );
+	}
+	if( libbfio_file_initialize(
+	     &file_io_handle,
+	     error ) != 1 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 "%s: unable to create file IO handle.",
+		 function );
+
+		return( -1 );
+	}
+#if defined( LIBSMRAW_HAVE_WIDE_SYSTEM_CHARACTER )
+	if( libbfio_file_set_name_wide(
+	     file_io_handle,
+	     internal_handle->information_file->name,
+	     internal_handle->information_file->name_size - 1,
+	     error ) != 1 )
+#else
+	if( libbfio_file_set_name(
+	     file_io_handle,
+	     internal_handle->information_file->name,
+	     internal_handle->information_file->name_size - 1,
+	     error ) != 1 )
+#endif
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to set name in file IO handle.",
+		 function );
+
+		libbfio_handle_free(
+		 &file_io_handle,
+		 NULL );
+
+		return( -1 );
+	}
+	result = libbfio_handle_exists(
+		  file_io_handle,
+		  error );
+
+	if( result == -1 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_IO,
+		 LIBERROR_IO_ERROR_GENERIC,
+		 "%s: unable to determine if information filename exists.",
+		 function );
+
+		libbfio_handle_free(
+		 &file_io_handle,
+		 NULL );
+
+		return( -1 );
+	}
+	if( libbfio_handle_free(
+	     &file_io_handle,
+	     error ) != 1 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 "%s: unable to free file io handle.",
+		 function );
+
+		return( -1 );
+	}
+	/* Only read the information file if it exists
+	 */
+	if( result == 1 )
+	{
+		if( libsmraw_information_file_open(
+		     internal_handle->information_file,
+		     _LIBSMRAW_SYSTEM_STRING( FILE_STREAM_OPEN_READ ),
+		     error ) != 1 )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_IO,
+			 LIBERROR_IO_ERROR_OPEN_FAILED,
+			 "%s: unable to open information file.",
+			 function );
+
+			return( -1 );
+		}
+		if( libsmraw_information_file_read_section(
+		     internal_handle->information_file,
+		     (uint8_t *) "media_values",
+		     12,
+		     internal_handle->media_values_table,
+		     error ) != 1 )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_IO,
+			 LIBERROR_IO_ERROR_READ_FAILED,
+			 "%s: unable to read media values from information file.",
+			 function );
+
+			return( -1 );
+		}
+		if( libsmraw_information_file_read_section(
+		     internal_handle->information_file,
+		     (uint8_t *) "information_values",
+		     18,
+		     internal_handle->information_values_table,
+		     error ) != 1 )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_IO,
+			 LIBERROR_IO_ERROR_READ_FAILED,
+			 "%s: unable to read information values from information file.",
+			 function );
+
+			return( -1 );
+		}
+		if( libsmraw_information_file_read_section(
+		     internal_handle->information_file,
+		     (uint8_t *) "integrity_hash_values",
+		     21,
+		     internal_handle->integrity_hash_values_table,
+		     error ) != 1 )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_IO,
+			 LIBERROR_IO_ERROR_READ_FAILED,
+			 "%s: unable to read integrity hash values from information file.",
+			 function );
+
+			return( -1 );
+		}
+		if( libsmraw_information_file_close(
+		     internal_handle->information_file,
+		     error ) != 0 )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_IO,
+			 LIBERROR_IO_ERROR_OPEN_FAILED,
+			 "%s: unable to close information file.",
+			 function );
+
+			return( -1 );
+		}
+	}
 	return( 1 );
 }
 

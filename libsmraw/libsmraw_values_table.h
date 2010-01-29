@@ -44,7 +44,7 @@ struct libsmraw_values_table
 
 	/* The value identifiers
 	 */
-	uint8_t **identifier;
+	libsmraw_character_t **identifier;
 
 	/* The value identifier lengths
 	 */
@@ -52,7 +52,7 @@ struct libsmraw_values_table
 
 	/* The values
 	 */
-	uint8_t **value;
+	libsmraw_character_t **value;
 
 	/* The value lengths
 	 */
@@ -80,7 +80,7 @@ int libsmraw_values_table_get_amount_of_values(
 
 int libsmraw_values_table_get_index(
      libsmraw_values_table_t *values_table,
-     const uint8_t *identifier,
+     const libsmraw_character_t *identifier,
      size_t identifier_length,
      int *index,
      liberror_error_t **error );
@@ -94,37 +94,37 @@ int libsmraw_values_table_get_identifier_size(
 int libsmraw_values_table_get_identifier(
      libsmraw_values_table_t *values_table,
      int index,
-     uint8_t *identifier,
+     libsmraw_character_t *identifier,
      size_t identifier_size,
      liberror_error_t **error );
 
 int libsmraw_values_table_set_identifier(
      libsmraw_values_table_t *values_table,
      int index,
-     const uint8_t *identifier,
+     const libsmraw_character_t *identifier,
      size_t indentifier_length,
      liberror_error_t **error );
 
 int libsmraw_values_table_get_value_size(
      libsmraw_values_table_t *values_table,
-     const uint8_t *identifier,
+     const libsmraw_character_t *identifier,
      size_t identifier_length,
      size_t *value_size,
      liberror_error_t **error );
 
 int libsmraw_values_table_get_value(
      libsmraw_values_table_t *values_table,
-     const uint8_t *identifier,
+     const libsmraw_character_t *identifier,
      size_t identifier_length,
-     uint8_t *value,
+     libsmraw_character_t *value,
      size_t value_size,
      liberror_error_t **error );
 
 int libsmraw_values_table_set_value(
      libsmraw_values_table_t *values_table,
-     const uint8_t *identifier,
+     const libsmraw_character_t *identifier,
      size_t identifier_length,
-     const uint8_t *value,
+     const libsmraw_character_t *value,
      size_t value_length,
      liberror_error_t **error );
 

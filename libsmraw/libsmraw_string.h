@@ -44,7 +44,34 @@ typedef libuna_utf8_character_t libsmraw_character_t;
 #define PRIs_LIBSMRAW	"s"
 
 #define _LIBSMRAW_STRING( string ) \
-	(libsmraw_character_t *) string
+	string
+
+#define libsmraw_string_compare( string1, string2, size ) \
+	narrow_string_compare( (char *) string1, (char *) string2, size )
+
+#define libsmraw_string_copy( destination, source, size ) \
+	narrow_string_copy( (char *) destination, (char *) source, size )
+
+#if defined( __BORLANDC__ ) && ( __BORLANDC__ < 0x0560 )
+#define libsmraw_string_snprintf \
+	narrow_string_snprintf
+
+#else
+#define libsmraw_string_snprintf( target, size, format, ... ) \
+	narrow_string_snprintf( (char *) target, size, format, __VA_ARGS__ )
+#endif
+
+int libsmraw_string_copy_to_64bit_decimal(
+     libsmraw_character_t *string,
+     size_t string_size,
+     uint64_t *value_64bit,
+     liberror_error_t **error );
+
+int libsmraw_string_copy_to_64bit_hexadecimal(
+     libsmraw_character_t *string,
+     size_t string_size,
+     uint64_t *value_64bit,
+     liberror_error_t **error );
 
 #if defined( _cplusplus )
 }

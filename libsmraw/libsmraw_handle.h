@@ -100,6 +100,10 @@ struct libsmraw_internal_handle
 	 */
 	size64_t maximum_segment_size;
 
+	/* The media values table
+	 */
+	libsmraw_values_table_t *media_values_table;
+
 	/* The information values table
 	 */
 	libsmraw_values_table_t *information_values_table;
@@ -150,6 +154,10 @@ LIBSMRAW_EXTERN int libsmraw_handle_open_file_io_pool(
                      libbfio_pool_t *file_io_pool,
                      uint8_t flags,
                      liberror_error_t **error );
+
+int libsmraw_handle_read_information_file(
+     libsmraw_internal_handle_t *internal_handle,
+     liberror_error_t **error );
 
 LIBSMRAW_EXTERN int libsmraw_handle_close(
                      libsmraw_handle_t *handle,

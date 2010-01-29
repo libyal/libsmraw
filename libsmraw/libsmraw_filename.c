@@ -51,8 +51,8 @@ int libsmraw_filename_create(
      liberror_error_t **error )
 {
 	static char *function    = "filename_create";
-	ssize_t print_count      = 0;
 	size_t additional_length = 4;
+	int print_count          = 0;
 
 	if( filename == NULL )
 	{
