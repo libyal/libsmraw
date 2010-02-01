@@ -104,7 +104,7 @@ int libsmraw_string_copy_to_64bit_decimal(
 			 error,
 			 LIBERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBERROR_RUNTIME_ERROR_UNSUPPORTED_VALUE,
-			 "%s: unsupported character value: %" PRIc_LIBEWF ".",
+			 "%s: unsupported character value: %" PRIc_LIBSMRAW ".",
 			 function,
 			 string[ string_iterator ] );
 
@@ -209,7 +209,7 @@ int libsmraw_string_copy_to_64bit_hexadecimal(
 			 error,
 			 LIBERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBERROR_RUNTIME_ERROR_UNSUPPORTED_VALUE,
-			 "%s: unsupported character value: %" PRIc_LIBEWF ".",
+			 "%s: unsupported character value: %" PRIc_LIBSMRAW ".",
 			 function,
 			 string[ string_iterator ] );
 
