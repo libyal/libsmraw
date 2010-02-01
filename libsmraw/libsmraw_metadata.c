@@ -135,8 +135,9 @@ int libsmraw_handle_get_bytes_per_sector(
 
 	libsmraw_internal_handle_t *internal_handle = NULL;
 	static char *function                       = "libsmraw_handle_get_bytes_per_sector";
-	int result                                  = 0;
+	size_t value_string_size                    = 0;
 	uint64_t value_64bit                        = 0;
+	int result                                  = 0;
 
 	if( handle == NULL )
 	{
@@ -162,12 +163,13 @@ int libsmraw_handle_get_bytes_per_sector(
 
 		return( -1 );
 	}
-	result = libsmraw_values_table_get_value(
-	          internal_handle->information_values_table,
-	          (libsmraw_character_t *) "bytes_per_sector",
-	          12,
-	          value_string,
-	          11,
+	*bytes_per_sector = 0;
+
+	result = libsmraw_values_table_get_value_size(
+	          internal_handle->media_values_table,
+	          (libsmraw_character_t *) _LIBSMRAW_STRING( "bytes_per_sector" ),
+	          16,
+	          &value_string_size,
 	          error );
 
 	if( result == -1 )
@@ -176,15 +178,42 @@ int libsmraw_handle_get_bytes_per_sector(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve information value size for identifier: bytes_per_sector.",
+		 "%s: unable to retrieve media value size for identifier: media_type.",
 		 function );
 
 		return( -1 );
 	}
-	*bytes_per_sector = 0;
-
-	if( result != 0 )
+	else if( result != 0 )
 	{
+		if( value_string_size != 11 )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
+			 LIBERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
+			 "%s: unsupported value string size: %" PRIzd ".",
+			 function,
+			 value_string_size );
+
+			return( -1 );
+		}
+		if( libsmraw_values_table_get_value(
+		     internal_handle->media_values_table,
+		     (libsmraw_character_t *) _LIBSMRAW_STRING( "bytes_per_sector" ),
+		     16,
+		     value_string,
+		     11,
+		     error ) != 1 )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve media value for identifier: bytes_per_sector.",
+			 function );
+
+			return( -1 );
+		}
 		if( libsmraw_string_copy_to_64bit_hexadecimal(
 		     value_string,
 		     11,
@@ -274,7 +303,7 @@ int libsmraw_handle_set_bytes_per_sector(
 		return( -1 );
 	}
 	if( libsmraw_values_table_set_value(
-	     internal_handle->information_values_table,
+	     internal_handle->media_values_table,
 	     (libsmraw_character_t *) "bytes_per_sector",
 	     16,
 	     value_string,
@@ -293,21 +322,20 @@ int libsmraw_handle_set_bytes_per_sector(
 	return( 1 );
 }
 
-#ifdef TODO
-
-/* Retrieves the media values
+/* Retrieves the media type
  * Returns the 1 if succesful or -1 on error
  */
-int libsmraw_handle_get_media_values(
+int libsmraw_handle_get_media_type(
      libsmraw_handle_t *handle,
-     int *media_type,
-     int *volume_type,
+     uint8_t *media_type,
      liberror_error_t **error )
 {
+	libsmraw_character_t value_string[ 10 ];
+
 	libsmraw_internal_handle_t *internal_handle = NULL;
-	static char *function                       = "libsmraw_handle_get_media_values";
-	uint8_t raw_media_type                      = 0;
-	uint8_t raw_media_flags                     = 0;
+	static char *function                       = "libsmraw_handle_get_media_type";
+	size_t value_string_size                    = 0;
+	int result                                  = 0;
 
 	if( handle == NULL )
 	{
@@ -344,35 +372,103 @@ int libsmraw_handle_get_media_values(
 
 		return( -1 );
 	}
-	if( volume_type == NULL )
+	*media_type = LIBSMRAW_MEDIA_TYPE_UNKNOWN;
+
+	result = libsmraw_values_table_get_value_size(
+	          internal_handle->media_values_table,
+	          (libsmraw_character_t *) _LIBSMRAW_STRING( "media_type" ),
+	          10,
+	          &value_string_size,
+	          error );
+
+	if( result == -1 )
 	{
 		liberror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid volume type.",
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve media value size for identifier: media_type.",
 		 function );
 
 		return( -1 );
 	}
-	/* TODO */
+	else if( result != 0 )
+	{
+		if( libsmraw_values_table_get_value(
+		     internal_handle->media_values_table,
+		     (libsmraw_character_t *) _LIBSMRAW_STRING( "media_type" ),
+		     10,
+		     value_string,
+		     10,
+		     error ) != 1 )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve media value for identifier: media_type.",
+			 function );
 
+			return( -1 );
+		}
+		if( value_string_size == 6 )
+		{
+			if( libsmraw_string_compare(
+			     _LIBSMRAW_STRING( "fixed" ),
+			     value_string,
+			     5 ) == 0 )
+			{
+				*media_type = LIBSMRAW_MEDIA_TYPE_FIXED;
+			}
+		}
+		else if( value_string_size == 7 )
+		{
+			if( libsmraw_string_compare(
+			     _LIBSMRAW_STRING( "memory" ),
+			     value_string,
+			     6 ) == 0 )
+			{
+				*media_type = LIBSMRAW_MEDIA_TYPE_MEMORY;
+			}
+		}
+		else if( value_string_size == 8 )
+		{
+			if( libsmraw_string_compare(
+			     _LIBSMRAW_STRING( "optical" ),
+			     value_string,
+			     7 ) == 0 )
+			{
+				*media_type = LIBSMRAW_MEDIA_TYPE_OPTICAL;
+			}
+		}
+		else if( value_string_size == 10 )
+		{
+			if( libsmraw_string_compare(
+			     _LIBSMRAW_STRING( "removable" ),
+			     value_string,
+			     9 ) == 0 )
+			{
+				*media_type = LIBSMRAW_MEDIA_TYPE_REMOVABLE;
+			}
+		}
+	}
 	return( 1 );
 }
 
-/* Sets the media values
+/* Sets the media type
  * Returns the 1 if succesful or -1 on error
  */
-int libsmraw_handle_set_media_values(
+int libsmraw_handle_set_media_type(
      libsmraw_handle_t *handle,
-     int media_type,
-     int volume_type,
+     uint8_t media_type,
      liberror_error_t **error )
 {
+	libsmraw_character_t value_string[ 10 ];
+
+	libsmraw_character_t *result                = NULL;
 	libsmraw_internal_handle_t *internal_handle = NULL;
-	static char *function                       = "libsmraw_handle_set_media_values";
-	uint8_t raw_media_type                      = 0;
-	uint8_t raw_media_flags                     = 0;
+	static char *function                       = "libsmraw_handle_set_media_type";
+	size_t value_string_length                  = 0;
 
 	if( handle == NULL )
 	{
@@ -401,15 +497,39 @@ int libsmraw_handle_set_media_values(
 	switch( media_type )
 	{
 		case LIBSMRAW_MEDIA_TYPE_FIXED:
+			value_string_length = 5;
+
+			result = libsmraw_string_copy(
+				  value_string,
+				  _LIBSMRAW_STRING( "fixed" ),
+				  value_string_length );
 			break;
 
 		case LIBSMRAW_MEDIA_TYPE_MEMORY:
+			value_string_length = 6;
+
+			result = libsmraw_string_copy(
+				  value_string,
+				  _LIBSMRAW_STRING( "memory" ),
+				  value_string_length );
 			break;
 
 		case LIBSMRAW_MEDIA_TYPE_OPTICAL:
+			value_string_length = 7;
+
+			result = libsmraw_string_copy(
+				  value_string,
+				  _LIBSMRAW_STRING( "optical" ),
+				  value_string_length );
 			break;
 
 		case LIBSMRAW_MEDIA_TYPE_REMOVABLE:
+			value_string_length = 9;
+
+			result = libsmraw_string_copy(
+				  value_string,
+				  _LIBSMRAW_STRING( "removable" ),
+				  value_string_length );
 			break;
 
 		default:
@@ -423,31 +543,252 @@ int libsmraw_handle_set_media_values(
 
 			return( -1 );
 	}
-	switch( volume_type )
+	value_string[ value_string_length ] = 0;
+
+	if( result == NULL )
 	{
-		case LIBSMRAW_VOLUME_TYPE_LOGICAL:
-			break;
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to set media type value string.",
+		 function );
 
-		case LIBSMRAW_VOLUME_TYPE_PHYSICAL:
-			break;
-
-		default:
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-			 LIBERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
-			 "%s: unsupported volume type: 0x%02x.",
-			 function,
-			 volume_type );
-
-			return( -1 );
+		return( -1 );
 	}
-	/* TODO */
+	if( libsmraw_values_table_set_value(
+	     internal_handle->media_values_table,
+	     (libsmraw_character_t *) "media_type",
+	     10,
+	     value_string,
+	     value_string_length,
+	     error ) != 1 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to set media value for identifier: media_type.",
+		 function );
 
+		return( -1 );
+	}
 	return( 1 );
 }
 
-#endif
+/* Retrieves the media flags
+ * Returns the 1 if succesful or -1 on error
+ */
+int libsmraw_handle_get_media_flags(
+     libsmraw_handle_t *handle,
+     uint8_t *media_flags,
+     liberror_error_t **error )
+{
+	libsmraw_character_t value_string[ 9 ];
+
+	libsmraw_internal_handle_t *internal_handle = NULL;
+	static char *function                       = "libsmraw_handle_get_media_flags";
+	size_t value_string_size                    = 0;
+	int result                                  = 0;
+
+	if( handle == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid handle.",
+		 function );
+
+		return( -1 );
+	}
+	internal_handle = (libsmraw_internal_handle_t *) handle;
+
+	if( internal_handle->file_io_pool == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid handle - missing file io pool.",
+		 function );
+
+		return( -1 );
+	}
+	if( media_flags == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid media flags.",
+		 function );
+
+		return( -1 );
+	}
+	result = libsmraw_values_table_get_value_size(
+	          internal_handle->media_values_table,
+	          (libsmraw_character_t *) _LIBSMRAW_STRING( "media_flags" ),
+	          11,
+	          &value_string_size,
+	          error );
+
+	if( result == -1 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve media value size for identifier: media_flags.",
+		 function );
+
+		return( -1 );
+	}
+	else if( result != 0 )
+	{
+		if( libsmraw_values_table_get_value(
+		     internal_handle->media_values_table,
+		     (libsmraw_character_t *) _LIBSMRAW_STRING( "media_flags" ),
+		     11,
+		     value_string,
+		     9,
+		     error ) != 1 )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve media value for identifier: media_flags.",
+			 function );
+
+			return( -1 );
+		}
+		if( value_string_size == 8 )
+		{
+			if( libsmraw_string_compare(
+			     _LIBSMRAW_STRING( "logical" ),
+			     value_string,
+			     7 ) == 0 )
+			{
+				*media_flags &= ~( LIBSMRAW_MEDIA_FLAG_PHYSICAL );
+			}
+		}
+		else if( value_string_size == 9 )
+		{
+			if( libsmraw_string_compare(
+			     _LIBSMRAW_STRING( "physical" ),
+			     value_string,
+			     8 ) == 0 )
+			{
+				*media_flags |= LIBSMRAW_MEDIA_FLAG_PHYSICAL;
+			}
+		}
+	}
+	return( 1 );
+}
+
+/* Sets the media flags
+ * Returns the 1 if succesful or -1 on error
+ */
+int libsmraw_handle_set_media_flags(
+     libsmraw_handle_t *handle,
+     uint8_t media_flags,
+     liberror_error_t **error )
+{
+	libsmraw_character_t value_string[ 9 ];
+
+	libsmraw_character_t *result                = NULL;
+	libsmraw_internal_handle_t *internal_handle = NULL;
+	static char *function                       = "libsmraw_handle_set_media_flags";
+	size_t value_string_length                  = 0;
+
+	if( handle == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid handle.",
+		 function );
+
+		return( -1 );
+	}
+	internal_handle = (libsmraw_internal_handle_t *) handle;
+
+	if( internal_handle->read_values_initialized != 0 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: media size cannot be changed.",
+		 function );
+
+		return( -1 );
+	}
+	if( ( media_flags & ~( LIBSMRAW_MEDIA_FLAG_PHYSICAL ) ) != 0 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
+		 "%s: unsupported media flags: 0x%02x.",
+		 function,
+		 media_flags );
+
+		return( -1 );
+	}
+	if( ( media_flags & LIBSMRAW_MEDIA_FLAG_PHYSICAL ) != 0 )
+	{
+		value_string_length = 8;
+
+		result = libsmraw_string_copy(
+			  value_string,
+			  _LIBSMRAW_STRING( "physical" ),
+			  value_string_length );
+	}
+	else
+	{
+		value_string_length = 7;
+
+		result = libsmraw_string_copy(
+			  value_string,
+			  _LIBSMRAW_STRING( "logical" ),
+			  value_string_length );
+	}
+	value_string[ value_string_length ] = 0;
+
+	if( result == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to set media flags value string.",
+		 function );
+
+		return( -1 );
+	}
+	if( libsmraw_values_table_set_value(
+	     internal_handle->media_values_table,
+	     (libsmraw_character_t *) "media_flags",
+	     11,
+	     value_string,
+	     value_string_length,
+	     error ) != 1 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to set media value for identifier: media_flags.",
+		 function );
+
+		return( -1 );
+	}
+
+	return( 1 );
+}
 
 /* Retrieves the amount of information values
  * Returns 1 if successful or -1 on error
@@ -712,7 +1053,7 @@ int libsmraw_handle_get_information_value_size(
 	}
 	result = libsmraw_values_table_get_value_size(
 	          internal_handle->information_values_table,
-	          identifier,
+	          (libsmraw_character_t *) identifier,
 	          identifier_length,
 	          value_size,
 	          error );
@@ -723,7 +1064,7 @@ int libsmraw_handle_get_information_value_size(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve information value size for identifier: %s.",
+		 "%s: unable to retrieve information value size for identifier: %" PRIs_LIBSMRAW ".",
 		 function,
 		 identifier );
 
@@ -797,9 +1138,9 @@ int libsmraw_handle_get_information_value(
 	}
 	result = libsmraw_values_table_get_value(
 	          internal_handle->information_values_table,
-	          identifier,
+	          (libsmraw_character_t *) identifier,
 	          identifier_length,
-	          value,
+	          (libsmraw_character_t *) value,
 	          value_size,
 	          error );
 
@@ -809,7 +1150,7 @@ int libsmraw_handle_get_information_value(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve information value for identifier: %s.",
+		 "%s: unable to retrieve information value for identifier: %" PRIs_LIBSMRAW ".",
 		 function,
 		 identifier );
 
@@ -891,7 +1232,7 @@ int libsmraw_handle_set_information_value(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_SET_FAILED,
-		 "%s: unable to set information value for identifier: %s.",
+		 "%s: unable to set information value for identifier: %" PRIs_LIBSMRAW ".",
 		 function,
 		 identifier );
 
@@ -1163,7 +1504,7 @@ int libsmraw_handle_get_integrity_hash_value_size(
 	}
 	result = libsmraw_values_table_get_value_size(
 	          internal_handle->integrity_hash_values_table,
-	          identifier,
+	          (libsmraw_character_t *) identifier,
 	          identifier_length,
 	          value_size,
 	          error );
@@ -1174,7 +1515,7 @@ int libsmraw_handle_get_integrity_hash_value_size(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve integrity hash value size for identifier: %s.",
+		 "%s: unable to retrieve integrity hash value size for identifier: %" PRIs_LIBSMRAW ".",
 		 function,
 		 identifier );
 
@@ -1248,9 +1589,9 @@ int libsmraw_handle_get_integrity_hash_value(
 	}
 	result = libsmraw_values_table_get_value(
 	          internal_handle->integrity_hash_values_table,
-	          identifier,
+	          (libsmraw_character_t *) identifier,
 	          identifier_length,
-	          value,
+	          (libsmraw_character_t *) value,
 	          value_size,
 	          error );
 
@@ -1260,7 +1601,7 @@ int libsmraw_handle_get_integrity_hash_value(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve integrity hash value for identifier: %s.",
+		 "%s: unable to retrieve integrity hash value for identifier: %" PRIs_LIBSMRAW ".",
 		 function,
 		 identifier );
 
@@ -1342,7 +1683,7 @@ int libsmraw_handle_set_integrity_hash_value(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_SET_FAILED,
-		 "%s: unable to set integrity hash value for identifier: %s.",
+		 "%s: unable to set integrity hash value for identifier: %" PRIs_LIBSMRAW ".",
 		 function,
 		 identifier );
 

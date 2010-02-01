@@ -1,4 +1,4 @@
-.Dd January 29, 2010
+.Dd February 1, 2010
 .Dt libsmraw 3
 .Os libsmraw
 .Sh NAME
@@ -115,6 +115,14 @@ Meta data functions
 .Ft int
 .Fn libsmraw_handle_set_bytes_per_sector "libsmraw_handle_t *handle, uint32_t bytes_per_sector, libsmraw_error_t **error"
 .Ft int
+.Fn libsmraw_handle_get_media_type "libsmraw_handle_t *handle, uint8_t *media_type, libsmraw_error_t **error"
+.Ft int
+.Fn libsmraw_handle_set_media_type "libsmraw_handle_t *handle, uint8_t media_type, libsmraw_error_t **error"
+.Ft int
+.Fn libsmraw_handle_get_media_flags "libsmraw_handle_t *handle, uint8_t *media_flags, libsmraw_error_t **error"
+.Ft int
+.Fn libsmraw_handle_set_media_flags "libsmraw_handle_t *handle, uint8_t media_flags, libsmraw_error_t **error"
+.Ft int
 .Fn libsmraw_handle_get_amount_of_information_values "libsmraw_handle_t *handle, uint32_t *amount_of_values, libsmraw_error_t **error"
 .Ft int
 .Fn libsmraw_handle_get_information_value_identifier_size "libsmraw_handle_t *handle, uint32_t index, size_t *identifier_size, libsmraw_error_t **error"
@@ -165,14 +173,12 @@ If the
 is known the filename should contain the base of the filename otherwise the function will try to determine the format based on the extension.
 .Pp
 The
-.Fn libsmraw_open ,
-.Fn libsmraw_open_wide ,
-.Fn libsmraw_seek_offset ,
-.Fn libsmraw_read_buffer ,
-.Fn libsmraw_read_random ,
-.Fn libsmraw_write_buffer ,
-.Fn libsmraw_write_random ,
-.Fn libsmraw_close
+.Fn libsmraw_handle_open ,
+.Fn libsmraw_handle_open_wide ,
+.Fn libsmraw_handle_close ,
+.Fn libsmraw_handle_read_buffer ,
+.Fn libsmraw_handle_write_buffer ,
+.Fn libsmraw_handle_seek_offset
 functions can be used to open, seek in, read from, write to and close a set of storage media RAW files.
 .Pp
 The

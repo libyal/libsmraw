@@ -1055,15 +1055,15 @@ int libsmraw_glob_wide(
 	return( 1 );
 }
 
-/* Frees the globbed filenames
+/* Frees the globbed wide filenames
  * Returns 1 if successful or -1 on error
  */
-int libsmraw_glob_free_wide(
+int libsmraw_glob_wide_free(
      wchar_t *filenames[],
      int amount_of_filenames,
      liberror_error_t **error )
 {
-	static char *function = "libsmraw_glob_free";
+	static char *function = "libsmraw_glob_wide_free";
 	int filename_iterator = 0;
 
 	if( filenames == NULL )

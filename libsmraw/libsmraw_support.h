@@ -57,7 +57,7 @@ LIBSMRAW_EXTERN int libsmraw_glob_wide(
                      int *amount_of_filenames,
                      liberror_error_t **error );
 
-LIBSMRAW_EXTERN int libsmraw_glob_free_wide(
+LIBSMRAW_EXTERN int libsmraw_glob_wide_free(
                      wchar_t *filenames[],
                      int amount_of_filenames,
                      liberror_error_t **error );

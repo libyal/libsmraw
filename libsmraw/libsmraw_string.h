@@ -50,7 +50,7 @@ typedef libuna_utf8_character_t libsmraw_character_t;
 	narrow_string_compare( (char *) string1, (char *) string2, size )
 
 #define libsmraw_string_copy( destination, source, size ) \
-	narrow_string_copy( (char *) destination, (char *) source, size )
+	(libsmraw_character_t *) narrow_string_copy( (char *) destination, (char *) source, size )
 
 #if defined( __BORLANDC__ ) && ( __BORLANDC__ < 0x0560 )
 #define libsmraw_string_snprintf \

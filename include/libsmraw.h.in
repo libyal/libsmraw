@@ -78,10 +78,10 @@ LIBSMRAW_EXTERN int libsmraw_glob_wide(
                      int *amount_of_filenames,
                      libsmraw_error_t **error );
 
-/* Frees the globbed filenames
+/* Frees the globbed wide filenames
  * Returns 1 if successful or -1 on error
  */
-LIBSMRAW_EXTERN int libsmraw_glob_free_wide(
+LIBSMRAW_EXTERN int libsmraw_glob_wide_free(
                      char *filenames[],
                      int amount_of_filenames,
                      libsmraw_error_t **error );
@@ -425,6 +425,38 @@ LIBSMRAW_EXTERN int libsmraw_handle_get_bytes_per_sector(
 LIBSMRAW_EXTERN int libsmraw_handle_set_bytes_per_sector(
                      libsmraw_handle_t *handle,
                      uint32_t bytes_per_sector,
+                     libsmraw_error_t **error );
+
+/* Retrieves the media type
+ * Returns the 1 if succesful or -1 on error
+ */
+LIBSMRAW_EXTERN int libsmraw_handle_get_media_type(
+                     libsmraw_handle_t *handle,
+                     uint8_t *media_type,
+                     libsmraw_error_t **error );
+
+/* Sets the media type
+ * Returns the 1 if succesful or -1 on error
+ */
+LIBSMRAW_EXTERN int libsmraw_handle_set_media_type(
+                     libsmraw_handle_t *handle,
+                     uint8_t media_type,
+                     libsmraw_error_t **error );
+
+/* Retrieves the media flags
+ * Returns the 1 if succesful or -1 on error
+ */
+LIBSMRAW_EXTERN int libsmraw_handle_get_media_flags(
+                     libsmraw_handle_t *handle,
+                     uint8_t *media_flags,
+                     libsmraw_error_t **error );
+
+/* Sets the media flags
+ * Returns the 1 if succesful or -1 on error
+ */
+LIBSMRAW_EXTERN int libsmraw_handle_set_media_flags(
+                     libsmraw_handle_t *handle,
+                     uint8_t media_flags,
                      libsmraw_error_t **error );
 
 /* Retrieves the amount of information values

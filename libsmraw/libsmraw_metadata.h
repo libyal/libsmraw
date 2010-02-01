@@ -55,21 +55,25 @@ LIBSMRAW_EXTERN int libsmraw_handle_set_bytes_per_sector(
                      uint32_t bytes_per_sector,
                      liberror_error_t **error );
 
-#ifdef TODO
-
-LIBSMRAW_EXTERN int libsmraw_handle_get_media_values(
+LIBSMRAW_EXTERN int libsmraw_handle_get_media_type(
                      libsmraw_handle_t *handle,
-                     int *media_type,
-                     int *media_flags,
+                     uint8_t *media_type,
                      liberror_error_t **error );
 
-LIBSMRAW_EXTERN int libsmraw_handle_set_media_values(
+LIBSMRAW_EXTERN int libsmraw_handle_set_media_type(
                      libsmraw_handle_t *handle,
-                     int media_type,
-                     int media_flags,
+                     uint8_t media_type,
                      liberror_error_t **error );
 
-#endif
+LIBSMRAW_EXTERN int libsmraw_handle_get_media_flags(
+                     libsmraw_handle_t *handle,
+                     uint8_t *media_flags,
+                     liberror_error_t **error );
+
+LIBSMRAW_EXTERN int libsmraw_handle_set_media_flags(
+                     libsmraw_handle_t *handle,
+                     uint8_t media_flags,
+                     liberror_error_t **error );
 
 LIBSMRAW_EXTERN int libsmraw_handle_get_amount_of_information_values(
                      libsmraw_handle_t *handle,
