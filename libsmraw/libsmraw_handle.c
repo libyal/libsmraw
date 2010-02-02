@@ -421,17 +421,29 @@ int libsmraw_handle_open(
 
 		return( -1 );
 	}
+	if( ( ( flags & LIBSMRAW_FLAG_READ ) != LIBSMRAW_FLAG_READ )
+	 && ( ( flags & LIBSMRAW_FLAG_WRITE ) != LIBSMRAW_FLAG_WRITE ) )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
+		 "%s: unsupported flags.",
+		 function );
+
+		return( -1 );
+	}
 	/* Open for read only or read/write
 	 */
 	if( ( flags & LIBSMRAW_FLAG_READ ) == LIBSMRAW_FLAG_READ )
 	{
-		if( ( flags & LIBSMRAW_FLAG_WRITE ) == LIBSMRAW_FLAG_WRITE )
+		if( ( flags & LIBSMRAW_FLAG_READ ) != 0 )
 		{
-			file_io_flags = LIBBFIO_OPEN_READ_WRITE;
+			file_io_flags |= LIBBFIO_FLAG_READ;
 		}
-		else
+		if( ( flags & LIBSMRAW_FLAG_WRITE ) != 0 )
 		{
-			file_io_flags = LIBBFIO_OPEN_READ;
+			file_io_flags |= LIBBFIO_FLAG_WRITE;
 		}
 		/* Set the basename
 		 */
@@ -842,17 +854,29 @@ int libsmraw_handle_open_wide(
 
 		return( -1 );
 	}
+	if( ( ( flags & LIBSMRAW_FLAG_READ ) != LIBSMRAW_FLAG_READ )
+	 && ( ( flags & LIBSMRAW_FLAG_WRITE ) != LIBSMRAW_FLAG_WRITE ) )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
+		 "%s: unsupported flags.",
+		 function );
+
+		return( -1 );
+	}
 	/* Open for read only or read/write
 	 */
 	if( ( flags & LIBSMRAW_FLAG_READ ) == LIBSMRAW_FLAG_READ )
 	{
-		if( ( flags & LIBSMRAW_FLAG_WRITE ) == LIBSMRAW_FLAG_WRITE )
+		if( ( flags & LIBSMRAW_FLAG_READ ) != 0 )
 		{
-			file_io_flags = LIBBFIO_OPEN_READ_WRITE;
+			file_io_flags |= LIBBFIO_FLAG_READ;
 		}
-		else
+		if( ( flags & LIBSMRAW_FLAG_WRITE ) != 0 )
 		{
-			file_io_flags = LIBBFIO_OPEN_READ;
+			file_io_flags |= LIBBFIO_FLAG_WRITE;
 		}
 		/* Set the basename
 		 */
