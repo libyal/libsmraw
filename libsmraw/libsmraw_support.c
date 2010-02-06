@@ -54,7 +54,6 @@ int libsmraw_glob(
 	void *reallocation               = NULL;
 	char *segment_filename           = NULL;
 	static char *function            = "libsmraw_glob";
-	size_t additional_length         = 0;
 	size_t segment_filename_length   = 0;
 	ssize_t print_count              = 0;
 	int result                       = 0;
@@ -378,57 +377,30 @@ int libsmraw_glob(
 
 			return( -1 );
 		}
-		if( additional_length == 0 )
+		print_count = narrow_string_snprintf(
+			       segment_filename,
+			       segment_filename_length,
+			       "%s.raw.%03d",
+			       filename,
+			       *amount_of_filenames );
+
+		if( ( print_count < 0 )
+		 || ( (size_t) print_count > segment_filename_length ) )
 		{
-			if( narrow_string_copy(
-			     segment_filename,
-			     filename,
-			     filename_length ) == NULL )
-			{
-				liberror_error_set(
-				 error,
-				 LIBERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBERROR_RUNTIME_ERROR_SET_FAILED,
-				 "%s: unable to set segment filename.",
-				 function );
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+			 "%s: unable to set segment filename.",
+			 function );
 
-				memory_free(
-				 segment_filename );
-				libbfio_handle_free(
-				 &file_io_handle,
-				 NULL );
+			memory_free(
+			 segment_filename );
+			libbfio_handle_free(
+			 &file_io_handle,
+			 NULL );
 
-				return( -1 );
-			}
-			segment_filename[ filename_length ] = 0;
-		}
-		else
-		{
-			print_count = narrow_string_snprintf(
-				       segment_filename,
-				       segment_filename_length,
-				       "%s.raw.%03d",
-				       filename,
-				       *amount_of_filenames );
-
-			if( ( print_count < 0 )
-			 || ( (size_t) print_count > segment_filename_length ) )
-			{
-				liberror_error_set(
-				 error,
-				 LIBERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBERROR_RUNTIME_ERROR_SET_FAILED,
-				 "%s: unable to set segment filename.",
-				 function );
-
-				memory_free(
-				 segment_filename );
-				libbfio_handle_free(
-				 &file_io_handle,
-				 NULL );
-
-				return( -1 );
-			}
+			return( -1 );
 		}
 		if( libbfio_file_set_name(
 		     file_io_handle,
@@ -586,7 +558,6 @@ int libsmraw_glob_wide(
 	void *reallocation               = NULL;
 	wchar_t *segment_filename        = NULL;
 	static char *function            = "libsmraw_glob_wide";
-	size_t additional_length         = 0;
 	size_t segment_filename_length   = 0;
 	ssize_t print_count              = 0;
 	int result                       = 0;
@@ -910,57 +881,30 @@ int libsmraw_glob_wide(
 
 			return( -1 );
 		}
-		if( additional_length == 0 )
+		print_count = wide_string_snwprintf(
+			       segment_filename,
+			       segment_filename_length,
+			       L"%s.raw.%03d",
+			       filename,
+			       *amount_of_filenames );
+
+		if( ( print_count < 0 )
+		 || ( (size_t) print_count > segment_filename_length ) )
 		{
-			if( wide_string_copy(
-			     segment_filename,
-			     filename,
-			     filename_length ) == NULL )
-			{
-				liberror_error_set(
-				 error,
-				 LIBERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBERROR_RUNTIME_ERROR_SET_FAILED,
-				 "%s: unable to set segment filename.",
-				 function );
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+			 "%s: unable to set segment filename.",
+			 function );
 
-				memory_free(
-				 segment_filename );
-				libbfio_handle_free(
-				 &file_io_handle,
-				 NULL );
+			memory_free(
+			 segment_filename );
+			libbfio_handle_free(
+			 &file_io_handle,
+			 NULL );
 
-				return( -1 );
-			}
-			segment_filename[ filename_length ] = 0;
-		}
-		else
-		{
-			print_count = wide_string_snwprintf(
-				       segment_filename,
-				       segment_filename_length,
-				       L"%s.raw.%03d",
-				       filename,
-				       *amount_of_filenames );
-
-			if( ( print_count < 0 )
-			 || ( (size_t) print_count > segment_filename_length ) )
-			{
-				liberror_error_set(
-				 error,
-				 LIBERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBERROR_RUNTIME_ERROR_SET_FAILED,
-				 "%s: unable to set segment filename.",
-				 function );
-
-				memory_free(
-				 segment_filename );
-				libbfio_handle_free(
-				 &file_io_handle,
-				 NULL );
-
-				return( -1 );
-			}
+			return( -1 );
 		}
 		if( libbfio_file_set_name_wide(
 		     file_io_handle,

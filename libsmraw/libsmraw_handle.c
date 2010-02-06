@@ -1507,7 +1507,7 @@ int libsmraw_handle_read_information_file(
 		     (uint8_t *) "media_values",
 		     12,
 		     internal_handle->media_values_table,
-		     error ) != 1 )
+		     error ) == -1 )
 		{
 			liberror_error_set(
 			 error,
@@ -1523,7 +1523,7 @@ int libsmraw_handle_read_information_file(
 		     (uint8_t *) "information_values",
 		     18,
 		     internal_handle->information_values_table,
-		     error ) != 1 )
+		     error ) == -1 )
 		{
 			liberror_error_set(
 			 error,
@@ -1539,7 +1539,7 @@ int libsmraw_handle_read_information_file(
 		     (uint8_t *) "integrity_hash_values",
 		     21,
 		     internal_handle->integrity_hash_values_table,
-		     error ) != 1 )
+		     error ) == -1 )
 		{
 			liberror_error_set(
 			 error,

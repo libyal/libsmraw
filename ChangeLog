@@ -12,6 +12,10 @@ Test
 * retrieve data from the information file on open
 * make sure certain values cannot be changed if writing/reading from raw files
 
+20100204
+* fixed issue in glob
+* fix for missing sections in information file
+
 20100202
 * minor changes
 

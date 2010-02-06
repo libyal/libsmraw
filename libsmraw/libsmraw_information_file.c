@@ -337,7 +337,7 @@ int libsmraw_information_file_close(
 }
 
 /* Reas a section with its values from the information file
- * Returns the 1 if succesful or -1 on error
+ * Returns the 1 if succesful, 0 if no such section or -1 on error
  */
 int libsmraw_information_file_read_section(
      libsmraw_information_file_t *information_file,
@@ -350,11 +350,13 @@ int libsmraw_information_file_read_section(
 
 	uint8_t *value_identifier      = NULL;
 	uint8_t *value                 = NULL;
+	char *result_string            = NULL;
 	static char *function          = "libsmraw_information_file_read_section";
 	size_t input_string_index      = 0;
 	size_t value_identifier_length = 0;
 	size_t value_length            = 0;
 	uint8_t in_section             = 0;
+	int result                     = 0;
 
 	if( information_file == NULL )
 	{
@@ -430,11 +432,18 @@ int libsmraw_information_file_read_section(
 	while( file_stream_at_end(
 	        information_file->file_stream ) == 0 )
 	{
-		if( file_stream_get_string(
-		     information_file->file_stream,
-		     (char *) input_string,
-		     128 ) == NULL )
+		result_string = file_stream_get_string(
+		                 information_file->file_stream,
+		                 (char *) input_string,
+		                 128 );
+
+		if( result_string == NULL )
 		{
+			if( file_stream_at_end(
+			     information_file->file_stream ) != 0 )
+			{
+				break;
+			}
 			liberror_error_set(
 			 error,
 			 LIBERROR_ERROR_DOMAIN_IO,
@@ -480,6 +489,7 @@ int libsmraw_information_file_read_section(
 			 && ( input_string[ input_string_index + section_identifier_length + 2 ] == (uint8_t) '>' ) )
 			{
 				in_section = 0;
+				result     = 1;
 
 				break;
 			}
@@ -606,7 +616,7 @@ int libsmraw_information_file_read_section(
 			}
 		}
 	}
-	return( 1 );
+	return( result );
 }
 
 /* Write a section with its values to the information file
