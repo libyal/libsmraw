@@ -34,6 +34,8 @@
 
 #include "libsmraw_notify.h"
 
+#if !defined( HAVE_LOCAL_LIBSMRAW )
+
 /* Set the verbose notification
  */
 void libsmraw_notify_set_verbose(
@@ -116,4 +118,6 @@ int libsmraw_notify_stream_close(
 	}
 	return( 0 );
 }
+
+#endif /* !defined( HAVE_LOCAL_LIBSMRAW ) */
 

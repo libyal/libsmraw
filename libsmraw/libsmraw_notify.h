@@ -27,7 +27,6 @@
 #include <types.h>
 
 #include <liberror.h>
-#include <libnotify.h>
 
 #include <stdio.h>
 
@@ -36,6 +35,8 @@
 #if defined( __cplusplus )
 extern "C" {
 #endif
+
+#if !defined( HAVE_LOCAL_LIBSMRAW )
 
 LIBSMRAW_EXTERN void libsmraw_notify_set_verbose(
                      int verbose );
@@ -50,6 +51,8 @@ LIBSMRAW_EXTERN int libsmraw_notify_stream_open(
 
 LIBSMRAW_EXTERN int libsmraw_notify_stream_close(
                     liberror_error_t **error );
+
+#endif /* !defined( HAVE_LOCAL_LIBSMRAW ) */
 
 #if defined( __cplusplus )
 }
