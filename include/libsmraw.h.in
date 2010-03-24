@@ -82,7 +82,7 @@ LIBSMRAW_EXTERN int libsmraw_glob_wide(
  * Returns 1 if successful or -1 on error
  */
 LIBSMRAW_EXTERN int libsmraw_glob_wide_free(
-                     char *filenames[],
+                     wchar_t *filenames[],
                      int amount_of_filenames,
                      libsmraw_error_t **error );
 #endif

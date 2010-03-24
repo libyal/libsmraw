@@ -35,6 +35,14 @@
 #include "libsmraw_types.h"
 #include "libsmraw_values_table.h"
 
+#if defined( _MSC_VER ) || defined( __BORLANDC__ )
+
+/* This inclusion is needed otherwise some linkers
+ * mess up exporting the metadata functions
+ */
+#include "libsmraw_metadata.h"
+#endif
+
 #if defined( __cplusplus )
 extern "C" {
 #endif
