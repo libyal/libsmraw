@@ -12,6 +12,9 @@ Test
 * retrieve data from the information file on open
 * make sure certain values cannot be changed if writing/reading from raw files
 
+20100414
+* worked on seek offset 0 issue
+
 20100331
 * update to makefile
 

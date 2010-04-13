@@ -2244,9 +2244,9 @@ off64_t libsmraw_handle_seek_offset(
 	if( offset < (off64_t) internal_handle->media_size )
 	{
 		if( libbfio_pool_get_amount_of_handles(
-		    internal_handle->file_io_pool,
-		    &amount_of_handles,
-		    error ) != 1 )
+		     internal_handle->file_io_pool,
+		     &amount_of_handles,
+		     error ) != 1 )
 		{
 			liberror_error_set(
 			 error,
@@ -2264,6 +2264,10 @@ off64_t libsmraw_handle_seek_offset(
 		     file_io_pool_entry < amount_of_handles;
 		     file_io_pool_entry++ )
 		{
+			if( file_offset == 0 )
+			{
+				break;
+			}
 			if( libbfio_pool_get_size(
 			     internal_handle->file_io_pool,
 			     file_io_pool_entry,
