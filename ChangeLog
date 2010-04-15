@@ -12,6 +12,9 @@ Test
 * retrieve data from the information file on open
 * make sure certain values cannot be changed if writing/reading from raw files
 
+20100415
+* worked on seek offset issue - incorrect logic
+
 20100414
 * worked on seek offset 0 issue
 

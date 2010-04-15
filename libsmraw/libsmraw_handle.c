@@ -2284,7 +2284,7 @@ off64_t libsmraw_handle_seek_offset(
 
 				return( -1 );
 			}
-			if( file_offset > (off64_t) file_size )
+			if( file_offset < (off64_t) file_size )
 			{
 				break;
 			}
