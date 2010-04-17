@@ -1,6 +1,7 @@
 /*
  * Values table functions
  *
+ * Copyright (c) 2010, Joachim Metz <jbmetz@users.sourceforge.net>
  * Copyright (c) 2006-2010, Joachim Metz <forensics@hoffmannbv.nl>,
  * Hoffmann Investigations.
  *
@@ -21,10 +22,11 @@
  */
 
 #include <common.h>
-#include <narrow_string.h>
 #include <memory.h>
 #include <types.h>
-#include <wide_string.h>
+
+#include <libcstring.h>
+#include <liberror.h>
 
 #include "libsmraw_definitions.h"
 #include "libsmraw_values_table.h"
@@ -65,7 +67,7 @@ int libsmraw_values_table_initialize(
 	}
 	if( *values_table == NULL )
 	{
-		values_table_string_size = amount_of_values * sizeof( libsmraw_character_t * );
+		values_table_string_size = amount_of_values * sizeof( libcstring_character_t * );
 
 		if( values_table_string_size > (size_t) SSIZE_MAX )
 		{
@@ -126,8 +128,8 @@ int libsmraw_values_table_initialize(
 		}
 		if( amount_of_values > 0 )
 		{
-			( *values_table )->identifier = (libsmraw_character_t **) memory_allocate(
-								                   values_table_string_size );
+			( *values_table )->identifier = (libcstring_character_t **) memory_allocate(
+								                     values_table_string_size );
 
 			if( ( *values_table )->identifier == NULL )
 			{
@@ -210,8 +212,8 @@ int libsmraw_values_table_initialize(
 
 				return( -1 );
 			}
-			( *values_table )->value = (libsmraw_character_t **) memory_allocate(
-			                                                      values_table_string_size );
+			( *values_table )->value = (libcstring_character_t **) memory_allocate(
+			                                                        values_table_string_size );
  
 			if( ( *values_table )->value == NULL )
 			{
@@ -419,7 +421,7 @@ int libsmraw_values_table_resize(
 	}
 	if( values_table->amount_of_values < amount_of_values )
 	{
-		values_table_string_size = amount_of_values * sizeof( libsmraw_character_t * );
+		values_table_string_size = amount_of_values * sizeof( libcstring_character_t * );
 
 		if( values_table_string_size > (ssize_t) SSIZE_MAX )
 		{
@@ -460,12 +462,12 @@ int libsmraw_values_table_resize(
 
 			return( -1 );
 		}
-		values_table->identifier = (libsmraw_character_t **) reallocation;
+		values_table->identifier = (libcstring_character_t **) reallocation;
 
 		if( memory_set(
 		     &( values_table->identifier[ values_table->amount_of_values ] ),
 		     0,
-		     sizeof( libsmraw_character_t * ) * ( amount_of_values - values_table->amount_of_values ) ) == NULL )
+		     sizeof( libcstring_character_t * ) * ( amount_of_values - values_table->amount_of_values ) ) == NULL )
 		{
 			liberror_error_set(
 			 error,
@@ -522,12 +524,12 @@ int libsmraw_values_table_resize(
 
 			return( -1 );
 		}
-		values_table->value = (libsmraw_character_t **) reallocation;
+		values_table->value = (libcstring_character_t **) reallocation;
 
 		if( memory_set(
 		     &( values_table->value[ values_table->amount_of_values ] ),
 		     0,
-		     sizeof( libsmraw_character_t * ) * ( amount_of_values - values_table->amount_of_values ) ) == NULL )
+		     sizeof( libcstring_character_t * ) * ( amount_of_values - values_table->amount_of_values ) ) == NULL )
 		{
 			liberror_error_set(
 			 error,
@@ -616,7 +618,7 @@ int libsmraw_values_table_get_amount_of_values(
  */
 int libsmraw_values_table_get_index(
      libsmraw_values_table_t *values_table,
-     const libsmraw_character_t *identifier,
+     const libcstring_character_t *identifier,
      size_t identifier_length,
      int *index,
      liberror_error_t **error )
@@ -722,7 +724,7 @@ int libsmraw_values_table_get_index(
 		{
 			continue;
 		}
-		if( libsmraw_string_compare(
+		if( libcstring_string_compare(
 		     identifier,
 		     values_table->identifier[ values_table_iterator ],
 		     identifier_length ) == 0 )
@@ -819,7 +821,7 @@ int libsmraw_values_table_get_identifier_size(
 int libsmraw_values_table_get_identifier(
      libsmraw_values_table_t *values_table,
      int index,
-     libsmraw_character_t *identifier,
+     libcstring_character_t *identifier,
      size_t identifier_size,
      liberror_error_t **error )
 {
@@ -912,7 +914,7 @@ int libsmraw_values_table_get_identifier(
 
 		return( -1 );
 	}
-	if( libsmraw_string_copy(
+	if( libcstring_string_copy(
 	     identifier,
 	     values_table->identifier[ index ],
 	     values_table->identifier_length[ index ] ) == NULL )
@@ -938,7 +940,7 @@ int libsmraw_values_table_get_identifier(
 int libsmraw_values_table_set_identifier(
      libsmraw_values_table_t *values_table,
      int index,
-     const libsmraw_character_t *identifier,
+     const libcstring_character_t *identifier,
      size_t identifier_length,
      liberror_error_t **error )
 {
@@ -1018,8 +1020,8 @@ int libsmraw_values_table_set_identifier(
 	}
 	values_table->identifier_length[ index ] = identifier_length;
 
-	values_table->identifier[ index ] = (libsmraw_character_t *) memory_allocate(
-	                                                              sizeof( libsmraw_character_t ) * ( values_table->identifier_length[ index ] + 1 ) );
+	values_table->identifier[ index ] = (libcstring_character_t *) memory_allocate(
+	                                                                sizeof( libcstring_character_t ) * ( values_table->identifier_length[ index ] + 1 ) );
 
 	if( values_table->identifier[ index ] == NULL )
 	{
@@ -1032,7 +1034,7 @@ int libsmraw_values_table_set_identifier(
 
 		return( -1 );
 	}
-	if( libsmraw_string_copy(
+	if( libcstring_string_copy(
 	     (char *) values_table->identifier[ index ],
 	     (char *) identifier,
 	     identifier_length ) == NULL )
@@ -1062,7 +1064,7 @@ int libsmraw_values_table_set_identifier(
  */
 int libsmraw_values_table_get_value_size(
      libsmraw_values_table_t *values_table,
-     const libsmraw_character_t *identifier,
+     const libcstring_character_t *identifier,
      size_t identifier_length,
      size_t *value_size,
      liberror_error_t **error )
@@ -1120,9 +1122,9 @@ int libsmraw_values_table_get_value_size(
  */
 int libsmraw_values_table_get_value(
      libsmraw_values_table_t *values_table,
-     const libsmraw_character_t *identifier,
+     const libcstring_character_t *identifier,
      size_t identifier_length,
-     libsmraw_character_t *value,
+     libcstring_character_t *value,
      size_t value_size,
      liberror_error_t **error )
 {
@@ -1194,7 +1196,7 @@ int libsmraw_values_table_get_value(
 
 		return( -1 );
 	}
-	if( libsmraw_string_copy(
+	if( libcstring_string_copy(
 	     value,
 	     values_table->value[ index ],
 	     values_table->value_length[ index ] ) == NULL )
@@ -1219,9 +1221,9 @@ int libsmraw_values_table_get_value(
  */
 int libsmraw_values_table_set_value(
      libsmraw_values_table_t *values_table,
-     const libsmraw_character_t *identifier,
+     const libcstring_character_t *identifier,
      size_t identifier_length,
-     const libsmraw_character_t *value,
+     const libcstring_character_t *value,
      size_t value_length,
      liberror_error_t **error )
 {
@@ -1304,8 +1306,8 @@ int libsmraw_values_table_set_value(
 		}
 		values_table->value_length[ index ] = value_length;
 
-		values_table->value[ index ] = (libsmraw_character_t *) memory_allocate(
-		                                                         sizeof( libsmraw_character_t ) * ( values_table->value_length[ index ] + 1 ) );
+		values_table->value[ index ] = (libcstring_character_t *) memory_allocate(
+		                                                           sizeof( libcstring_character_t ) * ( values_table->value_length[ index ] + 1 ) );
 
 		if( values_table->value[ index ] == NULL )
 		{
@@ -1318,7 +1320,7 @@ int libsmraw_values_table_set_value(
 
 			return( -1 );
 		}
-		if( libsmraw_string_copy(
+		if( libcstring_string_copy(
 		     values_table->value[ index ],
 		     value,
 		     value_length ) == NULL )

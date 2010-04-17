@@ -1,6 +1,7 @@
 /*
  * Filename functions
  *
+ * Copyright (c) 2010, Joachim Metz <jbmetz@users.sourceforge.net>
  * Copyright (c) 2008-2010, Joachim Metz <forensics@hoffmannbv.nl>,
  * Hoffmann Investigations.
  *
@@ -26,18 +27,17 @@
 #include <common.h>
 #include <types.h>
 
+#include <libcstring.h>
 #include <liberror.h>
-
-#include "libsmraw_system_string.h"
 
 #if defined( __cplusplus )
 extern "C" {
 #endif
 
 int libsmraw_filename_create(
-     libsmraw_system_character_t **filename,
+     libcstring_system_character_t **filename,
      size_t *filename_size,
-     libsmraw_system_character_t *basename,
+     libcstring_system_character_t *basename,
      size_t basename_size,
      int total_amount_of_file_io_pool_entries,
      int current_file_io_pool_entry,

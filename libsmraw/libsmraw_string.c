@@ -1,6 +1,7 @@
 /*
  * Character type string functions
  *
+ * Copyright (c) 2010, Joachim Metz <jbmetz@users.sourceforge.net>
  * Copyright (c) 2006-2010, Joachim Metz <forensics@hoffmannbv.nl>,
  * Hoffmann Investigations.
  *
@@ -23,6 +24,7 @@
 #include <common.h>
 #include <types.h>
 
+#include <libcstring.h>
 #include <liberror.h>
 
 #include "libsmraw_string.h"
@@ -31,7 +33,7 @@
  * Return 1 if successful or -1 on error
  */
 int libsmraw_string_copy_to_64bit_decimal(
-     libsmraw_character_t *string,
+     libcstring_character_t *string,
      size_t string_size,
      uint64_t *value_64bit,
      liberror_error_t **error )
@@ -93,10 +95,10 @@ int libsmraw_string_copy_to_64bit_decimal(
 	{
 		*value_64bit *= 10;
 
-		if( ( string[ string_iterator ] >= (libsmraw_character_t) '0' )
-		 && ( string[ string_iterator ] <= (libsmraw_character_t) '9' ) )
+		if( ( string[ string_iterator ] >= (libcstring_character_t) '0' )
+		 && ( string[ string_iterator ] <= (libcstring_character_t) '9' ) )
 		{
-			byte_value = (uint8_t) ( string[ string_iterator ] - (libsmraw_character_t) '0' );
+			byte_value = (uint8_t) ( string[ string_iterator ] - (libcstring_character_t) '0' );
 		}
 		else
 		{
@@ -104,7 +106,7 @@ int libsmraw_string_copy_to_64bit_decimal(
 			 error,
 			 LIBERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBERROR_RUNTIME_ERROR_UNSUPPORTED_VALUE,
-			 "%s: unsupported character value: %" PRIc_LIBSMRAW ".",
+			 "%s: unsupported character value: %" PRIc_LIBCSTRING ".",
 			 function,
 			 string[ string_iterator ] );
 
@@ -121,7 +123,7 @@ int libsmraw_string_copy_to_64bit_decimal(
  * Return 1 if successful or -1 on error
  */
 int libsmraw_string_copy_to_64bit_hexadecimal(
-     libsmraw_character_t *string,
+     libcstring_character_t *string,
      size_t string_size,
      uint64_t *value_64bit,
      liberror_error_t **error )
@@ -164,8 +166,8 @@ int libsmraw_string_copy_to_64bit_hexadecimal(
 		return( -1 );
 	}
 	if( ( string_size > 2 )
-	 && ( string[ 0 ] == (libsmraw_character_t) '0' )
-	 && ( string[ 1 ] == (libsmraw_character_t) 'x' ) )
+	 && ( string[ 0 ] == (libcstring_character_t) '0' )
+	 && ( string[ 1 ] == (libcstring_character_t) 'x' ) )
 	{
 		string_iterator = 2;
 	}
@@ -188,20 +190,20 @@ int libsmraw_string_copy_to_64bit_hexadecimal(
 	{
 		*value_64bit <<= 4;
 
-		if( ( string[ string_iterator ] >= (libsmraw_character_t) '0' )
-		 && ( string[ string_iterator ] <= (libsmraw_character_t) '9' ) )
+		if( ( string[ string_iterator ] >= (libcstring_character_t) '0' )
+		 && ( string[ string_iterator ] <= (libcstring_character_t) '9' ) )
 		{
-			byte_value = (uint8_t) ( string[ string_iterator ] - (libsmraw_character_t) '0' );
+			byte_value = (uint8_t) ( string[ string_iterator ] - (libcstring_character_t) '0' );
 		}
-		else if( ( string[ string_iterator ] >= (libsmraw_character_t) 'A' )
-		      && ( string[ string_iterator ] <= (libsmraw_character_t) 'F' ) )
+		else if( ( string[ string_iterator ] >= (libcstring_character_t) 'A' )
+		      && ( string[ string_iterator ] <= (libcstring_character_t) 'F' ) )
 		{
-			byte_value = (uint8_t) ( string[ string_iterator ] - (libsmraw_character_t) 'A' );
+			byte_value = (uint8_t) ( string[ string_iterator ] - (libcstring_character_t) 'A' );
 		}
-		else if( ( string[ string_iterator ] >= (libsmraw_character_t) 'a' )
-		      && ( string[ string_iterator ] <= (libsmraw_character_t) 'f' ) )
+		else if( ( string[ string_iterator ] >= (libcstring_character_t) 'a' )
+		      && ( string[ string_iterator ] <= (libcstring_character_t) 'f' ) )
 		{
-			byte_value = (uint8_t) ( string[ string_iterator ] - (libsmraw_character_t) 'a' );
+			byte_value = (uint8_t) ( string[ string_iterator ] - (libcstring_character_t) 'a' );
 		}
 		else
 		{
@@ -209,7 +211,7 @@ int libsmraw_string_copy_to_64bit_hexadecimal(
 			 error,
 			 LIBERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBERROR_RUNTIME_ERROR_UNSUPPORTED_VALUE,
-			 "%s: unsupported character value: %" PRIc_LIBSMRAW ".",
+			 "%s: unsupported character value: %" PRIc_LIBCSTRING ".",
 			 function,
 			 string[ string_iterator ] );
 

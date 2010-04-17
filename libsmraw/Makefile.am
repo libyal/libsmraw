@@ -1,6 +1,7 @@
 AM_CPPFLAGS = \
 	-I$(top_srcdir)/include \
 	-I$(top_srcdir)/common \
+	-I$(top_srcdir)/libcstring \
 	-I$(top_srcdir)/liberror \
 	-I$(top_srcdir)/libnotify \
 	@LIBUNA_CPPFLAGS@ \
@@ -24,11 +25,11 @@ libsmraw_la_SOURCES = \
 	libsmraw_notify.c libsmraw_notify.h \
 	libsmraw_string.c libsmraw_string.h \
 	libsmraw_support.c libsmraw_support.h \
-	libsmraw_system_string.c libsmraw_system_string.h \
 	libsmraw_types.h \
 	libsmraw_values_table.c libsmraw_values_table.h
 
 libsmraw_la_LIBADD = \
+	../libcstring/libcstring.la \
 	../liberror/liberror.la \
 	../libnotify/libnotify.la \
 	@LIBUNA_LIBADD@ \

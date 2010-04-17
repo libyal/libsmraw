@@ -1,6 +1,7 @@
 /*
  * Values table functions
  *
+ * Copyright (c) 2010, Joachim Metz <jbmetz@users.sourceforge.net>
  * Copyright (c) 2006-2010, Joachim Metz <forensics@hoffmannbv.nl>,
  * Hoffmann Investigations.
  *
@@ -24,11 +25,10 @@
 #define _LIBSMRAW_VALUES_TABLE_H
 
 #include <common.h>
-#include <narrow_string.h>
 #include <types.h>
-#include <wide_string.h>
 
-#include "libsmraw_string.h"
+#include <libcstring.h>
+#include <liberror.h>
 
 #if defined( __cplusplus )
 extern "C" {
@@ -44,7 +44,7 @@ struct libsmraw_values_table
 
 	/* The value identifiers
 	 */
-	libsmraw_character_t **identifier;
+	libcstring_character_t **identifier;
 
 	/* The value identifier lengths
 	 */
@@ -52,7 +52,7 @@ struct libsmraw_values_table
 
 	/* The values
 	 */
-	libsmraw_character_t **value;
+	libcstring_character_t **value;
 
 	/* The value lengths
 	 */
@@ -80,7 +80,7 @@ int libsmraw_values_table_get_amount_of_values(
 
 int libsmraw_values_table_get_index(
      libsmraw_values_table_t *values_table,
-     const libsmraw_character_t *identifier,
+     const libcstring_character_t *identifier,
      size_t identifier_length,
      int *index,
      liberror_error_t **error );
@@ -94,37 +94,37 @@ int libsmraw_values_table_get_identifier_size(
 int libsmraw_values_table_get_identifier(
      libsmraw_values_table_t *values_table,
      int index,
-     libsmraw_character_t *identifier,
+     libcstring_character_t *identifier,
      size_t identifier_size,
      liberror_error_t **error );
 
 int libsmraw_values_table_set_identifier(
      libsmraw_values_table_t *values_table,
      int index,
-     const libsmraw_character_t *identifier,
+     const libcstring_character_t *identifier,
      size_t indentifier_length,
      liberror_error_t **error );
 
 int libsmraw_values_table_get_value_size(
      libsmraw_values_table_t *values_table,
-     const libsmraw_character_t *identifier,
+     const libcstring_character_t *identifier,
      size_t identifier_length,
      size_t *value_size,
      liberror_error_t **error );
 
 int libsmraw_values_table_get_value(
      libsmraw_values_table_t *values_table,
-     const libsmraw_character_t *identifier,
+     const libcstring_character_t *identifier,
      size_t identifier_length,
-     libsmraw_character_t *value,
+     libcstring_character_t *value,
      size_t value_size,
      liberror_error_t **error );
 
 int libsmraw_values_table_set_value(
      libsmraw_values_table_t *values_table,
-     const libsmraw_character_t *identifier,
+     const libcstring_character_t *identifier,
      size_t identifier_length,
-     const libsmraw_character_t *value,
+     const libcstring_character_t *value,
      size_t value_length,
      liberror_error_t **error );
 

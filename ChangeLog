@@ -12,6 +12,12 @@ Test
 * retrieve data from the information file on open
 * make sure certain values cannot be changed if writing/reading from raw files
 
+20100417
+* added libcstring
+* updated common, liberror, libnotify, libuna, libbfio
+* email change
+* code clean up
+
 20100415
 * worked on seek offset issue - incorrect logic
 

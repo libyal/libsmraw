@@ -1,6 +1,7 @@
 /*
  * libsmraw support functions
  *
+ * Copyright (c) 2010, Joachim Metz <jbmetz@users.sourceforge.net>
  * Copyright (c) 2008-2010, Joachim Metz <forensics@hoffmannbv.nl>,
  * Hoffmann Investigations.
  *
@@ -34,8 +35,51 @@
 extern "C" {
 #endif
 
+enum LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMAS
+{
+	/* Numeric naming schema e.g.
+	 * .1, .2, ... .10 ...
+	 * .000, .001, ... .010 ...
+	 * PREFIX000, PREFIX001, ...
+	 */
+	LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_NUMERIC	= (int) 'n',
+
+	/* Single naming schema e.g.
+	 * .dd
+	 * .raw
+	 */
+	LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_SINGLE	= (int) '1',
+
+	/* Split naming schema e.g.
+	 * PREFIXaa, PREFIXab, ...
+	 */
+	LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_SPLIT	= (int) 's'
+};
+
 LIBSMRAW_EXTERN const char *libsmraw_get_version(
                             void );
+
+int libsmraw_glob_append_segment_file(
+     char **filenames[],
+     int *amount_of_filenames,
+     const char *segment_filename,
+     liberror_error_t **error );
+
+int libsmraw_glob_exists_segment_file(
+     libbfio_handle_t *file_io_handle,
+     const char *prefix,
+     size_t prefix_length,
+     const char *suffix,
+     size_t suffix_length,
+     char **segment_filename,
+     size_t *segment_filename_size,
+     liberror_error_t **error );
+
+int libsmraw_glob_determine_naming_schema(
+     const char *suffix,
+     size_t suffix_length,
+     int *naming_schema,
+     liberror_error_t **error );
 
 LIBSMRAW_EXTERN int libsmraw_glob(
                      const char *filename,

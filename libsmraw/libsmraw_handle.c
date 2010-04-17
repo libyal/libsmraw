@@ -1,6 +1,7 @@
 /*
  * libsmraw main handle
  *
+ * Copyright (c) 2010, Joachim Metz <jbmetz@users.sourceforge.net>
  * Copyright (c) 2008-2010, Joachim Metz <forensics@hoffmannbv.nl>,
  * Hoffmann Investigations.
  *
@@ -23,10 +24,9 @@
 #include <common.h>
 #include <file_stream.h>
 #include <memory.h>
-#include <narrow_string.h>
 #include <types.h>
-#include <wide_string.h>
 
+#include <libcstring.h>
 #include <liberror.h>
 #include <libnotify.h>
 
@@ -35,7 +35,7 @@
 #include "libsmraw_filename.h"
 #include "libsmraw_handle.h"
 #include "libsmraw_libbfio.h"
-#include "libsmraw_system_string.h"
+#include "libsmraw_libuna.h"
 #include "libsmraw_types.h"
 #include "libsmraw_values_table.h"
 
@@ -363,17 +363,17 @@ int libsmraw_handle_open(
      uint8_t flags,
      liberror_error_t **error )
 {
-	libbfio_handle_t *file_io_handle                  = NULL;
-	libbfio_pool_t *file_io_pool                      = NULL;
-	libsmraw_internal_handle_t *internal_handle       = NULL;
-	libsmraw_system_character_t *information_filename = NULL;
-	static char *function                             = "libsmraw_handle_open";
-	size_t filename_length                            = 0;
-	size_t information_filename_length                = 0;
-	ssize_t print_count                               = 0;
-	int filename_iterator                             = 0;
-	int file_io_flags                                 = 0;
-	int pool_entry                                    = 0;
+	libbfio_handle_t *file_io_handle                    = NULL;
+	libbfio_pool_t *file_io_pool                        = NULL;
+	libsmraw_internal_handle_t *internal_handle         = NULL;
+	libcstring_system_character_t *information_filename = NULL;
+	static char *function                               = "libsmraw_handle_open";
+	size_t filename_length                              = 0;
+	size_t information_filename_length                  = 0;
+	ssize_t print_count                                 = 0;
+	int filename_iterator                               = 0;
+	int file_io_flags                                   = 0;
+	int pool_entry                                      = 0;
 
 	if( handle == NULL )
 	{
@@ -447,7 +447,7 @@ int libsmraw_handle_open(
 		}
 		/* Set the basename
 		 */
-		filename_length = narrow_string_length(
+		filename_length = libcstring_narrow_string_length(
 				   filenames[ 0 ] );
 
 		if( filename_length <= 4 )
@@ -497,7 +497,7 @@ int libsmraw_handle_open(
 		     filename_iterator < amount_of_filenames;
 		     filename_iterator++ )
 		{
-			filename_length = narrow_string_length(
+			filename_length = libcstring_narrow_string_length(
 					   filenames[ filename_iterator ] );
 
 			if( filename_length == 0 )
@@ -610,7 +610,7 @@ int libsmraw_handle_open(
 	{
 		/* Set the basename
 		 */
-		filename_length = narrow_string_length(
+		filename_length = libcstring_narrow_string_length(
 				   filenames[ 0 ] );
 
 		if( filename_length == 0 )
@@ -684,8 +684,8 @@ int libsmraw_handle_open(
 	{
 		information_filename_length = internal_handle->basename_size + 8;
 
-		information_filename = (libsmraw_system_character_t *) memory_allocate(
-		                                                        sizeof( libsmraw_system_character_t ) * ( information_filename_length + 1 ) );
+		information_filename = (libcstring_system_character_t *) memory_allocate(
+		                                                          sizeof( libcstring_system_character_t ) * ( information_filename_length + 1 ) );
 
 		if( information_filename == NULL )
 		{
@@ -698,10 +698,10 @@ int libsmraw_handle_open(
 
 			return( -1 );
 		}
-		print_count = libsmraw_system_string_snprintf(
+		print_count = libcstring_system_string_sprintf(
 			       information_filename,
 			       information_filename_length + 1,
-			       _LIBSMRAW_SYSTEM_STRING( "%s.raw.info" ),
+			       _LIBCSTRING_SYSTEM_STRING( "%s.raw.info" ),
 			       internal_handle->basename );
 
 		if( ( print_count < 0 )
@@ -738,7 +738,7 @@ int libsmraw_handle_open(
 		if( libsmraw_information_file_set_name(
 		     internal_handle->information_file,
 		     information_filename,
-		     libsmraw_system_string_length(
+		     libcstring_system_string_length(
 		      information_filename ),
 		     error ) != 1 )
 		{
@@ -796,17 +796,17 @@ int libsmraw_handle_open_wide(
      uint8_t flags,
      liberror_error_t **error )
 {
-	libbfio_handle_t *file_io_handle                  = NULL;
-	libbfio_pool_t *file_io_pool                      = NULL;
-	libsmraw_internal_handle_t *internal_handle       = NULL;
-	libsmraw_system_character_t *information_filename = NULL;
-	static char *function                             = "libsmraw_handle_open_wide";
-	size_t filename_length                            = 0;
-	size_t information_filename_length                = 0;
-	ssize_t print_count                               = 0;
-	int filename_iterator                             = 0;
-	int file_io_flags                                 = 0;
-	int pool_entry                                    = 0;
+	libbfio_handle_t *file_io_handle                    = NULL;
+	libbfio_pool_t *file_io_pool                        = NULL;
+	libsmraw_internal_handle_t *internal_handle         = NULL;
+	libcstring_system_character_t *information_filename = NULL;
+	static char *function                               = "libsmraw_handle_open_wide";
+	size_t filename_length                              = 0;
+	size_t information_filename_length                  = 0;
+	ssize_t print_count                                 = 0;
+	int filename_iterator                               = 0;
+	int file_io_flags                                   = 0;
+	int pool_entry                                      = 0;
 
 	if( handle == NULL )
 	{
@@ -880,7 +880,7 @@ int libsmraw_handle_open_wide(
 		}
 		/* Set the basename
 		 */
-		filename_length = wide_string_length(
+		filename_length = libcstring_wide_string_length(
 				   filenames[ 0 ] );
 
 		if( filename_length <= 4 )
@@ -930,7 +930,7 @@ int libsmraw_handle_open_wide(
 		     filename_iterator < amount_of_filenames;
 		     filename_iterator++ )
 		{
-			filename_length = wide_string_length(
+			filename_length = libcstring_wide_string_length(
 					   filenames[ filename_iterator ] );
 
 			if( filename_length == 0 )
@@ -1043,7 +1043,7 @@ int libsmraw_handle_open_wide(
 	{
 		/* Set the basename
 		 */
-		filename_length = wide_string_length(
+		filename_length = libcstring_wide_string_length(
 				   filenames[ 0 ] );
 
 		if( filename_length == 0 )
@@ -1117,8 +1117,8 @@ int libsmraw_handle_open_wide(
 	{
 		information_filename_length = internal_handle->basename_size + 8;
 
-		information_filename = (libsmraw_system_character_t *) memory_allocate(
-		                                                        sizeof( libsmraw_system_character_t ) * ( information_filename_length + 1 ) );
+		information_filename = (libcstring_system_character_t *) memory_allocate(
+		                                                          sizeof( libcstring_system_character_t ) * ( information_filename_length + 1 ) );
 
 		if( information_filename == NULL )
 		{
@@ -1131,10 +1131,10 @@ int libsmraw_handle_open_wide(
 
 			return( -1 );
 		}
-		print_count = libsmraw_system_string_snprintf(
+		print_count = libcstring_system_string_sprintf(
 			       information_filename,
 			       information_filename_length + 1,
-			       _LIBSMRAW_SYSTEM_STRING( "%s.raw.info" ),
+			       _LIBCSTRING_SYSTEM_STRING( "%s.raw.info" ),
 			       internal_handle->basename );
 
 		if( ( print_count < 0 )
@@ -1171,7 +1171,7 @@ int libsmraw_handle_open_wide(
 		if( libsmraw_information_file_set_name(
 		     internal_handle->information_file,
 		     information_filename,
-		     libsmraw_system_string_length(
+		     libcstring_system_string_length(
 		      information_filename ),
 		     error ) != 1 )
 		{
@@ -1490,7 +1490,7 @@ int libsmraw_handle_read_information_file(
 	{
 		if( libsmraw_information_file_open(
 		     internal_handle->information_file,
-		     _LIBSMRAW_SYSTEM_STRING( FILE_STREAM_OPEN_READ ),
+		     _LIBCSTRING_SYSTEM_STRING( FILE_STREAM_OPEN_READ ),
 		     error ) != 1 )
 		{
 			liberror_error_set(
@@ -1595,7 +1595,7 @@ int libsmraw_handle_close(
 	{
 		if( libsmraw_information_file_open(
 		     internal_handle->information_file,
-		     _LIBSMRAW_SYSTEM_STRING( FILE_STREAM_OPEN_WRITE ),
+		     _LIBCSTRING_SYSTEM_STRING( FILE_STREAM_OPEN_WRITE ),
 		     error ) != 1 )
 		{
 			liberror_error_set(
@@ -1865,18 +1865,18 @@ ssize_t libsmraw_handle_write_buffer(
          size_t buffer_size,
          liberror_error_t **error )
 {
-	libbfio_handle_t *file_io_handle              = NULL;
-	libsmraw_internal_handle_t *internal_handle   = NULL;
-	libsmraw_system_character_t *segment_filename = NULL;
-	static char *function                         = "libsmraw_handle_write_buffer";
-	off64_t file_offset                           = 0;
-	size64_t file_size                            = 0;
-	size_t buffer_offset                          = 0;
-	size_t segment_filename_size                  = 0;
-	size_t write_size                             = 0;
-	ssize_t write_count                           = 0;
-	int amount_of_handles                         = 0;
-	int pool_entry                                = 0;
+	libbfio_handle_t *file_io_handle                = NULL;
+	libsmraw_internal_handle_t *internal_handle     = NULL;
+	libcstring_system_character_t *segment_filename = NULL;
+	static char *function                           = "libsmraw_handle_write_buffer";
+	off64_t file_offset                             = 0;
+	size64_t file_size                              = 0;
+	size_t buffer_offset                            = 0;
+	size_t segment_filename_size                    = 0;
+	size_t write_size                               = 0;
+	ssize_t write_count                             = 0;
+	int amount_of_handles                           = 0;
+	int pool_entry                                  = 0;
 
 	if( handle == NULL )
 	{
@@ -2086,7 +2086,7 @@ ssize_t libsmraw_handle_write_buffer(
 				 error,
 				 LIBERROR_ERROR_DOMAIN_IO,
 				 LIBERROR_IO_ERROR_OPEN_FAILED,
-				 "%s: unable to open file: %" PRIs_LIBSMRAW_SYSTEM ".",
+				 "%s: unable to open file: %" PRIs_LIBCSTRING_SYSTEM ".",
 				 function,
 				 segment_filename );
 
@@ -2464,7 +2464,7 @@ int libsmraw_handle_get_segment_filename_size(
 		return( -1 );
 	}
 #if defined( LIBSMRAW_HAVE_WIDE_SYSTEM_CHARACTER )
-	if( libbfio_system_narrow_string_codepage == 0 )
+	if( libcstring_narrow_system_string_codepage == 0 )
 	{
 #if SIZEOF_WCHAR_T == 4
 		result = libuna_utf8_string_size_from_utf32(
@@ -2488,14 +2488,14 @@ int libsmraw_handle_get_segment_filename_size(
 		result = libuna_byte_stream_size_from_utf32(
 		          (libuna_utf32_character_t *) internal_handle->basename,
 		          internal_handle->basename_size,
-		          libbfio_system_narrow_string_codepage,
+		          libcstring_narrow_system_string_codepage,
 		          filename_size,
 		          error );
 #elif SIZEOF_WCHAR_T == 2
 		result = libuna_byte_stream_size_from_utf16(
 		          (libuna_utf16_character_t *) internal_handle->basename,
 		          internal_handle->basename_size,
-		          libbfio_system_narrow_string_codepage,
+		          libcstring_narrow_system_string_codepage,
 		          filename_size,
 		          error );
 #else
@@ -2573,7 +2573,7 @@ int libsmraw_handle_get_segment_filename(
 		return( -1 );
 	}
 #if defined( LIBSMRAW_HAVE_WIDE_SYSTEM_CHARACTER )
-	if( libbfio_system_narrow_string_codepage == 0 )
+	if( libcstring_narrow_system_string_codepage == 0 )
 	{
 #if SIZEOF_WCHAR_T == 4
 		result = libuna_utf8_string_size_from_utf32(
@@ -2597,14 +2597,14 @@ int libsmraw_handle_get_segment_filename(
 		result = libuna_byte_stream_size_from_utf32(
 		          (libuna_utf32_character_t *) internal_handle->basename,
 		          internal_handle->basename_size,
-		          libbfio_system_narrow_string_codepage,
+		          libcstring_narrow_system_string_codepage,
 		          &narrow_filename_size,
 		          error );
 #elif SIZEOF_WCHAR_T == 2
 		result = libuna_byte_stream_size_from_utf16(
 		          (libuna_utf16_character_t *) internal_handle->basename,
 		          internal_handle->basename_size,
-		          libbfio_system_narrow_string_codepage,
+		          libcstring_narrow_system_string_codepage,
 		          &narrow_filename_size,
 		          error );
 #else
@@ -2637,7 +2637,7 @@ int libsmraw_handle_get_segment_filename(
 		return( -1 );
 	}
 #if defined( LIBSMRAW_HAVE_WIDE_SYSTEM_CHARACTER )
-	if( libbfio_system_narrow_string_codepage == 0 )
+	if( libcstring_narrow_system_string_codepage == 0 )
 	{
 #if SIZEOF_WCHAR_T == 4
 		result = libuna_utf8_string_copy_from_utf32(
@@ -2663,7 +2663,7 @@ int libsmraw_handle_get_segment_filename(
 		result = libuna_byte_stream_copy_from_utf32(
 		          (uint8_t *) filename,
 		          filename_size,
-		          libbfio_system_narrow_string_codepage,
+		          libcstring_narrow_system_string_codepage,
 		          (libuna_utf32_character_t *) internal_handle->basename,
 		          internal_handle->basename_size,
 		          error );
@@ -2671,7 +2671,7 @@ int libsmraw_handle_get_segment_filename(
 		result = libuna_byte_stream_copy_from_utf16(
 		          (uint8_t *) filename,
 		          filename_size,
-		          libbfio_system_narrow_string_codepage,
+		          libcstring_narrow_system_string_codepage,
 		          (libuna_utf16_character_t *) internal_handle->basename,
 		          internal_handle->basename_size,
 		          error );
@@ -2691,7 +2691,7 @@ int libsmraw_handle_get_segment_filename(
 		return( -1 );
 	}
 #else
-	if( libbfio_system_string_copy(
+	if( libcstring_system_string_copy(
 	     filename,
 	     internal_handle->basename,
 	     internal_handle->basename_size ) == NULL )
@@ -2791,7 +2791,7 @@ int libsmraw_handle_set_segment_filename(
 			 error,
 			 LIBERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
-			 "%s: basename already set: %" PRIs_LIBSMRAW_SYSTEM ".",
+			 "%s: basename already set: %" PRIs_LIBCSTRING_SYSTEM ".",
 			 function,
 			 internal_handle->basename );
 
@@ -2804,7 +2804,7 @@ int libsmraw_handle_set_segment_filename(
 		 internal_handle->basename_size = 0;
 	}
 #if defined( LIBSMRAW_HAVE_WIDE_SYSTEM_CHARACTER )
-	if( libbfio_system_narrow_string_codepage == 0 )
+	if( libcstring_narrow_system_string_codepage == 0 )
 	{
 #if SIZEOF_WCHAR_T == 4
 		result = libuna_utf32_string_size_from_utf8(
@@ -2828,14 +2828,14 @@ int libsmraw_handle_set_segment_filename(
 		result = libuna_utf32_string_size_from_byte_stream(
 		          (uint8_t *) filename,
 		          filename_length + 1,
-		          libbfio_system_narrow_string_codepage,
+		          libcstring_narrow_system_string_codepage,
 		          &( internal_handle->basename_size ),
 		          error );
 #elif SIZEOF_WCHAR_T == 2
 		result = libuna_utf16_string_size_from_byte_stream(
 		          (uint8_t *) filename,
 		          filename_length + 1,
-		          libbfio_system_narrow_string_codepage,
+		          libcstring_narrow_system_string_codepage,
 		          &( internal_handle->basename_size ),
 		          error );
 #else
@@ -2856,8 +2856,8 @@ int libsmraw_handle_set_segment_filename(
 #else
 	internal_handle->basename_size = filename_length + 1;
 #endif
-	internal_handle->basename = (libbfio_system_character_t *) memory_allocate(
-	                                                            sizeof( libbfio_system_character_t ) * internal_handle->basename_size );
+	internal_handle->basename = (libcstring_system_character_t *) memory_allocate(
+	                                                               sizeof( libcstring_system_character_t ) * internal_handle->basename_size );
 
 	if( internal_handle->basename == NULL )
 	{
@@ -2871,7 +2871,7 @@ int libsmraw_handle_set_segment_filename(
 		return( -1 );
 	}
 #if defined( LIBSMRAW_HAVE_WIDE_SYSTEM_CHARACTER )
-	if( libbfio_system_narrow_string_codepage == 0 )
+	if( libcstring_narrow_system_string_codepage == 0 )
 	{
 #if SIZEOF_WCHAR_T == 4
 		result = libuna_utf32_string_copy_from_utf8(
@@ -2899,7 +2899,7 @@ int libsmraw_handle_set_segment_filename(
 		          internal_handle->basename_size,
 		          (uint8_t *) filename,
 		          filename_length + 1,
-		          libbfio_system_narrow_string_codepage,
+		          libcstring_narrow_system_string_codepage,
 		          error );
 #elif SIZEOF_WCHAR_T == 2
 		result = libuna_utf16_string_copy_from_byte_stream(
@@ -2907,7 +2907,7 @@ int libsmraw_handle_set_segment_filename(
 		          internal_handle->basename_size,
 		          (uint8_t *) filename,
 		          filename_length + 1,
-		          libbfio_system_narrow_string_codepage,
+		          libcstring_narrow_system_string_codepage,
 		          error );
 #else
 #error Unsupported size of wchar_t
@@ -2931,7 +2931,7 @@ int libsmraw_handle_set_segment_filename(
 		return( -1 );
 	}
 #else
-	if( libbfio_system_string_copy(
+	if( libcstring_system_string_copy(
 	     internal_handle->basename,
 	     filename,
 	     filename_length + 1 ) == NULL )
@@ -3012,7 +3012,7 @@ int libsmraw_handle_get_segment_filename_size_wide(
 #if defined( LIBSMRAW_HAVE_WIDE_SYSTEM_CHARACTER )
 	*filename_size = internal_handle->basename_size;
 #else
-	if( libbfio_system_narrow_string_codepage == 0 )
+	if( libcstring_narrow_system_string_codepage == 0 )
 	{
 #if SIZEOF_WCHAR_T == 4
 		result = libuna_utf32_string_size_from_utf8(
@@ -3036,14 +3036,14 @@ int libsmraw_handle_get_segment_filename_size_wide(
 		result = libuna_utf32_string_size_from_byte_stream(
 		          (uint8_t *) internal_handle->basename,
 		          internal_handle->basename_size,
-		          libbfio_system_narrow_string_codepage,
+		          libcstring_narrow_system_string_codepage,
 		          filename_size,
 		          error );
 #elif SIZEOF_WCHAR_T == 2
 		result = libuna_utf16_string_size_from_byte_stream(
 		          (uint8_t *) internal_handle->basename,
 		          internal_handle->basename_size,
-		          libbfio_system_narrow_string_codepage,
+		          libcstring_narrow_system_string_codepage,
 		          filename_size,
 		          error );
 #else
@@ -3121,7 +3121,7 @@ int libsmraw_handle_get_segment_filename_wide(
 #if defined( LIBSMRAW_HAVE_WIDE_SYSTEM_CHARACTER )
 	wide_filename_size = internal_handle->basename_size;
 #else
-	if( libbfio_system_narrow_string_codepage == 0 )
+	if( libcstring_narrow_system_string_codepage == 0 )
 	{
 #if SIZEOF_WCHAR_T == 4
 		result = libuna_utf32_string_size_from_utf8(
@@ -3145,14 +3145,14 @@ int libsmraw_handle_get_segment_filename_wide(
 		result = libuna_utf32_string_size_from_byte_stream(
 		          (uint8_t *) internal_handle->basename,
 		          internal_handle->basename_size,
-		          libbfio_system_narrow_string_codepage,
+		          libcstring_narrow_system_string_codepage,
 		          &wide_filename_size,
 		          error );
 #elif SIZEOF_WCHAR_T == 2
 		result = libuna_utf16_string_size_from_byte_stream(
 		          (uint8_t *) internal_handle->basename,
 		          internal_handle->basename_size,
-		          libbfio_system_narrow_string_codepage,
+		          libcstring_narrow_system_string_codepage,
 		          &wide_filename_size,
 		          error );
 #else
@@ -3183,7 +3183,7 @@ int libsmraw_handle_get_segment_filename_wide(
 		return( -1 );
 	}
 #if defined( LIBSMRAW_HAVE_WIDE_SYSTEM_CHARACTER )
-	if( libbfio_system_string_copy(
+	if( libcstring_system_string_copy(
 	     filename,
 	     internal_handle->basename,
 	     internal_handle->basename_size ) == NULL )
@@ -3199,7 +3199,7 @@ int libsmraw_handle_get_segment_filename_wide(
 	}
 	filename[ internal_handle->basename_size - 1 ] = 0;
 #else
-	if( libbfio_system_narrow_string_codepage == 0 )
+	if( libcstring_narrow_system_string_codepage == 0 )
 	{
 #if SIZEOF_WCHAR_T == 4
 		result = libuna_utf32_string_copy_from_utf8(
@@ -3227,7 +3227,7 @@ int libsmraw_handle_get_segment_filename_wide(
 		          filename_size,
 		          (uint8_t *) internal_handle->basename,
 		          internal_handle->basename_size,
-		          libbfio_system_narrow_string_codepage,
+		          libcstring_narrow_system_string_codepage,
 		          error );
 #elif SIZEOF_WCHAR_T == 2
 		result = libuna_utf16_string_copy_from_byte_stream(
@@ -3235,7 +3235,7 @@ int libsmraw_handle_get_segment_filename_wide(
 		          filename_size,
 		          (uint8_t *) internal_handle->basename,
 		          internal_handle->basename_size,
-		          libbfio_system_narrow_string_codepage,
+		          libcstring_narrow_system_string_codepage,
 		          error );
 #else
 #error Unsupported size of wchar_t
@@ -3326,7 +3326,7 @@ int libsmraw_handle_set_segment_filename_wide(
 			 error,
 			 LIBERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
-			 "%s: basename already set: %" PRIs_LIBSMRAW_SYSTEM ".",
+			 "%s: basename already set: %" PRIs_LIBCSTRING_SYSTEM ".",
 			 function,
 			 internal_handle->basename );
 
@@ -3341,7 +3341,7 @@ int libsmraw_handle_set_segment_filename_wide(
 #if defined( LIBSMRAW_HAVE_WIDE_SYSTEM_CHARACTER )
 	internal_handle->basename_size = filename_length + 1;
 #else
-	if( libbfio_system_narrow_string_codepage == 0 )
+	if( libcstring_narrow_system_string_codepage == 0 )
 	{
 #if SIZEOF_WCHAR_T == 4
 		result = libuna_utf8_string_size_from_utf32(
@@ -3365,14 +3365,14 @@ int libsmraw_handle_set_segment_filename_wide(
 		result = libuna_byte_stream_size_from_utf32(
 		          (libuna_utf32_character_t *) filename,
 		          filename_length + 1,
-		          libbfio_system_narrow_string_codepage,
+		          libcstring_narrow_system_string_codepage,
 		          &( internal_handle->basename_size ),
 		          error );
 #elif SIZEOF_WCHAR_T == 2
 		result = libuna_byte_stream_size_from_utf16(
 		          (libuna_utf16_character_t *) filename,
 		          filename_length + 1,
-		          libbfio_system_narrow_string_codepage,
+		          libcstring_narrow_system_string_codepage,
 		          &( internal_handle->basename_size ),
 		          error );
 #else
@@ -3392,8 +3392,8 @@ int libsmraw_handle_set_segment_filename_wide(
 	}
 #endif /* defined( LIBSMRAW_HAVE_WIDE_SYSTEM_CHARACTER ) */
 
-	internal_handle->basename = (libbfio_system_character_t *) memory_allocate(
-	                                                            sizeof( libbfio_system_character_t ) * internal_handle->basename_size );
+	internal_handle->basename = (libcstring_system_character_t *) memory_allocate(
+	                                                               sizeof( libcstring_system_character_t ) * internal_handle->basename_size );
 
 	if( internal_handle->basename == NULL )
 	{
@@ -3407,7 +3407,7 @@ int libsmraw_handle_set_segment_filename_wide(
 		return( -1 );
 	}
 #if defined( LIBSMRAW_HAVE_WIDE_SYSTEM_CHARACTER )
-	if( libbfio_system_string_copy(
+	if( libcstring_system_string_copy(
 	     internal_handle->basename,
 	     filename,
 	     filename_length + 1 ) == NULL )
@@ -3429,7 +3429,7 @@ int libsmraw_handle_set_segment_filename_wide(
 	}
 	internal_handle->basename[ filename_length ] = 0;
 #else
-	if( libbfio_system_narrow_string_codepage == 0 )
+	if( libcstring_narrow_system_string_codepage == 0 )
 	{
 #if SIZEOF_WCHAR_T == 4
 		result = libuna_utf8_string_copy_from_utf32(
@@ -3455,7 +3455,7 @@ int libsmraw_handle_set_segment_filename_wide(
 		result = libuna_byte_stream_copy_from_utf32(
 		          (uint8_t *) internal_handle->basename,
 		          internal_handle->basename_size,
-		          libbfio_system_narrow_string_codepage,
+		          libcstring_narrow_system_string_codepage,
 		          (libuna_utf32_character_t *) filename,
 		          filename_length + 1,
 		          error );
@@ -3463,7 +3463,7 @@ int libsmraw_handle_set_segment_filename_wide(
 		result = libuna_byte_stream_copy_from_utf16(
 		          (uint8_t *) internal_handle->basename,
 		          internal_handle->basename_size,
-		          libbfio_system_narrow_string_codepage,
+		          libcstring_narrow_system_string_codepage,
 		          (libuna_utf16_character_t *) filename,
 		          filename_length + 1,
 		          error );

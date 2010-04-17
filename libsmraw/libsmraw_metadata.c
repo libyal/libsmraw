@@ -1,6 +1,7 @@
 /*
  * Meta data functions
  *
+ * Copyright (c) 2010, Joachim Metz <jbmetz@users.sourceforge.net>
  * Copyright (c) 2008-2010, Joachim Metz <forensics@hoffmannbv.nl>,
  * Hoffmann Investigations.
  *
@@ -23,6 +24,7 @@
 #include <common.h>
 #include <types.h>
 
+#include <libcstring.h>
 #include <liberror.h>
 #include <libnotify.h>
 
@@ -131,7 +133,7 @@ int libsmraw_handle_get_bytes_per_sector(
      uint32_t *bytes_per_sector,
      liberror_error_t **error )
 {
-	libsmraw_character_t value_string[ 11 ];
+	libcstring_character_t value_string[ 11 ];
 
 	libsmraw_internal_handle_t *internal_handle = NULL;
 	static char *function                       = "libsmraw_handle_get_bytes_per_sector";
@@ -167,7 +169,7 @@ int libsmraw_handle_get_bytes_per_sector(
 
 	result = libsmraw_values_table_get_value_size(
 	          internal_handle->media_values_table,
-	          (libsmraw_character_t *) _LIBSMRAW_STRING( "bytes_per_sector" ),
+	          _LIBCSTRING_STRING( "bytes_per_sector" ),
 	          16,
 	          &value_string_size,
 	          error );
@@ -199,7 +201,7 @@ int libsmraw_handle_get_bytes_per_sector(
 		}
 		if( libsmraw_values_table_get_value(
 		     internal_handle->media_values_table,
-		     (libsmraw_character_t *) _LIBSMRAW_STRING( "bytes_per_sector" ),
+		     _LIBCSTRING_STRING( "bytes_per_sector" ),
 		     16,
 		     value_string,
 		     11,
@@ -253,7 +255,7 @@ int libsmraw_handle_set_bytes_per_sector(
      uint32_t bytes_per_sector,
      liberror_error_t **error )
 {
-	libsmraw_character_t value_string[ 11 ];
+	libcstring_character_t value_string[ 11 ];
 
 	libsmraw_internal_handle_t *internal_handle = NULL;
 	static char *function                       = "libsmraw_handle_set_bytes_per_sector";
@@ -284,10 +286,10 @@ int libsmraw_handle_set_bytes_per_sector(
 
 		return( -1 );
 	}
-	print_count = libsmraw_string_snprintf(
+	print_count = libcstring_string_snprintf(
 	               value_string,
 	               11,
-	               _LIBSMRAW_STRING( "0x%08" ) _LIBSMRAW_STRING( PRIx32 ) _LIBSMRAW_STRING( "" ),
+	               "0x%08" PRIx32 "",
 	               bytes_per_sector );
 
 	if( ( print_count < 0 )
@@ -304,7 +306,7 @@ int libsmraw_handle_set_bytes_per_sector(
 	}
 	if( libsmraw_values_table_set_value(
 	     internal_handle->media_values_table,
-	     (libsmraw_character_t *) "bytes_per_sector",
+	     _LIBCSTRING_STRING( "bytes_per_sector" ),
 	     16,
 	     value_string,
 	     11,
@@ -330,7 +332,7 @@ int libsmraw_handle_get_media_type(
      uint8_t *media_type,
      liberror_error_t **error )
 {
-	libsmraw_character_t value_string[ 10 ];
+	libcstring_character_t value_string[ 10 ];
 
 	libsmraw_internal_handle_t *internal_handle = NULL;
 	static char *function                       = "libsmraw_handle_get_media_type";
@@ -376,7 +378,7 @@ int libsmraw_handle_get_media_type(
 
 	result = libsmraw_values_table_get_value_size(
 	          internal_handle->media_values_table,
-	          (libsmraw_character_t *) _LIBSMRAW_STRING( "media_type" ),
+	          _LIBCSTRING_STRING( "media_type" ),
 	          10,
 	          &value_string_size,
 	          error );
@@ -396,7 +398,7 @@ int libsmraw_handle_get_media_type(
 	{
 		if( libsmraw_values_table_get_value(
 		     internal_handle->media_values_table,
-		     (libsmraw_character_t *) _LIBSMRAW_STRING( "media_type" ),
+		     _LIBCSTRING_STRING( "media_type" ),
 		     10,
 		     value_string,
 		     10,
@@ -413,8 +415,8 @@ int libsmraw_handle_get_media_type(
 		}
 		if( value_string_size == 6 )
 		{
-			if( libsmraw_string_compare(
-			     _LIBSMRAW_STRING( "fixed" ),
+			if( libcstring_string_compare(
+			     _LIBCSTRING_STRING( "fixed" ),
 			     value_string,
 			     5 ) == 0 )
 			{
@@ -423,8 +425,8 @@ int libsmraw_handle_get_media_type(
 		}
 		else if( value_string_size == 7 )
 		{
-			if( libsmraw_string_compare(
-			     _LIBSMRAW_STRING( "memory" ),
+			if( libcstring_string_compare(
+			     _LIBCSTRING_STRING( "memory" ),
 			     value_string,
 			     6 ) == 0 )
 			{
@@ -433,8 +435,8 @@ int libsmraw_handle_get_media_type(
 		}
 		else if( value_string_size == 8 )
 		{
-			if( libsmraw_string_compare(
-			     _LIBSMRAW_STRING( "optical" ),
+			if( libcstring_string_compare(
+			     _LIBCSTRING_STRING( "optical" ),
 			     value_string,
 			     7 ) == 0 )
 			{
@@ -443,8 +445,8 @@ int libsmraw_handle_get_media_type(
 		}
 		else if( value_string_size == 10 )
 		{
-			if( libsmraw_string_compare(
-			     _LIBSMRAW_STRING( "removable" ),
+			if( libcstring_string_compare(
+			     _LIBCSTRING_STRING( "removable" ),
 			     value_string,
 			     9 ) == 0 )
 			{
@@ -463,9 +465,9 @@ int libsmraw_handle_set_media_type(
      uint8_t media_type,
      liberror_error_t **error )
 {
-	libsmraw_character_t value_string[ 10 ];
+	libcstring_character_t value_string[ 10 ];
 
-	libsmraw_character_t *result                = NULL;
+	libcstring_character_t *result              = NULL;
 	libsmraw_internal_handle_t *internal_handle = NULL;
 	static char *function                       = "libsmraw_handle_set_media_type";
 	size_t value_string_length                  = 0;
@@ -499,36 +501,36 @@ int libsmraw_handle_set_media_type(
 		case LIBSMRAW_MEDIA_TYPE_FIXED:
 			value_string_length = 5;
 
-			result = libsmraw_string_copy(
+			result = libcstring_string_copy(
 				  value_string,
-				  _LIBSMRAW_STRING( "fixed" ),
+				  _LIBCSTRING_STRING( "fixed" ),
 				  value_string_length );
 			break;
 
 		case LIBSMRAW_MEDIA_TYPE_MEMORY:
 			value_string_length = 6;
 
-			result = libsmraw_string_copy(
+			result = libcstring_string_copy(
 				  value_string,
-				  _LIBSMRAW_STRING( "memory" ),
+				  _LIBCSTRING_STRING( "memory" ),
 				  value_string_length );
 			break;
 
 		case LIBSMRAW_MEDIA_TYPE_OPTICAL:
 			value_string_length = 7;
 
-			result = libsmraw_string_copy(
+			result = libcstring_string_copy(
 				  value_string,
-				  _LIBSMRAW_STRING( "optical" ),
+				  _LIBCSTRING_STRING( "optical" ),
 				  value_string_length );
 			break;
 
 		case LIBSMRAW_MEDIA_TYPE_REMOVABLE:
 			value_string_length = 9;
 
-			result = libsmraw_string_copy(
+			result = libcstring_string_copy(
 				  value_string,
-				  _LIBSMRAW_STRING( "removable" ),
+				  _LIBCSTRING_STRING( "removable" ),
 				  value_string_length );
 			break;
 
@@ -558,7 +560,7 @@ int libsmraw_handle_set_media_type(
 	}
 	if( libsmraw_values_table_set_value(
 	     internal_handle->media_values_table,
-	     (libsmraw_character_t *) "media_type",
+	     _LIBCSTRING_STRING( "media_type" ),
 	     10,
 	     value_string,
 	     value_string_length,
@@ -584,7 +586,7 @@ int libsmraw_handle_get_media_flags(
      uint8_t *media_flags,
      liberror_error_t **error )
 {
-	libsmraw_character_t value_string[ 9 ];
+	libcstring_character_t value_string[ 9 ];
 
 	libsmraw_internal_handle_t *internal_handle = NULL;
 	static char *function                       = "libsmraw_handle_get_media_flags";
@@ -628,7 +630,7 @@ int libsmraw_handle_get_media_flags(
 	}
 	result = libsmraw_values_table_get_value_size(
 	          internal_handle->media_values_table,
-	          (libsmraw_character_t *) _LIBSMRAW_STRING( "media_flags" ),
+	          _LIBCSTRING_STRING( "media_flags" ),
 	          11,
 	          &value_string_size,
 	          error );
@@ -648,7 +650,7 @@ int libsmraw_handle_get_media_flags(
 	{
 		if( libsmraw_values_table_get_value(
 		     internal_handle->media_values_table,
-		     (libsmraw_character_t *) _LIBSMRAW_STRING( "media_flags" ),
+		     _LIBCSTRING_STRING( "media_flags" ),
 		     11,
 		     value_string,
 		     9,
@@ -665,8 +667,8 @@ int libsmraw_handle_get_media_flags(
 		}
 		if( value_string_size == 8 )
 		{
-			if( libsmraw_string_compare(
-			     _LIBSMRAW_STRING( "logical" ),
+			if( libcstring_string_compare(
+			     _LIBCSTRING_STRING( "logical" ),
 			     value_string,
 			     7 ) == 0 )
 			{
@@ -675,8 +677,8 @@ int libsmraw_handle_get_media_flags(
 		}
 		else if( value_string_size == 9 )
 		{
-			if( libsmraw_string_compare(
-			     _LIBSMRAW_STRING( "physical" ),
+			if( libcstring_string_compare(
+			     _LIBCSTRING_STRING( "physical" ),
 			     value_string,
 			     8 ) == 0 )
 			{
@@ -695,9 +697,9 @@ int libsmraw_handle_set_media_flags(
      uint8_t media_flags,
      liberror_error_t **error )
 {
-	libsmraw_character_t value_string[ 9 ];
+	libcstring_character_t value_string[ 9 ];
 
-	libsmraw_character_t *result                = NULL;
+	libcstring_character_t *result              = NULL;
 	libsmraw_internal_handle_t *internal_handle = NULL;
 	static char *function                       = "libsmraw_handle_set_media_flags";
 	size_t value_string_length                  = 0;
@@ -742,18 +744,18 @@ int libsmraw_handle_set_media_flags(
 	{
 		value_string_length = 8;
 
-		result = libsmraw_string_copy(
+		result = libcstring_string_copy(
 			  value_string,
-			  _LIBSMRAW_STRING( "physical" ),
+			  _LIBCSTRING_STRING( "physical" ),
 			  value_string_length );
 	}
 	else
 	{
 		value_string_length = 7;
 
-		result = libsmraw_string_copy(
+		result = libcstring_string_copy(
 			  value_string,
-			  _LIBSMRAW_STRING( "logical" ),
+			  _LIBCSTRING_STRING( "logical" ),
 			  value_string_length );
 	}
 	value_string[ value_string_length ] = 0;
@@ -771,7 +773,7 @@ int libsmraw_handle_set_media_flags(
 	}
 	if( libsmraw_values_table_set_value(
 	     internal_handle->media_values_table,
-	     (libsmraw_character_t *) "media_flags",
+	     _LIBCSTRING_STRING( "media_flags" ),
 	     11,
 	     value_string,
 	     value_string_length,
@@ -1053,7 +1055,7 @@ int libsmraw_handle_get_information_value_size(
 	}
 	result = libsmraw_values_table_get_value_size(
 	          internal_handle->information_values_table,
-	          (libsmraw_character_t *) identifier,
+	          identifier,
 	          identifier_length,
 	          value_size,
 	          error );
@@ -1064,7 +1066,7 @@ int libsmraw_handle_get_information_value_size(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve information value size for identifier: %" PRIs_LIBSMRAW ".",
+		 "%s: unable to retrieve information value size for identifier: %" PRIs_LIBCSTRING ".",
 		 function,
 		 identifier );
 
@@ -1138,9 +1140,9 @@ int libsmraw_handle_get_information_value(
 	}
 	result = libsmraw_values_table_get_value(
 	          internal_handle->information_values_table,
-	          (libsmraw_character_t *) identifier,
+	          identifier,
 	          identifier_length,
-	          (libsmraw_character_t *) value,
+	          value,
 	          value_size,
 	          error );
 
@@ -1150,7 +1152,7 @@ int libsmraw_handle_get_information_value(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve information value for identifier: %" PRIs_LIBSMRAW ".",
+		 "%s: unable to retrieve information value for identifier: %" PRIs_LIBCSTRING ".",
 		 function,
 		 identifier );
 
@@ -1232,7 +1234,7 @@ int libsmraw_handle_set_information_value(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_SET_FAILED,
-		 "%s: unable to set information value for identifier: %" PRIs_LIBSMRAW ".",
+		 "%s: unable to set information value for identifier: %" PRIs_LIBCSTRING ".",
 		 function,
 		 identifier );
 
@@ -1504,7 +1506,7 @@ int libsmraw_handle_get_integrity_hash_value_size(
 	}
 	result = libsmraw_values_table_get_value_size(
 	          internal_handle->integrity_hash_values_table,
-	          (libsmraw_character_t *) identifier,
+	          identifier,
 	          identifier_length,
 	          value_size,
 	          error );
@@ -1515,7 +1517,7 @@ int libsmraw_handle_get_integrity_hash_value_size(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve integrity hash value size for identifier: %" PRIs_LIBSMRAW ".",
+		 "%s: unable to retrieve integrity hash value size for identifier: %" PRIs_LIBCSTRING ".",
 		 function,
 		 identifier );
 
@@ -1589,9 +1591,9 @@ int libsmraw_handle_get_integrity_hash_value(
 	}
 	result = libsmraw_values_table_get_value(
 	          internal_handle->integrity_hash_values_table,
-	          (libsmraw_character_t *) identifier,
+	          identifier,
 	          identifier_length,
-	          (libsmraw_character_t *) value,
+	          value,
 	          value_size,
 	          error );
 
@@ -1601,7 +1603,7 @@ int libsmraw_handle_get_integrity_hash_value(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve integrity hash value for identifier: %" PRIs_LIBSMRAW ".",
+		 "%s: unable to retrieve integrity hash value for identifier: %" PRIs_LIBCSTRING ".",
 		 function,
 		 identifier );
 
@@ -1683,7 +1685,7 @@ int libsmraw_handle_set_integrity_hash_value(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_SET_FAILED,
-		 "%s: unable to set integrity hash value for identifier: %" PRIs_LIBSMRAW ".",
+		 "%s: unable to set integrity hash value for identifier: %" PRIs_LIBCSTRING ".",
 		 function,
 		 identifier );
 

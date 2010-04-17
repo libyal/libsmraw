@@ -1,6 +1,7 @@
 /*
  * libsmraw storage media information file
  *
+ * Copyright (c) 2010, Joachim Metz <jbmetz@users.sourceforge.net>
  * Copyright (c) 2008-2010, Joachim Metz <forensics@hoffmannbv.nl>,
  * Hoffmann Investigations.
  *
@@ -22,11 +23,10 @@
 
 #include <common.h>
 #include <file_stream.h>
-#include <narrow_string.h>
 #include <memory.h>
 #include <types.h>
-#include <wide_string.h>
 
+#include <libcstring.h>
 #include <liberror.h>
 
 #if defined( HAVE_ERRNO_H ) || defined( WINAPI )
@@ -137,7 +137,7 @@ int libsmraw_information_file_free(
  */
 int libsmraw_information_file_set_name(
      libsmraw_information_file_t *information_file,
-     const libsmraw_system_character_t *name,
+     const libcstring_system_character_t *name,
      size_t name_length,
      liberror_error_t **error )
 {
@@ -176,8 +176,8 @@ int libsmraw_information_file_set_name(
 
 		return( -1 );
 	}
-	information_file->name = (libsmraw_system_character_t *) memory_allocate(
-	                                                          sizeof( libsmraw_system_character_t ) * ( name_length + 1 ) );
+	information_file->name = (libcstring_system_character_t *) memory_allocate(
+	                                                            sizeof( libcstring_system_character_t ) * ( name_length + 1 ) );
 
 	if( information_file->name == NULL )
 	{
@@ -190,7 +190,7 @@ int libsmraw_information_file_set_name(
 
 		return( -1 );
 	}
-	if( libsmraw_system_string_copy(
+	if( libcstring_system_string_copy(
 	     information_file->name,
 	     name,
 	     name_length ) == NULL )
@@ -216,7 +216,7 @@ int libsmraw_information_file_set_name(
  */
 int libsmraw_information_file_open(
      libsmraw_information_file_t *information_file,
-     const libsmraw_system_character_t *mode,
+     const libcstring_system_character_t *mode,
      liberror_error_t **error )
 {
 	static char *function = "libsmraw_information_file_open";
@@ -281,7 +281,7 @@ int libsmraw_information_file_open(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_IO,
 		 LIBERROR_IO_ERROR_OPEN_FAILED,
-		 "%s: unable to open: %" PRIs_LIBSMRAW_SYSTEM ".",
+		 "%s: unable to open: %" PRIs_LIBCSTRING_SYSTEM ".",
 		 function,
 		 information_file->name );
 
@@ -482,7 +482,7 @@ int libsmraw_information_file_read_section(
 			if( ( ( input_string_index + section_identifier_length + 2 ) < 128 )
 			 && ( input_string[ input_string_index ] == (uint8_t) '<' )
 			 && ( input_string[ input_string_index + 1 ] == (uint8_t) '/' )
-			 && ( narrow_string_compare(
+			 && ( libcstring_narrow_string_compare(
 			       (char *) &( input_string[ input_string_index + 2 ] ),
 			       (char *) section_identifier,
 			       section_identifier_length ) == 0 )
@@ -572,7 +572,7 @@ int libsmraw_information_file_read_section(
 
 				if( ( ( input_string_index + value_identifier_length + 2 ) >= 128 )
 				 || ( input_string[ input_string_index ] != (uint8_t) '/' )
-				 || ( narrow_string_compare(
+				 || ( libcstring_narrow_string_compare(
 				       (char *) &( input_string[ input_string_index + 1 ] ),
 				       (char *) value_identifier,
 				       value_identifier_length ) != 0 )
@@ -606,7 +606,7 @@ int libsmraw_information_file_read_section(
 			 */
 			if( ( ( input_string_index + section_identifier_length + 1 ) < 128 )
 			 && ( input_string[ input_string_index ] == (uint8_t) '<' )
-			 && ( narrow_string_compare(
+			 && ( libcstring_narrow_string_compare(
 			       (char *) &( input_string[ input_string_index + 1 ] ),
 			       (char *) section_identifier,
 			       section_identifier_length ) == 0 )

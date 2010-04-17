@@ -3,6 +3,7 @@ ACLOCAL_AMFLAGS = -I m4
 SUBDIRS = \
 	include \
 	common \
+	libcstring \
 	liberror \
 	libnotify \
 	libuna \
@@ -32,6 +33,7 @@ lib: library
 
 library:
 	(cd $(srcdir)/common && $(MAKE) $(AM_MAKEFLAGS))
+	(cd $(srcdir)/libcstring && $(MAKE) $(AM_MAKEFLAGS))
 	(cd $(srcdir)/liberror && $(MAKE) $(AM_MAKEFLAGS))
 	(cd $(srcdir)/libnotify && $(MAKE) $(AM_MAKEFLAGS))
 	(cd $(srcdir)/libuna && $(MAKE) $(AM_MAKEFLAGS))
@@ -51,6 +53,7 @@ distclean: clean
 	done && test -z "$$fail"
 
 splint:
+	(cd $(srcdir)/libcstring && $(MAKE) splint $(AM_MAKEFLAGS))
 	(cd $(srcdir)/liberror && $(MAKE) splint $(AM_MAKEFLAGS))
 	(cd $(srcdir)/libnotify && $(MAKE) splint $(AM_MAKEFLAGS))
 	(cd $(srcdir)/libuna && $(MAKE) splint $(AM_MAKEFLAGS))

@@ -1,6 +1,7 @@
 /*
  * Filename functions
  *
+ * Copyright (c) 2010, Joachim Metz <jbmetz@users.sourceforge.net>
  * Copyright (c) 2008-2010, Joachim Metz <forensics@hoffmannbv.nl>,
  * Hoffmann Investigations.
  *
@@ -23,10 +24,9 @@
 #include <common.h>
 #include <file_stream.h>
 #include <memory.h>
-#include <narrow_string.h>
 #include <types.h>
-#include <wide_string.h>
 
+#include <libcstring.h>
 #include <liberror.h>
 #include <libnotify.h>
 
@@ -35,16 +35,15 @@
 #include "libsmraw_information_file.h"
 #include "libsmraw_libbfio.h"
 #include "libsmraw_handle.h"
-#include "libsmraw_system_string.h"
 #include "libsmraw_types.h"
 
 /* Creates a (split) RAW filename
  * Returns 1 if successful or -1 on error
  */
 int libsmraw_filename_create(
-     libsmraw_system_character_t **filename,
+     libcstring_system_character_t **filename,
      size_t *filename_size,
-     libsmraw_system_character_t *basename,
+     libcstring_system_character_t *basename,
      size_t basename_size,
      int total_amount_of_file_io_pool_entries,
      int current_file_io_pool_entry,
@@ -139,8 +138,8 @@ int libsmraw_filename_create(
 	}
 	*filename_size = basename_size + additional_length;
 
-	*filename = (libsmraw_system_character_t *) memory_allocate(
-	                                             sizeof( libsmraw_system_character_t ) * *filename_size );
+	*filename = (libcstring_system_character_t *) memory_allocate(
+	                                               sizeof( libcstring_system_character_t ) * *filename_size );
 
 	if( *filename == NULL )
 	{
@@ -155,18 +154,18 @@ int libsmraw_filename_create(
 	}
 	if( total_amount_of_file_io_pool_entries == 1 )
 	{
-		print_count = libsmraw_system_string_snprintf(
+		print_count = libcstring_system_string_sprintf(
 		               *filename,
 		               *filename_size,
-		               _LIBSMRAW_SYSTEM_STRING( "%" ) _LIBSMRAW_SYSTEM_STRING( PRIs_LIBSMRAW_SYSTEM ) _LIBSMRAW_SYSTEM_STRING( ".raw" ),
+		               _LIBCSTRING_SYSTEM_STRING( "%" ) _LIBCSTRING_SYSTEM_STRING( PRIs_LIBCSTRING_SYSTEM ) _LIBCSTRING_SYSTEM_STRING( ".raw" ),
 		               basename );
 	}
 	else
 	{
-		print_count = libsmraw_system_string_snprintf(
+		print_count = libcstring_system_string_sprintf(
 		               *filename,
 		               *filename_size,
-		               _LIBSMRAW_SYSTEM_STRING( "%" ) _LIBSMRAW_SYSTEM_STRING( PRIs_LIBSMRAW_SYSTEM ) _LIBSMRAW_SYSTEM_STRING( ".raw.%03d" ),
+		               _LIBCSTRING_SYSTEM_STRING( "%" ) _LIBCSTRING_SYSTEM_STRING( PRIs_LIBCSTRING_SYSTEM ) _LIBCSTRING_SYSTEM_STRING( ".raw.%03d" ),
 		               basename,
 		               current_file_io_pool_entry );
 	}

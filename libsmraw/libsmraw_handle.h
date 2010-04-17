@@ -1,6 +1,7 @@
 /*
  * libsmraw main handle
  *
+ * Copyright (c) 2010, Joachim Metz <jbmetz@users.sourceforge.net>
  * Copyright (c) 2008-2010, Joachim Metz <forensics@hoffmannbv.nl>,
  * Hoffmann Investigations.
  *
@@ -26,12 +27,12 @@
 #include <common.h>
 #include <types.h>
 
+#include <libcstring.h>
 #include <liberror.h>
 
 #include "libsmraw_extern.h"
 #include "libsmraw_information_file.h"
 #include "libsmraw_libbfio.h"
-#include "libsmraw_system_string.h"
 #include "libsmraw_types.h"
 #include "libsmraw_values_table.h"
 
@@ -53,7 +54,7 @@ struct libsmraw_internal_handle
 {
         /* The basename
 	 */
-        libsmraw_system_character_t *basename;
+        libcstring_system_character_t *basename;
 
         /* The size of the basename
 	 */

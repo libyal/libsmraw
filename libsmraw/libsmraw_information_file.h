@@ -1,6 +1,7 @@
 /*
  * libsmraw storage media information file
  *
+ * Copyright (c) 2010, Joachim Metz <jbmetz@users.sourceforge.net>
  * Copyright (c) 2008-2010, Joachim Metz <forensics@hoffmannbv.nl>,
  * Hoffmann Investigations.
  *
@@ -25,14 +26,12 @@
 
 #include <common.h>
 #include <file_stream.h>
-#include <narrow_string.h>
 #include <types.h>
-#include <wide_string.h>
 
+#include <libcstring.h>
 #include <liberror.h>
 
 #include "libsmraw_values_table.h"
-#include "libsmraw_system_string.h"
 
 #if defined( __cplusplus )
 extern "C" {
@@ -44,7 +43,7 @@ struct libsmraw_information_file
 {
 	/* The filename
 	 */
-	libsmraw_system_character_t *name;
+	libcstring_system_character_t *name;
 
 	/* The size of the filename
 	 */
@@ -65,13 +64,13 @@ int libsmraw_information_file_free(
 
 int libsmraw_information_file_set_name(
      libsmraw_information_file_t *information_file,
-     const libsmraw_system_character_t *name,
+     const libcstring_system_character_t *name,
      size_t name_length,
      liberror_error_t **error );
 
 int libsmraw_information_file_open(
      libsmraw_information_file_t *information_file,
-     const libsmraw_system_character_t *mode,
+     const libcstring_system_character_t *mode,
      liberror_error_t **error );
 
 int libsmraw_information_file_close(
