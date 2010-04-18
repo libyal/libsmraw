@@ -1425,7 +1425,7 @@ int libsmraw_handle_read_information_file(
 
 		return( -1 );
 	}
-#if defined( LIBSMRAW_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
 	if( libbfio_file_set_name_wide(
 	     file_io_handle,
 	     internal_handle->information_file->name,
@@ -2022,7 +2022,7 @@ ssize_t libsmraw_handle_write_buffer(
 
 				return( -1 );
 			}
-#if defined( LIBSMRAW_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
 			if( libbfio_file_set_name_wide(
 			     file_io_handle,
 			     segment_filename,
@@ -2424,7 +2424,7 @@ int libsmraw_handle_get_segment_filename_size(
 	libsmraw_internal_handle_t *internal_handle = NULL;
 	static char *function                       = "libsmraw_handle_get_segment_filename_size";
 
-#if defined( LIBSMRAW_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
 	int result                                  = 0;
 #endif
 
@@ -2463,7 +2463,7 @@ int libsmraw_handle_get_segment_filename_size(
 
 		return( -1 );
 	}
-#if defined( LIBSMRAW_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
 	if( libcstring_narrow_system_string_codepage == 0 )
 	{
 #if SIZEOF_WCHAR_T == 4
@@ -2533,7 +2533,7 @@ int libsmraw_handle_get_segment_filename(
 	static char *function                       = "libsmraw_handle_get_segment_filename";
 	size_t narrow_filename_size                 = 0;
 
-#if defined( LIBSMRAW_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
 	int result                                  = 0;
 #endif
 
@@ -2572,7 +2572,7 @@ int libsmraw_handle_get_segment_filename(
 
 		return( -1 );
 	}
-#if defined( LIBSMRAW_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
 	if( libcstring_narrow_system_string_codepage == 0 )
 	{
 #if SIZEOF_WCHAR_T == 4
@@ -2636,7 +2636,7 @@ int libsmraw_handle_get_segment_filename(
 
 		return( -1 );
 	}
-#if defined( LIBSMRAW_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
 	if( libcstring_narrow_system_string_codepage == 0 )
 	{
 #if SIZEOF_WCHAR_T == 4
@@ -2722,7 +2722,7 @@ int libsmraw_handle_set_segment_filename(
 	libsmraw_internal_handle_t *internal_handle = NULL;
 	static char *function                       = "libsmraw_handle_set_segment_filename";
 
-#if defined( LIBSMRAW_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
 	int result                                  = 0;
 #endif
 
@@ -2803,7 +2803,7 @@ int libsmraw_handle_set_segment_filename(
 		 internal_handle->basename      = NULL;
 		 internal_handle->basename_size = 0;
 	}
-#if defined( LIBSMRAW_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
 	if( libcstring_narrow_system_string_codepage == 0 )
 	{
 #if SIZEOF_WCHAR_T == 4
@@ -2870,7 +2870,7 @@ int libsmraw_handle_set_segment_filename(
 
 		return( -1 );
 	}
-#if defined( LIBSMRAW_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
 	if( libcstring_narrow_system_string_codepage == 0 )
 	{
 #if SIZEOF_WCHAR_T == 4
@@ -2970,7 +2970,7 @@ int libsmraw_handle_get_segment_filename_size_wide(
 	libsmraw_internal_handle_t *internal_handle = NULL;
 	static char *function                       = "libsmraw_handle_get_segment_filename_size_wide";
 
-#if !defined( LIBSMRAW_HAVE_WIDE_SYSTEM_CHARACTER )
+#if !defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
 	int result                                  = 0;
 #endif
 
@@ -3009,7 +3009,7 @@ int libsmraw_handle_get_segment_filename_size_wide(
 
 		return( -1 );
 	}
-#if defined( LIBSMRAW_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
 	*filename_size = internal_handle->basename_size;
 #else
 	if( libcstring_narrow_system_string_codepage == 0 )
@@ -3079,7 +3079,7 @@ int libsmraw_handle_get_segment_filename_wide(
 	static char *function                      = "libsmraw_handle_get_segment_filename_wide";
 	size_t wide_filename_size                  = 0;
 
-#if !defined( LIBSMRAW_HAVE_WIDE_SYSTEM_CHARACTER )
+#if !defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
 	int result                                 = 0;
 #endif
 
@@ -3118,7 +3118,7 @@ int libsmraw_handle_get_segment_filename_wide(
 
 		return( -1 );
 	}
-#if defined( LIBSMRAW_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
 	wide_filename_size = internal_handle->basename_size;
 #else
 	if( libcstring_narrow_system_string_codepage == 0 )
@@ -3182,7 +3182,7 @@ int libsmraw_handle_get_segment_filename_wide(
 
 		return( -1 );
 	}
-#if defined( LIBSMRAW_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
 	if( libcstring_system_string_copy(
 	     filename,
 	     internal_handle->basename,
@@ -3268,7 +3268,7 @@ int libsmraw_handle_set_segment_filename_wide(
 	libsmraw_internal_handle_t *internal_handle = NULL;
 	static char *function                       = "libsmraw_handle_set_segment_filename_wide";
 
-#if !defined( LIBSMRAW_HAVE_WIDE_SYSTEM_CHARACTER )
+#if !defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
 	int result                                  = 0;
 #endif
 
@@ -3338,7 +3338,7 @@ int libsmraw_handle_set_segment_filename_wide(
 		 internal_handle->basename      = NULL;
 		 internal_handle->basename_size = 0;
 	}
-#if defined( LIBSMRAW_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
 	internal_handle->basename_size = filename_length + 1;
 #else
 	if( libcstring_narrow_system_string_codepage == 0 )
@@ -3390,7 +3390,7 @@ int libsmraw_handle_set_segment_filename_wide(
 
 		return( -1 );
 	}
-#endif /* defined( LIBSMRAW_HAVE_WIDE_SYSTEM_CHARACTER ) */
+#endif /* defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER ) */
 
 	internal_handle->basename = (libcstring_system_character_t *) memory_allocate(
 	                                                               sizeof( libcstring_system_character_t ) * internal_handle->basename_size );
@@ -3406,7 +3406,7 @@ int libsmraw_handle_set_segment_filename_wide(
 
 		return( -1 );
 	}
-#if defined( LIBSMRAW_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
 	if( libcstring_system_string_copy(
 	     internal_handle->basename,
 	     filename,
@@ -3488,7 +3488,7 @@ int libsmraw_handle_set_segment_filename_wide(
 
 		return( -1 );
 	}
-#endif /* defined( LIBSMRAW_HAVE_WIDE_SYSTEM_CHARACTER ) */
+#endif /* defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER ) */
 
 	return( 1 );
 }

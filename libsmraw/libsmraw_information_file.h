@@ -1,5 +1,5 @@
 /*
- * libsmraw storage media information file
+ * Information file functions
  *
  * Copyright (c) 2010, Joachim Metz <jbmetz@users.sourceforge.net>
  * Copyright (c) 2008-2010, Joachim Metz <forensics@hoffmannbv.nl>,

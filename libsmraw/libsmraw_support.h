@@ -42,18 +42,18 @@ enum LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMAS
 	 * .000, .001, ... .010 ...
 	 * PREFIX000, PREFIX001, ...
 	 */
-	LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_NUMERIC	= (int) 'n',
+	LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_NUMERIC	= (uint8_t) 'n',
 
 	/* Single naming schema e.g.
 	 * .dd
 	 * .raw
 	 */
-	LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_SINGLE	= (int) '1',
+	LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_SINGLE	= (uint8_t) '1',
 
 	/* Split naming schema e.g.
 	 * PREFIXaa, PREFIXab, ...
 	 */
-	LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_SPLIT	= (int) 's'
+	LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_SPLIT	= (uint8_t) 's'
 };
 
 LIBSMRAW_EXTERN const char *libsmraw_get_version(
@@ -78,7 +78,7 @@ int libsmraw_glob_exists_segment_file(
 int libsmraw_glob_determine_naming_schema(
      const char *suffix,
      size_t suffix_length,
-     int *naming_schema,
+     uint8_t *naming_schema,
      liberror_error_t **error );
 
 LIBSMRAW_EXTERN int libsmraw_glob(

@@ -1,5 +1,5 @@
 /*
- * libsmraw storage media information file
+ * Information file functions
  *
  * Copyright (c) 2010, Joachim Metz <jbmetz@users.sourceforge.net>
  * Copyright (c) 2008-2010, Joachim Metz <forensics@hoffmannbv.nl>,
@@ -265,7 +265,7 @@ int libsmraw_information_file_open(
 
 		return( -1 );
 	}
-#if defined( LIBSMRAW_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
 	information_file->file_stream = file_stream_open_wide(
 	                                 information_file->name,
 	                                 mode );

@@ -1,5 +1,6 @@
 EXTRA_DIST = \
 	libbfio/libbfio.vcproj \
+	libcstring/libcstring.vcproj \
 	liberror/liberror.vcproj \
 	libsmraw_dll/libsmraw_dll.vcproj \
 	libnotify/libnotify.vcproj \
