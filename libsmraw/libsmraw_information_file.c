@@ -336,7 +336,7 @@ int libsmraw_information_file_close(
 	return( 0 );
 }
 
-/* Reas a section with its values from the information file
+/* Reads a section with its values from the information file
  * Returns the 1 if succesful, 0 if no such section or -1 on error
  */
 int libsmraw_information_file_read_section(
