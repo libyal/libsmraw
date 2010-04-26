@@ -217,7 +217,7 @@ int libsmraw_glob_exists_segment_file(
 		return( -1 );
 	}
 	if( libcstring_narrow_string_copy(
-	     &( ( *segment_filename )[ 0 ] ),
+	     *segment_filename,
 	     prefix,
 	     prefix_length ) == NULL )
 	{
@@ -262,7 +262,6 @@ int libsmraw_glob_exists_segment_file(
 		}
 		( *segment_filename )[ prefix_length + suffix_length ] = 0;
 	}
-
 	if( libbfio_file_set_name(
 	     file_io_handle,
 	     *segment_filename,
@@ -445,7 +444,6 @@ int libsmraw_glob(
 	};
 
 	libbfio_handle_t *file_io_handle    = NULL;
-	void *reallocation                  = NULL;
 	char *identifier                    = NULL;
 	char *segment_filename              = NULL;
 	char *segment_filename_copy         = NULL;
@@ -548,9 +546,13 @@ int libsmraw_glob(
 
 		while( result == 0 )
 		{
-			memory_free(
-			 segment_filename );
+			if( segment_filename != NULL )
+			{
+				memory_free(
+				 segment_filename );
 
+				segment_filename = NULL;
+			}
 			suffix = suffixes[ suffix_index ];
 
 			if( suffix == NULL )
@@ -591,9 +593,11 @@ int libsmraw_glob(
 	}
 	if( result == 0 )
 	{
-		memory_free(
-		 segment_filename );
-
+		if( segment_filename != NULL )
+		{
+			memory_free(
+			 segment_filename );
+		}
 		return( 1 );
 	}
 	if( libsmraw_glob_append_segment_file(
@@ -620,7 +624,7 @@ int libsmraw_glob(
 	/* Make a copy of the segment filename to tamper with
 	 */
 	segment_filename_copy = (char *) memory_allocate(
-	                                  sizeof( char ) * filename_length );
+	                                  sizeof( char ) * segment_filename_size );
 
 	if( segment_filename_copy == NULL )
 	{
@@ -704,6 +708,10 @@ int libsmraw_glob(
 		}
 		if( naming_schema == 0 )
 		{
+			if( identifier == NULL )
+			{
+				segment_filename_copy_index = segment_filename_copy_size - 1;
+			}
 			/* Determine if the segment filename contains a segment identifier
 			 */
 			while( segment_filename_copy_index > 0 )
@@ -731,7 +739,7 @@ int libsmraw_glob(
 				else
 				{
 					if( ( segment_filename_copy[ segment_filename_copy_index ] == '0' )
-					 && ( segment_filename_copy[ segment_filename_copy_index ] == '1' ) )
+					 || ( segment_filename_copy[ segment_filename_copy_index ] == '1' ) )
 					{
 						naming_schema     = LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_NUMERIC;
 						identifier_length = 1;
@@ -818,28 +826,26 @@ int libsmraw_glob(
 		{
 			segment_file_identifier++;
 
+			identifier_divider = 1;
+
 			if( naming_schema == LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_NUMERIC )
 			{
-				identifier_divider = 10;
-
 				for( identifier_index = 0;
 				     identifier_index < identifier_length;
 				     identifier_index++ )
 				{
-					identifier[ identifier_length - identifier_index ] = '0' + (char) ( segment_file_identifier % identifier_divider );
+					identifier[ identifier_length - identifier_index - 1 ] = '0' + (char) ( ( segment_file_identifier / identifier_divider ) % 10 );
 
 					identifier_divider *= 10;
 				}
 			}
 			else if( naming_schema == LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_SPLIT )
 			{
-				identifier_divider = 26;
-
 				for( identifier_index = 0;
 				     identifier_index < identifier_length;
 				     identifier_index++ )
 				{
-					identifier[ identifier_length - identifier_index ] = 'a' + (char) ( segment_file_identifier % identifier_divider );
+					identifier[ identifier_length - identifier_index - 1 ] = 'a' + (char) ( ( segment_file_identifier / identifier_divider ) % 26 );
 
 					identifier_divider *= 26;
 				}
@@ -975,6 +981,383 @@ int libsmraw_glob_free(
 
 #if defined( HAVE_WIDE_CHARACTER_TYPE )
 
+/* Appends a globbed filename to the filenames
+ * Returns 1 if successful or -1 on error
+ */
+int libsmraw_glob_wide_append_segment_file(
+     wchar_t **filenames[],
+     int *amount_of_filenames,
+     const wchar_t *segment_filename, 
+     liberror_error_t **error )
+{
+	static char *function = "libsmraw_glob_wide_append_segment_file";
+	void *reallocation    = NULL;
+
+	if( filenames == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid filenames.",
+		 function );
+
+		return( -1 );
+	}
+	if( amount_of_filenames == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid amount of filenames.",
+		 function );
+
+		return( -1 );
+	}
+	if( segment_filename == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid segment filename.",
+		 function );
+
+		return( -1 );
+	}
+	reallocation = memory_reallocate(
+			*filenames,
+			sizeof( wchar_t * ) * ( *amount_of_filenames + 1 ) );
+
+	if( reallocation == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_MEMORY,
+		 LIBERROR_MEMORY_ERROR_INSUFFICIENT,
+		 "%s: unable reallocate filenames.",
+		 function );
+
+		return( -1 );
+	}
+	*filenames = reallocation;
+
+	( *filenames )[ *amount_of_filenames ] = (wchar_t *) segment_filename;
+
+	*amount_of_filenames += 1;
+
+	return( 1 );
+}
+
+/* Determines if a segment file exists
+ * The segment filename is made up from the prefix and the suffix
+ * Returns 1 if segment file exists, 0 if not or -1 on error
+ */
+int libsmraw_glob_wide_exists_segment_file(
+     libbfio_handle_t *file_io_handle,
+     const wchar_t *prefix,
+     size_t prefix_length,
+     const wchar_t *suffix,
+     size_t suffix_length,
+     wchar_t **segment_filename,
+     size_t *segment_filename_size,
+     liberror_error_t **error )
+{
+	static char *function = "libsmraw_glob_exists_segment_file";
+	int result            = 0;
+
+	if( file_io_handle == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid file IO handle.",
+		 function );
+
+		return( -1 );
+	}
+	if( prefix == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid prefix.",
+		 function );
+
+		return( -1 );
+	}
+	if( prefix_length > (size_t) SSIZE_MAX )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_VALUE_EXCEEDS_MAXIMUM,
+		 "%s: invalid prefix length value exceeds maximum.",
+		 function );
+
+		return( -1 );
+	}
+	if( ( suffix != NULL )
+	 && ( suffix_length > (size_t) SSIZE_MAX ) )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_VALUE_EXCEEDS_MAXIMUM,
+		 "%s: invalid suffix length value exceeds maximum.",
+		 function );
+
+		return( -1 );
+	}
+	if( segment_filename == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid segment filename.",
+		 function );
+
+		return( -1 );
+	}
+	if( segment_filename_size == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid segment filename size.",
+		 function );
+
+		return( -1 );
+	}
+	/* The segment filename consists of the prefix, an end of string character
+	 * and (if provided) the suffix
+	 */
+	*segment_filename_size = prefix_length + 1;
+
+	if( suffix != NULL )
+	{
+		*segment_filename_size += suffix_length;
+	}
+	*segment_filename = (wchar_t *) memory_allocate(
+	                                 sizeof( wchar_t ) * *segment_filename_size );
+
+	if( *segment_filename == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_MEMORY,
+		 LIBERROR_MEMORY_ERROR_INSUFFICIENT,
+		 "%s: unable to create segment filename.",
+		 function );
+
+		return( -1 );
+	}
+	if( libcstring_wide_string_copy(
+	     *segment_filename,
+	     prefix,
+	     prefix_length ) == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to set prefix in segment filename.",
+		 function );
+
+		memory_free(
+		 *segment_filename );
+
+		*segment_filename      = NULL;
+		*segment_filename_size = 0;
+
+		return( -1 );
+	}
+	( *segment_filename )[ prefix_length ] = 0;
+
+	if( suffix != NULL )
+	{
+		if( libcstring_wide_string_copy(
+		     &( ( *segment_filename )[ prefix_length ] ),
+		     suffix,
+		     suffix_length ) == NULL )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+			 "%s: unable to set suffix in segment filename.",
+			 function );
+
+			memory_free(
+			 *segment_filename );
+
+			*segment_filename      = NULL;
+			*segment_filename_size = 0;
+
+			return( -1 );
+		}
+		( *segment_filename )[ prefix_length + suffix_length ] = 0;
+	}
+	if( libbfio_file_set_name_wide(
+	     file_io_handle,
+	     *segment_filename,
+	     *segment_filename_size - 1,
+	     error ) != 1 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to set name in file IO handle.",
+		 function );
+
+		memory_free(
+		 *segment_filename );
+
+		*segment_filename      = NULL;
+		*segment_filename_size = 0;
+
+		return( -1 );
+	}
+	result = libbfio_handle_exists(
+		  file_io_handle,
+		  error );
+
+	if( result == -1 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_IO,
+		 LIBERROR_IO_ERROR_GENERIC,
+		 "%s: unable to determine if file: %s exists.",
+		 function,
+		 *segment_filename );
+
+		memory_free(
+		 *segment_filename );
+
+		*segment_filename      = NULL;
+		*segment_filename_size = 0;
+
+		return( -1 );
+	}
+	return( result );
+}
+
+/* Determines the naming schema
+ * Returns 1 if successful, 0 if no naming schema could be determined or -1 on error
+ */
+int libsmraw_glob_wide_determine_naming_schema(
+     const wchar_t *suffix,
+     size_t suffix_length,
+     uint8_t *naming_schema,
+     liberror_error_t **error )
+{
+	static char *function = "libsmraw_glob_wide_determine_naming_schema";
+
+	if( suffix == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid suffix.",
+		 function );
+
+		return( -1 );
+	}
+	if( suffix_length > (size_t) SSIZE_MAX )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
+		 "%s: invalid suffix length value exceeds maximum.",
+		 function );
+
+		return( -1 );
+	}
+	if( naming_schema == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid naming schema.",
+		 function );
+
+		return( -1 );
+	}
+	*naming_schema = 0;
+
+	/* Determine naming schema
+	 */
+	if( suffix_length == 1 )
+	{
+		if( ( suffix[ 0 ] == (wchar_t) '0' )
+		 || ( suffix[ 0 ] == (wchar_t) '1' ) )
+		{
+			*naming_schema = LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_NUMERIC;
+		}
+	}
+	else if( suffix_length == 2 )
+	{
+		if( ( suffix[ 0 ] == (wchar_t) 'a' )
+		 && ( suffix[ 1 ] == (wchar_t) 'a' ) )
+		{
+			*naming_schema = LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_SPLIT;
+		}
+		else if( ( ( suffix[ 0 ] == (wchar_t) 'd' )
+		        || ( suffix[ 0 ] == (wchar_t) 'D' ) )
+		      && ( ( suffix[ 1 ] == (wchar_t) 'd' )
+		        || ( suffix[ 1 ] == (wchar_t) 'D' ) ) )
+		{
+			*naming_schema = LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_SINGLE;
+		}
+		else if( ( suffix[ 0 ] == (wchar_t) '0' )
+		      && ( ( suffix[ 1 ] == (wchar_t) '0' )
+		        || ( suffix[ 1 ] == (wchar_t) '1' ) ) )
+		{
+			*naming_schema = LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_NUMERIC;
+		}
+	}
+	else if( suffix_length == 3 )
+	{
+		if( ( suffix[ 0 ] == (wchar_t) 'a' )
+		 && ( suffix[ 1 ] == (wchar_t) 'a' )
+		 && ( suffix[ 2 ] == (wchar_t) 'a' ) )
+		{
+			*naming_schema = LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_SPLIT;
+		}
+		else if( ( ( suffix[ 0 ] == (wchar_t) 'r' )
+		        || ( suffix[ 0 ] == (wchar_t) 'R' ) )
+		      && ( ( suffix[ 1 ] == (wchar_t) 'a' )
+		        || ( suffix[ 1 ] == (wchar_t) 'A' ) )
+		      && ( ( suffix[ 2 ] == (wchar_t) 'w' )
+		        || ( suffix[ 2 ] == (wchar_t) 'W' ) ) )
+		{
+			*naming_schema = LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_SINGLE;
+		}
+		else if( ( suffix[ 0 ] == (wchar_t) '0' )
+		      && ( suffix[ 1 ] == (wchar_t) '0' )
+		      && ( ( suffix[ 2 ] == (wchar_t) '0' )
+		        || ( suffix[ 2 ] == (wchar_t) '1' ) ) )
+		{
+			*naming_schema = LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_NUMERIC;
+		}
+	}
+	if( *naming_schema == 0 )
+	{
+		return( 0 );
+	}
+	return( 1 );
+}
+
 /* Globs the files according to common (split) RAW naming schemas
  * Returns 1 if successful or -1 on error
  */
@@ -985,13 +1368,40 @@ int libsmraw_glob_wide(
      int *amount_of_filenames,
      liberror_error_t **error )
 {
-	libbfio_handle_t *file_io_handle = NULL;
-	void *reallocation               = NULL;
-	wchar_t *segment_filename        = NULL;
-	static char *function            = "libsmraw_glob_wide";
-	size_t segment_filename_length   = 0;
-	ssize_t print_count              = 0;
-	int result                       = 0;
+	wchar_t *suffixes[ ] = {
+		L".raw",
+		L".dd",
+		L".000",
+		L".001",
+		L".00",
+		L".01",
+		L".0",
+		L".1",
+		L"aa",
+		L"00",
+		L"aaa",
+		L"000",
+		NULL
+	};
+
+	libbfio_handle_t *file_io_handle    = NULL;
+	wchar_t *identifier                 = NULL;
+	wchar_t *segment_filename           = NULL;
+	wchar_t *segment_filename_copy      = NULL;
+	wchar_t *suffix                     = NULL;
+	static char *function               = "libsmraw_glob_wide";
+	size_t identifier_divider           = 0;
+	size_t identifier_index             = 0;
+	size_t identifier_length            = 0;
+	size_t segment_filename_copy_index  = 0;
+	size_t segment_filename_copy_length = 0;
+	size_t segment_filename_copy_size   = 0;
+	size_t segment_filename_size        = 0;
+	size_t suffix_length                = 0;
+	uint8_t naming_schema               = 0;
+	int result                          = 0;
+	int segment_file_identifier         = 0;
+	int suffix_index                    = 0;
 
 	if( filename == NULL )
 	{
@@ -1026,6 +1436,8 @@ int libsmraw_glob_wide(
 
 		return( -1 );
 	}
+	*amount_of_filenames = 0;
+
 	if( libbfio_file_initialize(
 	     &file_io_handle,
 	     error ) != 1 )
@@ -1041,72 +1453,15 @@ int libsmraw_glob_wide(
 	}
 	/* Test if the full filename was provided
 	 */
-	segment_filename_length = filename_length + 1;
-
-	segment_filename = (wchar_t *) memory_allocate(
-	                                sizeof( wchar_t ) * segment_filename_length );
-
-	if( segment_filename == NULL )
-	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_MEMORY,
-		 LIBERROR_MEMORY_ERROR_INSUFFICIENT,
-		 "%s: unable to create segment filename.",
-		 function );
-
-		libbfio_handle_free(
-		 &file_io_handle,
-		 NULL );
-
-		return( -1 );
-	}
-	if( libcstring_wide_string_copy(
-	     segment_filename,
-	     filename,
-	     filename_length ) == NULL )
-	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_SET_FAILED,
-		 "%s: unable to set segment filename.",
-		 function );
-
-		memory_free(
-		 segment_filename );
-		libbfio_handle_free(
-		 &file_io_handle,
-		 NULL );
-
-		return( -1 );
-	}
-	segment_filename[ filename_length ] = 0;
-
-	if( libbfio_file_set_name_wide(
-	     file_io_handle,
-	     segment_filename,
-	     filename_length,
-	     error ) != 1 )
-	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_SET_FAILED,
-		 "%s: unable to set name in file IO handle.",
-		 function );
-
-		memory_free(
-		 segment_filename );
-		libbfio_handle_free(
-		 &file_io_handle,
-		 NULL );
-
-		return( -1 );
-	}
-	result = libbfio_handle_exists(
-	          file_io_handle,
-	          error );
+	result = libsmraw_glob_wide_exists_segment_file(
+		  file_io_handle,
+		  filename,
+		  filename_length,
+		  NULL,
+		  0,
+		  &segment_filename,
+		  &segment_filename_size,
+		  error );
 
 	if( result == -1 )
 	{
@@ -1114,127 +1469,48 @@ int libsmraw_glob_wide(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_IO,
 		 LIBERROR_IO_ERROR_GENERIC,
-		 "%s: unable to determine if file: %s exists.",
+		 "%s: unable to determine if file: %ls exists.",
 		 function,
-		 segment_filename );
+		 filename );
 
-		memory_free(
-		 segment_filename );
 		libbfio_handle_free(
 		 &file_io_handle,
 		 NULL );
 
 		return( -1 );
 	}
-	else if( result != 0 )
-	{
-		reallocation = memory_reallocate(
-		                *filenames,
-		                sizeof( wchar_t * ) * 1 );
-
-		if( reallocation == NULL )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_MEMORY,
-			 LIBERROR_MEMORY_ERROR_INSUFFICIENT,
-			 "%s: unable reallocate filenames.",
-			 function );
-
-			memory_free(
-			 segment_filename );
-			libbfio_handle_free(
-			 &file_io_handle,
-			 NULL );
-
-			return( -1 );
-		}
-		*filenames = reallocation;
-
-		( *filenames )[ 0 ] = segment_filename;
-
-		*amount_of_filenames = 1;
-
-		return( 1 );
-	}
-	/* Test if the filename was provided without the extension (.raw)
+	/* Check if there is a segment file with a known suffix
 	 */
 	else if( result == 0 )
 	{
-		memory_free(
-		 segment_filename );
+		suffix_index = 0;
 
-		/* Test if only the basename was provided
-		 */
-		 if( filename[ filename_length - 4 ] != (wchar_t) '.' )
+		while( result == 0 )
 		{
-			segment_filename_length = filename_length + 5;
-
-			segment_filename = (wchar_t *) memory_allocate(
-			                                sizeof( wchar_t ) * segment_filename_length );
-
-			if( segment_filename == NULL )
+			if( segment_filename != NULL )
 			{
-				liberror_error_set(
-				 error,
-				 LIBERROR_ERROR_DOMAIN_MEMORY,
-				 LIBERROR_MEMORY_ERROR_INSUFFICIENT,
-				 "%s: unable to create segment filename.",
-				 function );
-
-				libbfio_handle_free(
-				 &file_io_handle,
-				 NULL );
-
-				return( -1 );
-			}
-			print_count = libcstring_wide_string_snwprintf(
-				       segment_filename,
-				       segment_filename_length,
-				       L"%s.raw",
-				       filename );
-
-			if( ( print_count < 0 )
-			 || ( (size_t) print_count > segment_filename_length ) )
-			{
-				liberror_error_set(
-				 error,
-				 LIBERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBERROR_RUNTIME_ERROR_SET_FAILED,
-				 "%s: unable to set segment filename.",
-				 function );
-
 				memory_free(
 				 segment_filename );
-				libbfio_handle_free(
-				 &file_io_handle,
-				 NULL );
 
-				return( -1 );
+				segment_filename = NULL;
 			}
-			if( libbfio_file_set_name_wide(
-			     file_io_handle,
-			     segment_filename,
-			     segment_filename_length - 1,
-			     error ) != 1 )
+			suffix = suffixes[ suffix_index ];
+
+			if( suffix == NULL )
 			{
-				liberror_error_set(
-				 error,
-				 LIBERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBERROR_RUNTIME_ERROR_SET_FAILED,
-				 "%s: unable to set name in file IO handle.",
-				 function );
-
-				memory_free(
-				 segment_filename );
-				libbfio_handle_free(
-				 &file_io_handle,
-				 NULL );
-
-				return( -1 );
+				break;
 			}
-			result = libbfio_handle_exists(
-			          file_io_handle,
+			suffix_length = libcstring_wide_string_length(
+			                 suffix );
+
+			result = libsmraw_glob_wide_exists_segment_file(
+				  file_io_handle,
+				  filename,
+				  filename_length,
+				  suffix,
+				  suffix_length,
+				  &segment_filename,
+				  &segment_filename_size,
 				  error );
 
 			if( result == -1 )
@@ -1243,12 +1519,333 @@ int libsmraw_glob_wide(
 				 error,
 				 LIBERROR_ERROR_DOMAIN_IO,
 				 LIBERROR_IO_ERROR_GENERIC,
-				 "%s: unable to determine if file: %s exists.",
+				 "%s: unable to determine if segment file with suffix: %ls exists.",
 				 function,
+				 suffix );
+
+				libbfio_handle_free(
+				 &file_io_handle,
+				 NULL );
+
+				return( -1 );
+			}
+			suffix_index++;
+		}
+	}
+	if( result == 0 )
+	{
+		if( segment_filename != NULL )
+		{
+			memory_free(
+			 segment_filename );
+		}
+		return( 1 );
+	}
+	if( libsmraw_glob_wide_append_segment_file(
+	     filenames,
+	     amount_of_filenames,
+	     segment_filename,
+	     error ) != 1 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_APPEND_FAILED,
+		 "%s: unable to append segment filename.",
+		 function );
+
+		memory_free(
+		 segment_filename );
+		libbfio_handle_free(
+		 &file_io_handle,
+		 NULL );
+
+		return( -1 );
+	}
+	/* Make a copy of the segment filename to tamper with
+	 */
+	segment_filename_copy = (wchar_t *) memory_allocate(
+	                                     sizeof( wchar_t ) * segment_filename_size );
+
+	if( segment_filename_copy == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_MEMORY,
+		 LIBERROR_MEMORY_ERROR_INSUFFICIENT,
+		 "%s: unable to create segment filename copy.",
+		 function );
+
+		return( -1 );
+	}
+	if( libcstring_wide_string_copy(
+	     segment_filename_copy,
+	     segment_filename,
+	     segment_filename_size ) == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to set segment filename copy.",
+		 function );
+
+		return( -1 );
+	}
+	segment_filename_copy[ segment_filename_size - 1 ] = 0;
+	segment_filename_copy_size                         = segment_filename_size;
+
+	/* Determine the naming schema
+	 */
+	if( suffix == NULL )
+	{
+		/* Determine if the segment filename contains a suffix which contains a segment identifier
+		 */
+		segment_filename_copy_index = segment_filename_copy_size - 1;
+
+		while( segment_filename_copy_index > 0 )
+		{
+			if( segment_filename_copy[ segment_filename_copy_index ] == '.' )
+			{
+				identifier        = &( segment_filename_copy[ segment_filename_copy_index + 1 ] );
+				identifier_length = ( segment_filename_copy_size - 1 ) - ( segment_filename_copy_index + 1 );
+
+				break;
+			}
+			else if( ( segment_filename_copy[ segment_filename_copy_index ] == '/' )
+			      || ( segment_filename_copy[ segment_filename_copy_index ] == '\\' ) )
+			{
+				break;
+			}
+			segment_filename_copy_index--;
+		}
+		if( identifier != NULL )
+		{
+			/* Check if the extension contains a known naming schema
+			 */
+			result = libsmraw_glob_wide_determine_naming_schema(
+			          identifier,
+			          identifier_length,
+			          &naming_schema,
+			          error );
+
+			if( result == -1 )
+			{
+				liberror_error_set(
+				 error,
+				 LIBERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+				 "%s: unable to determine naming schema.",
+				 function );
+
+				memory_free(
+				 segment_filename_copy );
+				libbfio_handle_free(
+				 &file_io_handle,
+				 NULL );
+
+				return( -1 );
+			}
+		}
+		if( naming_schema == 0 )
+		{
+			if( identifier == NULL )
+			{
+				segment_filename_copy_index = segment_filename_copy_size - 1;
+			}
+			/* Determine if the segment filename contains a segment identifier
+			 */
+			while( segment_filename_copy_index > 0 )
+			{
+				if( naming_schema == LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_NUMERIC )
+				{
+					if( segment_filename_copy[ segment_filename_copy_index ] != '0' )
+					{
+						identifier = &( segment_filename_copy[ segment_filename_copy_index + 1 ] );
+
+						break;
+					}
+					identifier_length++;
+				}
+				else if( naming_schema == LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_SPLIT )
+				{
+					if( segment_filename_copy[ segment_filename_copy_index ] != 'a' )
+					{
+						identifier = &( segment_filename_copy[ segment_filename_copy_index + 1 ] );
+
+						break;
+					}
+					identifier_length++;
+				}
+				else
+				{
+					if( ( segment_filename_copy[ segment_filename_copy_index ] == '0' )
+					 || ( segment_filename_copy[ segment_filename_copy_index ] == '1' ) )
+					{
+						naming_schema     = LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_NUMERIC;
+						identifier_length = 1;
+					}
+					else if( segment_filename_copy[ segment_filename_copy_index ] == 'a' )
+					{
+						naming_schema     = LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_SPLIT;
+						identifier_length = 1;
+					}
+					else if( ( segment_filename_copy[ segment_filename_copy_index ] == '/' )
+					      || ( segment_filename_copy[ segment_filename_copy_index ] == '\\' ) )
+					{
+						break;
+					}
+				}
+				segment_filename_copy_index--;
+			}
+		}
+	}
+	else
+	{
+		segment_filename_copy_index = ( segment_filename_copy_size - 1 ) - suffix_length;
+
+		identifier        = &( segment_filename_copy[ segment_filename_copy_index ] );
+		identifier_length = suffix_length;
+
+		/* Ignore the extension dot
+		 */
+		if( identifier[ 0 ] == '.' )
+		{
+			identifier        += 1;
+			identifier_length -= 1;
+		}
+		result = libsmraw_glob_wide_determine_naming_schema(
+		          identifier,
+		          identifier_length,
+		          &naming_schema,
+		          error );
+
+		if( result == -1 )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to determine naming schema.",
+			 function );
+
+			memory_free(
+			 segment_filename_copy );
+			libbfio_handle_free(
+			 &file_io_handle,
+			 NULL );
+
+			return( -1 );
+		}
+	}
+	if( naming_schema == 0 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid naming schema missing value.",
+		 function );
+
+		memory_free(
+		 segment_filename_copy );
+		libbfio_handle_free(
+		 &file_io_handle,
+		 NULL );
+
+		return( -1 );
+	}
+	if( naming_schema != LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_SINGLE )
+	{
+		if( naming_schema == LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_NUMERIC )
+		{
+			segment_file_identifier = identifier[ identifier_length - 1 ] - '0';
+		}
+		segment_filename_copy_length = segment_filename_copy_size - 1;
+
+		while( *amount_of_filenames < INT_MAX )
+		{
+			segment_file_identifier++;
+
+			identifier_divider = 1;
+
+			if( naming_schema == LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_NUMERIC )
+			{
+				for( identifier_index = 0;
+				     identifier_index < identifier_length;
+				     identifier_index++ )
+				{
+					identifier[ identifier_length - identifier_index - 1 ] = (wchar_t) '0' + (wchar_t) ( ( segment_file_identifier / identifier_divider ) % 10 );
+
+					identifier_divider *= 10;
+				}
+			}
+			else if( naming_schema == LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_SPLIT )
+			{
+				for( identifier_index = 0;
+				     identifier_index < identifier_length;
+				     identifier_index++ )
+				{
+					identifier[ identifier_length - identifier_index - 1 ] = (wchar_t) 'a' + (wchar_t) ( ( segment_file_identifier / identifier_divider ) % 26 );
+
+					identifier_divider *= 26;
+				}
+			}
+			segment_filename      = NULL;
+			segment_filename_size = 0;
+
+			result = libsmraw_glob_wide_exists_segment_file(
+				  file_io_handle,
+				  segment_filename_copy,
+				  segment_filename_copy_length,
+				  NULL,
+				  0,
+				  &segment_filename,
+				  &segment_filename_size,
+				  error );
+
+			if( result == -1 )
+			{
+				liberror_error_set(
+				 error,
+				 LIBERROR_ERROR_DOMAIN_IO,
+				 LIBERROR_IO_ERROR_GENERIC,
+				 "%s: unable to determine if segment file: %ls exists.",
+				 function,
+				 segment_filename_copy );
+
+				memory_free(
+				 segment_filename_copy );
+				libbfio_handle_free(
+				 &file_io_handle,
+				 NULL );
+
+				return( -1 );
+			}
+			else if( result == 0 )
+			{
+				memory_free(
 				 segment_filename );
+
+				break;
+			}
+			if( libsmraw_glob_wide_append_segment_file(
+			     filenames,
+			     amount_of_filenames,
+			     segment_filename,
+			     error ) != 1 )
+			{
+				liberror_error_set(
+				 error,
+				 LIBERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBERROR_RUNTIME_ERROR_APPEND_FAILED,
+				 "%s: unable to append segment filename.",
+				 function );
 
 				memory_free(
 				 segment_filename );
+				memory_free(
+				 segment_filename_copy );
 				libbfio_handle_free(
 				 &file_io_handle,
 				 NULL );
@@ -1257,163 +1854,9 @@ int libsmraw_glob_wide(
 			}
 		}
 	}
-	if( result != 0 )
-	{
-		reallocation = memory_reallocate(
-				*filenames,
-				sizeof( wchar_t * ) * 1 );
+	memory_free(
+	 segment_filename_copy );
 
-		if( reallocation == NULL )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_MEMORY,
-			 LIBERROR_MEMORY_ERROR_INSUFFICIENT,
-			 "%s: unable reallocate filenames.",
-			 function );
-
-			memory_free(
-			 segment_filename );
-			libbfio_handle_free(
-			 &file_io_handle,
-			 NULL );
-
-			return( -1 );
-		}
-		*filenames = reallocation;
-
-		( *filenames )[ 0 ] = segment_filename;
-
-		*amount_of_filenames = 1;
-
-		return( 1 );
-	}
-	/* Test if the filename was provided without the extension (.raw.###)
-	 */
-	while( *amount_of_filenames < INT_MAX )
-	{
-		segment_filename_length = filename_length + 9;
-
-		segment_filename = (wchar_t *) memory_allocate(
-				                sizeof( wchar_t ) * segment_filename_length );
-
-		if( segment_filename == NULL )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_MEMORY,
-			 LIBERROR_MEMORY_ERROR_INSUFFICIENT,
-			 "%s: unable to create segment filename.",
-			 function );
-
-			libbfio_handle_free(
-			 &file_io_handle,
-			 NULL );
-
-			return( -1 );
-		}
-		print_count = libcstring_wide_string_snwprintf(
-			       segment_filename,
-			       segment_filename_length,
-			       L"%s.raw.%03d",
-			       filename,
-			       *amount_of_filenames );
-
-		if( ( print_count < 0 )
-		 || ( (size_t) print_count > segment_filename_length ) )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_SET_FAILED,
-			 "%s: unable to set segment filename.",
-			 function );
-
-			memory_free(
-			 segment_filename );
-			libbfio_handle_free(
-			 &file_io_handle,
-			 NULL );
-
-			return( -1 );
-		}
-		if( libbfio_file_set_name_wide(
-		     file_io_handle,
-		     segment_filename,
-		     segment_filename_length - 1,
-		     error ) != 1 )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_SET_FAILED,
-			 "%s: unable to set name in file IO handle.",
-			 function );
-
-			memory_free(
-			 segment_filename );
-			libbfio_handle_free(
-			 &file_io_handle,
-			 NULL );
-
-			return( -1 );
-		}
-		result = libbfio_handle_exists(
-			  file_io_handle,
-		          error );
-
-		if( result == -1 )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_IO,
-			 LIBERROR_IO_ERROR_CLOSE_FAILED,
-			 "%s: unable to determine if file: %s exists.",
-			 function,
-			 segment_filename );
-
-			memory_free(
-			 segment_filename );
-			libbfio_handle_free(
-			 &file_io_handle,
-			 NULL );
-
-			return( -1 );
-		}
-		else if( result == 0 )
-		{
-			memory_free(
-			 segment_filename );
-
-			break;
-		}
-		reallocation = memory_reallocate(
-		                *filenames,
-		                sizeof( wchar_t * ) * ( *amount_of_filenames + 1 ) );
-
-		if( reallocation == NULL )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_MEMORY,
-			 LIBERROR_MEMORY_ERROR_INSUFFICIENT,
-			 "%s: unable reallocate filenames.",
-			 function );
-
-			memory_free(
-			 segment_filename );
-			libbfio_handle_free(
-			 &file_io_handle,
-			 NULL );
-
-			return( -1 );
-		}
-		*filenames = reallocation;
-
-		( *filenames )[ *amount_of_filenames ] = segment_filename;
-
-		*amount_of_filenames += 1;
-	}
 	if( libbfio_handle_free(
 	     &file_io_handle,
 	     error ) != 1 )

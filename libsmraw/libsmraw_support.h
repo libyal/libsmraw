@@ -94,6 +94,28 @@ LIBSMRAW_EXTERN int libsmraw_glob_free(
                      liberror_error_t **error );
 
 #if defined( HAVE_WIDE_CHARACTER_TYPE )
+int libsmraw_glob_wide_append_segment_file(
+     wchar_t **filenames[],
+     int *amount_of_filenames,
+     const wchar_t *segment_filename,
+     liberror_error_t **error );
+
+int libsmraw_glob_wide_exists_segment_file(
+     libbfio_handle_t *file_io_handle,
+     const wchar_t *prefix,
+     size_t prefix_length,
+     const wchar_t *suffix,
+     size_t suffix_length,
+     wchar_t **segment_filename,
+     size_t *segment_filename_size,
+     liberror_error_t **error );
+
+int libsmraw_glob_wide_determine_naming_schema(
+     const wchar_t *suffix,
+     size_t suffix_length,
+     uint8_t *naming_schema,
+     liberror_error_t **error );
+
 LIBSMRAW_EXTERN int libsmraw_glob_wide(
                      const wchar_t *filename,
                      size_t filename_length,

@@ -12,6 +12,9 @@ Test
 * retrieve data from the information file on open
 * make sure certain values cannot be changed if writing/reading from raw files
 
+20100426
+* worked on additional naming schemas
+
 20100418
 * small changes
 
