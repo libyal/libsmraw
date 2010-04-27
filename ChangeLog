@@ -1,4 +1,5 @@
 TODO
+* work on support for naming schema XofY (1of5)
 
 Features
 * allow set of segment filename during write (as alternative writing locations)
@@ -11,6 +12,9 @@ Tooling
 Test
 * retrieve data from the information file on open
 * make sure certain values cannot be changed if writing/reading from raw files
+
+20100427
+* small changes
 
 20100426
 * worked on additional naming schemas
