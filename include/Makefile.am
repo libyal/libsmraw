@@ -15,6 +15,9 @@ EXTRA_DIST = \
 	libsmraw/features.h.in \
 	libsmraw/types.h.in
 
+MAINTAINERCLEANFILES = \
+	Makefile.in
+
 distclean: clean
 	/bin/rm -f libsmraw.h
 	/bin/rm -f libsmraw/definitions.h

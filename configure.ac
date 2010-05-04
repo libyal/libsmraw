@@ -2,15 +2,13 @@ AC_PREREQ( 2.59 )
 
 AC_INIT(
  [libsmraw],
-  [20100427],
-  [forensics@hoffmannbv.nl])
+  [20100504],
+  [jbmetz@users.sourceforge.net])
 
 AC_CONFIG_SRCDIR(
  [include/libsmraw.h.in])
 
-AM_INIT_AUTOMAKE(
- [libsmraw],
- [20100427])
+AM_INIT_AUTOMAKE([gnu 1.6])
 
 AC_CONFIG_MACRO_DIR([m4])
 
@@ -25,6 +23,11 @@ LIBSMRAW_TEST_ENABLE(
  [wide-character-type],
  [wide_character_type],
  [enable wide character type support],
+ [no])
+LIBSMRAW_TEST_ENABLE(
+ [winapi],
+ [winapi],
+ [enable WINAPI support for cross-compilation],
  [no])
 LIBSMRAW_TEST_ENABLE(
  [verbose-output],
@@ -93,33 +96,42 @@ AC_CHECK_HEADER(
   [HAVE_STDINT_H],
   [0])])
 
+dnl Headers included in common/common.h
+AS_IF(
+ [test "x$ac_cv_libsmraw_enable_winapi" = xyes],
+ [AC_CHECK_HEADERS([windows.h])
+
+ AS_IF(
+  [test "x$ac_cv_header_windows_h" = xno],
+  [AC_MSG_FAILURE(
+   [Missing header: windows.h header is required to compile with winapi support],
+   [1]) ])
+ ])
+
 dnl Headers included in common/types.h
 AC_CHECK_HEADERS([limits.h])
 
 dnl Headers included in common/memory.h and libcstring/libcstring_narrow_string.h
-AC_CHECK_HEADERS([stdlib.h])
-AC_CHECK_HEADERS([string.h])
+AC_CHECK_HEADERS([stdlib.h string.h])
 
 dnl Headers included in liberror/liberror_error.c and libnotify/libnotify_print.c
-AC_CHECK_HEADERS(
- [stdarg.h],
- [],
- [AC_CHECK_HEADERS(
-  [varargs.h],
-  [],
-  [AC_MSG_FAILURE(
-   [Missing headers: stdarg.h and varargs.h],
-   [1]) ]) ])
+AC_CHECK_HEADERS([stdarg.h])
 
-dnl Headers included in libnotify/libnotify_stream.c and libbfio/libbfio_file.c
+AS_IF(
+ [test "x$ac_cv_header_stdarg_h" != xyes],
+ [AC_CHECK_HEADERS([varargs.h]) ])
+
+AS_IF(
+ [test "x$ac_cv_header_stdarg_h" != xyes && test "x$ac_cv_header_varargs_h" != xyes],
+ [AC_MSG_FAILURE(
+  [Missing headers: stdarg.h and varargs.h],
+  [1]) ])
+
+dnl Headers included in libnotify/libnotify_stream.c
 AC_CHECK_HEADERS([errno.h])
 
-dnl Headers included in libbfio/libbfio_file.c, libsystem/libsystem_directory_io.h and libsystem/libsystem_file_io.h
-AC_CHECK_HEADERS([sys/stat.h])
-
-dnl Headers included in libbfio/libbfio_file.c and libsystem/libsystem_file_io.h
-AC_CHECK_HEADERS([fcntl.h])
-AC_CHECK_HEADERS([unistd.h])
+dnl Headers included in libbfio/libbfio_file.c
+AC_CHECK_HEADERS([fcntl.h sys/stat.h unistd.h])
 
 dnl Other headers
 
@@ -218,9 +230,12 @@ AC_CHECK_FUNCS(
 AC_CHECK_FUNCS(
  [fseeko],
  [],
- [AC_MSG_FAILURE(
-  [Missing function: fseeko],
-  [1]) ])
+ [AC_CHECK_FUNCS(
+  [fseeko64],
+  [],
+  [AC_MSG_FAILURE(
+   [Missing function: fseeko and fseeko64],
+   [1]) ]) ])
 
 AC_CHECK_FUNCS(
  [fwrite],
@@ -332,13 +347,13 @@ AC_CHECK_FUNCS(
  [ac_libsmraw_have_memrchr=no])
 
 AS_IF(
-	[test "x$ac_libsmraw_have_memrchr" = xno],
-	[AC_CHECK_FUNCS(
-	 [strrchr],
-	 [],
-	 [AC_MSG_FAILURE(
-	  [Missing functions: strrchr and memrchr],
-	  [1]) ]) ])
+ [test "x$ac_libsmraw_have_memrchr" = xno],
+ [AC_CHECK_FUNCS(
+ [strrchr],
+ [],
+ [AC_MSG_FAILURE(
+ [Missing functions: strrchr and memrchr],
+ [1]) ]) ])
 
 AC_CHECK_FUNCS(
  [snprintf],
@@ -442,8 +457,10 @@ AC_CHECK_FUNCS(
   [1]) ])
 
 dnl Check for error string functions used in libbfio/libbfio_error_string.h
-AC_FUNC_STRERROR_R(
- [],
+AC_FUNC_STRERROR_R()
+
+AS_IF(
+ [test "x$ac_cv_have_decl_strerror_r" = xno],
  [AC_CHECK_FUNCS(
   [strerror],
   [],
@@ -452,532 +469,119 @@ AC_FUNC_STRERROR_R(
    [1]) ]) ])
 
 dnl Check for printf conversion specifier support
-LIBSMRAW_CHECK_PRINTF_JD
-LIBSMRAW_CHECK_PRINTF_ZD
+LIBSMRAW_CHECK_FUNC_PRINTF_JD
+LIBSMRAW_CHECK_FUNC_PRINTF_ZD
 
 dnl Checks for libraries and library functions
 dnl ac_libsmraw_dummy is used to prevent AC_CHECK_LIB adding unnecessary -l<library> arguments
 
 dnl Check for enabling libuna for Unicode string support
-AC_CHECK_HEADERS(
- [libuna.h],
- [],
- [ac_libsmraw_have_libuna=no])
+LIBSMRAW_CHECK_LIBUNA
 
 AS_IF(
-	[test "x$ac_libsmraw_have_libuna" != xno],
-	[ac_libsmraw_have_libuna=yes
-	AC_CHECK_LIB(
-	 una,
-	 libuna_get_version,
-	 [],
-	 [ac_libsmraw_have_libuna=no])
-
-	dnl Byte stream functions
-	AC_CHECK_LIB(
-	 una,
-	 libuna_utf8_string_size_from_byte_stream,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libuna=no])
-	AC_CHECK_LIB(
-	 una,
-	 libuna_utf8_string_copy_from_byte_stream,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libuna=no])
-	AC_CHECK_LIB(
-	 una,
-	 libuna_byte_stream_size_from_utf8,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libuna=no])
-	AC_CHECK_LIB(
-	 una,
-	 libuna_byte_stream_copy_from_utf8,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libuna=no])
-	AC_CHECK_LIB(
-	 una,
-	 libuna_utf16_string_size_from_byte_stream,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libuna=no])
-	AC_CHECK_LIB(
-	 una,
-	 libuna_utf16_string_copy_from_byte_stream,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libuna=no])
-	AC_CHECK_LIB(
-	 una,
-	 libuna_byte_stream_size_from_utf16,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libuna=no])
-	AC_CHECK_LIB(
-	 una,
-	 libuna_byte_stream_copy_from_utf16,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libuna=no])
-	AC_CHECK_LIB(
-	 una,
-	 libuna_utf32_string_size_from_byte_stream,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libuna=no])
-	AC_CHECK_LIB(
-	 una,
-	 libuna_utf32_string_copy_from_byte_stream,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libuna=no])
-	AC_CHECK_LIB(
-	 una,
-	 libuna_byte_stream_size_from_utf32,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libuna=no])
-	AC_CHECK_LIB(
-	 una,
-	 libuna_byte_stream_copy_from_utf32,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libuna=no])
-
-	dnl UTF-8 stream functions
-	AC_CHECK_LIB(
-	 una,
-	 libuna_utf8_string_size_from_utf8_stream,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libuna=no])
-	AC_CHECK_LIB(
-	 una,
-	 libuna_utf8_string_copy_from_utf8_stream,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libuna=no])
-	AC_CHECK_LIB(
-	 una,
-	 libuna_utf8_stream_size_from_utf8,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libuna=no])
-	AC_CHECK_LIB(
-	 una,
-	 libuna_utf8_stream_copy_from_utf8,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libuna=no])
-	AC_CHECK_LIB(
-	 una,
-	 libuna_utf16_string_size_from_utf8_stream,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libuna=no])
-	AC_CHECK_LIB(
-	 una,
-	 libuna_utf16_string_copy_from_utf8_stream,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libuna=no])
-	AC_CHECK_LIB(
-	 una,
-	 libuna_utf8_stream_size_from_utf16,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libuna=no])
-	AC_CHECK_LIB(
-	 una,
-	 libuna_utf8_stream_copy_from_utf16,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libuna=no])
-	AC_CHECK_LIB(
-	 una,
-	 libuna_utf32_string_size_from_utf8_stream,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libuna=no])
-	AC_CHECK_LIB(
-	 una,
-	 libuna_utf32_string_copy_from_utf8_stream,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libuna=no])
-	AC_CHECK_LIB(
-	 una,
-	 libuna_utf8_stream_size_from_utf32,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libuna=no])
-	AC_CHECK_LIB(
-	 una,
-	 libuna_utf8_stream_copy_from_utf32,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libuna=no])
-
-	dnl UTF-16 stream functions
-	AC_CHECK_LIB(
-	 una,
-	 libuna_utf8_string_size_from_utf16_stream,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libuna=no])
-	AC_CHECK_LIB(
-	 una,
-	 libuna_utf8_string_copy_from_utf16_stream,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libuna=no])
-	AC_CHECK_LIB(
-	 una,
-	 libuna_utf16_stream_size_from_utf8,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libuna=no])
-	AC_CHECK_LIB(
-	 una,
-	 libuna_utf16_stream_copy_from_utf8,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libuna=no])
-	AC_CHECK_LIB(
-	 una,
-	 libuna_utf16_string_size_from_utf16_stream,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libuna=no])
-	AC_CHECK_LIB(
-	 una,
-	 libuna_utf16_string_copy_from_utf16_stream,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libuna=no])
-	AC_CHECK_LIB(
-	 una,
-	 libuna_utf16_stream_size_from_utf16,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libuna=no])
-	AC_CHECK_LIB(
-	 una,
-	 libuna_utf16_stream_copy_from_utf16,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libuna=no])
-	AC_CHECK_LIB(
-	 una,
-	 libuna_utf32_string_size_from_utf16_stream,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libuna=no])
-	AC_CHECK_LIB(
-	 una,
-	 libuna_utf32_string_copy_from_utf16_stream,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libuna=no])
-	AC_CHECK_LIB(
-	 una,
-	 libuna_utf16_stream_size_from_utf32,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libuna=no])
-	AC_CHECK_LIB(
-	 una,
-	 libuna_utf16_stream_copy_from_utf32,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libuna=no])
-
-	dnl UTF-8 string functions
-	AC_CHECK_LIB(
-	 una,
-	 libuna_utf8_string_size_from_utf16,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libuna=no])
-	AC_CHECK_LIB(
-	 una,
-	 libuna_utf8_string_copy_from_utf16,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libuna=no])
-	AC_CHECK_LIB(
-	 una,
-	 libuna_utf8_string_size_from_utf32,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libuna=no])
-	AC_CHECK_LIB(
-	 una,
-	 libuna_utf8_string_copy_from_utf32,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libuna=no])
-
-	dnl UTF-16 string functions
-	AC_CHECK_LIB(
-	 una,
-	 libuna_utf16_string_size_from_utf8,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libuna=no])
-	AC_CHECK_LIB(
-	 una,
-	 libuna_utf16_string_copy_from_utf8,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libuna=no])
-
-	dnl UTF-32 string functions
-	AC_CHECK_LIB(
-	 una,
-	 libuna_utf32_string_size_from_utf8,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libuna=no])
-	AC_CHECK_LIB(
-	 una,
-	 libuna_utf32_string_copy_from_utf8,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libuna=no])
-
-	dnl compare string functions
-	AC_CHECK_LIB(
-	 una,
-	 libuna_compare_utf8_with_utf16,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libuna=no])
-	AC_CHECK_LIB(
-	 una,
-	 libuna_compare_utf8_with_utf32,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libuna=no])
-	])
-
-AS_IF(
-	[test "x$ac_libsmraw_have_libuna" = xyes],
-	[AC_SUBST(
-	 [libsmraw_pc_libs_private_libuna],
-	 [-luna])
-	AC_SUBST(
-	 [libsmraw_spec_requires],
-	 [Requires:])
-	AC_SUBST(
-	 [libsmraw_spec_requires_libuna],
-	 [libuna])
-	AC_SUBST(
-	 [libsmraw_spec_build_requires],
-	 [BuildRequires:])
-	AC_SUBST(
-	 [libsmraw_spec_build_requires_libuna],
-	 [libuna-devel]) ],
-	[dnl If libuna is not available use the (local) version that came with libsmraw
-	AC_DEFINE(
-	 [HAVE_LOCAL_LIBUNA],
-	 [1],
-	 [Define to 1 if the local version of libuna is used.])
-	AC_SUBST(
-	 [HAVE_LOCAL_LIBUNA],
-	 [1])
-	AC_SUBST(
-	 [libsmraw_pc_libs_private_libuna],
-	 [])
-	AC_SUBST(
-	 [libsmraw_spec_requires],
-	 [])
-	AC_SUBST(
-	 [libsmraw_spec_requires_libuna],
-	 [])
-	AC_SUBST(
-	 [libsmraw_spec_build_requires],
-	 [])
-	AC_SUBST(
-	 [libsmraw_spec_build_requires_libuna],
-	 [])
-	AC_SUBST(
-	 [LIBUNA_CPPFLAGS],
-	 [-I../libuna])
-	AC_SUBST(
-	 [LIBUNA_LIBADD],
-	 [../libuna/libuna.la])
-	ac_libsmraw_have_libuna=local])
-
+ [test "x$ac_libsmraw_have_libuna" = xyes],
+ [dnl libuna is available
+ AC_SUBST(
+  [libsmraw_pc_libs_private_libuna],
+  [-luna])
+ AC_SUBST(
+  [libsmraw_spec_requires],
+  [Requires:])
+ AC_SUBST(
+  [libsmraw_spec_requires_libuna],
+  [libuna])
+ AC_SUBST(
+  [libsmraw_spec_build_requires],
+  [BuildRequires:])
+ AC_SUBST(
+  [libsmraw_spec_build_requires_libuna],
+  [libuna-devel]) ],
+ [dnl libuna is not available, using the (local) version that came with the source package
+ AC_DEFINE(
+  [HAVE_LOCAL_LIBUNA],
+  [1],
+  [Define to 1 if the local version of libuna is used.])
+ AC_SUBST(
+  [HAVE_LOCAL_LIBUNA],
+  [1])
+ AC_SUBST(
+  [libsmraw_pc_libs_private_libuna],
+  [])
+ AC_SUBST(
+  [libsmraw_spec_requires],
+  [])
+ AC_SUBST(
+  [libsmraw_spec_requires_libuna],
+  [])
+ AC_SUBST(
+  [libsmraw_spec_build_requires],
+  [])
+ AC_SUBST(
+  [libsmraw_spec_build_requires_libuna],
+  [])
+ AC_SUBST(
+  [LIBUNA_CPPFLAGS],
+  [-I../libuna])
+ AC_SUBST(
+  [LIBUNA_LIBADD],
+  [../libuna/libuna.la])
+ ac_libsmraw_have_libuna=local])
+ 
 AM_CONDITIONAL(
  [HAVE_LOCAL_LIBUNA],
  [test "x$ac_libsmraw_have_libuna" = xlocal])
 
 dnl Check for enabling libbfio for basic file IO support
-AC_CHECK_HEADERS(
- [libbfio.h],
- [],
- [ac_libsmraw_have_libbfio=no])
+LIBSMRAW_CHECK_LIBBFIO
 
 AS_IF(
-	[test "x$ac_libsmraw_have_libbfio" != xno],
-	[ac_libsmraw_have_libbfio=yes
-	AC_CHECK_LIB(
-	 bfio,
-	 libbfio_get_version,
-	 [],
-	 [ac_libsmraw_have_libbfio=no])
-
-	dnl Handle functions
-	AC_CHECK_LIB(
-	 bfio,
-	 libbfio_handle_free,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libbfio=no])
-	AC_CHECK_LIB(
-	 bfio,
-	 libbfio_handle_open,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libbfio=no])
-	AC_CHECK_LIB(
-	 bfio,
-	 libbfio_handle_close,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libbfio=no])
-	AC_CHECK_LIB(
-	 bfio,
-	 libbfio_handle_exists,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libbfio=no])
-	AC_CHECK_LIB(
-	 bfio,
-	 libbfio_handle_read,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libbfio=no])
-	AC_CHECK_LIB(
-	 bfio,
-	 libbfio_handle_set_track_offsets_read,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libbfio=no])
-
-	dnl File functions
-	AC_CHECK_LIB(
-	 bfio,
-	 libbfio_file_initialize,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libbfio=no])
-	AC_CHECK_LIB(
-	 bfio,
-	 libbfio_file_get_name_size,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libbfio=no])
-	AC_CHECK_LIB(
-	 bfio,
-	 libbfio_file_get_name,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libbfio=no])
-	AC_CHECK_LIB(
-	 bfio,
-	 libbfio_file_set_name,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libbfio=no])
-
-	AS_IF(
-		[test "x$ac_cv_libsmraw_enable_wide_character_type" != xno ],
-		[AC_CHECK_LIB(
-		 bfio,
-		 libbfio_file_get_name_size_wide,
-		 [ac_libsmraw_dummy=yes],
-		 [ac_libsmraw_have_libbfio=no])
-		AC_CHECK_LIB(
-		 bfio,
-		 libbfio_file_get_name_wide,
-		 [ac_libsmraw_dummy=yes],
-		 [ac_libsmraw_have_libbfio=no])
-		AC_CHECK_LIB(
-		 bfio,
-		 libbfio_file_set_name_wide,
-		 [ac_libsmraw_dummy=yes],
-		 [ac_libsmraw_have_libbfio=no]) ])
-
-	dnl Pool functions
-	AC_CHECK_LIB(
-	 bfio,
-	 libbfio_pool_initialize,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libbfio=no])
-	AC_CHECK_LIB(
-	 bfio,
-	 libbfio_pool_free,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libbfio=no])
-	AC_CHECK_LIB(
-	 bfio,
-	 libbfio_pool_open,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libbfio=no])
-	AC_CHECK_LIB(
-	 bfio,
-	 libbfio_pool_reopen,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libbfio=no])
-	AC_CHECK_LIB(
-	 bfio,
-	 libbfio_pool_close,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libbfio=no])
-	AC_CHECK_LIB(
-	 bfio,
-	 libbfio_pool_close_all,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libbfio=no])
-	AC_CHECK_LIB(
-	 bfio,
-	 libbfio_pool_read,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libbfio=no])
-	AC_CHECK_LIB(
-	 bfio,
-	 libbfio_pool_write,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libbfio=no])
-	AC_CHECK_LIB(
-	 bfio,
-	 libbfio_pool_seek_offset,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libbfio=no])
-
-	AC_CHECK_LIB(
-	 bfio,
-	 libbfio_pool_get_amount_of_handles,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libbfio=no])
-	AC_CHECK_LIB(
-	 bfio,
-	 libbfio_pool_get_handle,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libbfio=no])
-	AC_CHECK_LIB(
-	 bfio,
-	 libbfio_pool_add_handle,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libbfio=no])
-	AC_CHECK_LIB(
-	 bfio,
-	 libbfio_pool_get_offset,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libbfio=no])
-	AC_CHECK_LIB(
-	 bfio,
-	 libbfio_pool_get_size,
-	 [ac_libsmraw_dummy=yes],
-	 [ac_libsmraw_have_libbfio=no])
-	])
-
-AS_IF(
-	[test "x$ac_libsmraw_have_libbfio" = xyes],
-	[AC_SUBST(
-	 [libsmraw_pc_libs_private_libbfio],
-	 [-lbfio])
-	AC_SUBST(
-	 [libsmraw_spec_requires_libbfio],
-	 [libbfio])
-	AC_SUBST(
-	 [libsmraw_spec_build_requires_libbfio],
-	 [libbfio-devel])
-	AC_SUBST(
-	 [LIBBFIO_CPPFLAGS],
-	 [])
-	AC_SUBST(
-	 [LIBBFIO_LIBADD],
-	 [])
-	AC_SUBST(
-	 [HAVE_LIBBFIO],
-	 [1]) ],
-	[dnl If libbfio is not available use the (local) version that came with libsmraw
-	AC_DEFINE(
-	 [HAVE_LOCAL_LIBBFIO],
-	 [1],
-	 [Define to 1 if the local version of libbfio is used.])
-	AC_SUBST(
-	 [HAVE_LOCAL_LIBBFIO],
-	 [1])
-	AC_SUBST(
-	 [libsmraw_pc_libs_private_libbfio],
-	 [])
-	AC_SUBST(
-	 [libsmraw_spec_requires_libbfio],
-	 [])
-	AC_SUBST(
-	 [libsmraw_spec_build_requires_libbfio],
-	 [])
-	AC_SUBST(
-	 [LIBBFIO_CPPFLAGS],
-	 [-I../libbfio])
-	AC_SUBST(
-	 [LIBBFIO_LIBADD],
-	 [../libbfio/libbfio.la])
-	AC_SUBST(
-	 [HAVE_LIBBFIO],
-	 [0])
-	ac_libsmraw_have_libbfio=local])
+ [test "x$ac_libsmraw_have_libbfio" = xyes],
+ [dnl libbfio is available
+ AC_SUBST(
+  [libsmraw_pc_libs_private_libbfio],
+  [-lbfio])
+ AC_SUBST(
+  [libsmraw_spec_requires_libbfio],
+  [libbfio])
+ AC_SUBST(
+  [libsmraw_spec_build_requires_libbfio],
+  [libbfio-devel])
+ AC_SUBST(
+  [LIBBFIO_CPPFLAGS],
+  [])
+ AC_SUBST(
+  [LIBBFIO_LIBADD],
+  [])
+ AC_SUBST(
+  [HAVE_LIBBFIO],
+  [1]) ],
+ [dnl libbfio is not available, using the (local) version that came with the source package
+ AC_DEFINE(
+  [HAVE_LOCAL_LIBBFIO],
+  [1],
+  [Define to 1 if the local version of libbfio is used.])
+ AC_SUBST(
+  [HAVE_LOCAL_LIBBFIO],
+  [1])
+ AC_SUBST(
+  [libsmraw_pc_libs_private_libbfio],
+  [])
+ AC_SUBST(
+  [libsmraw_spec_requires_libbfio],
+  [])
+ AC_SUBST(
+  [libsmraw_spec_build_requires_libbfio],
+  [])
+ AC_SUBST(
+  [LIBBFIO_CPPFLAGS],
+  [-I../libbfio])
+ AC_SUBST(
+  [LIBBFIO_LIBADD],
+  [../libbfio/libbfio.la])
+ AC_SUBST(
+  [HAVE_LIBBFIO],
+  [0])
+ ac_libsmraw_have_libbfio=local])
 
 AM_CONDITIONAL(
  [HAVE_LOCAL_LIBBFIO],
@@ -985,137 +589,138 @@ AM_CONDITIONAL(
 
 dnl Check if libsmraw should be build with wide character type support
 AS_IF(
-	[test "x$ac_cv_libsmraw_enable_wide_character_type" != xno ],
-	[dnl Check for the wide character header
-	AC_CHECK_HEADERS(
-	 [wchar.h],
-	 [AC_DEFINE(
-	  [HAVE_WCHAR_H],
-	  [1],
-	  [Define to 1 if you have the <wchar.h> header file.])
-	 AC_SUBST(
-	  [HAVE_WCHAR_H],
-	  [1]) ],
-	 [AC_MSG_FAILURE(
-	  [Missing header: wchar.h],
-	  [1]) ])
+ [test "x$ac_cv_libsmraw_enable_wide_character_type" != xno ],
+ [dnl Check for the wide character header
+ AC_CHECK_HEADERS(
+  [wchar.h],
+  [AC_DEFINE(
+   [HAVE_WCHAR_H],
+   [1],
+   [Define to 1 if you have the <wchar.h> header file.])
+  AC_SUBST(
+   [HAVE_WCHAR_H],
+   [1]) ],
+  [AC_MSG_FAILURE(
+   [Missing header: wchar.h],
+   [1]) ])
 
-	dnl Determine wide character byte size
-	AC_CHECK_SIZEOF([wchar_t])
+ dnl Determine wide character byte size
+ AC_CHECK_SIZEOF([wchar_t])
 
-	dnl Check for wide character string functions
+ dnl Check for wide character string functions
 
-	dnl Wide character string functions used in libcstring/libcstring_wide_string.h
-	AC_CHECK_FUNCS(
-	 [fgetws],
-	 [],
-	 [AC_MSG_FAILURE(
-	  [Missing function: fgetws],
-	  [1]) ])
+ dnl Wide character string functions used in common/file_stream.h
+ AC_CHECK_FUNCS(
+  [fgetws],
+  [],
+  [AC_MSG_FAILURE(
+   [Missing function: fgetws],
+   [1]) ])
 
-	AC_CHECK_FUNCS(
-	 [swprintf],
-	 [],
-	 [AC_MSG_FAILURE(
-	  [Missing function: swprintf],
-	  [1]) ])
+ dnl Wide character string functions used in libcstring/libcstring_wide_string.h
+ AC_CHECK_FUNCS(
+  [swprintf],
+  [],
+  [AC_MSG_FAILURE(
+   [Missing function: swprintf],
+   [1]) ])
 
-	AC_CHECK_FUNCS(
-	 [wmemchr],
-	 [],
-	 [AC_CHECK_FUNCS(
-	  [wcschr],
-	  [],
-	  [AC_MSG_FAILURE(
-	   [Missing functions: wmemchr and wcschr],
-	   [1]) ]) ])
+ AC_CHECK_FUNCS(
+  [wmemchr],
+  [],
+  [AC_CHECK_FUNCS(
+   [wcschr],
+   [],
+   [AC_MSG_FAILURE(
+    [Missing functions: wmemchr and wcschr],
+    [1]) ]) ])
 
-	AC_CHECK_FUNCS(
-	 [wmemcmp],
-	 [],
-	 [AC_CHECK_FUNCS(
-	  [wcsncmp],
-	  [],
-	  [AC_CHECK_FUNCS(
-	   [wcscmp],
-	   [],
-	   [AC_MSG_FAILURE(
-	    [Missing functions: wmemcmp, wcsncmp and wcscmp],
-	    [1]) ]) ]) ])
+ AC_CHECK_FUNCS(
+  [wmemcmp],
+  [],
+  [AC_CHECK_FUNCS(
+   [wcsncmp],
+   [],
+   [AC_CHECK_FUNCS(
+    [wcscmp],
+    [],
+    [AC_MSG_FAILURE(
+     [Missing functions: wmemcmp, wcsncmp and wcscmp],
+     [1]) ]) ]) ])
 
-	AC_CHECK_FUNCS(
-	 [wmemcpy],
-	 [],
-	 [AC_CHECK_FUNCS(
-	  [wcsncpy],
-	  [],
-	  [AC_CHECK_FUNCS(
-	   [wcscpy],
-	   [],
-	   [AC_MSG_FAILURE(
-	    [Missing functions: wmemcpy, wcsncpy and wcscpy],
-	    [1]) ]) ]) ])
+ AC_CHECK_FUNCS(
+  [wmemcpy],
+  [],
+  [AC_CHECK_FUNCS(
+   [wcsncpy],
+   [],
+   [AC_CHECK_FUNCS(
+    [wcscpy],
+    [],
+    [AC_MSG_FAILURE(
+     [Missing functions: wmemcpy, wcsncpy and wcscpy],
+     [1]) ]) ]) ])
 
-	AC_CHECK_FUNCS(
-	 [wmemrchr],
-	 [],
-	 [AC_CHECK_FUNCS(
-	  [wcsrchr],
-	  [],
-	  [AC_MSG_FAILURE(
-	   [Missing functions: wmemrchr and wcsrchr],
-	   [1]) ]) ])
+ AC_CHECK_FUNCS(
+  [wmemrchr],
+  [],
+  [AC_CHECK_FUNCS(
+   [wcsrchr],
+   [],
+   [AC_MSG_FAILURE(
+    [Missing functions: wmemrchr and wcsrchr],
+    [1]) ]) ])
 
-	AC_CHECK_FUNCS(
-	 [wcslen],
-	 [],
-	 [AC_MSG_FAILURE(
-	  [Missing function: wcslen],
-	  [1]) ])
+ AC_CHECK_FUNCS(
+  [wcslen],
+  [],
+  [AC_MSG_FAILURE(
+   [Missing function: wcslen],
+   [1]) ])
 
-	AC_CHECK_FUNCS(
-	 [wcsncasecmp],
-	 [],
-	 [AC_CHECK_FUNCS(
-	  [wcscasecmp],
-	  [],
-	  [AC_CHECK_FUNCS(
-	   [towlower],
-	   [],
-	   [AC_MSG_FAILURE(
-	    [Missing functions: wcsncasecmp, wcscasecmp and towlower],
-	    [1]) ]) ]) ])
+ AC_CHECK_FUNCS(
+  [wcsncasecmp],
+  [],
+  [AC_CHECK_FUNCS(
+   [wcscasecmp],
+   [],
+   [AC_CHECK_FUNCS(
+    [towlower],
+    [],
+    [AC_MSG_FAILURE(
+     [Missing functions: wcsncasecmp, wcscasecmp and towlower],
+     [1]) ]) ]) ])
 
-	AC_CHECK_FUNCS(
-	 [wcstoll],
-	 [],
-	 [AC_MSG_FAILURE(
-	  [Missing function: wcstoll],
-	  [1]) ])
+ AC_CHECK_FUNCS(
+  [wcstoll],
+  [],
+  [AC_MSG_FAILURE(
+   [Missing function: wcstoll],
+   [1]) ])
 
-	AC_CHECK_FUNCS(
-	 [wcstoull],
-	 [],
-	 [AC_MSG_FAILURE(
-	  [Missing function: wcstoull],
-	  [1]) ])
+ AC_CHECK_FUNCS(
+  [wcstoull],
+  [],
+  [AC_MSG_FAILURE(
+   [Missing function: wcstoull],
+   [1]) ])
 
-	dnl Make the necessary definitions
-	AC_DEFINE(
-	 [HAVE_WIDE_CHARACTER_TYPE],
-	 [1],
-	 [Define to 1 if wide character type should be used.])
-	AC_SUBST(
-	 [HAVE_WIDE_CHARACTER_TYPE],
-	 [1])
-	ac_cv_libsmraw_enable_wide_character_type=yes],
+ dnl Make the necessary definitions
+ AC_DEFINE(
+  [HAVE_WIDE_CHARACTER_TYPE],
+  [1],
+  [Define to 1 if wide character type should be used.])
+ AC_SUBST(
+  [HAVE_WIDE_CHARACTER_TYPE],
+  [1])
+ ac_cv_libsmraw_enable_wide_character_type=yes],
 
-	[AC_SUBST(
-	 [HAVE_WIDE_CHARACTER_TYPE],
-	 [0])
-	AC_SUBST(
-	 [HAVE_WCHAR_H],
-	 [0]) ])
+ [AC_SUBST(
+  [HAVE_WIDE_CHARACTER_TYPE],
+  [0])
+ AC_SUBST(
+  [HAVE_WCHAR_H],
+  [0]) ])
 
 AC_SUBST(
  [HAVE_WIDE_CHARACTER_SUPPORT_FUNCTIONS],
@@ -1123,33 +728,33 @@ AC_SUBST(
 
 dnl Check if libsmraw should be build with verbose output
 AS_IF(
-	[test "x$ac_cv_libsmraw_enable_verbose_output" != xno],
-	[AC_DEFINE(
-	 [HAVE_VERBOSE_OUTPUT],
-	 [1],
-	 [Define to 1 if verbose output should be used] )
-	ac_cv_libsmraw_enable_verbose_output=yes])
+ [test "x$ac_cv_libsmraw_enable_verbose_output" != xno],
+ [AC_DEFINE(
+  [HAVE_VERBOSE_OUTPUT],
+  [1],
+  [Define to 1 if verbose output should be used] )
+ ac_cv_libsmraw_enable_verbose_output=yes])
 
 dnl Check if libsmraw should be build with debug output
 AS_IF(
-	[test "x$ac_cv_libsmraw_enable_debug_output" != xno],
-	[AC_DEFINE(
-	 [HAVE_DEBUG_OUTPUT],
-	 [1],
-	 [Define to 1 if debug output should be used] )
-	ac_cv_libsmraw_enable_debug_output=yes])
+ [test "x$ac_cv_libsmraw_enable_debug_output" != xno],
+ [AC_DEFINE(
+  [HAVE_DEBUG_OUTPUT],
+  [1],
+  [Define to 1 if debug output should be used] )
+ ac_cv_libsmraw_enable_debug_output=yes])
 
 dnl Set memwatch support
 ac_libsmraw_have_memwatch=no
 
 AS_IF(
-	[test "x$ac_libsmraw_have_memwatch" != xno ],
-	[AC_SUBST(
-	 [MEMWATCH_CPPFLAGS],
-	 ["-DMEMWATCH -DMEMWATCH_STDIO"])
-	AC_SUBST(
-	 [MEMWATCH_LIBADD],
-	 [../common/libmemwatch.la]) ])
+ [test "x$ac_libsmraw_have_memwatch" != xno ],
+ [AC_SUBST(
+  [MEMWATCH_CPPFLAGS],
+  ["-DMEMWATCH -DMEMWATCH_STDIO"])
+ AC_SUBST(
+  [MEMWATCH_LIBADD],
+  [../common/libmemwatch.la]) ])
 
 AM_CONDITIONAL(
  [HAVE_MEMWATCH],
@@ -1160,15 +765,15 @@ CFLAGS="$CFLAGS -Wall";
 
 dnl Check if DLL support is needed in smrawtools
 AS_IF(
-	[test x"$enable_shared" = xyes],
-	[AS_CASE(
-		[$host],
-		[*cygwin* | *mingw*],
-		[AC_SUBST(
-		 [LIBSMRAW_DLL_IMPORT],
-		 ["-DLIBSMRAW_DLL_IMPORT"])
-		])
-	])
+ [test x"$enable_shared" = xyes],
+ [AS_CASE(
+  [$host],
+  [*cygwin* | *mingw*],
+  [AC_SUBST(
+   [LIBSMRAW_DLL_IMPORT],
+   ["-DLIBSMRAW_DLL_IMPORT"])
+  ])
+ ])
 
 dnl Have configure make the Makefiles
 AC_CONFIG_FILES([Makefile])
@@ -1181,6 +786,7 @@ AC_CONFIG_FILES([libuna/Makefile])
 AC_CONFIG_FILES([libbfio/Makefile])
 AC_CONFIG_FILES([libsmraw/Makefile])
 AC_CONFIG_FILES([manuals/Makefile])
+AC_CONFIG_FILES([tests/Makefile])
 AC_CONFIG_FILES([borlandc/Makefile])
 AC_CONFIG_FILES([msvscpp/Makefile])
 dnl Have configure make the include files

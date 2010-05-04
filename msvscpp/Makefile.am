@@ -7,6 +7,9 @@ EXTRA_DIST = \
 	libuna/libuna.vcproj \
 	libsmraw.sln
 
+MAINTAINERCLEANFILES = \
+	Makefile.in
+
 distclean: clean
 	/bin/rm -f Makefile
 

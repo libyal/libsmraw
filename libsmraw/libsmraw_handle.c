@@ -154,7 +154,7 @@ int libsmraw_handle_initialize(
 			return( -1 );
 		}
 		internal_handle->maximum_segment_size           = LIBSMRAW_DEFAULT_MAXIMUM_SEGMENT_SIZE;
-		internal_handle->maximum_amount_of_open_handles = LIBBFIO_POOL_UNLIMITED_AMOUNT_OF_OPEN_HANDLES;
+		internal_handle->maximum_number_of_open_handles = LIBBFIO_POOL_UNLIMITED_NUMBER_OF_OPEN_HANDLES;
 
 		*handle = (libsmraw_handle_t *) internal_handle;
 	}
@@ -341,11 +341,11 @@ int libsmraw_internal_handle_initialize_write_values(
 	if( ( internal_handle->media_size > 0 )
 	 && ( internal_handle->maximum_segment_size > 0 ) )
 	{
-		internal_handle->total_amount_of_file_io_pool_entries = (int) ( internal_handle->media_size / internal_handle->maximum_segment_size );
+		internal_handle->total_number_of_file_io_pool_entries = (int) ( internal_handle->media_size / internal_handle->maximum_segment_size );
 
 		if( ( internal_handle->media_size % internal_handle->maximum_segment_size ) != 0 )
 		{
-			internal_handle->total_amount_of_file_io_pool_entries += 1;
+			internal_handle->total_number_of_file_io_pool_entries += 1;
 		}
 	}
 	internal_handle->write_values_initialized = 1;
@@ -359,7 +359,7 @@ int libsmraw_internal_handle_initialize_write_values(
 int libsmraw_handle_open(
      libsmraw_handle_t *handle,
      char * const filenames[],
-     int amount_of_filenames,
+     int number_of_filenames,
      uint8_t flags,
      liberror_error_t **error )
 {
@@ -410,13 +410,13 @@ int libsmraw_handle_open(
 
 		return( -1 );
 	}
-	if( amount_of_filenames <= 0 )
+	if( number_of_filenames <= 0 )
 	{
 		liberror_error_set(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBERROR_ARGUMENT_ERROR_VALUE_OUT_OF_RANGE,
-		 "%s: invalid amount of filenames value out of range.",
+		 "%s: invalid number of filenames value out of range.",
 		 function );
 
 		return( -1 );
@@ -481,7 +481,7 @@ int libsmraw_handle_open(
 		if( libbfio_pool_initialize(
 		     &file_io_pool,
 		     0,
-		     internal_handle->maximum_amount_of_open_handles,
+		     internal_handle->maximum_number_of_open_handles,
 		     error ) != 1 )
 		{
 			liberror_error_set(
@@ -494,7 +494,7 @@ int libsmraw_handle_open(
 			return( -1 );
 		}
 		for( filename_iterator = 0;
-		     filename_iterator < amount_of_filenames;
+		     filename_iterator < number_of_filenames;
 		     filename_iterator++ )
 		{
 			filename_length = libcstring_narrow_string_length(
@@ -644,7 +644,7 @@ int libsmraw_handle_open(
 		if( libbfio_pool_initialize(
 		     &file_io_pool,
 		     0,
-		     internal_handle->maximum_amount_of_open_handles,
+		     internal_handle->maximum_number_of_open_handles,
 		     error ) != 1 )
 		{
 			liberror_error_set(
@@ -792,7 +792,7 @@ int libsmraw_handle_open(
 int libsmraw_handle_open_wide(
      libsmraw_handle_t *handle,
      wchar_t * const filenames[],
-     int amount_of_filenames,
+     int number_of_filenames,
      uint8_t flags,
      liberror_error_t **error )
 {
@@ -843,13 +843,13 @@ int libsmraw_handle_open_wide(
 
 		return( -1 );
 	}
-	if( amount_of_filenames <= 0 )
+	if( number_of_filenames <= 0 )
 	{
 		liberror_error_set(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBERROR_ARGUMENT_ERROR_VALUE_OUT_OF_RANGE,
-		 "%s: invalid amount of filenames value out of range.",
+		 "%s: invalid number of filenames value out of range.",
 		 function );
 
 		return( -1 );
@@ -914,7 +914,7 @@ int libsmraw_handle_open_wide(
 		if( libbfio_pool_initialize(
 		     &file_io_pool,
 		     0,
-		     internal_handle->maximum_amount_of_open_handles,
+		     internal_handle->maximum_number_of_open_handles,
 		     error ) != 1 )
 		{
 			liberror_error_set(
@@ -927,7 +927,7 @@ int libsmraw_handle_open_wide(
 			return( -1 );
 		}
 		for( filename_iterator = 0;
-		     filename_iterator < amount_of_filenames;
+		     filename_iterator < number_of_filenames;
 		     filename_iterator++ )
 		{
 			filename_length = libcstring_wide_string_length(
@@ -1077,7 +1077,7 @@ int libsmraw_handle_open_wide(
 		if( libbfio_pool_initialize(
 		     &file_io_pool,
 		     0,
-		     internal_handle->maximum_amount_of_open_handles,
+		     internal_handle->maximum_number_of_open_handles,
 		     error ) != 1 )
 		{
 			liberror_error_set(
@@ -1232,7 +1232,7 @@ int libsmraw_handle_open_file_io_pool(
 	libsmraw_internal_handle_t *internal_handle = NULL;
 	static char *function                       = "libsmraw_handle_open_file_io_pool";
 	size64_t file_size                          = 0;
-	int amount_of_handles                       = 0;
+	int number_of_handles                       = 0;
 	int file_io_flags                           = 0;
 	int file_io_handle_iterator                 = 0;
 
@@ -1271,16 +1271,16 @@ int libsmraw_handle_open_file_io_pool(
 
 		return( -1 );
 	}
-	if( libbfio_pool_get_amount_of_handles(
+	if( libbfio_pool_get_number_of_handles(
 	     file_io_pool,
-	     &amount_of_handles,
+	     &number_of_handles,
 	     error ) != 1 )
 	{
 		liberror_error_set(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve the amount of handles in the file io pool.",
+		 "%s: unable to retrieve the number of handles in the file io pool.",
 		 function );
 
 		return( -1 );
@@ -1308,7 +1308,7 @@ int libsmraw_handle_open_file_io_pool(
 			file_io_flags = LIBBFIO_OPEN_READ;
 		}
 		for( file_io_handle_iterator = 0;
-		     file_io_handle_iterator < amount_of_handles;
+		     file_io_handle_iterator < number_of_handles;
 		     file_io_handle_iterator++ )
 		{
 			if( libbfio_pool_get_handle(
@@ -1692,7 +1692,7 @@ int libsmraw_handle_close(
 }
 
 /* Reads a buffer
- * Returns the amount of bytes read or -1 on error
+ * Returns the number of bytes read or -1 on error
  */
 ssize_t libsmraw_handle_read_buffer(
          libsmraw_handle_t *handle,
@@ -1857,7 +1857,7 @@ ssize_t libsmraw_handle_read_buffer(
 }
 
 /* Writes a buffer
- * Returns the amount of bytes written or -1 on error
+ * Returns the number of bytes written or -1 on error
  */
 ssize_t libsmraw_handle_write_buffer(
          libsmraw_handle_t *handle,
@@ -1875,7 +1875,7 @@ ssize_t libsmraw_handle_write_buffer(
 	size_t segment_filename_size                    = 0;
 	size_t write_size                               = 0;
 	ssize_t write_count                             = 0;
-	int amount_of_handles                           = 0;
+	int number_of_handles                           = 0;
 	int pool_entry                                  = 0;
 
 	if( handle == NULL )
@@ -1931,7 +1931,7 @@ ssize_t libsmraw_handle_write_buffer(
 		}
 	}
 	if( ( internal_handle->current_file_io_pool_entry < 0 )
-	 || ( internal_handle->current_file_io_pool_entry >= internal_handle->total_amount_of_file_io_pool_entries ) )
+	 || ( internal_handle->current_file_io_pool_entry >= internal_handle->total_number_of_file_io_pool_entries ) )
 	{
 		liberror_error_set(
 		 error,
@@ -1968,9 +1968,9 @@ ssize_t libsmraw_handle_write_buffer(
 	{
 		return( 0 );
 	}
-	if( libbfio_pool_get_amount_of_handles(
+	if( libbfio_pool_get_number_of_handles(
 	     internal_handle->file_io_pool,
-	     &amount_of_handles,
+	     &number_of_handles,
 	     error ) != 1 )
 	{
 		liberror_error_set(
@@ -1985,14 +1985,14 @@ ssize_t libsmraw_handle_write_buffer(
 	}
 	while( buffer_size > 0 )
 	{
-		if( internal_handle->current_file_io_pool_entry >= amount_of_handles )
+		if( internal_handle->current_file_io_pool_entry >= number_of_handles )
 		{
 			if( libsmraw_filename_create(
 			     &segment_filename,
 			     &segment_filename_size,
 			     internal_handle->basename,
 			     internal_handle->basename_size,
-			     internal_handle->total_amount_of_file_io_pool_entries,
+			     internal_handle->total_number_of_file_io_pool_entries,
 			     internal_handle->current_file_io_pool_entry,
 			     error ) != 1 )
 			{
@@ -2074,7 +2074,7 @@ ssize_t libsmraw_handle_write_buffer(
 
 				return( -1 );
 			}
-			amount_of_handles++;
+			number_of_handles++;
 
 			if( libbfio_pool_open(
 			     internal_handle->file_io_pool,
@@ -2182,7 +2182,7 @@ off64_t libsmraw_handle_seek_offset(
 	static char *function                       = "libsmraw_handle_seek_offset";
 	off64_t file_offset                         = 0;
 	size64_t file_size                          = 0;
-	int amount_of_handles                       = 0;
+	int number_of_handles                       = 0;
 	int file_io_pool_entry                      = 0;
 
 	if( handle == NULL )
@@ -2243,9 +2243,9 @@ off64_t libsmraw_handle_seek_offset(
 	}
 	if( offset < (off64_t) internal_handle->media_size )
 	{
-		if( libbfio_pool_get_amount_of_handles(
+		if( libbfio_pool_get_number_of_handles(
 		     internal_handle->file_io_pool,
-		     &amount_of_handles,
+		     &number_of_handles,
 		     error ) != 1 )
 		{
 			liberror_error_set(
@@ -2261,7 +2261,7 @@ off64_t libsmraw_handle_seek_offset(
 		file_offset = offset;
 
 		for( file_io_pool_entry = 0;
-		     file_io_pool_entry < amount_of_handles;
+		     file_io_pool_entry < number_of_handles;
 		     file_io_pool_entry++ )
 		{
 			if( file_offset == 0 )
@@ -2290,7 +2290,7 @@ off64_t libsmraw_handle_seek_offset(
 			}
 			file_offset -= (off64_t) file_size;
 		}
-		if( file_io_pool_entry >= amount_of_handles )
+		if( file_io_pool_entry >= number_of_handles )
 		{
 			liberror_error_set(
 			 error,
@@ -2366,16 +2366,16 @@ int libsmraw_handle_get_offset(
 	return( 1 );
 }
 
-/* Sets the maximum amount of (concurrent) open file handles
+/* Sets the maximum number of (concurrent) open file handles
  * Returns 1 if successful or -1 on error
  */
-int libsmraw_handle_set_maximum_amount_of_open_handles(
+int libsmraw_handle_set_maximum_number_of_open_handles(
      libsmraw_handle_t *handle,
-     int maximum_amount_of_open_handles,
+     int maximum_number_of_open_handles,
      liberror_error_t **error )
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
-	static char *function                       = "libsmraw_handle_set_maximum_amount_of_open_handles";
+	static char *function                       = "libsmraw_handle_set_maximum_number_of_open_handles";
 
 	if( handle == NULL )
 	{
@@ -2392,22 +2392,22 @@ int libsmraw_handle_set_maximum_amount_of_open_handles(
 
 	if( internal_handle->file_io_pool != NULL )
 	{
-		if( libbfio_pool_set_maximum_amount_of_open_handles(
+		if( libbfio_pool_set_maximum_number_of_open_handles(
 		     internal_handle->file_io_pool,
-		     maximum_amount_of_open_handles,
+		     maximum_number_of_open_handles,
 		     error ) != 1 )
 		{
 			liberror_error_set(
 			 error,
 			 LIBERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBERROR_RUNTIME_ERROR_SET_FAILED,
-			 "%s: unable to set maximum amount of open handles in file io handle.",
+			 "%s: unable to set maximum number of open handles in file io handle.",
 			 function );
 
 			return( -1 );
 		}
 	}
-	internal_handle->maximum_amount_of_open_handles = maximum_amount_of_open_handles;
+	internal_handle->maximum_number_of_open_handles = maximum_number_of_open_handles;
 
 	return( 1 );
 }

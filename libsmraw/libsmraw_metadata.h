@@ -76,9 +76,9 @@ LIBSMRAW_EXTERN int libsmraw_handle_set_media_flags(
                      uint8_t media_flags,
                      liberror_error_t **error );
 
-LIBSMRAW_EXTERN int libsmraw_handle_get_amount_of_information_values(
+LIBSMRAW_EXTERN int libsmraw_handle_get_number_of_information_values(
                      libsmraw_handle_t *handle,
-                     int *amount_of_information_values,
+                     int *number_of_information_values,
                      liberror_error_t **error );
 
 LIBSMRAW_EXTERN int libsmraw_handle_get_information_value_identifier_size(
@@ -117,9 +117,9 @@ LIBSMRAW_EXTERN int libsmraw_handle_set_information_value(
                      size_t value_length,
                      liberror_error_t **error );
 
-LIBSMRAW_EXTERN int libsmraw_handle_get_amount_of_integrity_hash_values(
+LIBSMRAW_EXTERN int libsmraw_handle_get_number_of_integrity_hash_values(
                      libsmraw_handle_t *handle,
-                     int *amount_of_integrity_hash_values,
+                     int *number_of_integrity_hash_values,
                      liberror_error_t **error );
 
 LIBSMRAW_EXTERN int libsmraw_handle_get_integrity_hash_value_identifier_size(

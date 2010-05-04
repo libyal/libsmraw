@@ -57,7 +57,7 @@ LIBSMRAW_EXTERN int libsmraw_glob(
                      const char *filename,
                      size_t filename_length,
                      char **filenames[],
-                     int *amount_of_filenames,
+                     int *number_of_filenames,
                      libsmraw_error_t **error );
 
 /* Frees the globbed filenames
@@ -65,7 +65,7 @@ LIBSMRAW_EXTERN int libsmraw_glob(
  */
 LIBSMRAW_EXTERN int libsmraw_glob_free(
                      char *filenames[],
-                     int amount_of_filenames,
+                     int number_of_filenames,
                      libsmraw_error_t **error );
 
 #if defined( HAVE_WIDE_CHARACTER_TYPE )
@@ -76,7 +76,7 @@ LIBSMRAW_EXTERN int libsmraw_glob_wide(
                      const wchar_t *filename,
                      size_t filename_length,
                      wchar_t **filenames[],
-                     int *amount_of_filenames,
+                     int *number_of_filenames,
                      libsmraw_error_t **error );
 
 /* Frees the globbed wide filenames
@@ -84,7 +84,7 @@ LIBSMRAW_EXTERN int libsmraw_glob_wide(
  */
 LIBSMRAW_EXTERN int libsmraw_glob_wide_free(
                      wchar_t *filenames[],
-                     int amount_of_filenames,
+                     int number_of_filenames,
                      libsmraw_error_t **error );
 #endif
 
@@ -128,14 +128,14 @@ LIBSMRAW_EXTERN void libsmraw_error_free(
                       libsmraw_error_t **error );
 
 /* Prints a descriptive string of the error to the stream
- * Returns the amount of printed characters if successful or -1 on error
+ * Returns the number of printed characters if successful or -1 on error
  */
 LIBSMRAW_EXTERN int libsmraw_error_fprint(
                      libsmraw_error_t *error,
                      FILE *stream );
 
 /* Prints a descriptive string of the error to the string
- * Returns the amount of printed characters if successful or -1 on error
+ * Returns the number of printed characters if successful or -1 on error
  */
 LIBSMRAW_EXTERN int libsmraw_error_sprint(
                      libsmraw_error_t *error,
@@ -143,14 +143,14 @@ LIBSMRAW_EXTERN int libsmraw_error_sprint(
                      size_t size );
 
 /* Prints a backtrace of the error to the stream
- * Returns the amount of printed characters if successful or -1 on error
+ * Returns the number of printed characters if successful or -1 on error
  */
 LIBSMRAW_EXTERN int libsmraw_error_backtrace_fprint(
                      libsmraw_error_t *error,
                      FILE *stream );
 
 /* Prints a backtrace of the error to the string
- * Returns the amount of printed characters if successful or -1 on error
+ * Returns the number of printed characters if successful or -1 on error
  */
 LIBSMRAW_EXTERN int libsmraw_error_backtrace_sprint(
                      libsmraw_error_t *error,
@@ -189,7 +189,7 @@ LIBSMRAW_EXTERN int libsmraw_handle_signal_abort(
 LIBSMRAW_EXTERN int libsmraw_handle_open(
                      libsmraw_handle_t *handle,
                      char * const filenames[],
-                     int amount_of_filenames,
+                     int number_of_filenames,
                      uint8_t flags,
                      libsmraw_error_t **error );
 
@@ -200,7 +200,7 @@ LIBSMRAW_EXTERN int libsmraw_handle_open(
 LIBSMRAW_EXTERN int libsmraw_handle_open_wide(
                      libsmraw_handle_t *handle,
                      wchar_t * const filenames[],
-                     int amount_of_filenames,
+                     int number_of_filenames,
                      uint8_t flags,
                      libsmraw_error_t **error );
 #endif
@@ -224,7 +224,7 @@ LIBSMRAW_EXTERN int libsmraw_handle_close(
                      libsmraw_error_t **error );
 
 /* Reads a buffer from the handle
- * Returns the amount of bytes read or -1 on error
+ * Returns the number of bytes read or -1 on error
  */
 LIBSMRAW_EXTERN ssize_t libsmraw_handle_read_buffer(
                          libsmraw_handle_t *handle,
@@ -233,7 +233,7 @@ LIBSMRAW_EXTERN ssize_t libsmraw_handle_read_buffer(
                          libsmraw_error_t **error );
 
 /* Writes a buffer to the handle
- * Returns the amount of bytes written or -1 on error
+ * Returns the number of bytes written or -1 on error
  */
 LIBSMRAW_EXTERN ssize_t libsmraw_handle_write_buffer(
                          libsmraw_handle_t *handle,
@@ -242,7 +242,7 @@ LIBSMRAW_EXTERN ssize_t libsmraw_handle_write_buffer(
                          libsmraw_error_t **error );
 
 /* Seeks an offset in the handle
- * Returns the amount of bytes in the buffer or -1 on error
+ * Returns the number of bytes in the buffer or -1 on error
  */
 LIBSMRAW_EXTERN off64_t libsmraw_handle_seek_offset(
                          libsmraw_handle_t *handle,
@@ -258,9 +258,20 @@ LIBSMRAW_EXTERN int libsmraw_handle_get_offset(
                      off64_t *offset,
                      libsmraw_error_t **error );
 
-/* Sets the maximum amount of (concurrent) open file handles
+/* Sets the maximum number of (concurrent) open file handles
  * Returns 1 if successful or -1 on error
  */
+LIBSMRAW_EXTERN int libsmraw_handle_set_maximum_number_of_open_handles(
+                     libsmraw_handle_t *handle,
+                     int maximum_number_of_open_handles,
+                     libsmraw_error_t **error );
+
+/* Sets the maximum amount of (concurrent) open file handles
+ * Returns 1 if successful or -1 on error
+ *
+ * This function is deprecated use libsmraw_handle_set_maximum_number_of_open_handles instead
+ */
+LIBSMRAW_DEPRECATED \
 LIBSMRAW_EXTERN int libsmraw_handle_set_maximum_amount_of_open_handles(
                      libsmraw_handle_t *handle,
                      int maximum_amount_of_open_handles,
@@ -412,7 +423,7 @@ LIBSMRAW_EXTERN int libsmraw_handle_set_media_size(
                      size64_t media_size,
                      libsmraw_error_t **error );
 
-/* Retrieves the amount of bytes per sector
+/* Retrieves the number of bytes per sector
  * Returns the 1 if succesful or -1 on error
  */
 LIBSMRAW_EXTERN int libsmraw_handle_get_bytes_per_sector(
@@ -420,7 +431,7 @@ LIBSMRAW_EXTERN int libsmraw_handle_get_bytes_per_sector(
                      uint32_t *bytes_per_sector,
                      libsmraw_error_t **error );
 
-/* Sets the amount of bytes per sector
+/* Sets the number of bytes per sector
  * Returns the 1 if succesful or -1 on error
  */
 LIBSMRAW_EXTERN int libsmraw_handle_set_bytes_per_sector(
@@ -460,9 +471,20 @@ LIBSMRAW_EXTERN int libsmraw_handle_set_media_flags(
                      uint8_t media_flags,
                      libsmraw_error_t **error );
 
-/* Retrieves the amount of information values
+/* Retrieves the number of information values
  * Returns 1 if successful or -1 on error
  */
+LIBSMRAW_EXTERN int libsmraw_handle_get_number_of_information_values(
+                     libsmraw_handle_t *handle,
+                     int *number_of_information_values,
+                     libsmraw_error_t **error );
+
+/* Retrieves the amount of information values
+ * Returns 1 if successful or -1 on error
+ *
+ * This function is deprecated use libsmraw_handle_get_number_of_information_values instead
+ */
+LIBSMRAW_DEPRECATED \
 LIBSMRAW_EXTERN int libsmraw_handle_get_amount_of_information_values(
                      libsmraw_handle_t *handle,
                      int *amount_of_information_values,
@@ -526,9 +548,20 @@ LIBSMRAW_EXTERN int libsmraw_handle_set_information_value(
                      size_t value_length,
                      libsmraw_error_t **error );
 
-/* Retrieves the amount of integrity hash values
+/* Retrieves the number of integrity hash values
  * Returns 1 if successful or -1 on error
  */
+LIBSMRAW_EXTERN int libsmraw_handle_get_number_of_integrity_hash_values(
+                     libsmraw_handle_t *handle,
+                     int *number_of_integrity_hash_values,
+                     libsmraw_error_t **error );
+
+/* Retrieves the amount of integrity hash values
+ * Returns 1 if successful or -1 on error
+ *
+ * This function is deprecated use libsmraw_handle_get_amount_of_integrity_hash_values instead
+ */
+LIBSMRAW_DEPRECATED \
 LIBSMRAW_EXTERN int libsmraw_handle_get_amount_of_integrity_hash_values(
                      libsmraw_handle_t *handle,
                      int *amount_of_integrity_hash_values,

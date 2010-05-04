@@ -792,16 +792,16 @@ int libsmraw_handle_set_media_flags(
 	return( 1 );
 }
 
-/* Retrieves the amount of information values
+/* Retrieves the number of information values
  * Returns 1 if successful or -1 on error
  */
-int libsmraw_handle_get_amount_of_information_values(
+int libsmraw_handle_get_number_of_information_values(
      libsmraw_handle_t *handle,
-     int *amount_of_information_values,
+     int *number_of_information_values,
      liberror_error_t **error )
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
-	static char *function                       = "libsmraw_handle_get_amount_of_information_values";
+	static char *function                       = "libsmraw_handle_get_number_of_information_values";
 
 	if( handle == NULL )
 	{
@@ -838,16 +838,16 @@ int libsmraw_handle_get_amount_of_information_values(
 
 		return( -1 );
 	}
-	if( libsmraw_values_table_get_amount_of_values(
+	if( libsmraw_values_table_get_number_of_values(
 	     internal_handle->information_values_table,
-	     amount_of_information_values,
+	     number_of_information_values,
 	     error ) != 1 )
 	{
 		liberror_error_set(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve amount of information values.",
+		 "%s: unable to retrieve number of information values.",
 		 function );
 
 		return( -1 );
@@ -1243,16 +1243,16 @@ int libsmraw_handle_set_information_value(
 	return( 1 );
 }
 
-/* Retrieves the amount of integrity hash values
+/* Retrieves the number of integrity hash values
  * Returns 1 if successful or -1 on error
  */
-int libsmraw_handle_get_amount_of_integrity_hash_values(
+int libsmraw_handle_get_number_of_integrity_hash_values(
      libsmraw_handle_t *handle,
-     int *amount_of_integrity_hash_values,
+     int *number_of_integrity_hash_values,
      liberror_error_t **error )
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
-	static char *function                       = "libsmraw_handle_get_amount_of_integrity_hash_values";
+	static char *function                       = "libsmraw_handle_get_number_of_integrity_hash_values";
 
 	if( handle == NULL )
 	{
@@ -1289,16 +1289,16 @@ int libsmraw_handle_get_amount_of_integrity_hash_values(
 
 		return( -1 );
 	}
-	if( libsmraw_values_table_get_amount_of_values(
+	if( libsmraw_values_table_get_number_of_values(
 	     internal_handle->integrity_hash_values_table,
-	     amount_of_integrity_hash_values,
+	     number_of_integrity_hash_values,
 	     error ) != 1 )
 	{
 		liberror_error_set(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve amount of integrity hash values.",
+		 "%s: unable to retrieve number of integrity hash values.",
 		 function );
 
 		return( -1 );

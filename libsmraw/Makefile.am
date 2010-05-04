@@ -19,6 +19,7 @@ libsmraw_la_SOURCES = \
 	libsmraw_filename.c libsmraw_filename.h \
 	libsmraw_handle.c libsmraw_handle.h \
 	libsmraw_information_file.c libsmraw_information_file.h \
+	libsmraw_legacy.c libsmraw_legacy.h \
 	libsmraw_libbfio.h \
 	libsmraw_libuna.h \
 	libsmraw_metadata.c libsmraw_metadata.h \
@@ -36,6 +37,9 @@ libsmraw_la_LIBADD = \
 	@LIBBFIO_LIBADD@
 
 libsmraw_la_LDFLAGS = -no-undefined -version-info 1:0:0
+
+MAINTAINERCLEANFILES = \
+	Makefile.in
 
 distclean: clean
 	/bin/rm -f Makefile

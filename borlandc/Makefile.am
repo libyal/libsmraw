@@ -10,6 +10,9 @@ CODEGEAR_FILES = \
 EXTRA_DIST = \
 	$(CODEGEAR_FILES)
 
+MAINTAINERCLEANFILES = \
+	Makefile.in
+
 distclean: clean
 	/bin/rm -f Makefile
 

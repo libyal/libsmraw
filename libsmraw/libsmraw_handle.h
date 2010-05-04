@@ -39,8 +39,9 @@
 #if defined( _MSC_VER ) || defined( __BORLANDC__ )
 
 /* This inclusion is needed otherwise some linkers
- * mess up exporting the metadata functions
+ * mess up exporting the legacy and metadata functions
  */
+#include "libsmraw_legacy.h"
 #include "libsmraw_metadata.h"
 #endif
 
@@ -64,9 +65,9 @@ struct libsmraw_internal_handle
 	 */
 	int current_file_io_pool_entry;
 
-	/* The total amount of pool entries
+	/* The total number of pool entries
 	 */
-	int total_amount_of_file_io_pool_entries;
+	int total_number_of_file_io_pool_entries;
 
 	/* A pool of file io handles
 	 */
@@ -76,9 +77,9 @@ struct libsmraw_internal_handle
 	 */
 	uint8_t file_io_pool_created_in_library;
 
-	/* The maximum amount of open handles in the pool
+	/* The maximum number of open handles in the pool
 	 */
-	int maximum_amount_of_open_handles;
+	int maximum_number_of_open_handles;
  
 	/* A value to indicate if the read values have been initialized
 	 */
@@ -145,7 +146,7 @@ int libsmraw_internal_handle_initialize_write_values(
 LIBSMRAW_EXTERN int libsmraw_handle_open(
                      libsmraw_handle_t *handle,
                      char * const filenames[],
-                     int amount_of_filenames,
+                     int number_of_filenames,
                      uint8_t flags,
                      liberror_error_t **error );
 
@@ -153,7 +154,7 @@ LIBSMRAW_EXTERN int libsmraw_handle_open(
 LIBSMRAW_EXTERN int libsmraw_handle_open_wide(
                      libsmraw_handle_t *handle,
                      wchar_t * const filenames[],
-                     int amount_of_filenames,
+                     int number_of_filenames,
                      uint8_t flags,
                      liberror_error_t **error );
 #endif
@@ -195,9 +196,9 @@ LIBSMRAW_EXTERN int libsmraw_handle_get_offset(
                      off64_t *offset,
                      liberror_error_t **error );
 
-LIBSMRAW_EXTERN int libsmraw_handle_set_maximum_amount_of_open_handles(
+LIBSMRAW_EXTERN int libsmraw_handle_set_maximum_number_of_open_handles(
                      libsmraw_handle_t *handle,
-                     int maximum_amount_of_open_handles,
+                     int maximum_number_of_open_handles,
                      liberror_error_t **error );
 
 LIBSMRAW_EXTERN int libsmraw_handle_get_segment_filename_size(

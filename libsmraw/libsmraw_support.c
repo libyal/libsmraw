@@ -45,7 +45,7 @@ const char *libsmraw_get_version(
  */
 int libsmraw_glob_append_segment_file(
      char **filenames[],
-     int *amount_of_filenames,
+     int *number_of_filenames,
      const char *segment_filename, 
      liberror_error_t **error )
 {
@@ -63,13 +63,13 @@ int libsmraw_glob_append_segment_file(
 
 		return( -1 );
 	}
-	if( amount_of_filenames == NULL )
+	if( number_of_filenames == NULL )
 	{
 		liberror_error_set(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid amount of filenames.",
+		 "%s: invalid number of filenames.",
 		 function );
 
 		return( -1 );
@@ -87,7 +87,7 @@ int libsmraw_glob_append_segment_file(
 	}
 	reallocation = memory_reallocate(
 			*filenames,
-			sizeof( char * ) * ( *amount_of_filenames + 1 ) );
+			sizeof( char * ) * ( *number_of_filenames + 1 ) );
 
 	if( reallocation == NULL )
 	{
@@ -102,9 +102,9 @@ int libsmraw_glob_append_segment_file(
 	}
 	*filenames = reallocation;
 
-	( *filenames )[ *amount_of_filenames ] = (char *) segment_filename;
+	( *filenames )[ *number_of_filenames ] = (char *) segment_filename;
 
-	*amount_of_filenames += 1;
+	*number_of_filenames += 1;
 
 	return( 1 );
 }
@@ -424,7 +424,7 @@ int libsmraw_glob(
      const char *filename,
      size_t filename_length,
      char **filenames[],
-     int *amount_of_filenames,
+     int *number_of_filenames,
      liberror_error_t **error )
 {
 	char *suffixes[ ] = {
@@ -484,18 +484,18 @@ int libsmraw_glob(
 
 		return( -1 );
 	}
-	if( amount_of_filenames == NULL )
+	if( number_of_filenames == NULL )
 	{
 		liberror_error_set(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid amount of filenames.",
+		 "%s: invalid number of filenames.",
 		 function );
 
 		return( -1 );
 	}
-	*amount_of_filenames = 0;
+	*number_of_filenames = 0;
 
 	if( libbfio_file_initialize(
 	     &file_io_handle,
@@ -602,7 +602,7 @@ int libsmraw_glob(
 	}
 	if( libsmraw_glob_append_segment_file(
 	     filenames,
-	     amount_of_filenames,
+	     number_of_filenames,
 	     segment_filename,
 	     error ) != 1 )
 	{
@@ -822,7 +822,7 @@ int libsmraw_glob(
 		}
 		segment_filename_copy_length = segment_filename_copy_size - 1;
 
-		while( *amount_of_filenames < INT_MAX )
+		while( *number_of_filenames < INT_MAX )
 		{
 			segment_file_identifier++;
 
@@ -890,7 +890,7 @@ int libsmraw_glob(
 			}
 			if( libsmraw_glob_append_segment_file(
 			     filenames,
-			     amount_of_filenames,
+			     number_of_filenames,
 			     segment_filename,
 			     error ) != 1 )
 			{
@@ -937,7 +937,7 @@ int libsmraw_glob(
  */
 int libsmraw_glob_free(
      char *filenames[],
-     int amount_of_filenames,
+     int number_of_filenames,
      liberror_error_t **error )
 {
 	static char *function = "libsmraw_glob_free";
@@ -954,19 +954,19 @@ int libsmraw_glob_free(
 
 		return( -1 );
 	}
-	if( amount_of_filenames < 0 )
+	if( number_of_filenames < 0 )
 	{
 		liberror_error_set(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBERROR_ARGUMENT_ERROR_VALUE_LESS_THAN_ZERO,
-		 "%s: invalid amount of filenames value less than zero.",
+		 "%s: invalid number of filenames value less than zero.",
 		 function );
 
 		return( -1 );
 	}
 	for( filename_iterator = 0;
-	     filename_iterator < amount_of_filenames;
+	     filename_iterator < number_of_filenames;
 	     filename_iterator++ )
 	{
 		memory_free(
@@ -986,7 +986,7 @@ int libsmraw_glob_free(
  */
 int libsmraw_glob_wide_append_segment_file(
      wchar_t **filenames[],
-     int *amount_of_filenames,
+     int *number_of_filenames,
      const wchar_t *segment_filename, 
      liberror_error_t **error )
 {
@@ -1004,13 +1004,13 @@ int libsmraw_glob_wide_append_segment_file(
 
 		return( -1 );
 	}
-	if( amount_of_filenames == NULL )
+	if( number_of_filenames == NULL )
 	{
 		liberror_error_set(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid amount of filenames.",
+		 "%s: invalid number of filenames.",
 		 function );
 
 		return( -1 );
@@ -1028,7 +1028,7 @@ int libsmraw_glob_wide_append_segment_file(
 	}
 	reallocation = memory_reallocate(
 			*filenames,
-			sizeof( wchar_t * ) * ( *amount_of_filenames + 1 ) );
+			sizeof( wchar_t * ) * ( *number_of_filenames + 1 ) );
 
 	if( reallocation == NULL )
 	{
@@ -1043,9 +1043,9 @@ int libsmraw_glob_wide_append_segment_file(
 	}
 	*filenames = reallocation;
 
-	( *filenames )[ *amount_of_filenames ] = (wchar_t *) segment_filename;
+	( *filenames )[ *number_of_filenames ] = (wchar_t *) segment_filename;
 
-	*amount_of_filenames += 1;
+	*number_of_filenames += 1;
 
 	return( 1 );
 }
@@ -1365,7 +1365,7 @@ int libsmraw_glob_wide(
      const wchar_t *filename,
      size_t filename_length,
      wchar_t **filenames[],
-     int *amount_of_filenames,
+     int *number_of_filenames,
      liberror_error_t **error )
 {
 	wchar_t *suffixes[ ] = {
@@ -1425,18 +1425,18 @@ int libsmraw_glob_wide(
 
 		return( -1 );
 	}
-	if( amount_of_filenames == NULL )
+	if( number_of_filenames == NULL )
 	{
 		liberror_error_set(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid amount of filenames.",
+		 "%s: invalid number of filenames.",
 		 function );
 
 		return( -1 );
 	}
-	*amount_of_filenames = 0;
+	*number_of_filenames = 0;
 
 	if( libbfio_file_initialize(
 	     &file_io_handle,
@@ -1543,7 +1543,7 @@ int libsmraw_glob_wide(
 	}
 	if( libsmraw_glob_wide_append_segment_file(
 	     filenames,
-	     amount_of_filenames,
+	     number_of_filenames,
 	     segment_filename,
 	     error ) != 1 )
 	{
@@ -1763,7 +1763,7 @@ int libsmraw_glob_wide(
 		}
 		segment_filename_copy_length = segment_filename_copy_size - 1;
 
-		while( *amount_of_filenames < INT_MAX )
+		while( *number_of_filenames < INT_MAX )
 		{
 			segment_file_identifier++;
 
@@ -1831,7 +1831,7 @@ int libsmraw_glob_wide(
 			}
 			if( libsmraw_glob_wide_append_segment_file(
 			     filenames,
-			     amount_of_filenames,
+			     number_of_filenames,
 			     segment_filename,
 			     error ) != 1 )
 			{
@@ -1878,7 +1878,7 @@ int libsmraw_glob_wide(
  */
 int libsmraw_glob_wide_free(
      wchar_t *filenames[],
-     int amount_of_filenames,
+     int number_of_filenames,
      liberror_error_t **error )
 {
 	static char *function = "libsmraw_glob_wide_free";
@@ -1895,19 +1895,19 @@ int libsmraw_glob_wide_free(
 
 		return( -1 );
 	}
-	if( amount_of_filenames < 0 )
+	if( number_of_filenames < 0 )
 	{
 		liberror_error_set(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBERROR_ARGUMENT_ERROR_VALUE_LESS_THAN_ZERO,
-		 "%s: invalid amount of filenames value less than zero.",
+		 "%s: invalid number of filenames value less than zero.",
 		 function );
 
 		return( -1 );
 	}
 	for( filename_iterator = 0;
-	     filename_iterator < amount_of_filenames;
+	     filename_iterator < number_of_filenames;
 	     filename_iterator++ )
 	{
 		memory_free(

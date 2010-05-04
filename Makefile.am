@@ -10,6 +10,7 @@ SUBDIRS = \
 	libbfio \
 	libsmraw \
 	manuals \
+	tests \
 	borlandc \
 	msvscpp
 
@@ -20,6 +21,9 @@ REDHAT_FILES = \
 EXTRA_DIST = \
         $(REDHAT_FILES) \
 	libsmraw.pc.in
+
+MAINTAINERCLEANFILES = \
+	Makefile.in
 
 pkgconfigdir = $(libdir)/pkgconfig
 

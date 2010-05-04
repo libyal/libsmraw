@@ -11,6 +11,9 @@ EXTRA_DIST = \
 	types.h \
 	types.h.in
 
+MAINTAINERCLEANFILES = \
+	Makefile.in
+
 if HAVE_MEMWATCH
 noinst_LTLIBRARIES = libmemwatch.la
 

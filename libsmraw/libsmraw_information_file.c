@@ -630,7 +630,7 @@ int libsmraw_information_file_write_section(
      liberror_error_t **error )
 {
 	static char *function = "libsmraw_information_file_write_section";
-	int amount_of_values  = 0;
+	int number_of_values  = 0;
 	int print_count       = 0;
 	int result            = 1;
 	int value_iterator    = 0;
@@ -711,21 +711,21 @@ int libsmraw_information_file_write_section(
 	}
 	/* Write section values
 	 */
-	if( libsmraw_values_table_get_amount_of_values(
+	if( libsmraw_values_table_get_number_of_values(
 	     values_table,
-	     &amount_of_values,
+	     &number_of_values,
 	     error ) != 1 )
 	{
 		liberror_error_set(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve amount of values.",
+		 "%s: unable to retrieve number of values.",
 		 function );
 
 		return( -1 );
 	}
-	if( amount_of_values > 0 )
+	if( number_of_values > 0 )
 	{
 		if( values_table->identifier == NULL )
 		{
@@ -772,7 +772,7 @@ int libsmraw_information_file_write_section(
 			return( -1 );
 		}
 		for( value_iterator = 0;
-		     value_iterator < amount_of_values;
+		     value_iterator < number_of_values;
 		     value_iterator++ )
 		{
 			if( values_table->identifier[ value_iterator ] == NULL )

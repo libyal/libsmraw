@@ -1,5 +1,7 @@
 TODO
+* fix PREFIX.0, PREFIX001.asb
 * work on support for naming schema XofY (1of5)
+* close segment file on writing when full?
 
 Features
 * allow set of segment filename during write (as alternative writing locations)
@@ -12,6 +14,18 @@ Tooling
 Test
 * retrieve data from the information file on open
 * make sure certain values cannot be changed if writing/reading from raw files
+
+Beta release
+* remove deprecated functions in libsmraw_legacy.[ch]
+
+20100504
+* added MAINTAINERCLEANFILES to Makefile.am
+* changed AM_INIT_AUTOMAKE arguments
+* worked on integrating tests, use 'make check' to run
+
+20100502
+* updated common, libcstring, liberror, libnotify, libuna, libbfio
+* changed amount of in number of
 
 20100427
 * small changes

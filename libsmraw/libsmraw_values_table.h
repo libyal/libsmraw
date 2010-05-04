@@ -38,9 +38,9 @@ typedef struct libsmraw_values_table libsmraw_values_table_t;
 
 struct libsmraw_values_table
 {
-	/* The amount of values
+	/* The number of values
 	 */
-	int amount_of_values;
+	int number_of_values;
 
 	/* The value identifiers
 	 */
@@ -61,7 +61,7 @@ struct libsmraw_values_table
 
 int libsmraw_values_table_initialize(
      libsmraw_values_table_t **values_table,
-     int amount_of_values,
+     int number_of_values,
      liberror_error_t **error );
 
 int libsmraw_values_table_free(
@@ -70,12 +70,12 @@ int libsmraw_values_table_free(
 
 int libsmraw_values_table_resize(
      libsmraw_values_table_t *values_table,
-     int amount_of_values,
+     int number_of_values,
      liberror_error_t **error );
 
-int libsmraw_values_table_get_amount_of_values(
+int libsmraw_values_table_get_number_of_values(
      libsmraw_values_table_t *values_table,
-     int *amount_of_values,
+     int *number_of_values,
      liberror_error_t **error );
 
 int libsmraw_values_table_get_index(

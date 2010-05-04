@@ -1,4 +1,4 @@
-.Dd February 1, 2010
+.Dd May 2, 2010
 .Dt libsmraw 3
 .Os libsmraw
 .Sh NAME
@@ -13,15 +13,15 @@ Support functions
 .Ft const char *
 .Fn libsmraw_get_version "void"
 .Ft int
-.Fn libsmraw_glob "const char *filename, size_t filename_length, uint8_t format, char **filenames[], int *amount_of_filenames, libsmraw_error_t **error"
+.Fn libsmraw_glob "const char *filename, size_t filename_length, uint8_t format, char **filenames[], int *number_of_filenames, libsmraw_error_t **error"
 .Ft int
-.Fn libsmraw_glob_free "char *filenames[], int amount_of_filenames, libsmraw_error_t **error"
+.Fn libsmraw_glob_free "char *filenames[], int number_of_filenames, libsmraw_error_t **error"
 .Pp
 Available when compiled with wide character string support:
 .Ft int
-.Fn libsmraw_glob_wide "const wchar_t *filename, size_t filename_length, uint8_t format, wchar_t **filenames[], int *amount_of_filenames, libsmraw_error_t **error"
+.Fn libsmraw_glob_wide "const wchar_t *filename, size_t filename_length, uint8_t format, wchar_t **filenames[], int *number_of_filenames, libsmraw_error_t **error"
 .Ft int
-.Fn libsmraw_glob_free_wide "wchar_t *filenames[], int amount_of_filenames, libsmraw_error_t **error"
+.Fn libsmraw_glob_free_wide "wchar_t *filenames[], int number_of_filenames, libsmraw_error_t **error"
 .Pp
 Notify functions
 .Ft void
@@ -53,7 +53,7 @@ File/Handle functions
 .Ft int
 .Fn libsmraw_handle_free "libsmraw_handle_t **handle, libsmraw_error_t **error"
 .Ft int
-.Fn libsmraw_handle_open "libsmraw_handle_t *handle, char * const filenames[], int amount_of_filenames, uint8_t flags, libsmraw_error_t **error"
+.Fn libsmraw_handle_open "libsmraw_handle_t *handle, char * const filenames[], int number_of_filenames, uint8_t flags, libsmraw_error_t **error"
 .Ft int
 .Fn libsmraw_handle_close "libsmraw_handle_t *handle, libsmraw_error_t **error"
 .Ft ssize_t
@@ -69,7 +69,7 @@ File/Handle functions
 .Ft off64_t
 .Fn libsmraw_handle_get_offset "libsmraw_handle_t *handle, libsmraw_error_t **error"
 .Ft int
-.Fn libsmraw_handle_set_maximum_amount_of_open_handles "libsmraw_handle_t *handle, int maximum_amount_of_open_handles, libsmraw_error_t **error"
+.Fn libsmraw_handle_set_maximum_number_of_open_handles "libsmraw_handle_t *handle, int maximum_number_of_open_handles, libsmraw_error_t **error"
 .Ft int
 .Fn libsmraw_handle_get_segment_filename_size "libsmraw_handle_t *handle, size_t *filename_size, libsmraw_error_t **error"
 .Ft int
@@ -87,7 +87,7 @@ File/Handle functions
 .Pp
 Available when compiled with wide character string support:
 .Ft int
-.Fn libsmraw_handle_open_wide "libsmraw_handle_t *handle, wchar_t * const filenames[], int amount_of_filenames, uint8_t flags"
+.Fn libsmraw_handle_open_wide "libsmraw_handle_t *handle, wchar_t * const filenames[], int number_of_filenames, uint8_t flags"
 .Ft int
 .Fn libsmraw_handle_get_segment_filename_size_wide "libsmraw_handle_t *handle, size_t *filename_size, libsmraw_error_t **error"
 .Ft int
@@ -123,7 +123,7 @@ Meta data functions
 .Ft int
 .Fn libsmraw_handle_set_media_flags "libsmraw_handle_t *handle, uint8_t media_flags, libsmraw_error_t **error"
 .Ft int
-.Fn libsmraw_handle_get_amount_of_information_values "libsmraw_handle_t *handle, uint32_t *amount_of_values, libsmraw_error_t **error"
+.Fn libsmraw_handle_get_number_of_information_values "libsmraw_handle_t *handle, uint32_t *number_of_values, libsmraw_error_t **error"
 .Ft int
 .Fn libsmraw_handle_get_information_value_identifier_size "libsmraw_handle_t *handle, uint32_t index, size_t *identifier_size, libsmraw_error_t **error"
 .Ft int
@@ -133,7 +133,7 @@ Meta data functions
 .Ft int
 .Fn libsmraw_handle_get_information_value "libsmraw_handle_t *handle, const uint8_t *identifier, size_t identifier_length, uint8_t *value, size_t value_size, libsmraw_error_t **error"
 .Ft int
-.Fn libsmraw_handle_get_amount_of_integrity_hash_values "libsmraw_handle_t *handle, uint32_t *amount_of_values, libsmraw_error_t **error"
+.Fn libsmraw_handle_get_number_of_integrity_hash_values "libsmraw_handle_t *handle, uint32_t *number_of_values, libsmraw_error_t **error"
 .Ft int
 .Fn libsmraw_handle_get_integrity_hash_value_identifier_size "libsmraw_handle_t *handle, uint32_t index, size_t *identifier_size, libsmraw_error_t **error"
 .Ft int
@@ -235,6 +235,7 @@ http://libsmraw.sourceforge.net/
 .Sh AUTHOR
 These man pages were written by Joachim Metz.
 .Sh COPYRIGHT
+Copyright (c) 2010, Joachim Metz <jbmetz@users.sourceforge.net>
 Copyright 2006-2010 Joachim Metz, Hoffmann Investigations <forensics@hoffmannbv.nl> and contributors.
 This is free software; see the source for copying conditions. There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 .Sh SEE ALSO

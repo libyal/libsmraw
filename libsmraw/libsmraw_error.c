@@ -42,7 +42,7 @@ void libsmraw_error_free(
 }
 
 /* Prints a descriptive string of the error to the stream
- * Returns the amount of printed characters if successful or -1 on error
+ * Returns the number of printed characters if successful or -1 on error
  */
 int libsmraw_error_fprint(
      libsmraw_error_t *error,
@@ -54,7 +54,7 @@ int libsmraw_error_fprint(
 }
 
 /* Prints a descriptive string of the error to the string
- * Returns the amount of printed characters if successful or -1 on error
+ * Returns the number of printed characters if successful or -1 on error
  */
 int libsmraw_error_sprint(
      libsmraw_error_t *error,
@@ -68,7 +68,7 @@ int libsmraw_error_sprint(
 }
 
 /* Prints a backtrace of the error to the stream
- * Returns the amount of printed characters if successful or -1 on error
+ * Returns the number of printed characters if successful or -1 on error
  */
 int libsmraw_error_backtrace_fprint(
      libsmraw_error_t *error,
@@ -80,7 +80,7 @@ int libsmraw_error_backtrace_fprint(
 }
 
 /* Prints a backtrace of the error to the string
- * Returns the amount of printed characters if successful or -1 on error
+ * Returns the number of printed characters if successful or -1 on error
  */
 int libsmraw_error_backtrace_sprint(
      libsmraw_error_t *error,
