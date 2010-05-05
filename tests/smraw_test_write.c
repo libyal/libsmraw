@@ -39,11 +39,8 @@ int wmain( int argc, wchar_t * const argv[] )
 int main( int argc, char * const argv[] )
 #endif
 {
-	char **filenames          = NULL;
 	libsmraw_error_t *error   = NULL;
 	libsmraw_handle_t *handle = NULL;
-	off_t offset              = 1024;
-	int amount_of_filenames   = 0;
 
 	if( argc < 2 )
 	{
@@ -53,6 +50,8 @@ int main( int argc, char * const argv[] )
 
 		return( EXIT_FAILURE );
 	}
+	/* Initialization
+	 */
 	if( libsmraw_handle_initialize(
 	     &handle,
 	     &error ) != 1 )
@@ -70,12 +69,21 @@ int main( int argc, char * const argv[] )
 
 		return( EXIT_FAILURE );
 	}
-	if( libsmraw_handle_open(
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+	if( libsmraw_handle_open_wide(
 	     handle,
-	     filenames,
-	     amount_of_filenames,
+	     argv,
+	     argc,
 	     LIBSMRAW_OPEN_READ,
 	     &error ) != 1 )
+#else
+	if( libsmraw_handle_open(
+	     handle,
+	     argv,
+	     argc,
+	     LIBSMRAW_OPEN_READ,
+	     &error ) != 1 )
+#endif
 	{
 		fprintf(
 		 stderr,
@@ -94,30 +102,10 @@ int main( int argc, char * const argv[] )
 
 		return( EXIT_FAILURE );
 	}
-	if( libsmraw_handle_seek_offset(
-	     handle,
-	     offset,
-	     SEEK_SET,
-	     &error ) == -1 )
-	{
-		fprintf(
-		 stderr,
-		 "Unable to seek offset: %jd.\n",
-		 (intmax_t) offset );
+	/* TODO add write test */
 
-		libsmraw_handle_free(
-		 &handle,
-		 NULL );
-
-		libsmraw_error_backtrace_fprint(
-		 error,
-		 stderr );
-
-		libsmraw_error_free(
-		 &error );
-
-		return( EXIT_FAILURE );
-	}
+	/* Clean up
+	 */
 	if( libsmraw_handle_close(
 	     handle,
 	     &error ) != 0 )

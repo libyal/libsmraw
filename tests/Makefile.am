@@ -7,10 +7,17 @@ AM_CPPFLAGS = \
 	@LIBSMRAW_DLL_IMPORT@
 
 TESTS = \
-	test_glob.sh
+	test_glob.sh \
+	test_seek.sh \
+	test_read.sh
 
 check_SCRIPTS = \
-	test_glob.sh
+	test_glob.sh \
+	test_seek.sh \
+	test_read.sh
+
+EXTRA_DIST = \
+	$(check_SCRIPTS)
 
 check_PROGRAMS = \
 	smraw_test_glob \

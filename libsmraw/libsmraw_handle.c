@@ -1232,7 +1232,7 @@ int libsmraw_handle_open_file_io_pool(
 	libsmraw_internal_handle_t *internal_handle = NULL;
 	static char *function                       = "libsmraw_handle_open_file_io_pool";
 	size64_t file_size                          = 0;
-	int number_of_handles                       = 0;
+	int number_of_file_io_handles               = 0;
 	int file_io_flags                           = 0;
 	int file_io_handle_iterator                 = 0;
 
@@ -1273,7 +1273,7 @@ int libsmraw_handle_open_file_io_pool(
 	}
 	if( libbfio_pool_get_number_of_handles(
 	     file_io_pool,
-	     &number_of_handles,
+	     &number_of_file_io_handles,
 	     error ) != 1 )
 	{
 		liberror_error_set(
@@ -1308,7 +1308,7 @@ int libsmraw_handle_open_file_io_pool(
 			file_io_flags = LIBBFIO_OPEN_READ;
 		}
 		for( file_io_handle_iterator = 0;
-		     file_io_handle_iterator < number_of_handles;
+		     file_io_handle_iterator < number_of_file_io_handles;
 		     file_io_handle_iterator++ )
 		{
 			if( libbfio_pool_get_handle(
@@ -1707,6 +1707,7 @@ ssize_t libsmraw_handle_read_buffer(
 	size_t buffer_offset                        = 0;
 	size_t read_size                            = 0;
 	ssize_t read_count                          = 0;
+	int number_of_file_io_handles               = 0;
 
 	if( handle == NULL )
 	{
@@ -1732,8 +1733,7 @@ ssize_t libsmraw_handle_read_buffer(
 
 		return( -1 );
 	}
-	if( ( internal_handle->offset < 0 )
-	 || ( internal_handle->offset >(off64_t) internal_handle->media_size ) )
+	if( internal_handle->offset < 0 )
 	{
 		liberror_error_set(
 		 error,
@@ -1766,20 +1766,10 @@ ssize_t libsmraw_handle_read_buffer(
 
 		return( -1 );
 	}
-	if( buffer_size == 0 )
+	if( ( (size64_t) internal_handle->offset >= internal_handle->media_size )
+	 || ( buffer_size == 0 ) )
 	{
 		return( 0 );
-	}
-	if( ( (size64_t) buffer_size + (size64_t) internal_handle->offset ) > internal_handle->media_size )
-	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_VALUE_OUT_OF_RANGE,
-		 "%s: read beyond media size.",
-		 function );
-
-		return( -1 );
 	}
 	while( buffer_size > 0 )
 	{
@@ -1844,14 +1834,54 @@ ssize_t libsmraw_handle_read_buffer(
 
 			return( -1 );
 		}
-		internal_handle->offset += read_count;
+		internal_handle->offset += (off64_t) read_count;
 
 		if( ( (size64_t) file_offset + (size64_t) read_count ) == file_size )
 		{
 			internal_handle->current_file_io_pool_entry += 1;
+
+			if( libbfio_pool_get_number_of_handles(
+			     internal_handle->file_io_pool,
+			     &number_of_file_io_handles,
+			     error ) != 1 )
+			{
+				liberror_error_set(
+				 error,
+				 LIBERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+				 "%s: unable to retrieve the number of handles in the file io pool.",
+				 function );
+
+				return( -1 );
+			}
+			if( internal_handle->current_file_io_pool_entry < number_of_file_io_handles )
+			{
+				if( libbfio_pool_seek_offset(
+				     internal_handle->file_io_pool,
+				     internal_handle->current_file_io_pool_entry,
+				     0,
+				     SEEK_SET,
+				     error ) != 0 )
+				{
+					liberror_error_set(
+					 error,
+					 LIBERROR_ERROR_DOMAIN_IO,
+					 LIBERROR_IO_ERROR_SEEK_FAILED,
+					 "%s: unable to seek offset: 0 in entry: %d.",
+					 function,
+					 internal_handle->current_file_io_pool_entry );
+
+					return( -1 );
+				}
+			}
 		}
-		buffer_size   -= read_count;
+		buffer_size   -= (size_t) read_count;
 		buffer_offset += (size_t) read_count;
+
+		if( (size64_t) internal_handle->offset >= internal_handle->media_size )
+		{
+			break;
+		}
 	}
 	return( (ssize_t) buffer_offset );
 }
@@ -1875,7 +1905,7 @@ ssize_t libsmraw_handle_write_buffer(
 	size_t segment_filename_size                    = 0;
 	size_t write_size                               = 0;
 	ssize_t write_count                             = 0;
-	int number_of_handles                           = 0;
+	int number_of_file_io_handles                   = 0;
 	int pool_entry                                  = 0;
 
 	if( handle == NULL )
@@ -1970,22 +2000,21 @@ ssize_t libsmraw_handle_write_buffer(
 	}
 	if( libbfio_pool_get_number_of_handles(
 	     internal_handle->file_io_pool,
-	     &number_of_handles,
+	     &number_of_file_io_handles,
 	     error ) != 1 )
 	{
 		liberror_error_set(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve file size from entry: %d.",
-		 function,
-		 pool_entry );
+		 "%s: unable to retrieve the number of handles in the file io pool.",
+		 function );
 
 		return( -1 );
 	}
 	while( buffer_size > 0 )
 	{
-		if( internal_handle->current_file_io_pool_entry >= number_of_handles )
+		if( internal_handle->current_file_io_pool_entry >= number_of_file_io_handles )
 		{
 			if( libsmraw_filename_create(
 			     &segment_filename,
@@ -2074,7 +2103,7 @@ ssize_t libsmraw_handle_write_buffer(
 
 				return( -1 );
 			}
-			number_of_handles++;
+			number_of_file_io_handles++;
 
 			if( libbfio_pool_open(
 			     internal_handle->file_io_pool,
@@ -2182,7 +2211,7 @@ off64_t libsmraw_handle_seek_offset(
 	static char *function                       = "libsmraw_handle_seek_offset";
 	off64_t file_offset                         = 0;
 	size64_t file_size                          = 0;
-	int number_of_handles                       = 0;
+	int number_of_file_io_handles               = 0;
 	int file_io_pool_entry                      = 0;
 
 	if( handle == NULL )
@@ -2245,23 +2274,22 @@ off64_t libsmraw_handle_seek_offset(
 	{
 		if( libbfio_pool_get_number_of_handles(
 		     internal_handle->file_io_pool,
-		     &number_of_handles,
+		     &number_of_file_io_handles,
 		     error ) != 1 )
 		{
 			liberror_error_set(
 			 error,
 			 LIBERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-			 "%s: unable to retrieve file size from entry: %d.",
-			 function,
-			 file_io_pool_entry );
+			 "%s: unable to retrieve the number of handles in the file io pool.",
+			 function );
 
 			return( -1 );
 		}
 		file_offset = offset;
 
 		for( file_io_pool_entry = 0;
-		     file_io_pool_entry < number_of_handles;
+		     file_io_pool_entry < number_of_file_io_handles;
 		     file_io_pool_entry++ )
 		{
 			if( file_offset == 0 )
@@ -2290,7 +2318,7 @@ off64_t libsmraw_handle_seek_offset(
 			}
 			file_offset -= (off64_t) file_size;
 		}
-		if( file_io_pool_entry >= number_of_handles )
+		if( file_io_pool_entry >= number_of_file_io_handles )
 		{
 			liberror_error_set(
 			 error,

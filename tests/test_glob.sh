@@ -22,15 +22,17 @@
 
 EXIT_SUCCESS=0;
 EXIT_FAILURE=1;
+EXIT_IGNORE=77;
 
 TMP="tmp";
 
 CMP="cmp";
+
 SMRAW_TEST_GLOB="smraw_test_glob";
 
 function test_glob
 { 
-	echo "testing glob:" $*;
+	echo "Testing glob:" $*;
 
 	mkdir ${TMP};
 	cd ${TMP};
@@ -42,6 +44,8 @@ function test_glob
 	../${SMRAW_TEST_GLOB} PREFIX > output;
 
 	RESULT=$?;
+
+	echo "";
 
 	if test ${RESULT} -eq ${EXIT_SUCCESS};
 	then
@@ -59,6 +63,8 @@ function test_glob
 
 if ! test -x ${SMRAW_TEST_GLOB};
 then
+	echo "Missing executable: ${SMRAW_TEST_GLOB}";
+
 	exit ${EXIT_FAILURE};
 fi
 
@@ -103,6 +109,36 @@ if ! test_glob "PREFIX.001 PREFIX.002 PREFIX.003 PREFIX.004 PREFIX.005 PREFIX.00
 then
 	exit ${EXIT_FAILURE};
 fi
+
+#if ! test_glob "PREFIX0 PREFIX1 PREFIX2 PREFIX3 PREFIX4 PREFIX5 PREFIX6 PREFIX7 PREFIX8 PREFIX9";
+#then
+#	exit ${EXIT_FAILURE};
+#fi
+
+#if ! test_glob "PREFIX1 PREFIX2 PREFIX3 PREFIX4 PREFIX5 PREFIX6 PREFIX7 PREFIX8 PREFIX9";
+#then
+#	exit ${EXIT_FAILURE};
+#fi
+
+if ! test_glob "PREFIX00 PREFIX01 PREFIX02 PREFIX03 PREFIX04 PREFIX05 PREFIX06 PREFIX07 PREFIX08 PREFIX09 PREFIX10";
+then
+	exit ${EXIT_FAILURE};
+fi
+
+#if ! test_glob "PREFIX01 PREFIX02 PREFIX03 PREFIX04 PREFIX05 PREFIX06 PREFIX07 PREFIX08 PREFIX09 PREFIX10";
+#then
+#	exit ${EXIT_FAILURE};
+#fi
+
+if ! test_glob "PREFIX000 PREFIX001 PREFIX002 PREFIX003 PREFIX004 PREFIX005 PREFIX006 PREFIX007 PREFIX008 PREFIX009 PREFIX010";
+then
+	exit ${EXIT_FAILURE};
+fi
+
+#if ! test_glob "PREFIX001 PREFIX002 PREFIX003 PREFIX004 PREFIX005 PREFIX006 PREFIX007 PREFIX008 PREFIX009 PREFIX010";
+#then
+#	exit ${EXIT_FAILURE};
+#fi
 
 if ! test_glob "PREFIXaa PREFIXab PREFIXac PREFIXad PREFIXae PREFIXaf PREFIXag PREFIXah PREFIXai PREFIXaj";
 then

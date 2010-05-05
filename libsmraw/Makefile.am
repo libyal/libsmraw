@@ -38,10 +38,14 @@ libsmraw_la_LIBADD = \
 
 libsmraw_la_LDFLAGS = -no-undefined -version-info 1:0:0
 
+EXTRA_DIST = \
+	libsmraw_definitions.h.in
+
 MAINTAINERCLEANFILES = \
 	Makefile.in
 
 distclean: clean
+	/bin/rm -f libsmraw_definitions.h
 	/bin/rm -f Makefile
 
 splint:
