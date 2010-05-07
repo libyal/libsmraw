@@ -45,7 +45,7 @@ int main( int argc, char * const argv[] )
 	char **filenames        = NULL;
 #endif
 	libsmraw_error_t *error = NULL;
-	int amount_of_filenames = 0;
+	int number_of_filenames = 0;
 	int filename_iterator   = 0;
 
 	if( argc < 2 )
@@ -62,7 +62,7 @@ int main( int argc, char * const argv[] )
 	     strlen(
 	      argv[ 1 ] ),
 	     &filenames,
-	     &amount_of_filenames,
+	     &number_of_filenames,
 	     &error ) != 1 )
 #else
 	if( libsmraw_glob(
@@ -70,7 +70,7 @@ int main( int argc, char * const argv[] )
 	     strlen(
 	      argv[ 1 ] ),
 	     &filenames,
-	     &amount_of_filenames,
+	     &number_of_filenames,
 	     &error ) != 1 )
 #endif
 	{
@@ -87,61 +87,74 @@ int main( int argc, char * const argv[] )
 
 		return( EXIT_FAILURE );
 	}
-	if( amount_of_filenames > 0 )
+	if( number_of_filenames < 0 )
 	{
-		for( filename_iterator = 0;
-		     filename_iterator < amount_of_filenames;
-		     filename_iterator++ )
-		{
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
-			fprintf(
-			 stdout,
-			 "%ls",
-			 filenames[ filename_iterator ] );
-#else
-			fprintf(
-			 stdout,
-			 "%s",
-			 filenames[ filename_iterator ] );
-#endif
-		if( filename_iterator == ( amount_of_filenames - 1 ) )
-		{
-			fprintf(
-			 stdout,
-			 "\n" );
-		}
-		else
-		{
-			fprintf(
-			 stdout,
-			 " " );
-		}
+		fprintf(
+		 stderr,
+		 "Invalid number of filenames.\n" );
+
+		return( EXIT_FAILURE );
 	}
+	else if( number_of_filenames == 0 )
+	{
+		fprintf(
+		 stderr,
+		 "Missing filenames.\n" );
+
+		return( EXIT_FAILURE );
+	}
+	for( filename_iterator = 0;
+	     filename_iterator < number_of_filenames;
+	     filename_iterator++ )
+	{
 #if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
-		if( libsmraw_glob_wide_free(
-		     filenames,
-		     amount_of_filenames,
-		     &error ) != 1 )
+		fprintf(
+		 stdout,
+		 "%ls",
+		 filenames[ filename_iterator ] );
 #else
-		if( libsmraw_glob_free(
-		     filenames,
-		     amount_of_filenames,
-		     &error ) != 1 )
+		fprintf(
+		 stdout,
+		 "%s",
+		 filenames[ filename_iterator ] );
 #endif
-		{
-			fprintf(
-			 stderr,
-			 "Unable to free glob.\n" );
+	if( filename_iterator == ( number_of_filenames - 1 ) )
+	{
+		fprintf(
+		 stdout,
+		 "\n" );
+	}
+	else
+	{
+		fprintf(
+		 stdout,
+		 " " );
+	}
+}
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+	if( libsmraw_glob_wide_free(
+	     filenames,
+	     number_of_filenames,
+	     &error ) != 1 )
+#else
+	if( libsmraw_glob_free(
+	     filenames,
+	     number_of_filenames,
+	     &error ) != 1 )
+#endif
+	{
+		fprintf(
+		 stderr,
+		 "Unable to free glob.\n" );
 
-			libsmraw_error_backtrace_fprint(
-			 error,
-			 stderr );
+		libsmraw_error_backtrace_fprint(
+		 error,
+		 stderr );
 
-			libsmraw_error_free(
-			 &error );
+		libsmraw_error_free(
+		 &error );
 
-			return( EXIT_FAILURE );
-		}
+		return( EXIT_FAILURE );
 	}
 	return( EXIT_SUCCESS );
 }

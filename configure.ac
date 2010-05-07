@@ -2,7 +2,7 @@ AC_PREREQ( 2.59 )
 
 AC_INIT(
  [libsmraw],
-  [20100505],
+  [20100507],
   [jbmetz@users.sourceforge.net])
 
 AC_CONFIG_SRCDIR(
@@ -587,6 +587,142 @@ AM_CONDITIONAL(
  [HAVE_LOCAL_LIBBFIO],
  [test "x$ac_libsmraw_have_libbfio" = xlocal])
 
+dnl Check for enabling crypographic digest hash support
+ac_libsmraw_have_libcrypto=no
+
+AS_IF(
+ [test "x$ac_cv_libsmraw_enable_winapi" = xyes],
+ [AC_SUBST(
+  [LIBCRYPTO_LIBADD],
+  [-ladvapi32])
+  ac_libsmraw_have_libcrypto=libadvapi32])
+
+dnl Check for libcrypto openssl EVP support
+AS_IF(
+ [test "x$ac_libsmraw_have_libcrypto" = xno],
+ [AC_CHECK_HEADERS([openssl/evp.h openssl/opensslv.h])
+
+ AS_IF(
+  [test "x$ac_cv_header_openssl_evp_h" = xyes],
+  [AC_LANG_PUSH(C)
+  AC_MSG_CHECKING(
+   [if openssl/evp.h can be used in combination with zlib.h])
+  AC_LINK_IFELSE(
+   AC_LANG_PROGRAM(
+    [[#include <zlib.h>
+#include <openssl/evp.h>]],
+    [[ ]]),
+    [AC_MSG_RESULT(
+     [yes])
+    AC_DEFINE(
+     [HAVE_OPENSSL_EVP_H],
+     [1],
+     [Define to 1 if you have the <openssl/evp.h> header file.])
+    AC_SUBST(
+     [HAVE_OPENSSL_EVP_H],
+     [1])
+    ac_libsmraw_have_libcrypto=libcrypto_evp],
+   [AC_MSG_RESULT(
+    [no])
+   ac_libsmraw_have_libcrypto=no])
+  AC_LANG_POP(C)],
+  [ac_libsmraw_have_libcrypto=no])
+ ])
+
+dnl Check if all required libcrypto openssl EVP functions are available
+AS_IF(
+ [test "x$ac_libsmraw_have_libcrypto" = xlibcrypto_evp],
+ [AC_CHECK_LIB(
+  crypto,
+  EVP_md5,
+  [AC_SUBST(
+   [LIBCRYPTO_LIBADD],
+   [-lcrypto])
+  AC_DEFINE(
+   [HAVE_LIBCRYPTO],
+   [1],
+   [Define to 1 if you have the 'crypto' library (-lcrypto).]) ],
+  [ac_libsmraw_have_libcrypto=no])
+ AC_CHECK_LIB(
+  crypto,
+  EVP_MD_CTX_init,
+  [ac_libsmraw_dummy=yes],
+  [ac_libsmraw_have_libcrypto=no])
+ AC_CHECK_LIB(
+  crypto,
+  EVP_MD_CTX_cleanup,
+  [ac_libsmraw_dummy=yes],
+  [ac_libsmraw_have_libcrypto=no])
+ AC_CHECK_LIB(
+  crypto,
+  EVP_DigestInit_ex,
+  [ac_libsmraw_dummy=yes],
+  [ac_libsmraw_have_libcrypto=no])
+ AC_CHECK_LIB(
+  crypto,
+  EVP_DigestUpdate,
+  [ac_libsmraw_dummy=yes],
+  [ac_libsmraw_have_libcrypto=no])
+ AC_CHECK_LIB(
+  crypto,
+  EVP_DigestFinal_ex,
+  [ac_libsmraw_dummy=yes],
+  [ac_libsmraw_have_libcrypto=no])
+ ])
+
+AS_IF(
+ [test "x$ac_libsmraw_have_libcrypto" = xlibadvapi32],
+ [ac_libsmraw_have_libcrypto_md5=libadvapi32])
+
+AS_IF(
+ [test "x$ac_libsmraw_have_libcrypto" = xlibcrypto_evp],
+ [ac_libsmraw_have_libcrypto_md5=libcrypto_evp],
+ [AC_SUBST(
+  [HAVE_OPENSSL_EVP_H],
+  [0]) ])
+
+AS_IF(
+ [test "x$ac_libsmraw_have_libcrypto" = xno],
+ [ac_libsmraw_have_libcrypto_md5=no])
+
+dnl Check for libcrypto openssl MD5 support
+AS_IF(
+ [test "x$ac_libsmraw_have_libcrypto_md5" = xno],
+ [AC_CHECK_HEADERS([openssl/md5.h])
+
+ AS_IF(
+  [test "x$ac_cv_header_openssl_md5_h" = xyes],
+  [ac_libsmraw_have_libcrypto_md5=libcrypto
+  AC_CHECK_LIB(
+   crypto,
+   MD5_Init,
+   [AC_SUBST(
+    [LIBCRYPTO_LIBADD],
+    [-lcrypto])
+   AC_DEFINE(
+    [HAVE_LIBCRYPTO],
+    [1],
+    [Define to 1 if you have the 'crypto' library (-lcrypto).]) ],
+   [ac_libsmraw_have_libcrypto_md5=no])
+  AC_CHECK_LIB(
+   crypto,
+   MD5_Update,
+   [ac_libsmraw_dummy=yes],
+   [ac_libsmraw_have_libcrypto_md5=no])
+  AC_CHECK_LIB(
+   crypto,
+   MD5_Final,
+   [ac_libsmraw_dummy=yes],
+   [ac_libsmraw_have_libcrypto_md5=no])
+  ])
+ ])
+
+AS_IF(
+ [test "x$ac_libsmraw_have_libcrypto_md5" = xno],
+ [AC_MSG_NOTICE(
+  [No support for calculating MD5 hashes, if required install (openssl) libcrypto with MD5 support or Windows Crypto API.])
+ ])
+
 dnl Check if libsmraw should be build with wide character type support
 AS_IF(
  [test "x$ac_cv_libsmraw_enable_wide_character_type" != xno ],
@@ -807,13 +943,14 @@ AC_OUTPUT
 dnl Print a summary
 AC_MSG_NOTICE([
 Building:
-   libuna support:                             $ac_libsmraw_have_libuna
-   libbfio support:                            $ac_libsmraw_have_libbfio
+   libuna support:                                  $ac_libsmraw_have_libuna
+   libbfio support:                                 $ac_libsmraw_have_libbfio
+   MD5 support:                                     $ac_libsmraw_have_libcrypto_md5
 
 Features:
-   Wide character type support:                $ac_cv_libsmraw_enable_wide_character_type
-   Verbose output:                             $ac_cv_libsmraw_enable_verbose_output
-   Debug output:                               $ac_cv_libsmraw_enable_debug_output
+   Wide character type support:                     $ac_cv_libsmraw_enable_wide_character_type
+   Verbose output:                                  $ac_cv_libsmraw_enable_verbose_output
+   Debug output:                                    $ac_cv_libsmraw_enable_debug_output
 ]);
 
 

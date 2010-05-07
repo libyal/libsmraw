@@ -47,6 +47,7 @@ int smraw_test_read_buffer(
      libsmraw_handle_t *handle,
      off64_t input_offset,
      size64_t input_size,
+     off64_t output_offset,
      size64_t output_size )
 {
 	uint8_t buffer[ SMRAW_TEST_READ_BUFFER_SIZE ];
@@ -85,7 +86,18 @@ int smraw_test_read_buffer(
 		libsmraw_error_free(
 		 &error );
 	}
-	if( result_offset == input_offset )
+	if( result_offset != output_offset )
+	{
+		fprintf(
+		 stderr,
+		 "Unexpected result offset: %" PRIi64 "\n",
+		 result_offset );
+	}
+	else if( result_offset == -1 )
+	{
+		result = 1;
+	}
+	else if( result_offset == input_offset )
 	{
 		remaining_size = input_size;
 
@@ -202,15 +214,15 @@ int main( int argc, char * const argv[] )
 #if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
 	if( libsmraw_handle_open_wide(
 	     handle,
-	     argv,
-	     argc,
+	     &( argv[ 1 ] ),
+	     argc - 1,
 	     LIBSMRAW_OPEN_READ,
 	     &error ) != 1 )
 #else
 	if( libsmraw_handle_open(
 	     handle,
-	     argv,
-	     argc,
+	     &( argv[ 1 ] ),
+	     argc - 1,
 	     LIBSMRAW_OPEN_READ,
 	     &error ) != 1 )
 #endif
@@ -219,16 +231,15 @@ int main( int argc, char * const argv[] )
 		 stderr,
 		 "Unable to open file(s).\n" );
 
-		libsmraw_handle_free(
-		 &handle,
-		 NULL );
-
 		libsmraw_error_backtrace_fprint(
 		 error,
 		 stderr );
 
 		libsmraw_error_free(
 		 &error );
+		libsmraw_handle_free(
+		 &handle,
+		 NULL );
 
 		return( EXIT_FAILURE );
 	}
@@ -283,12 +294,13 @@ int main( int argc, char * const argv[] )
 	 media_size );
 
 	/* Test: offset: 0 size: <media_size>
-	 * Expected result: <media_size>
+	 * Expected result: offset: 0 size: <media_size>
 	 */
 	if( smraw_test_read_buffer(
 	     handle,
 	     0,
 	     media_size,
+	     0,
 	     media_size ) != 1 )
 	{
 		fprintf(
@@ -305,12 +317,13 @@ int main( int argc, char * const argv[] )
 		return( EXIT_FAILURE );
 	}
 	/* Test: offset: 0 size: <media_size>
-	 * Expected result: <media_size>
+	 * Expected result: ffset: 0 size: <media_size>
 	 */
 	if( smraw_test_read_buffer(
 	     handle,
 	     0,
 	     media_size,
+	     0,
 	     media_size ) != 1 )
 	{
 		fprintf(
@@ -327,12 +340,13 @@ int main( int argc, char * const argv[] )
 		return( EXIT_FAILURE );
 	}
 	/* Test: offset: <media_size / 7> size: <media_size / 2>
-	 * Expected result: <media_size / 2>
+	 * Expected result: offset: <media_size / 7> size: <media_size / 2>
 	 */
 	if( smraw_test_read_buffer(
 	     handle,
 	     (off64_t) ( media_size / 7 ),
 	     media_size / 2,
+	     (off64_t) ( media_size / 7 ),
 	     media_size / 2 ) != 1 )
 	{
 		fprintf(
@@ -349,12 +363,13 @@ int main( int argc, char * const argv[] )
 		return( EXIT_FAILURE );
 	}
 	/* Test: offset: <media_size / 7> size: <media_size / 2>
-	 * Expected result: <media_size / 2>
+	 * Expected result: offset: <media_size / 7> size: <media_size / 2>
 	 */
 	if( smraw_test_read_buffer(
 	     handle,
 	     (off64_t) ( media_size / 7 ),
 	     media_size / 2,
+	     (off64_t) ( media_size / 7 ),
 	     media_size / 2 ) != 1 )
 	{
 		fprintf(
@@ -370,49 +385,103 @@ int main( int argc, char * const argv[] )
 
 		return( EXIT_FAILURE );
 	}
-	/* Test: offset: <media_size - 1024> size: 4096
-	 * Expected result: 1024
-	 */
-	if( smraw_test_read_buffer(
-	     handle,
-	     (off64_t) ( media_size - 1024 ),
-	     4096,
-	     1024 ) != 1 )
+	if( media_size < 1024 )
 	{
-		fprintf(
-		 stderr,
-		 "Unable to test read buffer.\n" );
+		/* Test: offset: <media_size - 1024> size: 4096
+		 * Expected result: offset: -1 size: <undetermined>
+		 */
+		if( smraw_test_read_buffer(
+		     handle,
+		     (off64_t) ( media_size - 1024 ),
+		     4096,
+		     -1,
+		     -1 ) != 1 )
+		{
+			fprintf(
+			 stderr,
+			 "Unable to test read buffer.\n" );
 
-		libsmraw_handle_close(
-		 handle,
-		 NULL );
-		libsmraw_handle_free(
-		 &handle,
-		 NULL );
+			libsmraw_handle_close(
+			 handle,
+			 NULL );
+			libsmraw_handle_free(
+			 &handle,
+			 NULL );
 
-		return( EXIT_FAILURE );
+			return( EXIT_FAILURE );
+		}
+		/* Test: offset: <media_size - 1024> size: 4096
+		 * Expected result: offset: -1 size: <undetermined>
+		 */
+		if( smraw_test_read_buffer(
+		     handle,
+		     (off64_t) ( media_size - 1024 ),
+		     4096,
+		     -1,
+		     -1 ) != 1 )
+		{
+			fprintf(
+			 stderr,
+			 "Unable to test read buffer.\n" );
+
+			libsmraw_handle_close(
+			 handle,
+			 NULL );
+			libsmraw_handle_free(
+			 &handle,
+			 NULL );
+
+			return( EXIT_FAILURE );
+		}
 	}
-	/* Test: offset: <media_size - 1024> size: 4096
-	 * Expected result: 1024
-	 */
-	if( smraw_test_read_buffer(
-	     handle,
-	     (off64_t) ( media_size - 1024 ),
-	     4096,
-	     1024 ) != 1 )
+	else
 	{
-		fprintf(
-		 stderr,
-		 "Unable to test read buffer.\n" );
+		/* Test: offset: <media_size - 1024> size: 4096
+		 * Expected result: offset: <media_size - 1024> size: 1024
+		 */
+		if( smraw_test_read_buffer(
+		     handle,
+		     (off64_t) ( media_size - 1024 ),
+		     4096,
+		     (off64_t) ( media_size - 1024 ),
+		     1024 ) != 1 )
+		{
+			fprintf(
+			 stderr,
+			 "Unable to test read buffer.\n" );
 
-		libsmraw_handle_close(
-		 handle,
-		 NULL );
-		libsmraw_handle_free(
-		 &handle,
-		 NULL );
+			libsmraw_handle_close(
+			 handle,
+			 NULL );
+			libsmraw_handle_free(
+			 &handle,
+			 NULL );
 
-		return( EXIT_FAILURE );
+			return( EXIT_FAILURE );
+		}
+		/* Test: offset: <media_size - 1024> size: 4096
+		 * Expected result: offset: <media_size - 1024> size: 1024
+		 */
+		if( smraw_test_read_buffer(
+		     handle,
+		     (off64_t) ( media_size - 1024 ),
+		     4096,
+		     (off64_t) ( media_size - 1024 ),
+		     1024 ) != 1 )
+		{
+			fprintf(
+			 stderr,
+			 "Unable to test read buffer.\n" );
+
+			libsmraw_handle_close(
+			 handle,
+			 NULL );
+			libsmraw_handle_free(
+			 &handle,
+			 NULL );
+
+			return( EXIT_FAILURE );
+		}
 	}
 	/* Clean up
 	 */

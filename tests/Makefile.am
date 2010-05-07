@@ -2,6 +2,7 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/include \
 	-I$(top_srcdir)/common \
 	-I$(top_srcdir)/libcstring \
+	-I$(top_srcdir)/liberror \
 	-I$(top_srcdir)/libsmraw \
 	@MEMWATCH_CPPFLAGS@ \
 	@LIBSMRAW_DLL_IMPORT@
@@ -20,10 +21,24 @@ EXTRA_DIST = \
 	$(check_SCRIPTS)
 
 check_PROGRAMS = \
+	smraw_test_compare \
 	smraw_test_glob \
 	smraw_test_read \
 	smraw_test_seek \
 	smraw_test_write
+
+smraw_test_compare_SOURCES = \
+	digest_context.c digest_context.h \
+	digest_hash.c digest_hash.h \
+	md5.h \
+	smraw_test_compare.c
+
+smraw_test_compare_LDADD = \
+	../libcstring/libcstring.la \
+	../liberror/liberror.la \
+	../libsmraw/libsmraw.la \
+	@LIBCRYPTO_LIBADD@ \
+        @MEMWATCH_LIBADD@
 
 smraw_test_glob_SOURCES = \
 	smraw_test_glob.c

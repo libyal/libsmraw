@@ -158,15 +158,15 @@ int main( int argc, char * const argv[] )
 #if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
 	if( libsmraw_handle_open_wide(
 	     handle,
-	     argv,
-	     argc,
+	     &( argv[ 1 ] ),
+	     argc - 1,
 	     LIBSMRAW_OPEN_READ,
 	     &error ) != 1 )
 #else
 	if( libsmraw_handle_open(
 	     handle,
-	     argv,
-	     argc,
+	     &( argv[ 1 ] ),
+	     argc - 1,
 	     LIBSMRAW_OPEN_READ,
 	     &error ) != 1 )
 #endif
@@ -409,27 +409,55 @@ int main( int argc, char * const argv[] )
 
 		return( EXIT_FAILURE );
 	}
-	/* Test: SEEK_CUR offset: <-2 * (media_size / 3)>
-	 * Expected result: -1
-	 */
-	if( smraw_test_seek_offset(
-	     handle,
-	     -2 * (off64_t) ( media_size / 3 ),
-	     SEEK_CUR,
-	     -1 ) != 1 )
+	if( media_size == 0 )
 	{
-		fprintf(
-		 stderr,
-		 "Unable to test seek offset.\n" );
+		/* Test: SEEK_CUR offset: <-2 * (media_size / 3)>
+		 * Expected result: 0
+		 */
+		if( smraw_test_seek_offset(
+		     handle,
+		     -2 * (off64_t) ( media_size / 3 ),
+		     SEEK_CUR,
+		     0 ) != 1 )
+		{
+			fprintf(
+			 stderr,
+			 "Unable to test seek offset.\n" );
 
-		libsmraw_handle_close(
-		 handle,
-		 NULL );
-		libsmraw_handle_free(
-		 &handle,
-		 NULL );
+			libsmraw_handle_close(
+			 handle,
+			 NULL );
+			libsmraw_handle_free(
+			 &handle,
+			 NULL );
 
-		return( EXIT_FAILURE );
+			return( EXIT_FAILURE );
+		}
+	}
+	else
+	{
+		/* Test: SEEK_CUR offset: <-2 * (media_size / 3)>
+		 * Expected result: -1
+		 */
+		if( smraw_test_seek_offset(
+		     handle,
+		     -2 * (off64_t) ( media_size / 3 ),
+		     SEEK_CUR,
+		     -1 ) != 1 )
+		{
+			fprintf(
+			 stderr,
+			 "Unable to test seek offset.\n" );
+
+			libsmraw_handle_close(
+			 handle,
+			 NULL );
+			libsmraw_handle_free(
+			 &handle,
+			 NULL );
+
+			return( EXIT_FAILURE );
+		}
 	}
 	/* Test: SEEK_END offset: 0
 	 * Expected result: <media_size>
