@@ -1,13 +1,13 @@
 TODO
 * configure validate libuna and libbfio check
-* fix PREFIX.0, PREFIX001.asb
-* work on support for naming schema XofY (1of5)
 * close segment file on writing when full?
 
 Features
 * allow set of segment filename during write (as alternative writing locations)
 * add read and write random functions
 * implement write resume
+* support for glob naming schema XofY (1of5)
+* support for glob naming schema [.0,] .1, .2, ..., .10, ...
 
 Tooling
 * detect maximum possible segment size on file system (e.g. FAT)
@@ -18,6 +18,12 @@ Test
 
 Beta release
 * remove deprecated functions in libsmraw_legacy.[ch]
+
+20100508
+* worked on integrity tests
+* worked on glob tests
+* fixed issue regarding SEEK_CUR and read
+* fixed issue in glob
 
 20100507
 * worked on integrity tests

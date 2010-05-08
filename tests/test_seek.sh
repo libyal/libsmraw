@@ -59,16 +59,17 @@ fi
 
 if ! test -d ${INPUT};
 then
-	echo "Missing input directory: ${INPUT}";
+	echo "No input directory found, to test seek create input directory and place test files in directory.";
+	echo "Use unique filename bases per set of RAW image file(s)."
 
-	exit ${EXIT_FAILURE};
+	exit ${EXIT_IGNORE};
 fi
 
 RESULT=`${LS} ${INPUT} | ${TR} ' ' '\n' | ${SED} 's/[.][^.]*$//' | ${SORT} | ${UNIQ} | ${WC} -l`;
 
 if test ${RESULT} -eq 0;
 then
-	echo "No files found in input directory, to test seek place test input files in directory.";
+	echo "No files found in input directory, to test seek place test files in directory.";
 	echo "Use unique filename bases per set of RAW image file(s)."
 
 	exit ${EXIT_IGNORE};

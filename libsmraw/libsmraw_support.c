@@ -830,6 +830,10 @@ int libsmraw_glob(
 
 			if( naming_schema == LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_NUMERIC )
 			{
+				if( segment_file_identifier >= ( identifier_length * 10 ) )
+				{
+					break;
+				}
 				for( identifier_index = 0;
 				     identifier_index < identifier_length;
 				     identifier_index++ )
@@ -841,6 +845,10 @@ int libsmraw_glob(
 			}
 			else if( naming_schema == LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_SPLIT )
 			{
+				if( segment_file_identifier >= ( identifier_length * 26 ) )
+				{
+					break;
+				}
 				for( identifier_index = 0;
 				     identifier_index < identifier_length;
 				     identifier_index++ )
@@ -1771,6 +1779,10 @@ int libsmraw_glob_wide(
 
 			if( naming_schema == LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_NUMERIC )
 			{
+				if( segment_file_identifier >= ( identifier_length * 10 ) )
+				{
+					break;
+				}
 				for( identifier_index = 0;
 				     identifier_index < identifier_length;
 				     identifier_index++ )
@@ -1782,6 +1794,10 @@ int libsmraw_glob_wide(
 			}
 			else if( naming_schema == LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_SPLIT )
 			{
+				if( segment_file_identifier >= ( identifier_length * 26 ) )
+				{
+					break;
+				}
 				for( identifier_index = 0;
 				     identifier_index < identifier_length;
 				     identifier_index++ )
