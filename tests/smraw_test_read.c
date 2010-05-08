@@ -40,41 +40,59 @@
 
 #define SMRAW_TEST_READ_BUFFER_SIZE	4096
 
-/* Tests libsmraw_handle_read_buffer
+/* Tests libsmraw_seek_offset and libsmraw_handle_read_buffer
  * Returns 1 if successful, 0 if not or -1 on error
  */
 int smraw_test_read_buffer(
      libsmraw_handle_t *handle,
      off64_t input_offset,
+     int input_whence,
      size64_t input_size,
      off64_t output_offset,
      size64_t output_size )
 {
 	uint8_t buffer[ SMRAW_TEST_READ_BUFFER_SIZE ];
 
-	libsmraw_error_t *error = NULL;
-	off64_t result_offset   = 0;
-	size64_t remaining_size = 0;
-	size64_t result_size    = 0;
-	size_t read_size        = 0;
-	ssize_t read_count      = 0;
-	int result              = 0;
+	libsmraw_error_t *error   = NULL;
+	const char *whence_string = NULL;
+	off64_t result_offset     = 0;
+	size64_t remaining_size   = 0;
+	size64_t result_size      = 0;
+	size_t read_size          = 0;
+	ssize_t read_count        = 0;
+	int result                = 0;
 
 	if( handle == NULL )
 	{
 		return( -1 );
 	}
+	if( input_whence == SEEK_CUR )
+	{
+		whence_string = "SEEK_CUR";
+	}
+	else if( input_whence == SEEK_END )
+	{
+		whence_string = "SEEK_END";
+	}
+	else if( input_whence == SEEK_SET )
+	{
+		whence_string = "SEEK_SET";
+	}
+	else
+	{
+		whence_string = "UNKNOWN";
+	}
 	fprintf(
 	 stdout,
-	 "Testing read buffer of size: %d for range at offset: %" PRIi64 " of size: %" PRIu64 "\t",
-	 SMRAW_TEST_READ_BUFFER_SIZE,
+	 "Testing reading range with offset: %" PRIi64 ", whence: %s and size: %" PRIu64 "\t",
 	 input_offset,
+	 whence_string,
 	 input_size );
 
 	result_offset = libsmraw_handle_seek_offset(
 	                 handle,
 	                 input_offset,
-	                 SEEK_SET,
+	                 input_whence,
 	                 &error );
 
 	if( result_offset == -1 )
@@ -97,7 +115,7 @@ int smraw_test_read_buffer(
 	{
 		result = 1;
 	}
-	else if( result_offset == input_offset )
+	else if( result_offset >= 0 )
 	{
 		remaining_size = input_size;
 
@@ -299,6 +317,7 @@ int main( int argc, char * const argv[] )
 	if( smraw_test_read_buffer(
 	     handle,
 	     0,
+	     SEEK_SET,
 	     media_size,
 	     0,
 	     media_size ) != 1 )
@@ -322,6 +341,7 @@ int main( int argc, char * const argv[] )
 	if( smraw_test_read_buffer(
 	     handle,
 	     0,
+	     SEEK_SET,
 	     media_size,
 	     0,
 	     media_size ) != 1 )
@@ -345,6 +365,7 @@ int main( int argc, char * const argv[] )
 	if( smraw_test_read_buffer(
 	     handle,
 	     (off64_t) ( media_size / 7 ),
+	     SEEK_SET,
 	     media_size / 2,
 	     (off64_t) ( media_size / 7 ),
 	     media_size / 2 ) != 1 )
@@ -368,6 +389,7 @@ int main( int argc, char * const argv[] )
 	if( smraw_test_read_buffer(
 	     handle,
 	     (off64_t) ( media_size / 7 ),
+	     SEEK_SET,
 	     media_size / 2,
 	     (off64_t) ( media_size / 7 ),
 	     media_size / 2 ) != 1 )
@@ -393,6 +415,7 @@ int main( int argc, char * const argv[] )
 		if( smraw_test_read_buffer(
 		     handle,
 		     (off64_t) ( media_size - 1024 ),
+		     SEEK_SET,
 		     4096,
 		     -1,
 		     -1 ) != 1 )
@@ -416,6 +439,7 @@ int main( int argc, char * const argv[] )
 		if( smraw_test_read_buffer(
 		     handle,
 		     (off64_t) ( media_size - 1024 ),
+		     SEEK_SET,
 		     4096,
 		     -1,
 		     -1 ) != 1 )
@@ -442,6 +466,7 @@ int main( int argc, char * const argv[] )
 		if( smraw_test_read_buffer(
 		     handle,
 		     (off64_t) ( media_size - 1024 ),
+		     SEEK_SET,
 		     4096,
 		     (off64_t) ( media_size - 1024 ),
 		     1024 ) != 1 )
@@ -465,6 +490,7 @@ int main( int argc, char * const argv[] )
 		if( smraw_test_read_buffer(
 		     handle,
 		     (off64_t) ( media_size - 1024 ),
+		     SEEK_SET,
 		     4096,
 		     (off64_t) ( media_size - 1024 ),
 		     1024 ) != 1 )

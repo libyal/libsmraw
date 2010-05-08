@@ -14,8 +14,8 @@ TESTS = \
 
 check_SCRIPTS = \
 	test_glob.sh \
-	test_seek.sh \
-	test_read.sh
+	test_read.sh \
+	test_seek.sh
 
 EXTRA_DIST = \
 	$(check_SCRIPTS)

@@ -1805,6 +1805,18 @@ ssize_t libsmraw_handle_read_buffer(
 
 			return( -1 );
 		}
+		if( file_offset > file_size )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBERROR_RUNTIME_ERROR_VALUE_OUT_OF_RANGE,
+			 "%s: file offset exceeds file size of entry: %d.",
+			 function,
+			 internal_handle->current_file_io_pool_entry );
+
+			return( -1 );
+		}
 		read_size = buffer_size;
 
 		if( ( (size64_t) read_size + (size64_t) file_offset ) > file_size )
@@ -2333,7 +2345,7 @@ off64_t libsmraw_handle_seek_offset(
 		     internal_handle->file_io_pool,
 		     file_io_pool_entry,
 		     file_offset,
-		     whence,
+		     SEEK_SET,
 		     error ) == -1 )
 		{
 			liberror_error_set(
