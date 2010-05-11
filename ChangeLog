@@ -21,6 +21,7 @@ Beta release
 
 20100511
 * worked on integrity tests
+* changed test scripts from sh to bash
 
 20100508
 * worked on integrity tests

@@ -10,9 +10,11 @@ AM_CPPFLAGS = \
 TESTS = \
 	test_glob.sh \
 	test_seek.sh \
-	test_read.sh
+	test_read.sh \
+	test_compare.sh
 
 check_SCRIPTS = \
+	test_compare.sh \
 	test_glob.sh \
 	test_read.sh \
 	test_seek.sh

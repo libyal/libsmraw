@@ -842,9 +842,6 @@ int smraw_test_compare_case3(
 	 stdout,
 	 "Testing compare of single and multiple segment file RAW image using SEEK_END and read\t" );
 
-	/* Test: SEEK_SET offset: 0
-	 * Expected result: 0
-	 */
 	result = smraw_test_seek_offset(
 	          handle_single,
 	          0,
@@ -863,9 +860,6 @@ int smraw_test_compare_case3(
 	{
 		return( 0 );
 	}
-	/* Test: SEEK_SET offset: 0
-	 * Expected result: 0
-	 */
 	result = smraw_test_seek_offset(
 	          handle_multi,
 	          0,
@@ -1063,6 +1057,10 @@ int smraw_test_compare_case4a(
 	size64_t read_size          = 0;
 	int result                  = 0;
 
+	fprintf(
+	 stdout,
+	 "Testing compare of single and multiple segment file RAW image using SEEK_SET, SEEK_CUR and read\t" );
+
 	if( md5_initialize(
 	     &md5_context_single,
 	     &error ) != 1 )
@@ -1142,8 +1140,8 @@ int smraw_test_compare_case4a(
 	{
 		return( 0 );
 	}
-	read_offset += 2 * ( media_size / 8 );
-	read_size   = media_size / 7;
+	read_offset += ( media_size / 8 ) + ( media_size / 8 );
+	read_size    = media_size / 7;
 
 	result = smraw_test_read_hash(
 		  handle_single,
@@ -1276,6 +1274,10 @@ int smraw_test_compare_case4b(
 	size64_t read_size          = 0;
 	int result                  = 0;
 
+	fprintf(
+	 stdout,
+	 "Testing compare of single and multiple segment file RAW image using SEEK_SET, SEEK_CUR and read\t" );
+
 	if( md5_initialize(
 	     &md5_context_single,
 	     &error ) != 1 )
@@ -1355,7 +1357,7 @@ int smraw_test_compare_case4b(
 	{
 		return( 0 );
 	}
-	read_offset -= media_size / 8;
+	read_offset += ( media_size / 8 ) - ( media_size / 8 );
 	read_size    = media_size / 7;
 
 	result = smraw_test_read_hash(
@@ -1489,6 +1491,10 @@ int smraw_test_compare_case5a(
 	size64_t read_size          = 0;
 	int result                  = 0;
 
+	fprintf(
+	 stdout,
+	 "Testing compare of single and multiple segment file RAW image using SEEK_END, SEEK_CUR and read\t" );
+
 	if( md5_initialize(
 	     &md5_context_single,
 	     &error ) != 1 )
@@ -1568,13 +1574,13 @@ int smraw_test_compare_case5a(
 	{
 		return( 0 );
 	}
-	read_offset += 2 * ( media_size / 8 );
-	read_size   = media_size / 7;
+	read_offset += ( media_size / 8 ) + ( media_size / 8 );
+	read_size    = media_size / 7;
 
 	result = smraw_test_read_hash(
 		  handle_single,
 		  &md5_context_single,
-		  media_size / 8,
+		  (off64_t) media_size / 8,
 		  SEEK_CUR,
 		  read_size,
 		  read_offset,
@@ -1595,7 +1601,224 @@ int smraw_test_compare_case5a(
 	result = smraw_test_read_hash(
 		  handle_multi,
 		  &md5_context_multi,
-		  media_size / 8,
+		  (off64_t) media_size / 8,
+		  SEEK_CUR,
+		  read_size,
+		  read_offset,
+		  read_size );
+
+	if( result == -1 )
+	{
+		fprintf(
+		 stderr,
+		 "Unable to read buffer for multiple segment file RAW image.\n" );
+
+		return( -1 );
+	}
+	else if( result == 0 )
+	{
+		return( 0 );
+	}
+	if( md5_finalize(
+	     &md5_context_single,
+	     md5_hash_single,
+	     &md5_hash_size_single,
+	     &error ) != 1 )
+	{
+		fprintf(
+		 stderr,
+		 "Unable to finalize MD5 context.\n" );
+
+		libsmraw_error_backtrace_fprint(
+		 error,
+		 stderr );
+
+		libsmraw_error_free(
+		 &error );
+
+		return( -1 );
+	}
+	if( md5_finalize(
+	     &md5_context_multi,
+	     md5_hash_multi,
+	     &md5_hash_size_multi,
+	     &error ) != 1 )
+	{
+		fprintf(
+		 stderr,
+		 "Unable to finalize MD5 context.\n" );
+
+		libsmraw_error_backtrace_fprint(
+		 error,
+		 stderr );
+
+		libsmraw_error_free(
+		 &error );
+
+		return( -1 );
+	}
+	if( memory_compare(
+	     md5_hash_single,
+	     md5_hash_multi,
+	     DIGEST_HASH_SIZE_MD5 ) != 0 )
+	{
+		fprintf(
+		 stderr,
+		 "Mismatch in MD5 hashes.\n" );
+
+		result = 0;
+	}
+	if( result != 0 )
+	{
+		fprintf(
+		 stdout,
+		 "(PASS)" );
+	}
+	else
+	{
+		fprintf(
+		 stdout,
+		 "(FAIL)" );
+	}
+	fprintf(
+	 stdout,
+	 "\n" );
+
+	return( result );
+}
+
+/* Case 5b: Test SEEK_END, SEEK_CUR and read
+ * Returns 1 if successful, 0 if not or -1 on error
+ */
+int smraw_test_compare_case5b(
+     libsmraw_handle_t *handle_single,
+     libsmraw_handle_t *handle_multi,
+      size64_t media_size )
+{
+	md5_context_t md5_context_multi;
+	md5_context_t md5_context_single;
+
+	digest_hash_t md5_hash_multi[ DIGEST_HASH_SIZE_MD5 ];
+	digest_hash_t md5_hash_single[ DIGEST_HASH_SIZE_MD5 ];
+
+	libsmraw_error_t *error     = NULL;
+	size_t md5_hash_size_multi  = DIGEST_HASH_SIZE_MD5;
+	size_t md5_hash_size_single = DIGEST_HASH_SIZE_MD5;
+	off64_t read_offset         = 0;
+	size64_t read_size          = 0;
+	int result                  = 0;
+
+	fprintf(
+	 stdout,
+	 "Testing compare of single and multiple segment file RAW image using SEEK_END, SEEK_CUR and read\t" );
+
+	if( md5_initialize(
+	     &md5_context_single,
+	     &error ) != 1 )
+	{
+		fprintf(
+		 stderr,
+		 "Unable to initialize MD5 context.\n" );
+
+		libsmraw_error_backtrace_fprint(
+		 error,
+		 stderr );
+
+		libsmraw_error_free(
+		 &error );
+
+		return( -1 );
+	}
+	if( md5_initialize(
+	     &md5_context_multi,
+	     &error ) != 1 )
+	{
+		fprintf(
+		 stderr,
+		 "Unable to initialize MD5 context.\n" );
+
+		libsmraw_error_backtrace_fprint(
+		 error,
+		 stderr );
+
+		libsmraw_error_free(
+		 &error );
+
+		return( -1 );
+	}
+	read_offset = (off64_t) media_size / 2;
+	read_size   = media_size / 8;
+
+	result = smraw_test_read_hash(
+		  handle_single,
+		  &md5_context_single,
+		  -1 * read_offset,
+		  SEEK_END,
+		  read_size,
+		  read_offset,
+		  read_size );
+
+	if( result == -1 )
+	{
+		fprintf(
+		 stderr,
+		 "Unable to read buffer from single segment file RAW image.\n" );
+
+		return( -1 );
+	}
+	else if( result == 0 )
+	{
+		return( 0 );
+	}
+	result = smraw_test_read_hash(
+		  handle_multi,
+		  &md5_context_multi,
+		  -1 * read_offset,
+		  SEEK_END,
+		  read_size,
+		  read_offset,
+		  read_size );
+
+	if( result == -1 )
+	{
+		fprintf(
+		 stderr,
+		 "Unable to read buffer for multiple segment file RAW image.\n" );
+
+		return( -1 );
+	}
+	else if( result == 0 )
+	{
+		return( 0 );
+	}
+	read_offset += ( media_size / 8 ) - ( media_size / 8 );
+	read_size    = media_size / 7;
+
+	result = smraw_test_read_hash(
+		  handle_single,
+		  &md5_context_single,
+		  -1 * ( (off64_t) media_size / 8 ),
+		  SEEK_CUR,
+		  read_size,
+		  read_offset,
+		  read_size );
+
+	if( result == -1 )
+	{
+		fprintf(
+		 stderr,
+		 "Unable to read buffer from single segment file RAW image.\n" );
+
+		return( -1 );
+	}
+	else if( result == 0 )
+	{
+		return( 0 );
+	}
+	result = smraw_test_read_hash(
+		  handle_multi,
+		  &md5_context_multi,
+		  -1 * ( (off64_t) media_size / 8 ),
 		  SEEK_CUR,
 		  read_size,
 		  read_offset,
@@ -2119,6 +2342,54 @@ int main( int argc, char * const argv[] )
 		fprintf(
 		 stderr,
 		 "Unable to test case: 4b.\n" );
+
+		libsmraw_handle_close(
+		 handle_single,
+		 NULL );
+		libsmraw_handle_free(
+		 &handle_single,
+		 NULL );
+		libsmraw_handle_close(
+		 handle_single,
+		 NULL );
+		libsmraw_handle_free(
+		 &handle_single,
+		 NULL );
+
+		return( EXIT_FAILURE );
+	}
+	if( smraw_test_compare_case5a(
+	     handle_single,
+	     handle_multi,
+	     media_size_single ) != 1 )
+	{
+		fprintf(
+		 stderr,
+		 "Unable to test case: 5a.\n" );
+
+		libsmraw_handle_close(
+		 handle_single,
+		 NULL );
+		libsmraw_handle_free(
+		 &handle_single,
+		 NULL );
+		libsmraw_handle_close(
+		 handle_single,
+		 NULL );
+		libsmraw_handle_free(
+		 &handle_single,
+		 NULL );
+
+		return( EXIT_FAILURE );
+	}
+	if( smraw_test_compare_case5b(
+	     handle_single,
+	     handle_multi,
+	     media_size_single ) != 1 )
+	{
+		fprintf(
+		 stderr,
+		 "Unable to test case: 5b.\n" );
 
 		libsmraw_handle_close(
 		 handle_single,

@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Storage media (SM) RAW library read buffer testing script
+# Storage media (SM) RAW library seek and read compare testing script
 #
 # Copyright (c) 2010, Joachim Metz <jbmetz@users.sourceforge.net>
 #
@@ -35,13 +35,19 @@ SORT="sort";
 UNIQ="uniq";
 WC="wc";
 
-SMRAW_TEST_READ="smraw_test_read";
+COMPARE_SINGLE="compare_single.raw";
+COMPARE_MULTI="compare_multi.raw";
 
-function test_read
+COMPARE_SINGLE="usb256_single.raw";
+COMPARE_MULTI="usb256_multi.raw";
+
+SMRAW_TEST_COMPARE="smraw_test_compare";
+
+function test_compare
 { 
-	echo "Testing read of input:" $*;
+	echo "Testing seek and read compare of input:" $*;
 
-	./${SMRAW_TEST_READ} $*;
+	./${SMRAW_TEST_COMPARE} $*;
 
 	RESULT=$?;
 
@@ -50,9 +56,9 @@ function test_read
 	return ${RESULT};
 }
 
-if ! test -x ${SMRAW_TEST_READ};
+if ! test -x ${SMRAW_TEST_COMPARE};
 then
-	echo "Missing executable: ${SMRAW_TEST_READ}";
+	echo "Missing executable: ${SMRAW_TEST_COMPARE}";
 
 	exit ${EXIT_FAILURE};
 fi
@@ -65,23 +71,28 @@ then
 	exit ${EXIT_IGNORE};
 fi
 
-RESULT=`${LS} ${INPUT} | ${TR} ' ' '\n' | ${SED} 's/[.][^.]*$//' | ${SORT} | ${UNIQ} | ${WC} -l`;
-
-if test ${RESULT} -eq 0;
+if ! test -f ${INPUT}/${COMPARE_SINGLE};
 then
-	echo "No files found in input directory, to test read place test files in directory.";
-	echo "Use unique filename bases per set of RAW image file(s)."
+	echo "No single segment file RAW image found in input directory (${COMPARE_SINGLE}),";
+	echo "to test read place test files in directory. Use unique filename bases per set of RAW image file(s)."
 
 	exit ${EXIT_IGNORE};
 fi
 
-for BASENAME in `${LS} ${INPUT} | ${TR} ' ' '\n' | ${SED} 's/[.][^.]*$//' | ${SORT} | ${UNIQ}`;
-do
-	if ! test_read `${LS} ${INPUT}/${BASENAME}.*`;
-	then
-		exit ${EXIT_FAILURE};
-	fi
-done
+RESULT=`${LS} ${INPUT}/${COMPARE_MULTI}* | ${TR} ' ' '\n' | ${SED} 's/[.][^.]*$//' | ${SORT} | ${UNIQ} | ${WC} -l`;
+
+if test ${RESULT} -eq 0;
+then
+	echo "No single segment file RAW image found in input directory (${COMPARE_MULTI}*),";
+	echo "to test read place test files in directory. Use unique filename bases per set of RAW image file(s)."
+
+	exit ${EXIT_IGNORE};
+fi
+
+if ! test_compare ${INPUT}/${COMPARE_SINGLE} ${INPUT}/${COMPARE_MULTI};
+then
+	exit ${EXIT_FAILURE};
+fi
 
 exit ${EXIT_SUCCESS};
 
