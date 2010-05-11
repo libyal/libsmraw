@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # Storage media (SM) RAW library glob testing script
 #
