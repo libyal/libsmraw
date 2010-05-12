@@ -2041,17 +2041,17 @@ int main( int argc, char * const argv[] )
 	 */
 #if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
 	if( libsmraw_glob_wide(
-	     argv[ 1 ],
+	     argv[ 2 ],
 	     strlen(
-	      argv[ 1 ] ),
+	      argv[ 2 ] ),
 	     &filenames_multi,
 	     &number_of_filenames_multi,
 	     &error ) != 1 )
 #else
 	if( libsmraw_glob(
-	     argv[ 1 ],
+	     argv[ 2 ],
 	     strlen(
-	      argv[ 1 ] ),
+	      argv[ 2 ] ),
 	     &filenames_multi,
 	     &number_of_filenames_multi,
 	     &error ) != 1 )

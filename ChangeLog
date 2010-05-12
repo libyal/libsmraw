@@ -19,6 +19,9 @@ Test
 Beta release
 * remove deprecated functions in libsmraw_legacy.[ch]
 
+20100512
+* bug fix in integrity tests
+
 20100511
 * worked on integrity tests
 * changed test scripts from sh to bash
