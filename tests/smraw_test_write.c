@@ -102,8 +102,6 @@ int main( int argc, char * const argv[] )
 
 		return( EXIT_FAILURE );
 	}
-	/* TODO add write test */
-
 	/* Clean up
 	 */
 	if( libsmraw_handle_close(

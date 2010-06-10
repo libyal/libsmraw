@@ -1805,7 +1805,7 @@ ssize_t libsmraw_handle_read_buffer(
 
 			return( -1 );
 		}
-		if( file_offset > file_size )
+		if( file_offset > (off64_t) file_size )
 		{
 			liberror_error_set(
 			 error,

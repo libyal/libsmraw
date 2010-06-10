@@ -418,7 +418,7 @@ int main( int argc, char * const argv[] )
 		     SEEK_SET,
 		     4096,
 		     -1,
-		     -1 ) != 1 )
+		     (size64_t) -1 ) != 1 )
 		{
 			fprintf(
 			 stderr,
@@ -442,7 +442,7 @@ int main( int argc, char * const argv[] )
 		     SEEK_SET,
 		     4096,
 		     -1,
-		     -1 ) != 1 )
+		     (size64_t) -1 ) != 1 )
 		{
 			fprintf(
 			 stderr,
