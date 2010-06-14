@@ -26,6 +26,7 @@ check_PROGRAMS = \
 	smraw_test_compare \
 	smraw_test_glob \
 	smraw_test_read \
+	smraw_test_read_loop \
 	smraw_test_seek \
 	smraw_test_write
 
@@ -54,6 +55,14 @@ smraw_test_read_SOURCES = \
 	smraw_test_read.c
 
 smraw_test_read_LDADD = \
+	../libcstring/libcstring.la \
+	../libsmraw/libsmraw.la \
+        @MEMWATCH_LIBADD@
+
+smraw_test_read_loop_SOURCES = \
+	smraw_test_read_loop.c
+
+smraw_test_read_loop_LDADD = \
 	../libcstring/libcstring.la \
 	../libsmraw/libsmraw.la \
         @MEMWATCH_LIBADD@

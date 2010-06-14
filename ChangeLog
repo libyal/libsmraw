@@ -19,6 +19,10 @@ Test
 Beta release
 * remove deprecated functions in libsmraw_legacy.[ch]
 
+20100614
+* small changes
+* worked on loop test
+
 20100610
 * small changes
 
