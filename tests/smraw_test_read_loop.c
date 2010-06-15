@@ -330,8 +330,14 @@ int main( int argc, char * const argv[] )
 	{
 		read_size = random();
 
-		read_size %= media_size;
-
+		if( read_size > media_size )
+		{
+			read_size %= media_size;
+		}
+		else
+		{
+			read_size = media_size % read_size;
+		}
 		/* Test: offset: 0 size: <read_size>
 		 * Expected result: offset: 0 size: <read_size>
 		 */
@@ -430,15 +436,15 @@ int main( int argc, char * const argv[] )
 		}
 		if( ( media_size - read_size ) < 4096 )
 		{
-			/* Test: offset: <media_size - read_size> size: 4096
-			 * Expected result: offset: <media_size - read_size> size: 4096
+			/* Test: offset: <read_size> size: 4096
+			 * Expected result: offset: <read_size> size: <4096 - media_size - read_size>
 			 */
 			if( smraw_test_read_buffer(
 			     handle,
-			     (off64_t) ( media_size - read_size ),
+			     (off64_t) read_size,
 			     SEEK_SET,
 			     4096,
-			     (off64_t) ( media_size - read_size ),
+			     (off64_t) read_size,
 			     4096 - ( media_size - read_size ) ) != 1 )
 			{
 				fprintf(
@@ -454,15 +460,15 @@ int main( int argc, char * const argv[] )
 
 				return( EXIT_FAILURE );
 			}
-			/* Test: offset: <media_size - read_size> size: 4096
-			 * Expected result: offset: <media_size - read_size> size: 4096
+			/* Test: offset: <read_size> size: 4096
+			 * Expected result: offset: <read_size> size: <4096 - media_size - read_size>
 			 */
 			if( smraw_test_read_buffer(
 			     handle,
-			     (off64_t) ( media_size - read_size ),
+			     (off64_t) read_size,
 			     SEEK_SET,
 			     4096,
-			     (off64_t) ( media_size - read_size ),
+			     (off64_t) read_size,
 			     4096 - ( media_size - read_size ) ) != 1 )
 			{
 				fprintf(
@@ -481,15 +487,15 @@ int main( int argc, char * const argv[] )
 		}
 		else
 		{
-			/* Test: offset: <media_size - read_size> size: 4096
-			 * Expected result: offset: <media_size - read_size> size: 4096
+			/* Test: offset: <read_size> size: 4096
+			 * Expected result: offset: <read_size> size: 4096
 			 */
 			if( smraw_test_read_buffer(
 			     handle,
-			     (off64_t) ( media_size - read_size ),
+			     (off64_t) read_size,
 			     SEEK_SET,
 			     4096,
-			     (off64_t) ( media_size - read_size ),
+			     (off64_t) read_size,
 			     4096 ) != 1 )
 			{
 				fprintf(
@@ -505,15 +511,15 @@ int main( int argc, char * const argv[] )
 
 				return( EXIT_FAILURE );
 			}
-			/* Test: offset: <media_size - read_size> size: 4096
-			 * Expected result: offset: <media_size - read_size> size: 4096
+			/* Test: offset: <read_size> size: 4096
+			 * Expected result: offset: <read_size> size: 4096
 			 */
 			if( smraw_test_read_buffer(
 			     handle,
-			     (off64_t) ( media_size - read_size ),
+			     (off64_t) read_size,
 			     SEEK_SET,
 			     4096,
-			     (off64_t) ( media_size - read_size ),
+			     (off64_t) read_size,
 			     4096 ) != 1 )
 			{
 				fprintf(

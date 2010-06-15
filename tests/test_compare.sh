@@ -38,8 +38,8 @@ WC="wc";
 COMPARE_SINGLE="compare_single.raw";
 COMPARE_MULTI="compare_multi.raw";
 
-COMPARE_SINGLE="usb256_single.raw";
-COMPARE_MULTI="usb256_multi.raw";
+COMPARE_SINGLE="sdc.raw";
+COMPARE_MULTI="sdc.raw";
 
 SMRAW_TEST_COMPARE="smraw_test_compare";
 
