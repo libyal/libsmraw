@@ -1825,6 +1825,7 @@ ssize_t libsmraw_handle_read_buffer(
 		}
 		if( read_size == 0 )
 		{
+			/* TODO test and fix this */
 			break;
 		}
 		read_count = libbfio_pool_read(

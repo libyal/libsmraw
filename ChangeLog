@@ -1,4 +1,5 @@
 TODO
+* fix possible segment file size boundary
 * configure validate libuna and libbfio check
 * close segment file on writing when full?
 
