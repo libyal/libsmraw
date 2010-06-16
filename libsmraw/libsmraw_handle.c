@@ -1307,6 +1307,8 @@ int libsmraw_handle_open_file_io_pool(
 		{
 			file_io_flags = LIBBFIO_OPEN_READ;
 		}
+		internal_handle->maximum_segment_size = 0;
+
 		for( file_io_handle_iterator = 0;
 		     file_io_handle_iterator < number_of_file_io_handles;
 		     file_io_handle_iterator++ )
@@ -1371,6 +1373,11 @@ int libsmraw_handle_open_file_io_pool(
 			file_io_handle = NULL;
 
 			internal_handle->media_size += file_size;
+
+			if( file_size > internal_handle->maximum_segment_size )
+			{
+				internal_handle->maximum_segment_size = file_size;
+			}
 		}
 		internal_handle->read_values_initialized = 1;
 	}

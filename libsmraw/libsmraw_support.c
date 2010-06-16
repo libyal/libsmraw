@@ -452,6 +452,7 @@ int libsmraw_glob(
 	size_t identifier_divider           = 0;
 	size_t identifier_index             = 0;
 	size_t identifier_length            = 0;
+	size_t maximum_identifier_length    = 0;
 	size_t segment_filename_copy_index  = 0;
 	size_t segment_filename_copy_length = 0;
 	size_t segment_filename_copy_size   = 0;
@@ -822,18 +823,38 @@ int libsmraw_glob(
 		}
 		segment_filename_copy_length = segment_filename_copy_size - 1;
 
+		maximum_identifier_length = 1;
+
+		if( naming_schema == LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_NUMERIC )
+		{
+			for( identifier_index = 0;
+			     identifier_index < identifier_length;
+			     identifier_index++ )
+			{
+				maximum_identifier_length *= 10;
+			}
+		}
+		else if( naming_schema == LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_SPLIT )
+		{
+			for( identifier_index = 0;
+			     identifier_index < identifier_length;
+			     identifier_index++ )
+			{
+				maximum_identifier_length *= 26;
+			}
+		}
 		while( *number_of_filenames < INT_MAX )
 		{
 			segment_file_identifier++;
 
 			identifier_divider = 1;
 
+			if( (size_t) segment_file_identifier >= maximum_identifier_length )
+			{
+				break;
+			}
 			if( naming_schema == LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_NUMERIC )
 			{
-				if( (size_t) segment_file_identifier >= ( identifier_length * 10 ) )
-				{
-					break;
-				}
 				for( identifier_index = 0;
 				     identifier_index < identifier_length;
 				     identifier_index++ )
@@ -845,10 +866,6 @@ int libsmraw_glob(
 			}
 			else if( naming_schema == LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_SPLIT )
 			{
-				if( (size_t) segment_file_identifier >= ( identifier_length * 26 ) )
-				{
-					break;
-				}
 				for( identifier_index = 0;
 				     identifier_index < identifier_length;
 				     identifier_index++ )

@@ -38,8 +38,8 @@ WC="wc";
 COMPARE_SINGLE="compare_single.raw";
 COMPARE_MULTI="compare_multi.raw";
 
-COMPARE_SINGLE="sdc.raw";
-COMPARE_MULTI="sdc.raw";
+COMPARE_SINGLE="sdc_single.raw";
+COMPARE_MULTI="sdc_multi.raw";
 
 SMRAW_TEST_COMPARE="smraw_test_compare";
 

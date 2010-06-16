@@ -20,6 +20,12 @@ Test
 Beta release
 * remove deprecated functions in libsmraw_legacy.[ch]
 
+20100616
+* worked on segment file boundary read test scenario
+
+20100615
+* worked on loop test
+
 20100614
 * small changes
 * worked on loop test
