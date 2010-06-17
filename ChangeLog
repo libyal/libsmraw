@@ -20,6 +20,9 @@ Test
 Beta release
 * remove deprecated functions in libsmraw_legacy.[ch]
 
+20100617
+* small fixes in glob function
+
 20100616
 * worked on segment file boundary read test scenario
 
