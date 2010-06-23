@@ -47,6 +47,8 @@ function test_glob
 
 	RESULT=$?;
 
+cat output;
+
 	if test ${RESULT} -eq ${EXIT_SUCCESS};
 	then
 		if ! ${CMP} -s input output;
@@ -158,6 +160,7 @@ then
 	exit ${EXIT_FAILURE};
 fi
 
+# This test should fail
 if test_glob "PREFIX" "0" "PREFIX0 PREFIX1 PREFIX2 PREFIX3 PREFIX4 PREFIX5 PREFIX6 PREFIX7 PREFIX8 PREFIX9";
 then
 	exit ${EXIT_FAILURE};
@@ -168,6 +171,7 @@ then
 	exit ${EXIT_FAILURE};
 fi
 
+# This test should fail
 if test_glob "PREFIX" "1" "PREFIX1 PREFIX2 PREFIX3 PREFIX4 PREFIX5 PREFIX6 PREFIX7 PREFIX8 PREFIX9";
 then
 	exit ${EXIT_FAILURE};
@@ -188,6 +192,7 @@ then
 	exit ${EXIT_FAILURE};
 fi
 
+# This test should fail
 if test_glob "PREFIX" "01" "PREFIX01 PREFIX02 PREFIX03 PREFIX04 PREFIX05 PREFIX06 PREFIX07 PREFIX08 PREFIX09 PREFIX10";
 then
 	exit ${EXIT_FAILURE};
@@ -218,6 +223,7 @@ then
 	exit ${EXIT_FAILURE};
 fi
 
+# This test should fail
 if test_glob "PREFIX" "001" "PREFIX001 PREFIX002 PREFIX003 PREFIX004 PREFIX005 PREFIX006 PREFIX007 PREFIX008 PREFIX009 PREFIX010";
 then
 	exit ${EXIT_FAILURE};
@@ -239,6 +245,29 @@ then
 fi
 
 if ! test_glob "PREFIX001.asb" "001.asb" "PREFIX001.asb PREFIX002.asb PREFIX003.asb PREFIX004.asb PREFIX005.asb PREFIX006.asb PREFIX007.asb PREFIX008.asb PREFIX009.asb PREFIX010.asb";
+then
+	exit ${EXIT_FAILURE};
+fi
+
+# This test should fail
+if test_glob "PREFIX" ".1of5" "PREFIX.1of5 PREFIX.2of5 PREFIX.3of5 PREFIX.4of5 PREFIX.5of5";
+then
+	exit ${EXIT_FAILURE};
+fi
+
+if ! test_glob "PREFIX.1of5" ".1of5" "PREFIX.1of5 PREFIX.2of5 PREFIX.3of5 PREFIX.4of5 PREFIX.5of5";
+then
+	exit ${EXIT_FAILURE};
+fi
+
+# This test should fail
+if test_glob "PREFIX.1of5" ".1of5" "PREFIX.1of5 PREFIX.2of5 PREFIX.3of5 PREFIX.4of5";
+then
+	exit ${EXIT_FAILURE};
+fi
+
+# This test should fail
+if test_glob "PREFIX.1of5" ".1of5" "PREFIX.1of5 PREFIX.2of5 PREFIX.3of5 PREFIX.4of5 PREFIX.5of5 PREFIX.6of5";
 then
 	exit ${EXIT_FAILURE};
 fi

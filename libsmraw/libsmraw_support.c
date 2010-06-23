@@ -318,6 +318,7 @@ int libsmraw_glob_determine_naming_schema(
      liberror_error_t **error )
 {
 	static char *function = "libsmraw_glob_determine_naming_schema";
+	size_t suffix_index   = 0;
 
 	if( suffix == NULL )
 	{
@@ -352,65 +353,137 @@ int libsmraw_glob_determine_naming_schema(
 
 		return( -1 );
 	}
-	*naming_schema = 0;
+	*naming_schema = LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_UNKNOWN;
 
 	/* Determine naming schema
 	 */
-	if( suffix_length == 1 )
+	if( suffix_length == 2 )
 	{
-		if( ( suffix[ 0 ] == '0' )
-		 || ( suffix[ 0 ] == '1' ) )
-		{
-			*naming_schema = LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_NUMERIC;
-		}
-	}
-	else if( suffix_length == 2 )
-	{
-		if( ( suffix[ 0 ] == 'a' )
-		 && ( suffix[ 1 ] == 'a' ) )
-		{
-			*naming_schema = LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_SPLIT;
-		}
-		else if( ( ( suffix[ 0 ] == 'd' )
-		        || ( suffix[ 0 ] == 'D' ) )
-		      && ( ( suffix[ 1 ] == 'd' )
-		        || ( suffix[ 1 ] == 'D' ) ) )
+		if( ( ( suffix[ 0 ] == 'd' )
+		   || ( suffix[ 0 ] == 'D' ) )
+		 && ( ( suffix[ 1 ] == 'd' )
+		   || ( suffix[ 1 ] == 'D' ) ) )
 		{
 			*naming_schema = LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_SINGLE;
-		}
-		else if( ( suffix[ 0 ] == '0' )
-		      && ( ( suffix[ 1 ] == '0' )
-		        || ( suffix[ 1 ] == '1' ) ) )
-		{
-			*naming_schema = LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_NUMERIC;
 		}
 	}
 	else if( suffix_length == 3 )
 	{
-		if( ( suffix[ 0 ] == 'a' )
-		 && ( suffix[ 1 ] == 'a' )
-		 && ( suffix[ 2 ] == 'a' ) )
-		{
-			*naming_schema = LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_SPLIT;
-		}
-		else if( ( ( suffix[ 0 ] == 'r' )
-		        || ( suffix[ 0 ] == 'R' ) )
-		      && ( ( suffix[ 1 ] == 'a' )
-		        || ( suffix[ 1 ] == 'A' ) )
-		      && ( ( suffix[ 2 ] == 'w' )
-		        || ( suffix[ 2 ] == 'W' ) ) )
+		if( ( ( suffix[ 0 ] == 'r' )
+		   || ( suffix[ 0 ] == 'R' ) )
+		 && ( ( suffix[ 1 ] == 'a' )
+		   || ( suffix[ 1 ] == 'A' ) )
+		 && ( ( suffix[ 2 ] == 'w' )
+		   || ( suffix[ 2 ] == 'W' ) ) )
 		{
 			*naming_schema = LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_SINGLE;
 		}
-		else if( ( suffix[ 0 ] == '0' )
-		      && ( suffix[ 1 ] == '0' )
-		      && ( ( suffix[ 2 ] == '0' )
-		        || ( suffix[ 2 ] == '1' ) ) )
+	}
+	else if( suffix_length >= 4 )
+	{
+		for( suffix_index = 0;
+		     suffix_index < suffix_length;
+		     suffix_index++ )
 		{
-			*naming_schema = LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_NUMERIC;
+			if( ( suffix[ suffix_index ] >= '0' )
+			 && ( suffix[ suffix_index ] <= '9' ) )
+			{
+				*naming_schema = LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_X_OF_N;
+			}
+			else if( ( suffix_index > 0 )
+			      && ( ( suffix[ suffix_index ] == 'o' )
+			        || ( suffix[ suffix_index ] == 'O' ) ) )
+			{
+				*naming_schema = LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_X_OF_N;
+
+				break;
+			}
+			else
+			{
+				*naming_schema = LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_UNKNOWN;
+
+				break;
+			}
+		}
+		if( *naming_schema == LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_X_OF_N )
+		{
+			*naming_schema = LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_UNKNOWN;
+
+			if( suffix_index < suffix_length )
+			{
+				if( ( suffix[ suffix_index ] == 'o' )
+				 || ( suffix[ suffix_index ] == 'O' ) )
+				{
+					*naming_schema = LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_X_OF_N;
+
+					suffix_index++;
+				}
+			}
+		}
+		if( *naming_schema == LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_X_OF_N )
+		{
+			*naming_schema = LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_UNKNOWN;
+
+			if( suffix_index < suffix_length )
+			{
+				if( ( suffix[ suffix_index ] == 'f' )
+				 || ( suffix[ suffix_index ] == 'F' ) )
+				{
+					*naming_schema = LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_X_OF_N;
+
+					suffix_index++;
+				}
+			}
+		}
+		if( *naming_schema == LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_X_OF_N )
+		{
+			while( suffix_index < suffix_length )
+			{
+				if( ( suffix[ suffix_index ] >= '0' )
+				 && ( suffix[ suffix_index ] <= '9' ) )
+				{
+					*naming_schema = LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_X_OF_N;
+				}
+				else
+				{
+					*naming_schema = LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_UNKNOWN;
+
+					break;
+				}
+				suffix_index++;
+			}
 		}
 	}
-	if( *naming_schema == 0 )
+	if( *naming_schema == LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_UNKNOWN )
+	{
+		for( suffix_index = 0;
+		     suffix_index < suffix_length;
+		     suffix_index++ )
+		{
+			if( suffix[ suffix_index ] == 'a' )
+			{
+				*naming_schema = LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_SPLIT;
+			}
+			else if( ( suffix[ suffix_index ] == '0' )
+			      && ( suffix_index < ( suffix_length - 1 ) ) )
+			{
+				*naming_schema = LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_NUMERIC;
+			}
+			else if( ( ( suffix[ suffix_index ] == '0' )
+			        || ( suffix[ suffix_index ] == '1' ) )
+			      && ( suffix_index == ( suffix_length - 1 ) ) )
+			{
+				*naming_schema = LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_NUMERIC;
+			}
+			else
+			{
+				*naming_schema = LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_UNKNOWN;
+
+				break;
+			}
+		}
+	}
+	if( *naming_schema == LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_UNKNOWN )
 	{
 		return( 0 );
 	}
@@ -452,13 +525,13 @@ int libsmraw_glob(
 	size_t identifier_divider           = 0;
 	size_t identifier_index             = 0;
 	size_t identifier_length            = 0;
-	size_t maximum_identifier_length    = 0;
 	size_t segment_filename_copy_index  = 0;
 	size_t segment_filename_copy_length = 0;
 	size_t segment_filename_copy_size   = 0;
 	size_t segment_filename_size        = 0;
 	size_t suffix_length                = 0;
 	uint8_t naming_schema               = 0;
+	int maximum_segment_file_identifier = 0;
 	int result                          = 0;
 	int segment_file_identifier         = 0;
 	int suffix_index                    = 0;
@@ -506,7 +579,7 @@ int libsmraw_glob(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-		 "%s: unable to create file io handle.",
+		 "%s: unable to create file IO handle.",
 		 function );
 
 		return( -1 );
@@ -636,6 +709,17 @@ int libsmraw_glob(
 		 "%s: unable to create segment filename copy.",
 		 function );
 
+		libbfio_handle_free(
+		 &file_io_handle,
+		 NULL );
+		libsmraw_glob_free(
+		 *filenames,
+		 *number_of_filenames,
+		 NULL );
+
+		*filenames           = NULL;
+		*number_of_filenames = 0;
+
 		return( -1 );
 	}
 	if( libcstring_narrow_string_copy(
@@ -649,6 +733,19 @@ int libsmraw_glob(
 		 LIBERROR_RUNTIME_ERROR_SET_FAILED,
 		 "%s: unable to set segment filename copy.",
 		 function );
+
+		memory_free(
+		 segment_filename_copy );
+		libbfio_handle_free(
+		 &file_io_handle,
+		 NULL );
+		libsmraw_glob_free(
+		 *filenames,
+		 *number_of_filenames,
+		 NULL );
+
+		*filenames           = NULL;
+		*number_of_filenames = 0;
 
 		return( -1 );
 	}
@@ -703,11 +800,18 @@ int libsmraw_glob(
 				libbfio_handle_free(
 				 &file_io_handle,
 				 NULL );
+				libsmraw_glob_free(
+				 *filenames,
+				 *number_of_filenames,
+				 NULL );
+
+				*filenames           = NULL;
+				*number_of_filenames = 0;
 
 				return( -1 );
 			}
 		}
-		if( naming_schema == 0 )
+		if( naming_schema == LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_UNKNOWN )
 		{
 			if( identifier == NULL )
 			{
@@ -794,11 +898,18 @@ int libsmraw_glob(
 			libbfio_handle_free(
 			 &file_io_handle,
 			 NULL );
+			libsmraw_glob_free(
+			 *filenames,
+			 *number_of_filenames,
+			 NULL );
+
+			*filenames           = NULL;
+			*number_of_filenames = 0;
 
 			return( -1 );
 		}
 	}
-	if( naming_schema == 0 )
+	if( naming_schema == LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_UNKNOWN )
 	{
 		liberror_error_set(
 		 error,
@@ -812,6 +923,13 @@ int libsmraw_glob(
 		libbfio_handle_free(
 		 &file_io_handle,
 		 NULL );
+		libsmraw_glob_free(
+		 *filenames,
+		 *number_of_filenames,
+		 NULL );
+
+		*filenames           = NULL;
+		*number_of_filenames = 0;
 
 		return( -1 );
 	}
@@ -819,41 +937,73 @@ int libsmraw_glob(
 	{
 		if( naming_schema == LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_NUMERIC )
 		{
-			segment_file_identifier = identifier[ identifier_length - 1 ] - '0';
-		}
-		segment_filename_copy_length = segment_filename_copy_size - 1;
+			maximum_segment_file_identifier = 1;
 
-		maximum_identifier_length = 1;
-
-		if( naming_schema == LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_NUMERIC )
-		{
 			for( identifier_index = 0;
 			     identifier_index < identifier_length;
 			     identifier_index++ )
 			{
-				maximum_identifier_length *= 10;
+				maximum_segment_file_identifier *= 10;
 			}
 		}
 		else if( naming_schema == LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_SPLIT )
 		{
+			maximum_segment_file_identifier = 1;
+
 			for( identifier_index = 0;
 			     identifier_index < identifier_length;
 			     identifier_index++ )
 			{
-				maximum_identifier_length *= 26;
+				maximum_segment_file_identifier *= 26;
 			}
 		}
+		else if( naming_schema == LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_X_OF_N )
+		{
+			for( identifier_index = identifier_length - 1;
+			     identifier_index > 0;
+			     identifier_index-- )
+			{
+				if( ( identifier[ identifier_index ] < '0' )
+				 || ( identifier[ identifier_index ] > '9' ) )
+				{
+					break;
+				}
+				maximum_segment_file_identifier *= 10;
+				maximum_segment_file_identifier += (int) ( identifier[ identifier_index ] - '0' );
+			}
+			maximum_segment_file_identifier += 1;
+
+			for( identifier_index = 0;
+			     identifier_index < identifier_length;
+			     identifier_index++ )
+			{
+				if( ( identifier[ identifier_index ] < '0' )
+				 || ( identifier[ identifier_index ] > '9' ) )
+				{
+					break;
+				}
+			}
+			identifier_length = identifier_index;
+		}
+		if( ( naming_schema == LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_NUMERIC )
+		 || ( naming_schema == LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_X_OF_N ) )
+		{
+			segment_file_identifier = (int) ( identifier[ identifier_length - 1 ] - '0' );
+		}
+		segment_filename_copy_length = segment_filename_copy_size - 1;
+
 		while( *number_of_filenames < INT_MAX )
 		{
+			if( ( segment_file_identifier + 1 ) >= maximum_segment_file_identifier )
+			{
+				break;
+			}
 			segment_file_identifier++;
 
 			identifier_divider = 1;
 
-			if( (size_t) segment_file_identifier >= maximum_identifier_length )
-			{
-				break;
-			}
-			if( naming_schema == LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_NUMERIC )
+			if( ( naming_schema == LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_NUMERIC )
+			 || ( naming_schema == LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_X_OF_N ) )
 			{
 				for( identifier_index = 0;
 				     identifier_index < identifier_length;
@@ -903,6 +1053,13 @@ int libsmraw_glob(
 				libbfio_handle_free(
 				 &file_io_handle,
 				 NULL );
+				libsmraw_glob_free(
+				 *filenames,
+				 *number_of_filenames,
+				 NULL );
+
+				*filenames           = NULL;
+				*number_of_filenames = 0;
 
 				return( -1 );
 			}
@@ -910,6 +1067,8 @@ int libsmraw_glob(
 			{
 				memory_free(
 				 segment_filename );
+
+				segment_file_identifier--;
 
 				break;
 			}
@@ -933,10 +1092,42 @@ int libsmraw_glob(
 				libbfio_handle_free(
 				 &file_io_handle,
 				 NULL );
+				libsmraw_glob_free(
+				 *filenames,
+				 *number_of_filenames,
+				 NULL );
+
+				*filenames           = NULL;
+				*number_of_filenames = 0;
 
 				return( -1 );
 			}
 		}
+	}
+	if( ( naming_schema == LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_X_OF_N )
+	 && ( segment_file_identifier != ( maximum_segment_file_identifier - 1 ) ) )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: missing segment filename(s).",
+		 function );
+
+		memory_free(
+		 segment_filename_copy );
+		libbfio_handle_free(
+		 &file_io_handle,
+		 NULL );
+		libsmraw_glob_free(
+		 *filenames,
+		 *number_of_filenames,
+		 NULL );
+
+		*filenames           = NULL;
+		*number_of_filenames = 0;
+
+		return( -1 );
 	}
 	memory_free(
 	 segment_filename_copy );
@@ -949,8 +1140,16 @@ int libsmraw_glob(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-		 "%s: unable to free file io handle.",
+		 "%s: unable to free file IO handle.",
 		 function );
+
+		libsmraw_glob_free(
+		 *filenames,
+		 *number_of_filenames,
+		 NULL );
+
+		*filenames           = NULL;
+		*number_of_filenames = 0;
 
 		return( -1 );
 	}
@@ -1322,61 +1521,133 @@ int libsmraw_glob_wide_determine_naming_schema(
 
 	/* Determine naming schema
 	 */
-	if( suffix_length == 1 )
+	if( suffix_length == 2 )
 	{
-		if( ( suffix[ 0 ] == (wchar_t) '0' )
-		 || ( suffix[ 0 ] == (wchar_t) '1' ) )
-		{
-			*naming_schema = LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_NUMERIC;
-		}
-	}
-	else if( suffix_length == 2 )
-	{
-		if( ( suffix[ 0 ] == (wchar_t) 'a' )
-		 && ( suffix[ 1 ] == (wchar_t) 'a' ) )
-		{
-			*naming_schema = LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_SPLIT;
-		}
-		else if( ( ( suffix[ 0 ] == (wchar_t) 'd' )
-		        || ( suffix[ 0 ] == (wchar_t) 'D' ) )
-		      && ( ( suffix[ 1 ] == (wchar_t) 'd' )
-		        || ( suffix[ 1 ] == (wchar_t) 'D' ) ) )
+		if( ( ( suffix[ 0 ] == (wchar_t) 'd' )
+		   || ( suffix[ 0 ] == (wchar_t) 'D' ) )
+		 && ( ( suffix[ 1 ] == (wchar_t) 'd' )
+		   || ( suffix[ 1 ] == (wchar_t) 'D' ) ) )
 		{
 			*naming_schema = LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_SINGLE;
-		}
-		else if( ( suffix[ 0 ] == (wchar_t) '0' )
-		      && ( ( suffix[ 1 ] == (wchar_t) '0' )
-		        || ( suffix[ 1 ] == (wchar_t) '1' ) ) )
-		{
-			*naming_schema = LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_NUMERIC;
 		}
 	}
 	else if( suffix_length == 3 )
 	{
-		if( ( suffix[ 0 ] == (wchar_t) 'a' )
-		 && ( suffix[ 1 ] == (wchar_t) 'a' )
-		 && ( suffix[ 2 ] == (wchar_t) 'a' ) )
-		{
-			*naming_schema = LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_SPLIT;
-		}
-		else if( ( ( suffix[ 0 ] == (wchar_t) 'r' )
-		        || ( suffix[ 0 ] == (wchar_t) 'R' ) )
-		      && ( ( suffix[ 1 ] == (wchar_t) 'a' )
-		        || ( suffix[ 1 ] == (wchar_t) 'A' ) )
-		      && ( ( suffix[ 2 ] == (wchar_t) 'w' )
-		        || ( suffix[ 2 ] == (wchar_t) 'W' ) ) )
+		if( ( ( suffix[ 0 ] == (wchar_t) 'r' )
+		   || ( suffix[ 0 ] == (wchar_t) 'R' ) )
+		 && ( ( suffix[ 1 ] == (wchar_t) 'a' )
+		   || ( suffix[ 1 ] == (wchar_t) 'A' ) )
+		 && ( ( suffix[ 2 ] == (wchar_t) 'w' )
+		   || ( suffix[ 2 ] == (wchar_t) 'W' ) ) )
 		{
 			*naming_schema = LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_SINGLE;
 		}
-		else if( ( suffix[ 0 ] == (wchar_t) '0' )
-		      && ( suffix[ 1 ] == (wchar_t) '0' )
-		      && ( ( suffix[ 2 ] == (wchar_t) '0' )
-		        || ( suffix[ 2 ] == (wchar_t) '1' ) ) )
+	}
+	else if( suffix_length >= 4 )
+	{
+		for( suffix_index = 0;
+		     suffix_index < suffix_length;
+		     suffix_index++ )
 		{
-			*naming_schema = LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_NUMERIC;
+			if( ( suffix[ suffix_index ] >= (wchar_t) '0' )
+			 && ( suffix[ suffix_index ] <= (wchar_t) '9' ) )
+			{
+				*naming_schema = LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_X_OF_N;
+			}
+			else if( ( suffix_index > 0 )
+			      && ( ( suffix[ suffix_index ] == (wchar_t) 'o' )
+			        || ( suffix[ suffix_index ] == (wchar_t) 'O' ) ) )
+			{
+				*naming_schema = LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_X_OF_N;
+
+				break;
+			}
+			else
+			{
+				*naming_schema = LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_UNKNOWN;
+
+				break;
+			}
+		}
+		if( *naming_schema == LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_X_OF_N )
+		{
+			*naming_schema = LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_UNKNOWN;
+
+			if( suffix_index < suffix_length )
+			{
+				if( ( suffix[ suffix_index ] == (wchar_t) 'o' )
+				 || ( suffix[ suffix_index ] == (wchar_t) 'O' ) )
+				{
+					*naming_schema = LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_X_OF_N;
+
+					suffix_index++;
+				}
+			}
+		}
+		if( *naming_schema == LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_X_OF_N )
+		{
+			*naming_schema = LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_UNKNOWN;
+
+			if( suffix_index < suffix_length )
+			{
+				if( ( suffix[ suffix_index ] == (wchar_t) 'f' )
+				 || ( suffix[ suffix_index ] == (wchar_t) 'F' ) )
+				{
+					*naming_schema = LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_X_OF_N;
+
+					suffix_index++;
+				}
+			}
+		}
+		if( *naming_schema == LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_X_OF_N )
+		{
+			while( suffix_index < suffix_length )
+			{
+				if( ( suffix[ suffix_index ] >= (wchar_t) '0' )
+				 && ( suffix[ suffix_index ] <= (wchar_t) '9' ) )
+				{
+					*naming_schema = LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_X_OF_N;
+				}
+				else
+				{
+					*naming_schema = LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_UNKNOWN;
+
+					break;
+				}
+				suffix_index++;
+			}
 		}
 	}
-	if( *naming_schema == 0 )
+	if( *naming_schema == LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_UNKNOWN )
+	{
+		for( suffix_index = 0;
+		     suffix_index < suffix_length;
+		     suffix_index++ )
+		{
+			if( suffix[ suffix_index ] == (wchar_t) 'a' )
+			{
+				*naming_schema = LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_SPLIT;
+			}
+			else if( ( suffix[ suffix_index ] == (wchar_t) '0' )
+			      && ( suffix_index < ( suffix_length - 1 ) ) )
+			{
+				*naming_schema = LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_NUMERIC;
+			}
+			else if( ( ( suffix[ suffix_index ] == (wchar_t) '0' )
+			        || ( suffix[ suffix_index ] == (wchar_t) '1' ) )
+			      && ( suffix_index == ( suffix_length - 1 ) ) )
+			{
+				*naming_schema = LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_NUMERIC;
+			}
+			else
+			{
+				*naming_schema = LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_UNKNOWN;
+
+				break;
+			}
+		}
+	}
+	if( *naming_schema == LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_UNKNOWN )
 	{
 		return( 0 );
 	}
@@ -1418,13 +1689,13 @@ int libsmraw_glob_wide(
 	size_t identifier_divider           = 0;
 	size_t identifier_index             = 0;
 	size_t identifier_length            = 0;
-	size_t maximum_identifier_length    = 0;
 	size_t segment_filename_copy_index  = 0;
 	size_t segment_filename_copy_length = 0;
 	size_t segment_filename_copy_size   = 0;
 	size_t segment_filename_size        = 0;
 	size_t suffix_length                = 0;
 	uint8_t naming_schema               = 0;
+	int maximum_segment_file_identifier = 0;
 	int result                          = 0;
 	int segment_file_identifier         = 0;
 	int suffix_index                    = 0;
@@ -1472,7 +1743,7 @@ int libsmraw_glob_wide(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-		 "%s: unable to create file io handle.",
+		 "%s: unable to create file IO handle.",
 		 function );
 
 		return( -1 );
@@ -1602,6 +1873,17 @@ int libsmraw_glob_wide(
 		 "%s: unable to create segment filename copy.",
 		 function );
 
+		libbfio_handle_free(
+		 &file_io_handle,
+		 NULL );
+		libsmraw_glob_wide_free(
+		 *filenames,
+		 *number_of_filenames,
+		 NULL );
+
+		*filenames           = NULL;
+		*number_of_filenames = 0;
+
 		return( -1 );
 	}
 	if( libcstring_wide_string_copy(
@@ -1615,6 +1897,19 @@ int libsmraw_glob_wide(
 		 LIBERROR_RUNTIME_ERROR_SET_FAILED,
 		 "%s: unable to set segment filename copy.",
 		 function );
+
+		memory_free(
+		 segment_filename_copy );
+		libbfio_handle_free(
+		 &file_io_handle,
+		 NULL );
+		libsmraw_glob_wide_free(
+		 *filenames,
+		 *number_of_filenames,
+		 NULL );
+
+		*filenames           = NULL;
+		*number_of_filenames = 0;
 
 		return( -1 );
 	}
@@ -1669,11 +1964,18 @@ int libsmraw_glob_wide(
 				libbfio_handle_free(
 				 &file_io_handle,
 				 NULL );
+				libsmraw_glob_wide_free(
+				 *filenames,
+				 *number_of_filenames,
+				 NULL );
+
+				*filenames           = NULL;
+				*number_of_filenames = 0;
 
 				return( -1 );
 			}
 		}
-		if( naming_schema == 0 )
+		if( naming_schema == LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_UNKNOWN )
 		{
 			if( identifier == NULL )
 			{
@@ -1760,11 +2062,18 @@ int libsmraw_glob_wide(
 			libbfio_handle_free(
 			 &file_io_handle,
 			 NULL );
+			libsmraw_glob_wide_free(
+			 *filenames,
+			 *number_of_filenames,
+			 NULL );
+
+			*filenames           = NULL;
+			*number_of_filenames = 0;
 
 			return( -1 );
 		}
 	}
-	if( naming_schema == 0 )
+	if( naming_schema == LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_UNKNOWN )
 	{
 		liberror_error_set(
 		 error,
@@ -1778,48 +2087,101 @@ int libsmraw_glob_wide(
 		libbfio_handle_free(
 		 &file_io_handle,
 		 NULL );
+		libsmraw_glob_wide_free(
+		 *filenames,
+		 *number_of_filenames,
+		 NULL );
+
+		*filenames           = NULL;
+		*number_of_filenames = 0;
 
 		return( -1 );
+	}
+	if( naming_schema == LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_X_OF_N )
+	{
+		for( identifier_index = 0;
+		     identifier_index < identifier_length;
+		     identifier_index++ )
+		{
+			if( ( identifier[ identifier_index ] < '0' )
+			 || ( identifier[ identifier_index ] > '9' ) )
+			{
+				break;
+			}
+		}
+		identifier_length = identifier_index + 1;
 	}
 	if( naming_schema != LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_SINGLE )
 	{
 		if( naming_schema == LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_NUMERIC )
 		{
-			segment_file_identifier = identifier[ identifier_length - 1 ] - '0';
-		}
-		segment_filename_copy_length = segment_filename_copy_size - 1;
+			maximum_segment_file_identifier = 1;
 
-		maximum_identifier_length = 1;
-
-		if( naming_schema == LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_NUMERIC )
-		{
 			for( identifier_index = 0;
 			     identifier_index < identifier_length;
 			     identifier_index++ )
 			{
-				maximum_identifier_length *= 10;
+				maximum_segment_file_identifier *= 10;
 			}
 		}
 		else if( naming_schema == LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_SPLIT )
 		{
+			maximum_segment_file_identifier = 1;
+
 			for( identifier_index = 0;
 			     identifier_index < identifier_length;
 			     identifier_index++ )
 			{
-				maximum_identifier_length *= 26;
+				maximum_segment_file_identifier *= 26;
 			}
 		}
+		else if( naming_schema == LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_X_OF_N )
+		{
+			for( identifier_index = identifier_length - 1;
+			     identifier_index > 0;
+			     identifier_index-- )
+			{
+				if( ( identifier[ identifier_index ] < (wchar_t) '0' )
+				 || ( identifier[ identifier_index ] > (wchar_t) '9' ) )
+				{
+					break;
+				}
+				maximum_segment_file_identifier *= 10;
+				maximum_segment_file_identifier += (int) ( identifier[ identifier_index ] - (wchar_t) '0' );
+			}
+			maximum_segment_file_identifier += 1;
+
+			for( identifier_index = 0;
+			     identifier_index < identifier_length;
+			     identifier_index++ )
+			{
+				if( ( identifier[ identifier_index ] < (wchar_t) '0' )
+				 || ( identifier[ identifier_index ] > (wchar_t) '9' ) )
+				{
+					break;
+				}
+			}
+			identifier_length = identifier_index;
+		}
+		if( ( naming_schema == LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_NUMERIC )
+		 || ( naming_schema == LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_X_OF_N ) )
+		{
+			segment_file_identifier = (int) ( identifier[ identifier_length - 1 ] - '0' );
+		}
+		segment_filename_copy_length = segment_filename_copy_size - 1;
+
 		while( *number_of_filenames < INT_MAX )
 		{
+			if( ( segment_file_identifier + 1 ) >= maximum_segment_file_identifier )
+			{
+				break;
+			}
 			segment_file_identifier++;
 
 			identifier_divider = 1;
 
-			if( (size_t) segment_file_identifier >= maximum_identifier_length )
-			{
-				break;
-			}
-			if( naming_schema == LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_NUMERIC )
+			if( ( naming_schema == LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_NUMERIC )
+			 || ( naming_schema == LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_X_OF_N ) )
 			{
 				for( identifier_index = 0;
 				     identifier_index < identifier_length;
@@ -1869,6 +2231,13 @@ int libsmraw_glob_wide(
 				libbfio_handle_free(
 				 &file_io_handle,
 				 NULL );
+				libsmraw_glob_wide_free(
+				 *filenames,
+				 *number_of_filenames,
+				 NULL );
+
+				*filenames           = NULL;
+				*number_of_filenames = 0;
 
 				return( -1 );
 			}
@@ -1876,6 +2245,8 @@ int libsmraw_glob_wide(
 			{
 				memory_free(
 				 segment_filename );
+
+				segment_file_identifier--;
 
 				break;
 			}
@@ -1899,10 +2270,42 @@ int libsmraw_glob_wide(
 				libbfio_handle_free(
 				 &file_io_handle,
 				 NULL );
+				libsmraw_glob_wide_free(
+				 *filenames,
+				 *number_of_filenames,
+				 NULL );
+
+				*filenames           = NULL;
+				*number_of_filenames = 0;
 
 				return( -1 );
 			}
 		}
+	}
+	if( ( naming_schema == LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_X_OF_N )
+	 && ( segment_file_identifier != ( maximum_segment_file_identifier - 1 ) ) )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: missing segment filename(s).",
+		 function );
+
+		memory_free(
+		 segment_filename_copy );
+		libbfio_handle_free(
+		 &file_io_handle,
+		 NULL );
+		libsmraw_glob_wide_free(
+		 *filenames,
+		 *number_of_filenames,
+		 NULL );
+
+		*filenames           = NULL;
+		*number_of_filenames = 0;
+
+		return( -1 );
 	}
 	memory_free(
 	 segment_filename_copy );
@@ -1915,8 +2318,16 @@ int libsmraw_glob_wide(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-		 "%s: unable to free file io handle.",
+		 "%s: unable to free file IO handle.",
 		 function );
+
+		libsmraw_glob_wide_free(
+		 *filenames,
+		 *number_of_filenames,
+		 NULL );
+
+		*filenames           = NULL;
+		*number_of_filenames = 0;
 
 		return( -1 );
 	}

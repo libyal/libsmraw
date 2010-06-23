@@ -1,5 +1,4 @@
 TODO
-* fix possible segment file size boundary
 * configure validate libuna and libbfio check
 * close segment file on writing when full?
 
@@ -7,7 +6,6 @@ Features
 * allow set of segment filename during write (as alternative writing locations)
 * add read and write random functions
 * implement write resume
-* support for glob naming schema XofY (1of5)
 * support for glob naming schema [.0,] .1, .2, ..., .10, ...
 
 Tooling
@@ -19,6 +17,10 @@ Test
 
 Beta release
 * remove deprecated functions in libsmraw_legacy.[ch]
+
+20100623
+* worked on support for XofN naming schema
+* fixes possible leaks in glob functions
 
 20100617
 * small fixes in glob function

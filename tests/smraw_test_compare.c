@@ -2090,6 +2090,17 @@ int main( int argc, char * const argv[] )
 
 		libsmraw_error_free(
 		 &error );
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+		libsmraw_glob_wide_free(
+		 filenames_multi,
+		 number_of_filenames_multi,
+		 NULL );
+#else
+		libsmraw_glob_free(
+		 filenames_multi,
+		 number_of_filenames_multi,
+		 NULL );
+#endif
 		libsmraw_handle_close(
 		 handle_single,
 		 NULL );
@@ -2125,8 +2136,62 @@ int main( int argc, char * const argv[] )
 
 		libsmraw_error_free(
 		 &error );
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+		libsmraw_glob_wide_free(
+		 filenames_multi,
+		 number_of_filenames_multi,
+		 NULL );
+#else
+		libsmraw_glob_free(
+		 filenames_multi,
+		 number_of_filenames_multi,
+		 NULL );
+#endif
 		libsmraw_handle_free(
 		 &handle_multi,
+		 NULL );
+		libsmraw_handle_close(
+		 handle_single,
+		 NULL );
+		libsmraw_handle_free(
+		 &handle_single,
+		 NULL );
+
+		return( EXIT_FAILURE );
+	}
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+	if( libsmraw_glob_wide_free(
+	     filenames_multi,
+	     number_of_filenames_multi,
+	     &error ) != 1 )
+#else
+	if( libsmraw_glob_free(
+	     filenames_multi,
+	     number_of_filenames_multi,
+	     &error ) != 1 )
+#endif
+	{
+		fprintf(
+		 stderr,
+		 "Unable to free glob.\n" );
+
+		libsmraw_error_backtrace_fprint(
+		 error,
+		 stderr );
+
+		libsmraw_error_free(
+		 &error );
+		libsmraw_handle_close(
+		 handle_multi,
+		 NULL );
+		libsmraw_handle_free(
+		 &handle_multi,
+		 NULL );
+		libsmraw_handle_close(
+		 handle_single,
+		 NULL );
+		libsmraw_handle_free(
+		 &handle_single,
 		 NULL );
 
 		return( EXIT_FAILURE );

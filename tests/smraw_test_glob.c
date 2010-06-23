@@ -118,19 +118,19 @@ int main( int argc, char * const argv[] )
 		 "%s",
 		 filenames[ filename_iterator ] );
 #endif
-	if( filename_iterator == ( number_of_filenames - 1 ) )
-	{
-		fprintf(
-		 stdout,
-		 "\n" );
+		if( filename_iterator == ( number_of_filenames - 1 ) )
+		{
+			fprintf(
+			 stdout,
+			 "\n" );
+		}
+		else
+		{
+			fprintf(
+			 stdout,
+			 " " );
+		}
 	}
-	else
-	{
-		fprintf(
-		 stdout,
-		 " " );
-	}
-}
 #if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
 	if( libsmraw_glob_wide_free(
 	     filenames,

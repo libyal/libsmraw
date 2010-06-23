@@ -37,6 +37,8 @@ extern "C" {
 
 enum LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMAS
 {
+	LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_UNKNOWN	= 0,
+
 	/* Numeric naming schema e.g.
 	 * .1, .2, ... .10 ...
 	 * .000, .001, ... .010 ...
@@ -53,11 +55,16 @@ enum LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMAS
 	/* Split naming schema e.g.
 	 * PREFIXaa, PREFIXab, ...
 	 */
-	LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_SPLIT	= (uint8_t) 's'
+	LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_SPLIT	= (uint8_t) 's',
+
+	/* XofN naming schema e.g.
+	 * PREFIX.1of5, PREFIX.2of5, ...
+	 */
+	LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_X_OF_N	= (uint8_t) 'x'
 };
 
 LIBSMRAW_EXTERN const char *libsmraw_get_version(
-                            void );
+                             void );
 
 int libsmraw_glob_append_segment_file(
      char **filenames[],
