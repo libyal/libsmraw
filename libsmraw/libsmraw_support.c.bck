@@ -1418,7 +1418,7 @@ int libsmraw_glob_wide_exists_segment_file(
      size_t *segment_filename_size,
      liberror_error_t **error )
 {
-	static char *function = "libsmraw_glob_wide_exists_segment_file";
+	static char *function = "libsmraw_glob_exists_segment_file";
 	int result            = 0;
 
 	if( file_io_handle == NULL )
@@ -1588,7 +1588,7 @@ int libsmraw_glob_wide_exists_segment_file(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_IO,
 		 LIBERROR_IO_ERROR_GENERIC,
-		 "%s: unable to determine if file: %ls exists.",
+		 "%s: unable to determine if file: %s exists.",
 		 function,
 		 *segment_filename );
 
@@ -1648,7 +1648,7 @@ int libsmraw_glob_wide_determine_naming_schema(
 
 		return( -1 );
 	}
-	*naming_schema = LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_UNKNOWN;
+	*naming_schema = 0;
 
 	/* Determine naming schema
 	 */
@@ -2060,15 +2060,15 @@ int libsmraw_glob_wide(
 
 		while( segment_filename_copy_index > 0 )
 		{
-			if( segment_filename_copy[ segment_filename_copy_index ] == (wchar_t) '.' )
+			if( segment_filename_copy[ segment_filename_copy_index ] == '.' )
 			{
 				identifier        = &( segment_filename_copy[ segment_filename_copy_index + 1 ] );
 				identifier_length = ( segment_filename_copy_size - 1 ) - ( segment_filename_copy_index + 1 );
 
 				break;
 			}
-			else if( ( segment_filename_copy[ segment_filename_copy_index ] == (wchar_t) '/' )
-			      || ( segment_filename_copy[ segment_filename_copy_index ] == (wchar_t) '\\' ) )
+			else if( ( segment_filename_copy[ segment_filename_copy_index ] == '/' )
+			      || ( segment_filename_copy[ segment_filename_copy_index ] == '\\' ) )
 			{
 				break;
 			}
@@ -2121,7 +2121,7 @@ int libsmraw_glob_wide(
 			{
 				if( naming_schema == LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_NUMERIC )
 				{
-					if( segment_filename_copy[ segment_filename_copy_index ] != (wchar_t) '0' )
+					if( segment_filename_copy[ segment_filename_copy_index ] != '0' )
 					{
 						identifier = &( segment_filename_copy[ segment_filename_copy_index + 1 ] );
 
@@ -2131,7 +2131,7 @@ int libsmraw_glob_wide(
 				}
 				else if( naming_schema == LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_SPLIT )
 				{
-					if( segment_filename_copy[ segment_filename_copy_index ] != (wchar_t) 'a' )
+					if( segment_filename_copy[ segment_filename_copy_index ] != 'a' )
 					{
 						identifier = &( segment_filename_copy[ segment_filename_copy_index + 1 ] );
 
@@ -2141,19 +2141,19 @@ int libsmraw_glob_wide(
 				}
 				else
 				{
-					if( ( segment_filename_copy[ segment_filename_copy_index ] == (wchar_t) '0' )
-					 || ( segment_filename_copy[ segment_filename_copy_index ] == (wchar_t) '1' ) )
+					if( ( segment_filename_copy[ segment_filename_copy_index ] == '0' )
+					 || ( segment_filename_copy[ segment_filename_copy_index ] == '1' ) )
 					{
 						naming_schema     = LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_NUMERIC;
 						identifier_length = 1;
 					}
-					else if( segment_filename_copy[ segment_filename_copy_index ] == (wchar_t) 'a' )
+					else if( segment_filename_copy[ segment_filename_copy_index ] == 'a' )
 					{
 						naming_schema     = LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_SPLIT;
 						identifier_length = 1;
 					}
-					else if( ( segment_filename_copy[ segment_filename_copy_index ] == (wchar_t) '/' )
-					      || ( segment_filename_copy[ segment_filename_copy_index ] == (wchar_t) '\\' ) )
+					else if( ( segment_filename_copy[ segment_filename_copy_index ] == '/' )
+					      || ( segment_filename_copy[ segment_filename_copy_index ] == '\\' ) )
 					{
 						break;
 					}
@@ -2171,7 +2171,7 @@ int libsmraw_glob_wide(
 
 		/* Ignore the extension dot
 		 */
-		if( identifier[ 0 ] == (wchar_t) '.' )
+		if( identifier[ 0 ] == '.' )
 		{
 			identifier        += 1;
 			identifier_length -= 1;
@@ -2230,6 +2230,20 @@ int libsmraw_glob_wide(
 		*number_of_filenames = 0;
 
 		return( -1 );
+	}
+	if( naming_schema == LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_X_OF_N )
+	{
+		for( identifier_index = 0;
+		     identifier_index < identifier_length;
+		     identifier_index++ )
+		{
+			if( ( identifier[ identifier_index ] < '0' )
+			 || ( identifier[ identifier_index ] > '9' ) )
+			{
+				break;
+			}
+		}
+		identifier_length = identifier_index + 1;
 	}
 	if( naming_schema != LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_SINGLE )
 	{
@@ -2293,7 +2307,7 @@ int libsmraw_glob_wide(
 		if( ( naming_schema == LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_NUMERIC )
 		 || ( naming_schema == LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_X_OF_N ) )
 		{
-			segment_file_identifier = (int) ( identifier[ identifier_length - 1 ] - (wchar_t) '0' );
+			segment_file_identifier = (int) ( identifier[ identifier_length - 1 ] - '0' );
 
 			if( identifier_length == 1 )
 			{
@@ -2549,7 +2563,6 @@ int libsmraw_glob_wide_free(
 
 	return( 1 );
 }
-
 
 #endif
 

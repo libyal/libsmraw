@@ -2,8 +2,6 @@
  * Notification functions
  *
  * Copyright (c) 2010, Joachim Metz <jbmetz@users.sourceforge.net>
- * Copyright (c) 2006-2010, Joachim Metz <forensics@hoffmannbv.nl>,
- * Hoffmann Investigations.
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -37,7 +35,7 @@
 
 #if !defined( HAVE_LOCAL_LIBSMRAW )
 
-/* Set the verbose notification
+/* Sets the verbose notification
  */
 void libsmraw_notify_set_verbose(
       int verbose )
@@ -46,7 +44,7 @@ void libsmraw_notify_set_verbose(
 	 verbose );
 }
 
-/* Set the notification stream
+/* Sets the notification stream
  * Returns 1 if successful or -1 on error
  */
 int libsmraw_notify_set_stream(

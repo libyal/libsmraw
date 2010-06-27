@@ -2,8 +2,6 @@
  * Values table functions
  *
  * Copyright (c) 2010, Joachim Metz <jbmetz@users.sourceforge.net>
- * Copyright (c) 2006-2010, Joachim Metz <forensics@hoffmannbv.nl>,
- * Hoffmann Investigations.
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -933,7 +931,7 @@ int libsmraw_values_table_get_identifier(
 	return( 1 );
 }
 
-/* Set a value in the values table
+/* Sets a value in the values table
  * Frees the previous value if necessary
  * Returns 1 if successful or -1 on error
  */
@@ -1215,7 +1213,7 @@ int libsmraw_values_table_get_value(
 	return( 1 );
 }
 
-/* Set a value in the values table
+/* Sets a value in the values table
  * Frees the previous value if necessary
  * Returns 1 if successful or -1 on error
  */

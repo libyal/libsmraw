@@ -2,8 +2,6 @@
  * The libbfio header wrapper
  *
  * Copyright (c) 2010, Joachim Metz <jbmetz@users.sourceforge.net>
- * Copyright (c) 2008-2010, Joachim Metz <forensics@hoffmannbv.nl>,
- * Hoffmann Investigations.
  *
  * Refer to AUTHORS for acknowledgements.
  *

@@ -6,6 +6,7 @@ Features
 * allow set of segment filename during write (as alternative writing locations)
 * add read and write random functions
 * implement write resume
+* glob of .1ofN for PREFIX (without the initial extension to help the glob function)
 
 Tooling
 * detect maximum possible segment size on file system (e.g. FAT)
@@ -16,6 +17,11 @@ Test
 
 Beta release
 * remove deprecated functions in libsmraw_legacy.[ch]
+
+20100627
+* updated common, libcstring, liberror, libuna, libbfio
+* clean up
+* fixed issue in glob_wide
 
 20100624
 * worked on support for XofN naming schema

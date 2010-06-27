@@ -2,8 +2,6 @@
  * Codepage functions
  *
  * Copyright (c) 2010, Joachim Metz <jbmetz@users.sourceforge.net>
- * Copyright (c) 2009-2010, Joachim Metz <forensics@hoffmannbv.nl>,
- * Hoffmann Investigations.
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -62,6 +60,9 @@ enum LIBSMRAW_CODEPAGE
 	LIBSMRAW_CODEPAGE_ISO_8859_14			= 28604,
 	LIBSMRAW_CODEPAGE_ISO_8859_15			= 28605,
 	LIBSMRAW_CODEPAGE_ISO_8859_16			= 28606,
+
+	LIBSMRAW_CODEPAGE_KOI8_R			= 20866,
+	LIBSMRAW_CODEPAGE_KOI8_U			= 21866,
 
 	LIBSMRAW_CODEPAGE_WINDOWS_874			= 874,
 	LIBSMRAW_CODEPAGE_WINDOWS_1250			= 1250,

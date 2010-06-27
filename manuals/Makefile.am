@@ -1,7 +1,7 @@
-EXTRA_DIST = \
+man_MANS = \
 	libsmraw.3
 
-man_MANS = \
+EXTRA_DIST = \
 	libsmraw.3
 
 MAINTAINERCLEANFILES = \

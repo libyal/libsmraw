@@ -2,8 +2,6 @@
  * Support functions
  *
  * Copyright (c) 2010, Joachim Metz <jbmetz@users.sourceforge.net>
- * Copyright (c) 2008-2010, Joachim Metz <forensics@hoffmannbv.nl>,
- * Hoffmann Investigations.
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -65,6 +63,14 @@ enum LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMAS
 
 LIBSMRAW_EXTERN const char *libsmraw_get_version(
                              void );
+
+LIBSMRAW_EXTERN int libsmraw_get_codepage(
+                     int *codepage,
+                     liberror_error_t **error );
+
+LIBSMRAW_EXTERN int libsmraw_set_codepage(
+                     int codepage,
+                     liberror_error_t **error );
 
 int libsmraw_glob_append_segment_file(
      char **filenames[],
