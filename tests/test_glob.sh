@@ -27,6 +27,7 @@ EXIT_IGNORE=77;
 TMP="tmp";
 
 CMP="cmp";
+SEQ="seq";
 
 SMRAW_TEST_GLOB="smraw_test_glob";
 
@@ -47,6 +48,50 @@ function test_glob
 
 	RESULT=$?;
 
+	if test ${RESULT} -eq ${EXIT_SUCCESS};
+	then
+		if ! ${CMP} -s input output;
+		then
+			RESULT=${EXIT_FAILURE};
+		fi
+	fi
+
+	cd ..;
+	rm -rf ${TMP};
+
+	echo -n "Testing glob: for basename: ${BASENAME} and schema: ${SCHEMA} ";
+
+	if test ${RESULT} -ne ${EXIT_SUCCESS};
+	then
+		echo " (FAIL)";
+	else
+		echo " (PASS)";
+	fi
+	return ${RESULT};
+}
+
+function test_glob_sequence
+{ 
+	BASENAME=$1;
+	SCHEMA=$2;
+	FILENAME=$3;
+	LAST=$4;
+
+	SEQUENCE=`${SEQ} 1 ${LAST}`;
+	FILENAMES=`for NUMBER in ${SEQUENCE}; do echo -n "${FILENAME}.${NUMBER}of${LAST} "; echo $FILE; done`;
+
+	mkdir ${TMP};
+	cd ${TMP};
+
+	echo ${FILENAMES} > input;
+
+	touch ${FILENAMES};
+
+	../${SMRAW_TEST_GLOB} ${BASENAME} > output;
+
+	RESULT=$?;
+
+cat input;
 	if test ${RESULT} -eq ${EXIT_SUCCESS};
 	then
 		if ! ${CMP} -s input output;
@@ -332,6 +377,11 @@ fi
 
 # This test should fail
 if test_glob "PREFIX.01of10" ".01of10" "PREFIX.01of10 PREFIX.02of10 PREFIX.03of10 PREFIX.04of10 PREFIX.05of10 PREFIX.06of10 PREFIX.07of10 PREFIX.08of10 PREFIX.09of10 PREFIX.10of10 PREFIX.11of10";
+then
+	exit ${EXIT_FAILURE};
+fi
+
+if ! test_glob_sequence "PREFIX.1of192" ".1of192" "PREFIX" "192";
 then
 	exit ${EXIT_FAILURE};
 fi

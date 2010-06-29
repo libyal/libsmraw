@@ -1,6 +1,6 @@
 TODO
 * configure validate libuna and libbfio check
-* close segment file on writing when full?
+* close segment file handle on writing when full?
 
 Features
 * allow set of segment filename during write (as alternative writing locations)
@@ -14,9 +14,13 @@ Tooling
 Test
 * retrieve data from the information file on open
 * make sure certain values cannot be changed if writing/reading from raw files
+* add glob test to msvscpp project
 
 Beta release
 * remove deprecated functions in libsmraw_legacy.[ch]
+
+20100629
+* fix for glob of .1of91 and larger
 
 20100627
 * updated common, libcstring, liberror, libuna, libbfio

@@ -1130,18 +1130,21 @@ int libsmraw_glob(
 			if( ( naming_schema == LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_NUMERIC )
 			 || ( naming_schema == LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_X_OF_N ) )
 			{
+				if( allow_identifier_expansion != 0 )
+				{
+					expand_identifier = 1;
+				}
 				for( identifier_index = 0;
 				     identifier_index < identifier_length;
 				     identifier_index++ )
 				{
 					identifier[ identifier_length - identifier_index - 1 ] = '0' + (char) ( ( segment_file_identifier / identifier_divider ) % 10 );
 
+					if( identifier[ identifier_length - identifier_index - 1 ] != '9' )
+					{
+						expand_identifier = 0;
+					}
 					identifier_divider *= 10;
-				}
-				if( ( allow_identifier_expansion != 0 )
-				 && ( identifier[ 0 ] == '9' ) )
-				{
-					expand_identifier = 1;
 				}
 			}
 			else if( naming_schema == LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_SPLIT )
@@ -2347,18 +2350,21 @@ int libsmraw_glob_wide(
 			if( ( naming_schema == LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_NUMERIC )
 			 || ( naming_schema == LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_X_OF_N ) )
 			{
+				if( allow_identifier_expansion != 0 )
+				{
+					expand_identifier = 1;
+				}
 				for( identifier_index = 0;
 				     identifier_index < identifier_length;
 				     identifier_index++ )
 				{
 					identifier[ identifier_length - identifier_index - 1 ] = (wchar_t) '0' + (wchar_t) ( ( segment_file_identifier / identifier_divider ) % 10 );
 
+					if( identifier[ identifier_length - identifier_index - 1 ] != (wchar_t) '9' )
+					{
+						expand_identifier = 0;
+					}
 					identifier_divider *= 10;
-				}
-				if( ( allow_identifier_expansion != 0 )
-				 && ( identifier[ 0 ] == (wchar_t) '9' ) )
-				{
-					expand_identifier = 1;
 				}
 			}
 			else if( naming_schema == LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_SPLIT )
