@@ -19,6 +19,12 @@ Test
 Beta release
 * remove deprecated functions in libsmraw_legacy.[ch]
 
+20100714
+* updated configure.ac
+* updated include/error.h and liberror
+* updated include/codepage.h
+* updated common, libuna, libbfio
+
 20100629
 * fix for glob of .1of91 and larger
 

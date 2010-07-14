@@ -413,8 +413,8 @@ int libsmraw_handle_open(
 		liberror_error_set(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_VALUE_OUT_OF_RANGE,
-		 "%s: invalid number of filenames value out of range.",
+		 LIBERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
+		 "%s: invalid number of filenames value out of bounds.",
 		 function );
 
 		return( -1 );
@@ -846,8 +846,8 @@ int libsmraw_handle_open_wide(
 		liberror_error_set(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_VALUE_OUT_OF_RANGE,
-		 "%s: invalid number of filenames value out of range.",
+		 LIBERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
+		 "%s: invalid number of filenames value out of bounds.",
 		 function );
 
 		return( -1 );
@@ -1743,8 +1743,8 @@ ssize_t libsmraw_handle_read_buffer(
 		liberror_error_set(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_VALUE_OUT_OF_RANGE,
-		 "%s: invalid handle - offset value out of range.",
+		 LIBERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
+		 "%s: invalid handle - offset value out of bounds.",
 		 function );
 
 		return( -1 );
@@ -1815,7 +1815,7 @@ ssize_t libsmraw_handle_read_buffer(
 			liberror_error_set(
 			 error,
 			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_VALUE_OUT_OF_RANGE,
+			 LIBERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
 			 "%s: file offset exceeds file size of entry: %d.",
 			 function,
 			 internal_handle->current_file_io_pool_entry );
@@ -1956,8 +1956,8 @@ ssize_t libsmraw_handle_write_buffer(
 		liberror_error_set(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_VALUE_OUT_OF_RANGE,
-		 "%s: invalid handle - offset value out of range.",
+		 LIBERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
+		 "%s: invalid handle - offset value out of bounds.",
 		 function );
 
 		return( -1 );
@@ -1984,8 +1984,8 @@ ssize_t libsmraw_handle_write_buffer(
 		liberror_error_set(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_VALUE_OUT_OF_RANGE,
-		 "%s: invalid handle - current pool entry value out of range.",
+		 LIBERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
+		 "%s: invalid handle - current pool entry value out of bounds.",
 		 function );
 
 		return( -1 );
@@ -2282,8 +2282,8 @@ off64_t libsmraw_handle_seek_offset(
 		liberror_error_set(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_VALUE_OUT_OF_RANGE,
-		 "%s: invalid offset value out of range.",
+		 LIBERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
+		 "%s: invalid offset value out of bounds.",
 		 function );
 
 		return( -1 );
@@ -2341,8 +2341,8 @@ off64_t libsmraw_handle_seek_offset(
 			liberror_error_set(
 			 error,
 			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_VALUE_OUT_OF_RANGE,
-			 "%s: invalid pool entry value out of range.",
+			 LIBERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+			 "%s: invalid pool entry value out of bounds.",
 			 function );
 
 			return( -1 );
@@ -2358,7 +2358,7 @@ off64_t libsmraw_handle_seek_offset(
 			 error,
 			 LIBERROR_ERROR_DOMAIN_IO,
 			 LIBERROR_IO_ERROR_SEEK_FAILED,
-			 "%s: unable to seek offset: %" PRIu64 " in entry: %d.",
+			 "%s: unable to seek offset: %" PRIi64 " in entry: %d.",
 			 function,
 			 file_offset,
 			 file_io_pool_entry );
@@ -3903,7 +3903,7 @@ int libsmraw_handle_get_file_io_handle(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve file io handle for pool entry: %d (offset: %" PRIu64 ").",
+		 "%s: unable to retrieve file io handle for pool entry: %d (offset: %" PRIi64 ").",
 		 function,
 		 internal_handle->current_file_io_pool_entry,
 		 internal_handle->offset );

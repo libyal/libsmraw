@@ -24,6 +24,10 @@
 
 #include <libsmraw/types.h>
 
+#if defined( __cplusplus )
+extern "C" {
+#endif
+
 /* The codepage definitions
  */
 enum LIBSMRAW_CODEPAGE
@@ -101,6 +105,10 @@ enum LIBSMRAW_CODEPAGE
 #define LIBSMRAW_CODEPAGE_WINDOWS_ARABIC		LIBSMRAW_CODEPAGE_WINDOWS_1256
 #define LIBSMRAW_CODEPAGE_WINDOWS_BALTIC		LIBSMRAW_CODEPAGE_WINDOWS_1257
 #define LIBSMRAW_CODEPAGE_WINDOWS_VIETNAMESE		LIBSMRAW_CODEPAGE_WINDOWS_1258
+
+#if defined( __cplusplus )
+}
+#endif
 
 #endif
 
