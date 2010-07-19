@@ -91,7 +91,6 @@ function test_glob_sequence
 
 	RESULT=$?;
 
-cat input;
 	if test ${RESULT} -eq ${EXIT_SUCCESS};
 	then
 		if ! ${CMP} -s input output;

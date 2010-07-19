@@ -541,7 +541,7 @@ int libsmraw_handle_open(
 		                 error,
 		                 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		                 LIBERROR_RUNTIME_ERROR_SET_FAILED,
-		                 "%s: unable to set track offsets read in file io handle.",
+		                 "%s: unable to set track offsets read in file IO handle.",
 		                 function );
 
 				libbfio_handle_free(
@@ -974,7 +974,7 @@ int libsmraw_handle_open_wide(
 		                 error,
 		                 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		                 LIBERROR_RUNTIME_ERROR_SET_FAILED,
-		                 "%s: unable to set track offsets read in file io handle.",
+		                 "%s: unable to set track offsets read in file IO handle.",
 		                 function );
 
 				libbfio_handle_free(
@@ -1321,7 +1321,7 @@ int libsmraw_handle_open_file_io_pool(
 				 error,
 				 LIBERROR_ERROR_DOMAIN_RUNTIME,
 				 LIBERROR_RUNTIME_ERROR_APPEND_FAILED,
-				 "%s: unable to retrieve file io handle from pool entry: %d.",
+				 "%s: unable to retrieve file IO handle from pool entry: %d.",
 				 function,
 				 file_io_handle_iterator );
 
@@ -1484,7 +1484,7 @@ int libsmraw_handle_read_information_file(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-		 "%s: unable to free file io handle.",
+		 "%s: unable to free file IO handle.",
 		 function );
 
 		return( -1 );
@@ -2447,7 +2447,7 @@ int libsmraw_handle_set_maximum_number_of_open_handles(
 			 error,
 			 LIBERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBERROR_RUNTIME_ERROR_SET_FAILED,
-			 "%s: unable to set maximum number of open handles in file io handle.",
+			 "%s: unable to set maximum number of open handles in file IO handle.",
 			 function );
 
 			return( -1 );
@@ -3666,7 +3666,7 @@ int libsmraw_handle_get_filename_size(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve file io handle for current offset.",
+		 "%s: unable to retrieve file IO handle for current offset.",
 		 function );
 
 		return( -1 );
@@ -3721,7 +3721,7 @@ int libsmraw_handle_get_filename(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve file io handle for current offset.",
+		 "%s: unable to retrieve file IO handle for current offset.",
 		 function );
 
 		return( -1 );
@@ -3778,7 +3778,7 @@ int libsmraw_handle_get_filename_size_wide(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve file io handle for current offset.",
+		 "%s: unable to retrieve file IO handle for current offset.",
 		 function );
 
 		return( -1 );
@@ -3833,7 +3833,7 @@ int libsmraw_handle_get_filename_wide(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve file io handle for current offset.",
+		 "%s: unable to retrieve file IO handle for current offset.",
 		 function );
 
 		return( -1 );
@@ -3858,7 +3858,7 @@ int libsmraw_handle_get_filename_wide(
 
 #endif
 
-/* Retrieves the file io handle of the segment file of the current offset
+/* Retrieves the file IO handle of the segment file of the current offset
  * Returns 1 if successful or -1 on error
  */
 int libsmraw_handle_get_file_io_handle(
@@ -3903,7 +3903,7 @@ int libsmraw_handle_get_file_io_handle(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve file io handle for pool entry: %d (offset: %" PRIi64 ").",
+		 "%s: unable to retrieve file IO handle for pool entry: %d (offset: %" PRIi64 ").",
 		 function,
 		 internal_handle->current_file_io_pool_entry,
 		 internal_handle->offset );

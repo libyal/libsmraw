@@ -19,6 +19,10 @@ Test
 Beta release
 * remove deprecated functions in libsmraw_legacy.[ch]
 
+20100719
+* updated include/error.h and liberror
+* updated common, libuna, libbfio
+
 20100716
 * updated libuna, libbfio
 

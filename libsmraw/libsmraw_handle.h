@@ -67,7 +67,7 @@ struct libsmraw_internal_handle
 	 */
 	int total_number_of_file_io_pool_entries;
 
-	/* A pool of file io handles
+	/* A pool of file IO handles
 	 */
 	libbfio_pool_t *file_io_pool;
 
