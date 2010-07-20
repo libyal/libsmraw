@@ -34,6 +34,7 @@
 #include <stdio.h>
 
 #include "libsmraw_information_file.h"
+#include "libsmraw_libfvalue.h"
 
 /* Creates the information file
  * Returns 1 if successful or -1 on error
@@ -341,18 +342,19 @@ int libsmraw_information_file_read_section(
      libsmraw_information_file_t *information_file,
      const uint8_t *section_identifier,
      size_t section_identifier_length,
-     libsmraw_values_table_t *values_table,
+     libfvalue_table_t *values_table,
      liberror_error_t **error )
 {
-	uint8_t input_string[ 128 ];
+	char input_string[ 128 ];
 
-	uint8_t *value_identifier      = NULL;
-	uint8_t *value                 = NULL;
+	libfvalue_value_t *value       = NULL;
+	char *value_data               = NULL;
+	char *value_identifier         = NULL;
 	char *result_string            = NULL;
 	static char *function          = "libsmraw_information_file_read_section";
 	size_t input_string_index      = 0;
 	size_t value_identifier_length = 0;
-	size_t value_length            = 0;
+	size_t value_data_length       = 0;
 	uint8_t in_section             = 0;
 	int result                     = 0;
 
@@ -400,17 +402,6 @@ int libsmraw_information_file_read_section(
 
 		return( -1 );
 	}
-	if( values_table == NULL )
-	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid values table.",
-		 function );
-
-		return( -1 );
-	}
 	/* Reset the offset to start of the file stream
 	 */
 	if( file_stream_seek_offset(
@@ -422,7 +413,7 @@ int libsmraw_information_file_read_section(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_IO,
 		 LIBERROR_IO_ERROR_SEEK_FAILED,
-		 "%s: unable to seek start of stream.",
+		 "%s: unable to seek stream offset: 0.",
 		 function );
 
 		return( -1 );
@@ -432,7 +423,7 @@ int libsmraw_information_file_read_section(
 	{
 		result_string = file_stream_get_string(
 		                 information_file->file_stream,
-		                 (char *) input_string,
+		                 input_string,
 		                 128 );
 
 		if( result_string == NULL )
@@ -457,12 +448,12 @@ int libsmraw_information_file_read_section(
 		     input_string_index < 128;
 		     input_string_index++ )
 		{
-			if( ( input_string[ input_string_index ] != (uint8_t) '\t' )
-			 && ( input_string[ input_string_index ] != (uint8_t) '\n' )
-			 && ( input_string[ input_string_index ] != (uint8_t) '\f' )
-			 && ( input_string[ input_string_index ] != (uint8_t) '\v' )
-			 && ( input_string[ input_string_index ] != (uint8_t) '\r' )
-			 && ( input_string[ input_string_index ] != (uint8_t) ' ' ) )
+			if( ( input_string[ input_string_index ] != '\t' )
+			 && ( input_string[ input_string_index ] != '\n' )
+			 && ( input_string[ input_string_index ] != '\f' )
+			 && ( input_string[ input_string_index ] != '\v' )
+			 && ( input_string[ input_string_index ] != '\r' )
+			 && ( input_string[ input_string_index ] != ' ' ) )
 			{
 				break;
 			}
@@ -478,20 +469,20 @@ int libsmraw_information_file_read_section(
 			/* Check for the end of the section
 			 */
 			if( ( ( input_string_index + section_identifier_length + 2 ) < 128 )
-			 && ( input_string[ input_string_index ] == (uint8_t) '<' )
-			 && ( input_string[ input_string_index + 1 ] == (uint8_t) '/' )
+			 && ( input_string[ input_string_index ] == '<' )
+			 && ( input_string[ input_string_index + 1 ] == '/' )
 			 && ( libcstring_narrow_string_compare(
-			       (char *) &( input_string[ input_string_index + 2 ] ),
-			       (char *) section_identifier,
+			       &( input_string[ input_string_index + 2 ] ),
+			       section_identifier,
 			       section_identifier_length ) == 0 )
-			 && ( input_string[ input_string_index + section_identifier_length + 2 ] == (uint8_t) '>' ) )
+			 && ( input_string[ input_string_index + section_identifier_length + 2 ] == '>' ) )
 			{
 				in_section = 0;
 				result     = 1;
 
 				break;
 			}
-			if( input_string[ input_string_index ] == (uint8_t) '<' )
+			if( input_string[ input_string_index ] == '<' )
 			{
 				/* Determine the value identifier
 				 */
@@ -502,21 +493,21 @@ int libsmraw_information_file_read_section(
 
 				while( input_string_index < 128 )
 				{
-					if( ( ( input_string[ input_string_index ] >= (uint8_t) 'A' )
-					  &&  ( input_string[ input_string_index ] <= (uint8_t) 'I' ) )
-					 || ( ( input_string[ input_string_index ] >= (uint8_t) 'J' )
-					  &&  ( input_string[ input_string_index ] <= (uint8_t) 'R' ) )
-					 || ( ( input_string[ input_string_index ] >= (uint8_t) 'S' )
-					  &&  ( input_string[ input_string_index ] <= (uint8_t) 'Z' ) )
-					 || ( ( input_string[ input_string_index ] >= (uint8_t) 'a' )
-					  &&  ( input_string[ input_string_index ] <= (uint8_t) 'i' ) )
-					 || ( ( input_string[ input_string_index ] >= (uint8_t) 'j' )
-					  &&  ( input_string[ input_string_index ] <= (uint8_t) 'r' ) )
-					 || ( ( input_string[ input_string_index ] >= (uint8_t) 's' )
-					  &&  ( input_string[ input_string_index ] <= (uint8_t) 'z' ) )
-					 || ( ( input_string[ input_string_index ] >= (uint8_t) '0' )
-					  &&  ( input_string[ input_string_index ] <= (uint8_t) '9' ) )
-					 ||   ( input_string[ input_string_index ] == (uint8_t) '_' ) )
+					if( ( ( input_string[ input_string_index ] >= 'A' )
+					  &&  ( input_string[ input_string_index ] <= 'I' ) )
+					 || ( ( input_string[ input_string_index ] >= 'J' )
+					  &&  ( input_string[ input_string_index ] <= 'R' ) )
+					 || ( ( input_string[ input_string_index ] >= 'S' )
+					  &&  ( input_string[ input_string_index ] <= 'Z' ) )
+					 || ( ( input_string[ input_string_index ] >= 'a' )
+					  &&  ( input_string[ input_string_index ] <= 'i' ) )
+					 || ( ( input_string[ input_string_index ] >= 'j' )
+					  &&  ( input_string[ input_string_index ] <= 'r' ) )
+					 || ( ( input_string[ input_string_index ] >= 's' )
+					  &&  ( input_string[ input_string_index ] <= 'z' ) )
+					 || ( ( input_string[ input_string_index ] >= '0' )
+					  &&  ( input_string[ input_string_index ] <= '9' ) )
+					 ||   ( input_string[ input_string_index ] == '_' ) )
 					{
 						value_identifier_length++;
 					}
@@ -528,7 +519,7 @@ int libsmraw_information_file_read_section(
 				}
 				/* Check if there is a supported value identifier
 				 */
-				if( input_string[ input_string_index ] != (uint8_t) '>' )
+				if( input_string[ input_string_index ] != '>' )
 				{
 					continue;
 				}
@@ -540,27 +531,27 @@ int libsmraw_information_file_read_section(
 				 */
 				input_string_index++;
 
-				value        = &( input_string[ input_string_index ] );
-				value_length = 0;
+				value_data        = &( input_string[ input_string_index ] );
+				value_data_length = 0;
 
 				while( input_string_index < 128 )
 				{
 					if( ( input_string[ input_string_index ] == 0 )
-					 || ( input_string[ input_string_index ] == (uint8_t) '<' ) )
+					 || ( input_string[ input_string_index ] == '<' ) )
 					{
 						break;
 					}
-					value_length++;
+					value_data_length++;
 
 					input_string_index++;
 				}
 				/* Check if there is a supported value
 				 */
-				if( input_string[ input_string_index ] != (uint8_t) '<' )
+				if( input_string[ input_string_index ] != '<' )
 				{
 					continue;
 				}
-				/* Make sure the value is terminated by an end of string
+				/* Make sure the value data is terminated by an end of string
 				 */
 				input_string[ input_string_index ] = 0;
 
@@ -569,28 +560,65 @@ int libsmraw_information_file_read_section(
 				input_string_index++;
 
 				if( ( ( input_string_index + value_identifier_length + 2 ) >= 128 )
-				 || ( input_string[ input_string_index ] != (uint8_t) '/' )
+				 || ( input_string[ input_string_index ] != '/' )
 				 || ( libcstring_narrow_string_compare(
-				       (char *) &( input_string[ input_string_index + 1 ] ),
-				       (char *) value_identifier,
+				       &( input_string[ input_string_index + 1 ] ),
+				       value_identifier,
 				       value_identifier_length ) != 0 )
-				 || ( input_string[ input_string_index + value_identifier_length + 1 ] != (uint8_t) '>' ) )
+				 || ( input_string[ input_string_index + value_identifier_length + 1 ] != '>' ) )
 				{
 					continue;
 				}
-				if( libsmraw_values_table_set_value(
-				     values_table,
+				if( libfvalue_value_initialize(
+				     &value,
 				     value_identifier,
 				     value_identifier_length,
+				     LIBFVALUE_VALUE_TYPE_STRING_UTF8,
+				     LIBFVALUE_VALUE_FLAG_IDENTIFIER_MANAGED | LIBFVALUE_VALUE_FLAG_DATA_MANAGED,
+				     error ) != 1 )
+				{
+					liberror_error_set(
+					 error,
+					 LIBERROR_ERROR_DOMAIN_RUNTIME,
+					 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+					 "%s: unable to create value: %s.",
+					 function,
+					 value_identifier );
+
+					return( -1 );
+				}
+				if( libfvalue_table_set_value(
+				     values_table,
 				     value,
-				     value_length,
 				     error ) != 1 )
 				{
 					liberror_error_set(
 					 error,
 					 LIBERROR_ERROR_DOMAIN_RUNTIME,
 					 LIBERROR_RUNTIME_ERROR_SET_FAILED,
-					 "%s: unable to set value with identifier: %s.",
+					 "%s: unable to set value: %s in values table.",
+					 function,
+					 value_identifier );
+
+					libfvalue_value_free(
+					 (intptr_t *) value,
+					 NULL );
+
+					return( -1 );
+				}
+				if( libfvalue_value_set_data(
+				     value,
+				     (uint8_t *) value_data,
+				     value_data_length + 1,
+				     LIBFVALUE_ENDIAN_UNDEFINED,
+				     LIBFVALUE_VALUE_FORMAT_UNDEFINED,
+				     error ) != 1 )
+				{
+					liberror_error_set(
+					 error,
+					 LIBERROR_ERROR_DOMAIN_RUNTIME,
+					 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+					 "%s: unable to set value: %s data.",
 					 function,
 					 value_identifier );
 
@@ -603,12 +631,12 @@ int libsmraw_information_file_read_section(
 			/* Check for the start of the section
 			 */
 			if( ( ( input_string_index + section_identifier_length + 1 ) < 128 )
-			 && ( input_string[ input_string_index ] == (uint8_t) '<' )
+			 && ( input_string[ input_string_index ] == '<' )
 			 && ( libcstring_narrow_string_compare(
-			       (char *) &( input_string[ input_string_index + 1 ] ),
-			       (char *) section_identifier,
+			       &( input_string[ input_string_index + 1 ] ),
+			       section_identifier,
 			       section_identifier_length ) == 0 )
-			 && ( input_string[ input_string_index + section_identifier_length + 1 ] == (uint8_t) '>' ) )
+			 && ( input_string[ input_string_index + section_identifier_length + 1 ] == '>' ) )
 			{
 				in_section = 1;
 			}
@@ -624,14 +652,16 @@ int libsmraw_information_file_write_section(
      libsmraw_information_file_t *information_file,
      const uint8_t *section_identifier,
      size_t section_identifier_length,
-     libsmraw_values_table_t *values_table,
+     libfvalue_table_t *values_table,
      liberror_error_t **error )
 {
-	static char *function = "libsmraw_information_file_write_section";
-	int number_of_values  = 0;
-	int print_count       = 0;
-	int result            = 1;
-	int value_iterator    = 0;
+	libfvalue_value_t *value = NULL;
+	static char *function    = "libsmraw_information_file_write_section";
+	ssize_t write_count      = 0;
+	int number_of_values     = 0;
+	int print_count          = 0;
+	int result               = 1;
+	int value_iterator       = 0;
 
 	if( information_file == NULL )
 	{
@@ -709,7 +739,7 @@ int libsmraw_information_file_write_section(
 	}
 	/* Write section values
 	 */
-	if( libsmraw_values_table_get_number_of_values(
+	if( libfvalue_table_get_number_of_values(
 	     values_table,
 	     &number_of_values,
 	     error ) != 1 )
@@ -723,135 +753,76 @@ int libsmraw_information_file_write_section(
 
 		return( -1 );
 	}
-	if( number_of_values > 0 )
+	for( value_iterator = 0;
+	     value_iterator < number_of_values;
+	     value_iterator++ )
 	{
-		if( values_table->identifier == NULL )
+		print_count = fprintf(
+			       information_file->file_stream,
+			       "\t" );
+
+		if( ( print_count < 0 )
+		 || ( (size_t) print_count > 1 ) )
 		{
 			liberror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
-			 "%s: invalid values table - missing identifiers.",
+			 LIBERROR_ERROR_DOMAIN_IO,
+			 LIBERROR_IO_ERROR_WRITE_FAILED,
+			 "%s: unable to write to file stream.",
 			 function );
 
 			return( -1 );
 		}
-		if( values_table->identifier_length == NULL )
+		if( libfvalue_table_get_value_by_index(
+		     values_table,
+		     value_iterator,
+		     &value,
+		     error ) != 1 )
 		{
 			liberror_error_set(
 			 error,
 			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
-			 "%s: invalid values table - missing identifier lengths.",
-			 function );
+			 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve value: %d from values table.",
+			 function,
+			 value_iterator );
 
-			return( -1 );
+			result = -1;
+
+			continue;
 		}
-		if( values_table->value == NULL )
+		write_count = libfvalue_value_write_to_file_stream(
+		               value,
+		               information_file->file_stream,
+		               error );
+
+		if( write_count <= 0 )
 		{
 			liberror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
-			 "%s: invalid values table - missing values.",
-			 function );
+			 LIBERROR_ERROR_DOMAIN_IO,
+			 LIBERROR_IO_ERROR_WRITE_FAILED,
+			 "%s: unable to write value: %d to file stream.",
+			 function,
+			 value_iterator );
 
-			return( -1 );
+			result = -1;
 		}
-		if( values_table->value_length == NULL )
+		print_count = fprintf(
+			       information_file->file_stream,
+			       "\n" );
+
+		if( ( print_count < 0 )
+		 || ( (size_t) print_count > 1 ) )
 		{
 			liberror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
-			 "%s: invalid values table - missing value lengths.",
+			 LIBERROR_ERROR_DOMAIN_IO,
+			 LIBERROR_IO_ERROR_WRITE_FAILED,
+			 "%s: unable to write to file stream.",
 			 function );
 
 			return( -1 );
-		}
-		for( value_iterator = 0;
-		     value_iterator < number_of_values;
-		     value_iterator++ )
-		{
-			if( values_table->identifier[ value_iterator ] == NULL )
-			{
-				liberror_error_set(
-				 error,
-				 LIBERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
-				 "%s: missing identifier for value: %d.",
-				 function,
-				 value_iterator );
-
-				result = -1;
-
-				continue;
-			}
-			/* Write the section value start
-			 */
-			print_count = fprintf(
-				       information_file->file_stream,
-				       "\t<%s>",
-				       values_table->identifier[ value_iterator ] );
-
-			if( ( print_count < 0 )
-			 || ( (size_t) print_count > ( values_table->identifier_length[ value_iterator ] + 3 ) ) )
-			{
-				liberror_error_set(
-				 error,
-				 LIBERROR_ERROR_DOMAIN_IO,
-				 LIBERROR_IO_ERROR_WRITE_FAILED,
-				 "%s: unable to write section value start to file stream for value: %d.",
-				 function,
-				 value_iterator );
-
-				result = -1;
-
-				continue;
-			}
-			/* Write the section value data
-			 */
-			if( values_table->value[ value_iterator ] != NULL )
-			{
-				print_count = fprintf(
-					       information_file->file_stream,
-					       "%s",
-					       values_table->value[ value_iterator ] );
-
-				if( ( print_count < 0 )
-				 || ( (size_t) print_count > ( values_table->value_length[ value_iterator ] + 2 ) ) )
-				{
-					liberror_error_set(
-					 error,
-					 LIBERROR_ERROR_DOMAIN_IO,
-					 LIBERROR_IO_ERROR_WRITE_FAILED,
-					 "%s: unable to write section value data to file stream for value: %d.",
-					 function,
-					 value_iterator );
-
-					result = -1;
-				}
-			}
-			/* Write the section value end
-			 */
-			print_count = fprintf(
-				       information_file->file_stream,
-				       "</%s>\n",
-				       values_table->identifier[ value_iterator ] );
-
-			if( ( print_count < 0 )
-			 || ( (size_t) print_count > ( values_table->identifier_length[ value_iterator ] + 4 ) ) )
-			{
-				liberror_error_set(
-				 error,
-				 LIBERROR_ERROR_DOMAIN_IO,
-				 LIBERROR_IO_ERROR_WRITE_FAILED,
-				 "%s: unable to write section value end to file stream for value: %d.",
-				 function,
-				 value_iterator );
-
-				result = -1;
-			}
 		}
 	}
 	/* Write section end

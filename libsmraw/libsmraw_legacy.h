@@ -46,19 +46,6 @@ LIBSMRAW_EXTERN int libsmraw_handle_get_amount_of_information_values(
                      int *amount_of_information_values,
                      liberror_error_t **error );
 
-LIBSMRAW_EXTERN int libsmraw_handle_get_information_value_identifier_size(
-                     libsmraw_handle_t *handle,
-                     int information_value_index,
-                     size_t *identifier_size,
-                     liberror_error_t **error );
-
-LIBSMRAW_EXTERN int libsmraw_handle_get_information_value_identifier(
-                     libsmraw_handle_t *handle,
-                     int information_value_index,
-                     uint8_t *identifier,
-                     size_t identifier_size,
-                     liberror_error_t **error );
-
 LIBSMRAW_EXTERN int libsmraw_handle_get_information_value_size(
                      libsmraw_handle_t *handle,
                      const uint8_t *identifier,
@@ -85,19 +72,6 @@ LIBSMRAW_EXTERN int libsmraw_handle_set_information_value(
 LIBSMRAW_EXTERN int libsmraw_handle_get_amount_of_integrity_hash_values(
                      libsmraw_handle_t *handle,
                      int *amount_of_integrity_hash_values,
-                     liberror_error_t **error );
-
-LIBSMRAW_EXTERN int libsmraw_handle_get_integrity_hash_value_identifier_size(
-                     libsmraw_handle_t *handle,
-                     int integrity_hash_value_index,
-                     size_t *identifier_size,
-                     liberror_error_t **error );
-
-LIBSMRAW_EXTERN int libsmraw_handle_get_integrity_hash_value_identifier(
-                     libsmraw_handle_t *handle,
-                     int integrity_hash_value_index,
-                     uint8_t *identifier,
-                     size_t identifier_length,
                      liberror_error_t **error );
 
 LIBSMRAW_EXTERN int libsmraw_handle_get_integrity_hash_value_size(

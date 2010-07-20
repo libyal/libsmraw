@@ -594,6 +594,70 @@ AM_CONDITIONAL(
  [HAVE_LOCAL_LIBBFIO],
  [test "x$ac_libsmraw_have_libbfio" = xlocal])
 
+dnl Check for enabling libfvalue for file value support
+AC_CHECK_HEADERS(
+ [libfvalue.h],
+ [],
+ [ac_libpff_have_libfvalue=no])
+
+AS_IF(
+	[test "x$ac_libpff_have_libfvalue" != xno],
+	[ac_libpff_have_libfvalue=yes
+	AC_CHECK_LIB(
+	 fvalue,
+	 libfvalue_get_version,
+	 [],
+	 [ac_libpff_have_libfvalue=no])
+
+	])
+
+AS_IF(
+[test "x$ac_libpff_have_libfvalue" = xyes],
+ [dnl libfvalue is available
+ AC_SUBST(
+  [libpff_pc_libs_private_libfvalue],
+  [-lfvalue])
+ AC_SUBST(
+  [libpff_spec_requires_libfvalue],
+  [libfvalue])
+ AC_SUBST(
+  [libpff_spec_build_requires_libfvalue],
+  [libfvalue-devel])
+ AC_SUBST(
+  [LIBFVALUE_CPPFLAGS],
+  [])
+ AC_SUBST(
+  [LIBFVALUE_LIBADD],
+  []) ],
+ [dnl libfvalue is not available, using the (local) version that came with the source package
+ AC_DEFINE(
+  [HAVE_LOCAL_LIBFVALUE],
+  [1],
+  [Define to 1 if the local version of libfvalue is used.])
+ AC_SUBST(
+  [HAVE_LOCAL_LIBFVALUE],
+  [1])
+ AC_SUBST(
+  [libpff_pc_libs_private_libfvalue],
+  [])
+ AC_SUBST(
+  [libpff_spec_requires_libfvalue],
+  [])
+ AC_SUBST(
+  [libpff_spec_build_requires_libfvalue],
+  [])
+ AC_SUBST(
+  [LIBFVALUE_CPPFLAGS],
+  [-I../libfvalue])
+ AC_SUBST(
+  [LIBFVALUE_LIBADD],
+  [../libfvalue/libfvalue.la])
+ ac_libpff_have_libfvalue=local])
+
+AM_CONDITIONAL(
+ [HAVE_LOCAL_LIBFVALUE],
+ [test "x$ac_libpff_have_libfvalue" = xlocal])
+
 dnl Check for enabling crypographic digest hash support
 ac_libsmraw_have_libcrypto=no
 
@@ -925,9 +989,9 @@ AC_CONFIG_FILES([common/Makefile])
 AC_CONFIG_FILES([libcstring/Makefile])
 AC_CONFIG_FILES([liberror/Makefile])
 AC_CONFIG_FILES([libnotify/Makefile])
-AC_CONFIG_FILES([libvalue/Makefile])
 AC_CONFIG_FILES([libuna/Makefile])
 AC_CONFIG_FILES([libbfio/Makefile])
+AC_CONFIG_FILES([libfvalue/Makefile])
 AC_CONFIG_FILES([libsmraw/Makefile])
 AC_CONFIG_FILES([manuals/Makefile])
 AC_CONFIG_FILES([tests/Makefile])
@@ -953,6 +1017,7 @@ AC_MSG_NOTICE([
 Building:
    libuna support:                                  $ac_libsmraw_have_libuna
    libbfio support:                                 $ac_libsmraw_have_libbfio
+   libfvalue support:                               $ac_libsmraw_have_libfvalue
    MD5 support:                                     $ac_libsmraw_have_libcrypto_md5
 
 Features:

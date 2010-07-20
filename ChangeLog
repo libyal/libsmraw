@@ -1,6 +1,9 @@
 TODO
+* complete libfvalue and test information file read/write
 * configure validate libuna and libbfio check
 * close segment file handle on writing when full?
+* fix msvscpp compilation
+* fix codegear compilation
 
 Features
 * allow set of segment filename during write (as alternative writing locations)
@@ -21,7 +24,8 @@ Beta release
 
 20100720
 * moved information and integrity hash value functions to UTF-8 versions
-* moved values tables to libvalue
+* worked on libfvalue
+  - moved values tables to libvalue
 * updated libbfio
 
 20100719

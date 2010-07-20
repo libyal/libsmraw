@@ -6,9 +6,9 @@ SUBDIRS = \
 	libcstring \
 	liberror \
 	libnotify \
-	libvalue \
 	libuna \
 	libbfio \
+	libfvalue \
 	libsmraw \
 	manuals \
 	tests \
@@ -41,9 +41,9 @@ library:
 	(cd $(srcdir)/libcstring && $(MAKE) $(AM_MAKEFLAGS))
 	(cd $(srcdir)/liberror && $(MAKE) $(AM_MAKEFLAGS))
 	(cd $(srcdir)/libnotify && $(MAKE) $(AM_MAKEFLAGS))
-	(cd $(srcdir)/libvalue && $(MAKE) $(AM_MAKEFLAGS))
 	(cd $(srcdir)/libuna && $(MAKE) $(AM_MAKEFLAGS))
 	(cd $(srcdir)/libbfio && $(MAKE) $(AM_MAKEFLAGS))
+	(cd $(srcdir)/libfvalue && $(MAKE) $(AM_MAKEFLAGS))
 	(cd $(srcdir)/libsmraw && $(MAKE) $(AM_MAKEFLAGS))
 
 distclean: clean
@@ -62,8 +62,8 @@ splint:
 	(cd $(srcdir)/libcstring && $(MAKE) splint $(AM_MAKEFLAGS))
 	(cd $(srcdir)/liberror && $(MAKE) splint $(AM_MAKEFLAGS))
 	(cd $(srcdir)/libnotify && $(MAKE) splint $(AM_MAKEFLAGS))
-	(cd $(srcdir)/libvalue && $(MAKE) splint $(AM_MAKEFLAGS))
 	(cd $(srcdir)/libuna && $(MAKE) splint $(AM_MAKEFLAGS))
 	(cd $(srcdir)/libbfio && $(MAKE) splint $(AM_MAKEFLAGS))
+	(cd $(srcdir)/libfvalue && $(MAKE) splint $(AM_MAKEFLAGS))
 	(cd $(srcdir)/libsmraw && $(MAKE) splint $(AM_MAKEFLAGS))
 

@@ -33,9 +33,9 @@
 #include "libsmraw_filename.h"
 #include "libsmraw_handle.h"
 #include "libsmraw_libbfio.h"
+#include "libsmraw_libfvalue.h"
 #include "libsmraw_libuna.h"
 #include "libsmraw_types.h"
-#include "libsmraw_values_table.h"
 
 /* Initializes the handle
  * Returns 1 if successful or -1 on error
@@ -91,8 +91,8 @@ int libsmraw_handle_initialize(
 
 			return( -1 );
 		}
-		if( libsmraw_values_table_initialize(
-		     &( internal_handle->media_values_table ),
+		if( libfvalue_table_initialize(
+		     &( internal_handle->media_values ),
 		     0,
 		     error ) != 1 )
 		{
@@ -108,8 +108,8 @@ int libsmraw_handle_initialize(
 
 			return( -1 );
 		}
-		if( libsmraw_values_table_initialize(
-		     &( internal_handle->information_values_table ),
+		if( libfvalue_table_initialize(
+		     &( internal_handle->information_values ),
 		     0,
 		     error ) != 1 )
 		{
@@ -120,16 +120,16 @@ int libsmraw_handle_initialize(
 			 "%s: unable to create information values table.",
 			 function );
 
-			libsmraw_values_table_free(
-			 &( internal_handle->media_values_table ),
+			libfvalue_table_free(
+			 &( internal_handle->media_values ),
 			 NULL );
 			memory_free(
 			 internal_handle );
 
 			return( -1 );
 		}
-		if( libsmraw_values_table_initialize(
-		     &( internal_handle->integrity_hash_values_table ),
+		if( libfvalue_table_initialize(
+		     &( internal_handle->integrity_hash_values ),
 		     0,
 		     error ) != 1 )
 		{
@@ -140,11 +140,11 @@ int libsmraw_handle_initialize(
 			 "%s: unable to create integrity hash values table.",
 			 function );
 
-			libsmraw_values_table_free(
-			 &( internal_handle->information_values_table ),
+			libfvalue_table_free(
+			 &( internal_handle->information_values ),
 			 NULL );
-			libsmraw_values_table_free(
-			 &( internal_handle->media_values_table ),
+			libfvalue_table_free(
+			 &( internal_handle->media_values ),
 			 NULL );
 			memory_free(
 			 internal_handle );
@@ -221,10 +221,10 @@ int libsmraw_handle_free(
 				result = -1;
 			}
 		}
-		if( internal_handle->media_values_table != NULL )
+		if( internal_handle->media_values != NULL )
 		{
-			if( libsmraw_values_table_free(
-			     &( internal_handle->media_values_table ),
+			if( libfvalue_table_free(
+			     &( internal_handle->media_values ),
 			     error ) != 1 )
 			{
 				liberror_error_set(
@@ -237,10 +237,10 @@ int libsmraw_handle_free(
 				result = -1;
 			}
 		}
-		if( internal_handle->information_values_table != NULL )
+		if( internal_handle->information_values != NULL )
 		{
-			if( libsmraw_values_table_free(
-			     &( internal_handle->information_values_table ),
+			if( libfvalue_table_free(
+			     &( internal_handle->information_values ),
 			     error ) != 1 )
 			{
 				liberror_error_set(
@@ -253,10 +253,10 @@ int libsmraw_handle_free(
 				result = -1;
 			}
 		}
-		if( internal_handle->integrity_hash_values_table != NULL )
+		if( internal_handle->integrity_hash_values != NULL )
 		{
-			if( libsmraw_values_table_free(
-			     &( internal_handle->integrity_hash_values_table ),
+			if( libfvalue_table_free(
+			     &( internal_handle->integrity_hash_values ),
 			     error ) != 1 )
 			{
 				liberror_error_set(
@@ -1511,7 +1511,7 @@ int libsmraw_handle_read_information_file(
 		     internal_handle->information_file,
 		     (uint8_t *) "media_values",
 		     12,
-		     internal_handle->media_values_table,
+		     internal_handle->media_values,
 		     error ) == -1 )
 		{
 			liberror_error_set(
@@ -1527,7 +1527,7 @@ int libsmraw_handle_read_information_file(
 		     internal_handle->information_file,
 		     (uint8_t *) "information_values",
 		     18,
-		     internal_handle->information_values_table,
+		     internal_handle->information_values,
 		     error ) == -1 )
 		{
 			liberror_error_set(
@@ -1543,7 +1543,7 @@ int libsmraw_handle_read_information_file(
 		     internal_handle->information_file,
 		     (uint8_t *) "integrity_hash_values",
 		     21,
-		     internal_handle->integrity_hash_values_table,
+		     internal_handle->integrity_hash_values,
 		     error ) == -1 )
 		{
 			liberror_error_set(
@@ -1616,7 +1616,7 @@ int libsmraw_handle_close(
 		     internal_handle->information_file,
 		     (uint8_t *) "information_values",
 		     18,
-		     internal_handle->information_values_table,
+		     internal_handle->information_values,
 		     error ) != 1 )
 		{
 			liberror_error_set(
@@ -1632,7 +1632,7 @@ int libsmraw_handle_close(
 		     internal_handle->information_file,
 		     (uint8_t *) "integrity_hash_values",
 		     21,
-		     internal_handle->integrity_hash_values_table,
+		     internal_handle->integrity_hash_values,
 		     error ) != 1 )
 		{
 			liberror_error_set(
