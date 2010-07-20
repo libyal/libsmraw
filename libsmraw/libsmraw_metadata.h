@@ -79,27 +79,27 @@ LIBSMRAW_EXTERN int libsmraw_handle_get_number_of_information_values(
                      int *number_of_information_values,
                      liberror_error_t **error );
 
-LIBSMRAW_EXTERN int libsmraw_handle_get_information_value_identifier_size(
+LIBSMRAW_EXTERN int libsmraw_handle_get_utf8_information_value_identifier_size(
                      libsmraw_handle_t *handle,
                      int information_value_index,
                      size_t *identifier_size,
                      liberror_error_t **error );
 
-LIBSMRAW_EXTERN int libsmraw_handle_get_information_value_identifier(
+LIBSMRAW_EXTERN int libsmraw_handle_get_utf8_information_value_identifier(
                      libsmraw_handle_t *handle,
                      int information_value_index,
                      uint8_t *identifier,
                      size_t identifier_size,
                      liberror_error_t **error );
 
-LIBSMRAW_EXTERN int libsmraw_handle_get_information_value_size(
+LIBSMRAW_EXTERN int libsmraw_handle_get_utf8_information_value_size(
                      libsmraw_handle_t *handle,
                      const uint8_t *identifier,
                      size_t identifier_length,
                      size_t *value_size,
                      liberror_error_t **error );
 
-LIBSMRAW_EXTERN int libsmraw_handle_get_information_value(
+LIBSMRAW_EXTERN int libsmraw_handle_get_utf8_information_value(
                      libsmraw_handle_t *handle,
                      const uint8_t *identifier,
                      size_t identifier_length,
@@ -107,7 +107,7 @@ LIBSMRAW_EXTERN int libsmraw_handle_get_information_value(
                      size_t value_size,
                      liberror_error_t **error );
 
-LIBSMRAW_EXTERN int libsmraw_handle_set_information_value(
+LIBSMRAW_EXTERN int libsmraw_handle_set_utf8_information_value(
                      libsmraw_handle_t *handle,
                      const uint8_t *identifier,
                      size_t identifier_length,
@@ -120,27 +120,27 @@ LIBSMRAW_EXTERN int libsmraw_handle_get_number_of_integrity_hash_values(
                      int *number_of_integrity_hash_values,
                      liberror_error_t **error );
 
-LIBSMRAW_EXTERN int libsmraw_handle_get_integrity_hash_value_identifier_size(
+LIBSMRAW_EXTERN int libsmraw_handle_get_utf8_integrity_hash_value_identifier_size(
                      libsmraw_handle_t *handle,
                      int integrity_hash_value_index,
                      size_t *identifier_size,
                      liberror_error_t **error );
 
-LIBSMRAW_EXTERN int libsmraw_handle_get_integrity_hash_value_identifier(
+LIBSMRAW_EXTERN int libsmraw_handle_get_utf8_integrity_hash_value_identifier(
                      libsmraw_handle_t *handle,
                      int integrity_hash_value_index,
                      uint8_t *identifier,
                      size_t identifier_length,
                      liberror_error_t **error );
 
-LIBSMRAW_EXTERN int libsmraw_handle_get_integrity_hash_value_size(
+LIBSMRAW_EXTERN int libsmraw_handle_get_utf8_integrity_hash_value_size(
                      libsmraw_handle_t *handle,
                      const uint8_t *identifier,
                      size_t identifier_length,
                      size_t *value_size,
                      liberror_error_t **error );
 
-LIBSMRAW_EXTERN int libsmraw_handle_get_integrity_hash_value(
+LIBSMRAW_EXTERN int libsmraw_handle_get_utf8_integrity_hash_value(
                      libsmraw_handle_t *handle,
                      const uint8_t *identifier,
                      size_t identifier_length,
@@ -148,7 +148,7 @@ LIBSMRAW_EXTERN int libsmraw_handle_get_integrity_hash_value(
                      size_t value_size,
                      liberror_error_t **error );
 
-LIBSMRAW_EXTERN int libsmraw_handle_set_integrity_hash_value(
+LIBSMRAW_EXTERN int libsmraw_handle_set_utf8_integrity_hash_value(
                      libsmraw_handle_t *handle,
                      const uint8_t *identifier,
                      size_t identifier_length,

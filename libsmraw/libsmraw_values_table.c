@@ -735,6 +735,9 @@ int libsmraw_values_table_get_index(
 	return( 0 );
 }
 
+/* Internal string type functions
+ */
+
 /* Retrieves an identifiers size in the values table
  * Returns 1 if successful, 0 if value not present or -1 on error
  */
@@ -779,7 +782,7 @@ int libsmraw_values_table_get_identifier_size(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
-		 "%s: invalid index value out of bound.",
+		 "%s: invalid index value out of bounds.",
 		 function );
 
 		return( -1 );
@@ -870,7 +873,7 @@ int libsmraw_values_table_get_identifier(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
-		 "%s: invalid index value out of bound.",
+		 "%s: invalid index value out of bounds.",
 		 function );
 
 		return( -1 );
@@ -996,7 +999,7 @@ int libsmraw_values_table_set_identifier(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
-		 "%s: invalid index value out of bound.",
+		 "%s: invalid index value out of bounds.",
 		 function );
 
 		return( -1 );
@@ -1342,4 +1345,57 @@ int libsmraw_values_table_set_value(
 	}
 	return( 1 );
 }
+
+/* UTF-8 functions
+ */
+#if defined( LIBCSTRING_HAVE_16BIT_CHARACTER )
+
+int libsmraw_values_table_get_utf8_identifier(
+     libsmraw_values_table_t *values_table,
+     int index,
+     uint8_t *identifier,
+     size_t identifier_size,
+     liberror_error_t **error )
+{
+}
+
+int libsmraw_values_table_set_utf8_identifier(
+     libsmraw_values_table_t *values_table,
+     int index,
+     const uint8_t *identifier,
+     size_t indentifier_length,
+     liberror_error_t **error )
+{
+}
+
+int libsmraw_values_table_get_utf8_value_size(
+     libsmraw_values_table_t *values_table,
+     const uint8_t *identifier,
+     size_t identifier_length,
+     size_t *value_size,
+     liberror_error_t **error )
+{
+}
+
+int libsmraw_values_table_get_utf8_value(
+     libsmraw_values_table_t *values_table,
+     const uint8_t *identifier,
+     size_t identifier_length,
+     uint8_t *value,
+     size_t value_size,
+     liberror_error_t **error )
+{
+}
+
+int libsmraw_values_table_set_utf8_value(
+     libsmraw_values_table_t *values_table,
+     const uint8_t *identifier,
+     size_t identifier_length,
+     const uint8_t *value,
+     size_t value_length,
+     liberror_error_t **error )
+{
+}
+
+#endif /* defined( LIBCSTRING_HAVE_16BIT_CHARACTER ) */
 

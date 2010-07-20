@@ -19,6 +19,11 @@ Test
 Beta release
 * remove deprecated functions in libsmraw_legacy.[ch]
 
+20100720
+* moved information and integrity hash value functions to UTF-8 versions
+* moved values tables to libvalue
+* updated libbfio
+
 20100719
 * updated include/error.h and liberror
 * updated common, libuna, libbfio

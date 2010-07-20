@@ -853,18 +853,18 @@ int libsmraw_handle_get_number_of_information_values(
 	return( 1 );
 }
 
-/* Retrieves an information value identifier size
+/* Retrieves the size of a specific UTF-8 encoded information value identifier
  * The identifier size includes the end of string character
  * Returns 1 if successful or -1 on error
  */
-int libsmraw_handle_get_information_value_identifier_size(
+int libsmraw_handle_get_utf8_information_value_identifier_size(
      libsmraw_handle_t *handle,
      int information_value_index,
      size_t *identifier_size,
      liberror_error_t **error )
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
-	static char *function                       = "libsmraw_handle_get_information_value_identifier_size";
+	static char *function                       = "libsmraw_handle_get_utf8_information_value_identifier_size";
 
 	if( handle == NULL )
 	{
@@ -920,12 +920,11 @@ int libsmraw_handle_get_information_value_identifier_size(
 	return( 1 );
 }
 
-/* Retrieves an information value identifier
- * The strings are encoded in UTF-8
+/* Retrieves a specific UTF-8 encoded information value identifier
  * The identifier size should include the end of string character
  * Returns 1 if successful or -1 on error
  */
-int libsmraw_handle_get_information_value_identifier(
+int libsmraw_handle_get_utf8_information_value_identifier(
      libsmraw_handle_t *handle,
      int information_value_index,
      uint8_t *identifier,
@@ -933,7 +932,7 @@ int libsmraw_handle_get_information_value_identifier(
      liberror_error_t **error )
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
-	static char *function                       = "libsmraw_handle_get_information_value_identifier";
+	static char *function                       = "libsmraw_handle_get_utf8_information_value_identifier";
 
 	if( handle == NULL )
 	{
@@ -990,11 +989,11 @@ int libsmraw_handle_get_information_value_identifier(
 	return( 1 );
 }
 
-/* Retrieves an information value size
+/* Retrieves the size of an UTF-8 encoded information value for the specific identifier
  * The value size includes the end of string character
  * Returns 1 if successful, 0 if value not present or -1 on error
  */
-int libsmraw_handle_get_information_value_size(
+int libsmraw_handle_get_utf8_information_value_size(
      libsmraw_handle_t *handle,
      const uint8_t *identifier,
      size_t identifier_length,
@@ -1002,7 +1001,7 @@ int libsmraw_handle_get_information_value_size(
      liberror_error_t **error )
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
-	static char *function                       = "libsmraw_handle_get_information_value_size";
+	static char *function                       = "libsmraw_handle_get_utf8_information_value_size";
 	int result                                  = 0;
 
 	if( handle == NULL )
@@ -1064,7 +1063,7 @@ int libsmraw_handle_get_information_value_size(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve information value size for identifier: %" PRIs_LIBCSTRING ".",
+		 "%s: unable to retrieve information value size for identifier: %s.",
 		 function,
 		 identifier );
 
@@ -1073,12 +1072,11 @@ int libsmraw_handle_get_information_value_size(
 	return( result );
 }
 
-/* Retrieves an information value
- * The strings are encoded in UTF-8
+/* Retrieves an UTF-8 encoded information value for the specific identifier
  * The value size should include the end of string character
  * Returns 1 if successful, 0 if value not present or -1 on error
  */
-int libsmraw_handle_get_information_value(
+int libsmraw_handle_get_utf8_information_value(
      libsmraw_handle_t *handle,
      const uint8_t *identifier,
      size_t identifier_length,
@@ -1087,7 +1085,7 @@ int libsmraw_handle_get_information_value(
      liberror_error_t **error )
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
-	static char *function                       = "libsmraw_handle_get_information_value";
+	static char *function                       = "libsmraw_handle_get_utf8_information_value";
 	int result                                  = 0;
 
 	if( handle == NULL )
@@ -1150,7 +1148,7 @@ int libsmraw_handle_get_information_value(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve information value for identifier: %" PRIs_LIBCSTRING ".",
+		 "%s: unable to retrieve information value for identifier: %s.",
 		 function,
 		 identifier );
 
@@ -1159,11 +1157,10 @@ int libsmraw_handle_get_information_value(
 	return( result );
 }
 
-/* Sets an information value
- * The strings are encoded in UTF-8
+/* Sets an UTF-8 encoded information value for the specific identifier
  * Returns the 1 if succesful or -1 on error
  */
-int libsmraw_handle_set_information_value(
+int libsmraw_handle_set_utf8_information_value(
      libsmraw_handle_t *handle,
      const uint8_t *identifier,
      size_t identifier_length,
@@ -1172,7 +1169,7 @@ int libsmraw_handle_set_information_value(
      liberror_error_t **error )
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
-	static char *function                       = "libsmraw_handle_set_information_value";
+	static char *function                       = "libsmraw_handle_set_utf8_information_value";
 
 	if( handle == NULL )
 	{
@@ -1232,7 +1229,7 @@ int libsmraw_handle_set_information_value(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_SET_FAILED,
-		 "%s: unable to set information value for identifier: %" PRIs_LIBCSTRING ".",
+		 "%s: unable to set information value for identifier: %s.",
 		 function,
 		 identifier );
 
@@ -1304,18 +1301,18 @@ int libsmraw_handle_get_number_of_integrity_hash_values(
 	return( 1 );
 }
 
-/* Retrieves an integrity hash value identifier size
+/* Retrieves the size of a specific UTF-8 encoded integrity hash value identifier
  * The identifier size includes the end of string character
  * Returns 1 if successful or -1 on error
  */
-int libsmraw_handle_get_integrity_hash_value_identifier_size(
+int libsmraw_handle_get_utf8_integrity_hash_value_identifier_size(
      libsmraw_handle_t *handle,
      int integrity_hash_value_index,
      size_t *identifier_size,
      liberror_error_t **error )
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
-	static char *function                       = "libsmraw_handle_get_integrity_hash_value_identifier_size";
+	static char *function                       = "libsmraw_handle_get_utf8_integrity_hash_value_identifier_size";
 
 	if( handle == NULL )
 	{
@@ -1371,12 +1368,11 @@ int libsmraw_handle_get_integrity_hash_value_identifier_size(
 	return( 1 );
 }
 
-/* Retrieves an integrity hash value identifier
- * The strings are encoded in UTF-8
+/* Retrieves a specific UTF-8 encoded integrity hash value identifier
  * The identifier size should include the end of string character
  * Returns 1 if successful or -1 on error
  */
-int libsmraw_handle_get_integrity_hash_value_identifier(
+int libsmraw_handle_get_utf8_integrity_hash_value_identifier(
      libsmraw_handle_t *handle,
      int integrity_hash_value_index,
      uint8_t *identifier,
@@ -1384,7 +1380,7 @@ int libsmraw_handle_get_integrity_hash_value_identifier(
      liberror_error_t **error )
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
-	static char *function                       = "libsmraw_handle_get_integrity_hash_value_identifier";
+	static char *function                       = "libsmraw_handle_get_utf8_integrity_hash_value_identifier";
 
 	if( handle == NULL )
 	{
@@ -1441,11 +1437,11 @@ int libsmraw_handle_get_integrity_hash_value_identifier(
 	return( 1 );
 }
 
-/* Retrieves an integrity hash value size
+/* Retrieves the size of an UTF-8 encoded integrity hash value for the specific identifier
  * The value size includes the end of string character
  * Returns 1 if successful, 0 if value not present or -1 on error
  */
-int libsmraw_handle_get_integrity_hash_value_size(
+int libsmraw_handle_get_utf8_integrity_hash_value_size(
      libsmraw_handle_t *handle,
      const uint8_t *identifier,
      size_t identifier_length,
@@ -1453,7 +1449,7 @@ int libsmraw_handle_get_integrity_hash_value_size(
      liberror_error_t **error )
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
-	static char *function                       = "libsmraw_handle_get_integrity_hash_value_size";
+	static char *function                       = "libsmraw_handle_get_utf8_integrity_hash_value_size";
 	int result                                  = 0;
 
 	if( handle == NULL )
@@ -1515,7 +1511,7 @@ int libsmraw_handle_get_integrity_hash_value_size(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve integrity hash value size for identifier: %" PRIs_LIBCSTRING ".",
+		 "%s: unable to retrieve integrity hash value size for identifier: %s.",
 		 function,
 		 identifier );
 
@@ -1524,12 +1520,11 @@ int libsmraw_handle_get_integrity_hash_value_size(
 	return( result );
 }
 
-/* Retrieves an integrity hash value
- * The strings are encoded in UTF-8
+/* Retrieves an UTF-8 encoded integrity hash value for the specific identifier
  * The value size should include the end of string character
  * Returns 1 if successful, 0 if value not present or -1 on error
  */
-int libsmraw_handle_get_integrity_hash_value(
+int libsmraw_handle_get_utf8_integrity_hash_value(
      libsmraw_handle_t *handle,
      const uint8_t *identifier,
      size_t identifier_length,
@@ -1538,7 +1533,7 @@ int libsmraw_handle_get_integrity_hash_value(
      liberror_error_t **error )
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
-	static char *function                       = "libsmraw_handle_get_integrity_hash_value";
+	static char *function                       = "libsmraw_handle_get_utf8_integrity_hash_value";
 	int result                                  = 0;
 
 	if( handle == NULL )
@@ -1601,7 +1596,7 @@ int libsmraw_handle_get_integrity_hash_value(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve integrity hash value for identifier: %" PRIs_LIBCSTRING ".",
+		 "%s: unable to retrieve integrity hash value for identifier: %s.",
 		 function,
 		 identifier );
 
@@ -1610,11 +1605,10 @@ int libsmraw_handle_get_integrity_hash_value(
 	return( result );
 }
 
-/* Sets an integrity hash value
- * The strings are encoded in UTF-8
+/* Sets an UTF-8 encoded integrity hash value for the specific identifier
  * Returns the 1 if succesful or -1 on error
  */
-int libsmraw_handle_set_integrity_hash_value(
+int libsmraw_handle_set_utf8_integrity_hash_value(
      libsmraw_handle_t *handle,
      const uint8_t *identifier,
      size_t identifier_length,
@@ -1623,7 +1617,7 @@ int libsmraw_handle_set_integrity_hash_value(
      liberror_error_t **error )
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
-	static char *function                       = "libsmraw_handle_set_integrity_hash_value";
+	static char *function                       = "libsmraw_handle_set_utf8_integrity_hash_value";
 
 	if( handle == NULL )
 	{
@@ -1683,7 +1677,7 @@ int libsmraw_handle_set_integrity_hash_value(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_SET_FAILED,
-		 "%s: unable to set integrity hash value for identifier: %" PRIs_LIBCSTRING ".",
+		 "%s: unable to set integrity hash value for identifier: %s.",
 		 function,
 		 identifier );
 

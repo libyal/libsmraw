@@ -280,17 +280,6 @@ LIBSMRAW_EXTERN int libsmraw_handle_set_maximum_number_of_open_handles(
                      int maximum_number_of_open_handles,
                      libsmraw_error_t **error );
 
-/* Sets the maximum amount of (concurrent) open file handles
- * Returns 1 if successful or -1 on error
- *
- * This function is deprecated use libsmraw_handle_set_maximum_number_of_open_handles instead
- */
-LIBSMRAW_DEPRECATED \
-LIBSMRAW_EXTERN int libsmraw_handle_set_maximum_amount_of_open_handles(
-                     libsmraw_handle_t *handle,
-                     int maximum_amount_of_open_handles,
-                     libsmraw_error_t **error );
-
 /* Retrieves the segment filename size
  * The filename size includes the end of string character
  * Returns 1 if successful, 0 if value not present or -1 on error
@@ -418,6 +407,21 @@ LIBSMRAW_EXTERN int libsmraw_handle_get_file_io_handle(
 #endif
 
 /* -------------------------------------------------------------------------
+ * Handle functions - deprecated
+ * ------------------------------------------------------------------------- */
+
+/* Sets the maximum amount of (concurrent) open file handles
+ * Returns 1 if successful or -1 on error
+ *
+ * This function is deprecated use libsmraw_handle_set_maximum_number_of_open_handles instead
+ */
+LIBSMRAW_DEPRECATED \
+LIBSMRAW_EXTERN int libsmraw_handle_set_maximum_amount_of_open_handles(
+                     libsmraw_handle_t *handle,
+                     int maximum_amount_of_open_handles,
+                     libsmraw_error_t **error );
+
+/* -------------------------------------------------------------------------
  * Meta data functions
  * ------------------------------------------------------------------------- */
 
@@ -493,6 +497,128 @@ LIBSMRAW_EXTERN int libsmraw_handle_get_number_of_information_values(
                      int *number_of_information_values,
                      libsmraw_error_t **error );
 
+/* Retrieves the size of a specific UTF-8 encoded information value identifier
+ * The identifier size includes the end of string character
+ * Returns 1 if successful or -1 on error
+ */
+LIBSMRAW_EXTERN int libsmraw_handle_get_utf8_information_value_identifier_size(
+                     libsmraw_handle_t *handle,
+                     int information_value_index,
+                     size_t *identifier_size,
+                     libsmraw_error_t **error );
+
+/* Retrieves a specific UTF-8 encoded information value identifier
+ * The identifier size should include the end of string character
+ * Returns 1 if successful or -1 on error
+ */
+LIBSMRAW_EXTERN int libsmraw_handle_get_utf8_information_value_identifier(
+                     libsmraw_handle_t *handle,
+                     int information_value_index,
+                     uint8_t *identifier,
+                     size_t identifier_size,
+                     libsmraw_error_t **error );
+
+/* Retrieves the size of an UTF-8 encoded information value for the specific identifier
+ * The value size includes the end of string character
+ * Returns 1 if successful, 0 if value not present or -1 on error
+ */
+LIBSMRAW_EXTERN int libsmraw_handle_get_utf8_information_value_size(
+                     libsmraw_handle_t *handle,
+                     const uint8_t *identifier,
+                     size_t identifier_length,
+                     size_t *value_size,
+                     libsmraw_error_t **error );
+
+/* Retrieves an UTF-8 encoded information value for the specific identifier
+ * The value size should include the end of string character
+ * Returns 1 if successful, 0 if value not present or -1 on error
+ */
+LIBSMRAW_EXTERN int libsmraw_handle_get_utf8_information_value(
+                     libsmraw_handle_t *handle,
+                     const uint8_t *identifier,
+                     size_t identifier_length,
+                     uint8_t *value,
+                     size_t value_size,
+                     libsmraw_error_t **error );
+
+/* Sets an UTF-8 encoded information value for the specific identifier
+ * Returns the 1 if succesful or -1 on error
+ */
+LIBSMRAW_EXTERN int libsmraw_handle_set_utf8_information_value(
+                     libsmraw_handle_t *handle,
+                     const uint8_t *identifier,
+                     size_t identifier_length,
+                     const uint8_t *value,
+                     size_t value_length,
+                     libsmraw_error_t **error );
+
+/* Retrieves the number of integrity hash values
+ * Returns 1 if successful or -1 on error
+ */
+LIBSMRAW_EXTERN int libsmraw_handle_get_number_of_integrity_hash_values(
+                     libsmraw_handle_t *handle,
+                     int *number_of_integrity_hash_values,
+                     libsmraw_error_t **error );
+
+/* Retrieves the size of a specific UTF-8 encoded integrity hash value identifier
+ * The identifier size includes the end of string character
+ * Returns 1 if successful or -1 on error
+ */
+LIBSMRAW_EXTERN int libsmraw_handle_get_utf8_integrity_hash_value_identifier_size(
+                     libsmraw_handle_t *handle,
+                     int integrity_hash_value_index,
+                     size_t *identifier_size,
+                     libsmraw_error_t **error );
+
+/* Retrieves a specific UTF-8 encoded integrity hash value identifier
+ * The identifier size should include the end of string character
+ * Returns 1 if successful or -1 on error
+ */
+LIBSMRAW_EXTERN int libsmraw_handle_get_utf8_integrity_hash_value_identifier(
+                     libsmraw_handle_t *handle,
+                     int integrity_hash_value_index,
+                     uint8_t *identifier,
+                     size_t identifier_length,
+                     libsmraw_error_t **error );
+
+/* Retrieves the size of an UTF-8 encoded integrity hash value for the specific identifier
+ * The value size includes the end of string character
+ * Returns 1 if successful, 0 if value not present or -1 on error
+ */
+LIBSMRAW_EXTERN int libsmraw_handle_get_utf8_integrity_hash_value_size(
+                     libsmraw_handle_t *handle,
+                     const uint8_t *identifier,
+                     size_t identifier_length,
+                     size_t *value_size,
+                     libsmraw_error_t **error );
+
+/* Retrieves an UTF-8 encoded integrity hash value for the specific identifier
+ * The value size should include the end of string character
+ * Returns 1 if successful, 0 if value not present or -1 on error
+ */
+LIBSMRAW_EXTERN int libsmraw_handle_get_utf8_integrity_hash_value(
+                     libsmraw_handle_t *handle,
+                     const uint8_t *identifier,
+                     size_t identifier_length,
+                     uint8_t *value,
+                     size_t value_size,
+                     libsmraw_error_t **error );
+
+/* Sets an UTF-8 encoded integrity hash value for the specific identifier
+ * Returns the 1 if succesful or -1 on error
+ */
+LIBSMRAW_EXTERN int libsmraw_handle_set_utf8_integrity_hash_value(
+                     libsmraw_handle_t *handle,
+                     const uint8_t *identifier,
+                     size_t identifier_length,
+                     const uint8_t *value,
+                     size_t value_length,
+                     libsmraw_error_t **error );
+
+/* -------------------------------------------------------------------------
+ * Meta data functions - deprecated
+ * ------------------------------------------------------------------------- */
+
 /* Retrieves the amount of information values
  * Returns 1 if successful or -1 on error
  *
@@ -507,7 +633,10 @@ LIBSMRAW_EXTERN int libsmraw_handle_get_amount_of_information_values(
 /* Retrieves an information value identifier size
  * The identifier size includes the end of string character
  * Returns 1 if successful or -1 on error
+ *
+ * This function is deprecated use libsmraw_handle_get_utf8_information_value_identifier_size instead
  */
+LIBSMRAW_DEPRECATED \
 LIBSMRAW_EXTERN int libsmraw_handle_get_information_value_identifier_size(
                      libsmraw_handle_t *handle,
                      int information_value_index,
@@ -518,7 +647,10 @@ LIBSMRAW_EXTERN int libsmraw_handle_get_information_value_identifier_size(
  * The strings are encoded in UTF-8
  * The identifier size should include the end of string character
  * Returns 1 if successful or -1 on error
+ *
+ * This function is deprecated use libsmraw_handle_get_utf8_information_value_identifier instead
  */
+LIBSMRAW_DEPRECATED \
 LIBSMRAW_EXTERN int libsmraw_handle_get_information_value_identifier(
                      libsmraw_handle_t *handle,
                      int information_value_index,
@@ -529,7 +661,10 @@ LIBSMRAW_EXTERN int libsmraw_handle_get_information_value_identifier(
 /* Retrieves an information value size
  * The value size includes the end of string character
  * Returns 1 if successful, 0 if value not present or -1 on error
+ *
+ * This function is deprecated use libsmraw_handle_get_utf8_information_value_size instead
  */
+LIBSMRAW_DEPRECATED \
 LIBSMRAW_EXTERN int libsmraw_handle_get_information_value_size(
                      libsmraw_handle_t *handle,
                      const uint8_t *identifier,
@@ -541,7 +676,10 @@ LIBSMRAW_EXTERN int libsmraw_handle_get_information_value_size(
  * The strings are encoded in UTF-8
  * The value size should include the end of string character
  * Returns 1 if successful, 0 if value not present or -1 on error
+ *
+ * This function is deprecated use libsmraw_handle_get_utf8_information_value instead
  */
+LIBSMRAW_DEPRECATED \
 LIBSMRAW_EXTERN int libsmraw_handle_get_information_value(
                      libsmraw_handle_t *handle,
                      const uint8_t *identifier,
@@ -553,21 +691,16 @@ LIBSMRAW_EXTERN int libsmraw_handle_get_information_value(
 /* Sets an information value
  * The strings are encoded in UTF-8
  * Returns the 1 if succesful or -1 on error
+ *
+ * This function is deprecated use libsmraw_handle_set_utf8_information_value instead
  */
+LIBSMRAW_DEPRECATED \
 LIBSMRAW_EXTERN int libsmraw_handle_set_information_value(
                      libsmraw_handle_t *handle,
                      const uint8_t *identifier,
                      size_t identifier_length,
                      const uint8_t *value,
                      size_t value_length,
-                     libsmraw_error_t **error );
-
-/* Retrieves the number of integrity hash values
- * Returns 1 if successful or -1 on error
- */
-LIBSMRAW_EXTERN int libsmraw_handle_get_number_of_integrity_hash_values(
-                     libsmraw_handle_t *handle,
-                     int *number_of_integrity_hash_values,
                      libsmraw_error_t **error );
 
 /* Retrieves the amount of integrity hash values
@@ -584,7 +717,10 @@ LIBSMRAW_EXTERN int libsmraw_handle_get_amount_of_integrity_hash_values(
 /* Retrieves an integrity hash value identifier size
  * The identifier size includes the end of string character
  * Returns 1 if successful or -1 on error
+ *
+ * This function is deprecated use libsmraw_handle_get_utf8_integrity_hash_value_identifier_size instead
  */
+LIBSMRAW_DEPRECATED \
 LIBSMRAW_EXTERN int libsmraw_handle_get_integrity_hash_value_identifier_size(
                      libsmraw_handle_t *handle,
                      int integrity_hash_value_index,
@@ -595,7 +731,10 @@ LIBSMRAW_EXTERN int libsmraw_handle_get_integrity_hash_value_identifier_size(
  * The strings are encoded in UTF-8
  * The identifier size should include the end of string character
  * Returns 1 if successful or -1 on error
+ *
+ * This function is deprecated use libsmraw_handle_get_utf8_integrity_hash_value_identifier instead
  */
+LIBSMRAW_DEPRECATED \
 LIBSMRAW_EXTERN int libsmraw_handle_get_integrity_hash_value_identifier(
                      libsmraw_handle_t *handle,
                      int integrity_hash_value_index,
@@ -606,7 +745,10 @@ LIBSMRAW_EXTERN int libsmraw_handle_get_integrity_hash_value_identifier(
 /* Retrieves an integrity hash value size
  * The value size includes the end of string character
  * Returns 1 if successful, 0 if value not present or -1 on error
+ *
+ * This function is deprecated use libsmraw_handle_get_utf8_integrity_hash_value_size instead
  */
+LIBSMRAW_DEPRECATED \
 LIBSMRAW_EXTERN int libsmraw_handle_get_integrity_hash_value_size(
                      libsmraw_handle_t *handle,
                      const uint8_t *identifier,
@@ -618,7 +760,10 @@ LIBSMRAW_EXTERN int libsmraw_handle_get_integrity_hash_value_size(
  * The strings are encoded in UTF-8
  * The value size should include the end of string character
  * Returns 1 if successful, 0 if value not present or -1 on error
+ *
+ * This function is deprecated use libsmraw_handle_get_utf8_integrity_hash_value instead
  */
+LIBSMRAW_DEPRECATED \
 LIBSMRAW_EXTERN int libsmraw_handle_get_integrity_hash_value(
                      libsmraw_handle_t *handle,
                      const uint8_t *identifier,
@@ -630,7 +775,10 @@ LIBSMRAW_EXTERN int libsmraw_handle_get_integrity_hash_value(
 /* Sets an integrity hash value
  * The strings are encoded in UTF-8
  * Returns the 1 if succesful or -1 on error
+ *
+ * This function is deprecated use libsmraw_handle_set_utf8_integrity_hash_value instead
  */
+LIBSMRAW_DEPRECATED \
 LIBSMRAW_EXTERN int libsmraw_handle_set_integrity_hash_value(
                      libsmraw_handle_t *handle,
                      const uint8_t *identifier,
@@ -638,7 +786,6 @@ LIBSMRAW_EXTERN int libsmraw_handle_set_integrity_hash_value(
                      const uint8_t *value,
                      size_t value_length,
                      libsmraw_error_t **error );
-
 #if defined( __cplusplus )
 }
 #endif

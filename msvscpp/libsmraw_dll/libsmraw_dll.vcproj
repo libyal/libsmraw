@@ -129,10 +129,6 @@
 				RelativePath="..\..\libsmraw\libsmraw_support.c"
 				>
 			</File>
-			<File
-				RelativePath="..\..\libsmraw\libsmraw_values_table.c"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -193,10 +189,6 @@
 			</File>
 			<File
 				RelativePath="..\..\libsmraw\libsmraw_types.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\libsmraw\libsmraw_values_table.h"
 				>
 			</File>
 		</Filter>
