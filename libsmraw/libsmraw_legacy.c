@@ -67,14 +67,14 @@ int libsmraw_handle_get_amount_of_information_values(
 int libsmraw_handle_get_information_value_size(
      libsmraw_handle_t *handle,
      const uint8_t *identifier,
-     size_t identifier_length,
+     size_t identifier_size,
      size_t *value_size,
      liberror_error_t **error )
 {
 	return( libsmraw_handle_get_utf8_information_value_size(
 	         handle,
-	         (char *) identifier,
-	         identifier_length,
+	         identifier,
+	         identifier_size,
 	         value_size,
 	         error ) );
 }
@@ -87,15 +87,15 @@ int libsmraw_handle_get_information_value_size(
 int libsmraw_handle_get_information_value(
      libsmraw_handle_t *handle,
      const uint8_t *identifier,
-     size_t identifier_length,
+     size_t identifier_size,
      uint8_t *value,
      size_t value_size,
      liberror_error_t **error )
 {
 	return( libsmraw_handle_get_utf8_information_value(
 	         handle,
-	         (char *) identifier,
-	         identifier_length,
+	         identifier,
+	         identifier_size,
 	         value,
 	         value_size,
 	         error ) );
@@ -108,15 +108,15 @@ int libsmraw_handle_get_information_value(
 int libsmraw_handle_set_information_value(
      libsmraw_handle_t *handle,
      const uint8_t *identifier,
-     size_t identifier_length,
+     size_t identifier_size,
      const uint8_t *value,
      size_t value_length,
      liberror_error_t **error )
 {
 	return( libsmraw_handle_set_utf8_information_value(
 	         handle,
-	         (char *) identifier,
-	         identifier_length,
+	         identifier,
+	         identifier_size,
 	         value,
 	         value_length,
 	         error ) );
@@ -143,14 +143,14 @@ int libsmraw_handle_get_amount_of_integrity_hash_values(
 int libsmraw_handle_get_integrity_hash_value_size(
      libsmraw_handle_t *handle,
      const uint8_t *identifier,
-     size_t identifier_length,
+     size_t identifier_size,
      size_t *value_size,
      liberror_error_t **error )
 {
 	return( libsmraw_handle_get_utf8_integrity_hash_value_size(
 	         handle,
-	         (char *) identifier,
-	         identifier_length,
+	         identifier,
+	         identifier_size,
 	         value_size,
 	         error ) );
 }
@@ -163,15 +163,15 @@ int libsmraw_handle_get_integrity_hash_value_size(
 int libsmraw_handle_get_integrity_hash_value(
      libsmraw_handle_t *handle,
      const uint8_t *identifier,
-     size_t identifier_length,
+     size_t identifier_size,
      uint8_t *value,
      size_t value_size,
      liberror_error_t **error )
 {
 	return( libsmraw_handle_get_utf8_integrity_hash_value(
 	         handle,
-	         (char *) identifier,
-	         identifier_length,
+	         identifier,
+	         identifier_size,
 	         value,
 	         value_size,
 	         error ) );
@@ -184,15 +184,15 @@ int libsmraw_handle_get_integrity_hash_value(
 int libsmraw_handle_set_integrity_hash_value(
      libsmraw_handle_t *handle,
      const uint8_t *identifier,
-     size_t identifier_length,
+     size_t identifier_size,
      const uint8_t *value,
      size_t value_length,
      liberror_error_t **error )
 {
 	return( libsmraw_handle_set_utf8_integrity_hash_value(
 	         handle,
-	         (char *) identifier,
-	         identifier_length,
+	         identifier,
+	         identifier_size,
 	         value,
 	         value_length,
 	         error ) );

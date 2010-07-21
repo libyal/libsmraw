@@ -2,7 +2,7 @@ AC_PREREQ( 2.59 )
 
 AC_INIT(
  [libsmraw],
-  [20100720],
+  [20100721],
   [jbmetz@users.sourceforge.net])
 
 AC_CONFIG_SRCDIR(
@@ -598,30 +598,30 @@ dnl Check for enabling libfvalue for file value support
 AC_CHECK_HEADERS(
  [libfvalue.h],
  [],
- [ac_libpff_have_libfvalue=no])
+ [ac_libsmraw_have_libfvalue=no])
 
 AS_IF(
-	[test "x$ac_libpff_have_libfvalue" != xno],
-	[ac_libpff_have_libfvalue=yes
+	[test "x$ac_libsmraw_have_libfvalue" != xno],
+	[ac_libsmraw_have_libfvalue=yes
 	AC_CHECK_LIB(
 	 fvalue,
 	 libfvalue_get_version,
 	 [],
-	 [ac_libpff_have_libfvalue=no])
+	 [ac_libsmraw_have_libfvalue=no])
 
 	])
 
 AS_IF(
-[test "x$ac_libpff_have_libfvalue" = xyes],
+[test "x$ac_libsmraw_have_libfvalue" = xyes],
  [dnl libfvalue is available
  AC_SUBST(
-  [libpff_pc_libs_private_libfvalue],
+  [libsmraw_pc_libs_private_libfvalue],
   [-lfvalue])
  AC_SUBST(
-  [libpff_spec_requires_libfvalue],
+  [libsmraw_spec_requires_libfvalue],
   [libfvalue])
  AC_SUBST(
-  [libpff_spec_build_requires_libfvalue],
+  [libsmraw_spec_build_requires_libfvalue],
   [libfvalue-devel])
  AC_SUBST(
   [LIBFVALUE_CPPFLAGS],
@@ -638,13 +638,13 @@ AS_IF(
   [HAVE_LOCAL_LIBFVALUE],
   [1])
  AC_SUBST(
-  [libpff_pc_libs_private_libfvalue],
+  [libsmraw_pc_libs_private_libfvalue],
   [])
  AC_SUBST(
-  [libpff_spec_requires_libfvalue],
+  [libsmraw_spec_requires_libfvalue],
   [])
  AC_SUBST(
-  [libpff_spec_build_requires_libfvalue],
+  [libsmraw_spec_build_requires_libfvalue],
   [])
  AC_SUBST(
   [LIBFVALUE_CPPFLAGS],
@@ -652,11 +652,11 @@ AS_IF(
  AC_SUBST(
   [LIBFVALUE_LIBADD],
   [../libfvalue/libfvalue.la])
- ac_libpff_have_libfvalue=local])
+ ac_libsmraw_have_libfvalue=local])
 
 AM_CONDITIONAL(
  [HAVE_LOCAL_LIBFVALUE],
- [test "x$ac_libpff_have_libfvalue" = xlocal])
+ [test "x$ac_libsmraw_have_libfvalue" = xlocal])
 
 dnl Check for enabling crypographic digest hash support
 ac_libsmraw_have_libcrypto=no

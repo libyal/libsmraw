@@ -571,7 +571,7 @@ int libsmraw_information_file_read_section(
 				}
 				if( libfvalue_value_initialize(
 				     &value,
-				     value_identifier,
+				     (uint8_t *) value_identifier,
 				     value_identifier_length,
 				     LIBFVALUE_VALUE_TYPE_STRING_UTF8,
 				     LIBFVALUE_VALUE_FLAG_IDENTIFIER_MANAGED | LIBFVALUE_VALUE_FLAG_DATA_MANAGED,

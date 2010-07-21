@@ -22,6 +22,9 @@ Test
 Beta release
 * remove deprecated functions in libsmraw_legacy.[ch]
 
+20100721
+* worked on libfvalue
+
 20100720
 * moved information and integrity hash value functions to UTF-8 versions
 * worked on libfvalue
