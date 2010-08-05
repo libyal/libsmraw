@@ -520,14 +520,8 @@ AS_IF(
   [libsmraw_pc_libs_private_libuna],
   [-luna])
  AC_SUBST(
-  [libsmraw_spec_requires],
-  [Requires:])
- AC_SUBST(
   [libsmraw_spec_requires_libuna],
   [libuna])
- AC_SUBST(
-  [libsmraw_spec_build_requires],
-  [BuildRequires:])
  AC_SUBST(
   [libsmraw_spec_build_requires_libuna],
   [libuna-devel]) ],
@@ -543,13 +537,7 @@ AS_IF(
   [libsmraw_pc_libs_private_libuna],
   [])
  AC_SUBST(
-  [libsmraw_spec_requires],
-  [])
- AC_SUBST(
   [libsmraw_spec_requires_libuna],
-  [])
- AC_SUBST(
-  [libsmraw_spec_build_requires],
   [])
  AC_SUBST(
   [libsmraw_spec_build_requires_libuna],

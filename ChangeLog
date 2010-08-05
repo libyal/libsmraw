@@ -1,11 +1,10 @@
 TODO
-* configure: add build requires
+* check TODOs
+
 * complete libfvalue and test information file read/write
 * configure validate libuna and libbfio check
 * close segment file handle on writing when full?
 * check if information file is handled correctly on close/free
-* fix msvscpp compilation
-* fix codegear compilation
 
 Features
 * allow set of segment filename during write (as alternative writing locations)
@@ -26,7 +25,8 @@ Beta release
 
 20100805
 * textual changes
-* updated libcstring, libbfio
+* updated libcstring, libbfio, libfvalue
+* updated msvscpp and codegear files
 
 20100727
 * updated libmfdata

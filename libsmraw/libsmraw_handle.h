@@ -31,9 +31,9 @@
 #include "libsmraw_extern.h"
 #include "libsmraw_information_file.h"
 #include "libsmraw_libbfio.h"
+#include "libsmraw_libfvalue.h"
 #include "libsmraw_libmfdata.h"
 #include "libsmraw_types.h"
-#include "libsmraw_values_table.h"
 
 #if defined( _MSC_VER ) || defined( __BORLANDC__ )
 
@@ -101,17 +101,17 @@ struct libsmraw_internal_handle
 	 */
         size64_t media_size;
 
-	/* The media values (table)
+	/* The media values table
 	 */
-	libsmraw_values_table_t *media_values;
+	libfvalue_table_t *media_values;
 
-	/* The information values (table)
+	/* The information values table
 	 */
-	libsmraw_values_table_t *information_values;
+	libfvalue_table_t *information_values;
 
-	/* The integrity hash values (table)
+	/* The integrity hash values table
 	 */
-	libsmraw_values_table_t *integrity_hash_values;
+	libfvalue_table_t *integrity_hash_values;
 
 	/* Value to indicate if abort was signalled
 	 */

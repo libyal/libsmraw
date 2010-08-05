@@ -30,8 +30,7 @@ libsmraw_la_SOURCES = \
 	libsmraw_notify.c libsmraw_notify.h \
 	libsmraw_string.c libsmraw_string.h \
 	libsmraw_support.c libsmraw_support.h \
-	libsmraw_types.h \
-	libsmraw_values_table.c libsmraw_values_table.h
+	libsmraw_types.h
 
 libsmraw_la_LIBADD = \
 	../libcstring/libcstring.la \

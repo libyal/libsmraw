@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="9,00"
 	Name="smraw_test_read"
-	ProjectGUID="{A7545354-5D50-49F6-A3D0-1F97F6228955}"
+	ProjectGUID="{F7A2D803-FC42-4C42-B1E6-E794F94228BF}"
 	RootNamespace="smraw_test_read"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="131072"

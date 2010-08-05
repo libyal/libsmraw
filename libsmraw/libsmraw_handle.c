@@ -33,9 +33,10 @@
 #include "libsmraw_filename.h"
 #include "libsmraw_handle.h"
 #include "libsmraw_libbfio.h"
+#include "libsmraw_libfvalue.h"
+#include "libsmraw_libmfdata.h"
 #include "libsmraw_libuna.h"
 #include "libsmraw_types.h"
-#include "libsmraw_values_table.h"
 
 /* Initializes the handle
  * Returns 1 if successful or -1 on error
@@ -115,75 +116,6 @@ int libsmraw_handle_initialize(
 
 			return( -1 );
 		}
-		if( libsmraw_values_table_initialize(
-		     &( internal_handle->media_values ),
-		     0,
-		     error ) != 1 )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-			 "%s: unable to create media values.",
-			 function );
-
-			libmfdata_segment_table_free(
-			 &( internal_handle->segment_table ),
-			 NULL );
-			memory_free(
-			 internal_handle );
-
-			return( -1 );
-		}
-		if( libsmraw_values_table_initialize(
-		     &( internal_handle->information_values ),
-		     0,
-		     error ) != 1 )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-			 "%s: unable to create information values.",
-			 function );
-
-			libsmraw_values_table_free(
-			 &( internal_handle->media_values ),
-			 NULL );
-			libmfdata_segment_table_free(
-			 &( internal_handle->segment_table ),
-			 NULL );
-			memory_free(
-			 internal_handle );
-
-			return( -1 );
-		}
-		if( libsmraw_values_table_initialize(
-		     &( internal_handle->integrity_hash_values ),
-		     0,
-		     error ) != 1 )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-			 "%s: unable to create integrity hash values.",
-			 function );
-
-			libsmraw_values_table_free(
-			 &( internal_handle->information_values ),
-			 NULL );
-			libsmraw_values_table_free(
-			 &( internal_handle->media_values ),
-			 NULL );
-			libmfdata_segment_table_free(
-			 &( internal_handle->segment_table ),
-			 NULL );
-			memory_free(
-			 internal_handle );
-
-			return( -1 );
-		}
 		if( libmfdata_segment_table_set_maximum_segment_size(
 		     internal_handle->segment_table,
 		     LIBSMRAW_DEFAULT_MAXIMUM_SEGMENT_SIZE,
@@ -196,14 +128,74 @@ int libsmraw_handle_initialize(
 			 "%s: unable to set maximum segment size in segment table.",
 			 function );
 
-			libsmraw_values_table_free(
-			 &( internal_handle->integrity_hash_values ),
+			libmfdata_segment_table_free(
+			 &( internal_handle->segment_table ),
 			 NULL );
-			libsmraw_values_table_free(
-			 &( internal_handle->information_values ),
+			memory_free(
+			 internal_handle );
+
+			return( -1 );
+		}
+		if( libfvalue_table_initialize(
+		     &( internal_handle->media_values ),
+		     0,
+		     error ) != 1 )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+			 "%s: unable to create media values table.",
+			 function );
+
+			libmfdata_segment_table_free(
+			 &( internal_handle->segment_table ),
 			 NULL );
-			libsmraw_values_table_free(
-			 &( internal_handle->media_values ),
+			memory_free(
+			 internal_handle );
+
+			return( -1 );
+		}
+		if( libfvalue_table_initialize(
+		     &( internal_handle->information_values ),
+		     0,
+		     error ) != 1 )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+			 "%s: unable to create information values table.",
+			 function );
+
+			libfvalue_table_free(
+			 (intptr_t *) internal_handle->media_values,
+			 NULL );
+			libmfdata_segment_table_free(
+			 &( internal_handle->segment_table ),
+			 NULL );
+			memory_free(
+			 internal_handle );
+
+			return( -1 );
+		}
+		if( libfvalue_table_initialize(
+		     &( internal_handle->integrity_hash_values ),
+		     0,
+		     error ) != 1 )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+			 "%s: unable to create integrity hash values table.",
+			 function );
+
+			libfvalue_table_free(
+			 (intptr_t *) internal_handle->information_values,
+			 NULL );
+			libfvalue_table_free(
+			 (intptr_t *) internal_handle->media_values,
 			 NULL );
 			libmfdata_segment_table_free(
 			 &( internal_handle->segment_table ),
@@ -278,15 +270,15 @@ int libsmraw_handle_free(
 		}
 		if( internal_handle->media_values != NULL )
 		{
-			if( libsmraw_values_table_free(
-			     &( internal_handle->media_values ),
+			if( libfvalue_table_free(
+			     (intptr_t *) internal_handle->media_values,
 			     error ) != 1 )
 			{
 				liberror_error_set(
 				 error,
 				 LIBERROR_ERROR_DOMAIN_RUNTIME,
 				 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-				 "%s: unable to free media values.",
+				 "%s: unable to free media values table.",
 				 function );
 
 				result = -1;
@@ -294,15 +286,15 @@ int libsmraw_handle_free(
 		}
 		if( internal_handle->information_values != NULL )
 		{
-			if( libsmraw_values_table_free(
-			     &( internal_handle->information_values ),
+			if( libfvalue_table_free(
+			     (intptr_t *) internal_handle->information_values,
 			     error ) != 1 )
 			{
 				liberror_error_set(
 				 error,
 				 LIBERROR_ERROR_DOMAIN_RUNTIME,
 				 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-				 "%s: unable to free information values.",
+				 "%s: unable to free information values table.",
 				 function );
 
 				result = -1;
@@ -310,15 +302,15 @@ int libsmraw_handle_free(
 		}
 		if( internal_handle->integrity_hash_values != NULL )
 		{
-			if( libsmraw_values_table_free(
-			     &( internal_handle->integrity_hash_values ),
+			if( libfvalue_table_free(
+			     (intptr_t *) internal_handle->integrity_hash_values,
 			     error ) != 1 )
 			{
 				liberror_error_set(
 				 error,
 				 LIBERROR_ERROR_DOMAIN_RUNTIME,
 				 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-				 "%s: unable to free integrity hash values.",
+				 "%s: unable to free integrity hash values table.",
 				 function );
 
 				result = -1;

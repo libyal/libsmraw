@@ -2,6 +2,8 @@ CODEGEAR_FILES = \
 	codegear/libbfio/libbfio.cbproj \
 	codegear/libcstring/libcstring.cbproj \
 	codegear/liberror/liberror.cbproj \
+	codegear/libfvalue/libfvalue.cbproj \
+	codegear/libmfdata/libmfdata.cbproj \
 	codegear/libnotify/libnotify.cbproj \
 	codegear/libsmraw/libsmraw.cbproj \
 	codegear/libuna/libuna.cbproj \

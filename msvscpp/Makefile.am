@@ -2,8 +2,10 @@ EXTRA_DIST = \
 	libbfio/libbfio.vcproj \
 	libcstring/libcstring.vcproj \
 	liberror/liberror.vcproj \
-	libsmraw_dll/libsmraw_dll.vcproj \
+	libfvalue/libfvalue.vcproj \
+	libmfdata/libmfdata.vcproj \
 	libnotify/libnotify.vcproj \
+	libsmraw_dll/libsmraw_dll.vcproj \
 	libuna/libuna.vcproj \
 	libsmraw.sln \
 	smraw_test_compare/smraw_test_compare.vcproj \
