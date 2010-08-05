@@ -1,5 +1,5 @@
 /*
- * The libfvalue header wrapper
+ * The libmfdata header wrapper
  *
  * Copyright (c) 2010, Joachim Metz <jbmetz@users.sourceforge.net>
  *
@@ -19,34 +19,32 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _LIBSMRAW_LIBFVALUE_H )
-#define _LIBSMRAW_LIBFVALUE_H
+#if !defined( _LIBSMRAW_LIBMFDATA_H )
+#define _LIBSMRAW_LIBMFDATA_H
 
 #include <common.h>
 
-/* Define HAVE_LOCAL_LIBFVALUE for local use of libfvalue
+/* Define HAVE_LOCAL_LIBMFDATA for local use of libmfdata
  */
-#if defined( HAVE_LOCAL_LIBFVALUE )
+#if defined( HAVE_LOCAL_LIBMFDATA )
 
-#include <libfvalue_codepage.h>
-#include <libfvalue_definitions.h>
-#include <libfvalue_table.h>
-#include <libfvalue_types.h>
-#include <libfvalue_value.h>
+#include <libmfdata_definitions.h>
+#include <libmfdata_segment_table.h>
+#include <libmfdata_types.h>
 
-#elif defined( HAVE_LIBFVALUE_H )
+#elif defined( HAVE_LIBMFDATA_H )
 
-/* If libtool DLL support is enabled set LIBFVALUE_DLL_IMPORT
- * before including libfvalue.h
+/* If libtool DLL support is enabled set LIBMFDATA_DLL_IMPORT
+ * before including libmfdata.h
  */
 #if defined( _WIN32 ) && defined( DLL_IMPORT )
-#define LIBFVALUE_DLL_IMPORT
+#define LIBMFDATA_DLL_IMPORT
 #endif
 
-#include <libfvalue.h>
+#include <libmfdata.h>
 
 #else
-#error Missing libfvalue.h
+#error Missing libmfdata.h
 #endif
 
 #endif

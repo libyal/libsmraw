@@ -1,7 +1,9 @@
 TODO
+* configure: add build requires
 * complete libfvalue and test information file read/write
 * configure validate libuna and libbfio check
 * close segment file handle on writing when full?
+* check if information file is handled correctly on close/free
 * fix msvscpp compilation
 * fix codegear compilation
 
@@ -21,6 +23,26 @@ Test
 
 Beta release
 * remove deprecated functions in libsmraw_legacy.[ch]
+
+20100805
+* textual changes
+* updated libcstring, libbfio
+
+20100727
+* updated libmfdata
+
+20100724
+* updated libmfdata
+
+20100723
+* updated libbfio, libmfdata
+
+20100722
+* reverted libsmraw back to 20100719-1 version to test without libfvalue
+  changes
+* updated include/error.h and liberror
+* updated libuna, libbfio, libfvalue
+* worked on libmfdata integration
 
 20100721
 * worked on libfvalue

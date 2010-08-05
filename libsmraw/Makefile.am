@@ -6,6 +6,7 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/libnotify \
 	@LIBUNA_CPPFLAGS@ \
 	@LIBBFIO_CPPFLAGS@ \
+	@LIBMFDATA_CPPFLAGS@ \
 	@LIBFVALUE_CPPFLAGS@ \
 	@MEMWATCH_CPPFLAGS@
 
@@ -23,12 +24,14 @@ libsmraw_la_SOURCES = \
 	libsmraw_legacy.c libsmraw_legacy.h \
 	libsmraw_libbfio.h \
 	libsmraw_libfvalue.h \
+	libsmraw_libmfdata.h \
 	libsmraw_libuna.h \
 	libsmraw_metadata.c libsmraw_metadata.h \
 	libsmraw_notify.c libsmraw_notify.h \
 	libsmraw_string.c libsmraw_string.h \
 	libsmraw_support.c libsmraw_support.h \
-	libsmraw_types.h
+	libsmraw_types.h \
+	libsmraw_values_table.c libsmraw_values_table.h
 
 libsmraw_la_LIBADD = \
 	../libcstring/libcstring.la \
@@ -36,6 +39,7 @@ libsmraw_la_LIBADD = \
 	../libnotify/libnotify.la \
 	@LIBUNA_LIBADD@ \
 	@LIBBFIO_LIBADD@ \
+	@LIBMFDATA_LIBADD@ \
 	@LIBFVALUE_LIBADD@
 
 libsmraw_la_LDFLAGS = -no-undefined -version-info 1:0:0

@@ -60,68 +60,6 @@ int libsmraw_handle_get_amount_of_information_values(
 	         error ) );
 }
 
-/* Retrieves an information value size
- * The value size includes the end of string character
- * Returns 1 if successful, 0 if value not present or -1 on error
- */
-int libsmraw_handle_get_information_value_size(
-     libsmraw_handle_t *handle,
-     const uint8_t *identifier,
-     size_t identifier_size,
-     size_t *value_size,
-     liberror_error_t **error )
-{
-	return( libsmraw_handle_get_utf8_information_value_size(
-	         handle,
-	         identifier,
-	         identifier_size,
-	         value_size,
-	         error ) );
-}
-
-/* Retrieves an information value
- * The strings are encoded in UTF-8
- * The value size should include the end of string character
- * Returns 1 if successful, 0 if value not present or -1 on error
- */
-int libsmraw_handle_get_information_value(
-     libsmraw_handle_t *handle,
-     const uint8_t *identifier,
-     size_t identifier_size,
-     uint8_t *value,
-     size_t value_size,
-     liberror_error_t **error )
-{
-	return( libsmraw_handle_get_utf8_information_value(
-	         handle,
-	         identifier,
-	         identifier_size,
-	         value,
-	         value_size,
-	         error ) );
-}
-
-/* Sets an information value
- * The strings are encoded in UTF-8
- * Returns the 1 if succesful or -1 on error
- */
-int libsmraw_handle_set_information_value(
-     libsmraw_handle_t *handle,
-     const uint8_t *identifier,
-     size_t identifier_size,
-     const uint8_t *value,
-     size_t value_length,
-     liberror_error_t **error )
-{
-	return( libsmraw_handle_set_utf8_information_value(
-	         handle,
-	         identifier,
-	         identifier_size,
-	         value,
-	         value_length,
-	         error ) );
-}
-
 /* Retrieves the amount of integrity hash values
  * Returns 1 if successful or -1 on error
  */
@@ -133,68 +71,6 @@ int libsmraw_handle_get_amount_of_integrity_hash_values(
 	return( libsmraw_handle_get_number_of_integrity_hash_values(
 	         handle,
 	         amount_of_integrity_hash_values,
-	         error ) );
-}
-
-/* Retrieves an integrity hash value size
- * The value size includes the end of string character
- * Returns 1 if successful, 0 if value not present or -1 on error
- */
-int libsmraw_handle_get_integrity_hash_value_size(
-     libsmraw_handle_t *handle,
-     const uint8_t *identifier,
-     size_t identifier_size,
-     size_t *value_size,
-     liberror_error_t **error )
-{
-	return( libsmraw_handle_get_utf8_integrity_hash_value_size(
-	         handle,
-	         identifier,
-	         identifier_size,
-	         value_size,
-	         error ) );
-}
-
-/* Retrieves an integrity hash value
- * The strings are encoded in UTF-8
- * The value size should include the end of string character
- * Returns 1 if successful, 0 if value not present or -1 on error
- */
-int libsmraw_handle_get_integrity_hash_value(
-     libsmraw_handle_t *handle,
-     const uint8_t *identifier,
-     size_t identifier_size,
-     uint8_t *value,
-     size_t value_size,
-     liberror_error_t **error )
-{
-	return( libsmraw_handle_get_utf8_integrity_hash_value(
-	         handle,
-	         identifier,
-	         identifier_size,
-	         value,
-	         value_size,
-	         error ) );
-}
-
-/* Sets an integrity hash value
- * The strings are encoded in UTF-8
- * Returns the 1 if succesful or -1 on error
- */
-int libsmraw_handle_set_integrity_hash_value(
-     libsmraw_handle_t *handle,
-     const uint8_t *identifier,
-     size_t identifier_size,
-     const uint8_t *value,
-     size_t value_length,
-     liberror_error_t **error )
-{
-	return( libsmraw_handle_set_utf8_integrity_hash_value(
-	         handle,
-	         identifier,
-	         identifier_size,
-	         value,
-	         value_length,
 	         error ) );
 }
 

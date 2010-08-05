@@ -33,9 +33,9 @@
 #include "libsmraw_filename.h"
 #include "libsmraw_handle.h"
 #include "libsmraw_libbfio.h"
-#include "libsmraw_libfvalue.h"
 #include "libsmraw_libuna.h"
 #include "libsmraw_types.h"
+#include "libsmraw_values_table.h"
 
 /* Initializes the handle
  * Returns 1 if successful or -1 on error
@@ -91,7 +91,31 @@ int libsmraw_handle_initialize(
 
 			return( -1 );
 		}
-		if( libfvalue_table_initialize(
+		if( libmfdata_segment_table_initialize(
+		     &( internal_handle->segment_table ),
+		     (intptr_t *) internal_handle,
+		     NULL,
+		     NULL,
+		     &libsmraw_handle_set_segment_name,
+		     &libmfdata_segment_table_read_segment_data,
+		     &libmfdata_segment_table_write_segment_data,
+		     &libmfdata_segment_table_seek_segment_offset,
+		     0,
+		     error ) != 1 )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+			 "%s: unable to create segment table.",
+			 function );
+
+			memory_free(
+			 internal_handle );
+
+			return( -1 );
+		}
+		if( libsmraw_values_table_initialize(
 		     &( internal_handle->media_values ),
 		     0,
 		     error ) != 1 )
@@ -100,15 +124,18 @@ int libsmraw_handle_initialize(
 			 error,
 			 LIBERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-			 "%s: unable to create media values table.",
+			 "%s: unable to create media values.",
 			 function );
 
+			libmfdata_segment_table_free(
+			 &( internal_handle->segment_table ),
+			 NULL );
 			memory_free(
 			 internal_handle );
 
 			return( -1 );
 		}
-		if( libfvalue_table_initialize(
+		if( libsmraw_values_table_initialize(
 		     &( internal_handle->information_values ),
 		     0,
 		     error ) != 1 )
@@ -117,18 +144,21 @@ int libsmraw_handle_initialize(
 			 error,
 			 LIBERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-			 "%s: unable to create information values table.",
+			 "%s: unable to create information values.",
 			 function );
 
-			libfvalue_table_free(
+			libsmraw_values_table_free(
 			 &( internal_handle->media_values ),
+			 NULL );
+			libmfdata_segment_table_free(
+			 &( internal_handle->segment_table ),
 			 NULL );
 			memory_free(
 			 internal_handle );
 
 			return( -1 );
 		}
-		if( libfvalue_table_initialize(
+		if( libsmraw_values_table_initialize(
 		     &( internal_handle->integrity_hash_values ),
 		     0,
 		     error ) != 1 )
@@ -137,21 +167,52 @@ int libsmraw_handle_initialize(
 			 error,
 			 LIBERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-			 "%s: unable to create integrity hash values table.",
+			 "%s: unable to create integrity hash values.",
 			 function );
 
-			libfvalue_table_free(
+			libsmraw_values_table_free(
 			 &( internal_handle->information_values ),
 			 NULL );
-			libfvalue_table_free(
+			libsmraw_values_table_free(
 			 &( internal_handle->media_values ),
+			 NULL );
+			libmfdata_segment_table_free(
+			 &( internal_handle->segment_table ),
 			 NULL );
 			memory_free(
 			 internal_handle );
 
 			return( -1 );
 		}
-		internal_handle->maximum_segment_size           = LIBSMRAW_DEFAULT_MAXIMUM_SEGMENT_SIZE;
+		if( libmfdata_segment_table_set_maximum_segment_size(
+		     internal_handle->segment_table,
+		     LIBSMRAW_DEFAULT_MAXIMUM_SEGMENT_SIZE,
+		     error ) != 1 )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+			 "%s: unable to set maximum segment size in segment table.",
+			 function );
+
+			libsmraw_values_table_free(
+			 &( internal_handle->integrity_hash_values ),
+			 NULL );
+			libsmraw_values_table_free(
+			 &( internal_handle->information_values ),
+			 NULL );
+			libsmraw_values_table_free(
+			 &( internal_handle->media_values ),
+			 NULL );
+			libmfdata_segment_table_free(
+			 &( internal_handle->segment_table ),
+			 NULL );
+			memory_free(
+			 internal_handle );
+
+			return( -1 );
+		}
 		internal_handle->maximum_number_of_open_handles = LIBBFIO_POOL_UNLIMITED_NUMBER_OF_OPEN_HANDLES;
 
 		*handle = (libsmraw_handle_t *) internal_handle;
@@ -186,24 +247,18 @@ int libsmraw_handle_free(
 		internal_handle = (libsmraw_internal_handle_t *) *handle;
 		*handle         = NULL;
 
-		if( internal_handle->file_io_pool_created_in_library != 0 )
+		if( libmfdata_segment_table_free(
+		     &( internal_handle->segment_table ),
+		     error ) != 1 )
 		{
-			if( internal_handle->file_io_pool != NULL )
-			{
-				if( libbfio_pool_free(
-				     &( internal_handle->file_io_pool ),
-				     error ) != 1 )
-				{
-					liberror_error_set(
-					 error,
-					 LIBERROR_ERROR_DOMAIN_RUNTIME,
-					 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-					 "%s: unable to free file io pool.",
-					 function );
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+			 "%s: unable to free segment table.",
+			 function );
 
-					result = -1;
-				}
-			}
+			result = -1;
 		}
 		if( internal_handle->information_file != NULL )
 		{
@@ -223,7 +278,7 @@ int libsmraw_handle_free(
 		}
 		if( internal_handle->media_values != NULL )
 		{
-			if( libfvalue_table_free(
+			if( libsmraw_values_table_free(
 			     &( internal_handle->media_values ),
 			     error ) != 1 )
 			{
@@ -231,7 +286,7 @@ int libsmraw_handle_free(
 				 error,
 				 LIBERROR_ERROR_DOMAIN_RUNTIME,
 				 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-				 "%s: unable to free media values table.",
+				 "%s: unable to free media values.",
 				 function );
 
 				result = -1;
@@ -239,7 +294,7 @@ int libsmraw_handle_free(
 		}
 		if( internal_handle->information_values != NULL )
 		{
-			if( libfvalue_table_free(
+			if( libsmraw_values_table_free(
 			     &( internal_handle->information_values ),
 			     error ) != 1 )
 			{
@@ -247,7 +302,7 @@ int libsmraw_handle_free(
 				 error,
 				 LIBERROR_ERROR_DOMAIN_RUNTIME,
 				 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-				 "%s: unable to free information values table.",
+				 "%s: unable to free information values.",
 				 function );
 
 				result = -1;
@@ -255,7 +310,7 @@ int libsmraw_handle_free(
 		}
 		if( internal_handle->integrity_hash_values != NULL )
 		{
-			if( libfvalue_table_free(
+			if( libsmraw_values_table_free(
 			     &( internal_handle->integrity_hash_values ),
 			     error ) != 1 )
 			{
@@ -263,7 +318,7 @@ int libsmraw_handle_free(
 				 error,
 				 LIBERROR_ERROR_DOMAIN_RUNTIME,
 				 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-				 "%s: unable to free integrity hash values table.",
+				 "%s: unable to free integrity hash values.",
 				 function );
 
 				result = -1;
@@ -312,7 +367,8 @@ int libsmraw_internal_handle_initialize_write_values(
      libsmraw_internal_handle_t *internal_handle,
      liberror_error_t **error )
 {
-	static char *function = "libsmraw_internal_handle_initialize_write_values";
+	static char *function         = "libsmraw_internal_handle_initialize_write_values";
+	size64_t maximum_segment_size = 0;
 
 	if( internal_handle == NULL )
 	{
@@ -336,12 +392,26 @@ int libsmraw_internal_handle_initialize_write_values(
 
 		return( -1 );
 	}
-	if( ( internal_handle->media_size > 0 )
-	 && ( internal_handle->maximum_segment_size > 0 ) )
+	if( libmfdata_segment_table_get_maximum_segment_size(
+	     internal_handle->segment_table,
+	     &maximum_segment_size,
+	     error ) != 1 )
 	{
-		internal_handle->total_number_of_file_io_pool_entries = (int) ( internal_handle->media_size / internal_handle->maximum_segment_size );
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve maximum segment size from segment table.",
+		 function );
 
-		if( ( internal_handle->media_size % internal_handle->maximum_segment_size ) != 0 )
+		return( -1 );
+	}
+	if( ( internal_handle->media_size > 0 )
+	 && ( maximum_segment_size > 0 ) )
+	{
+		internal_handle->total_number_of_file_io_pool_entries = (int) ( internal_handle->media_size / maximum_segment_size );
+
+		if( ( internal_handle->media_size % maximum_segment_size ) != 0 )
 		{
 			internal_handle->total_number_of_file_io_pool_entries += 1;
 		}
@@ -576,7 +646,7 @@ int libsmraw_handle_open(
 
 				return( -1 );
 			}
-			if( libbfio_pool_add_handle(
+			if( libbfio_pool_append_handle(
 			     file_io_pool,
 			     &pool_entry,
 			     file_io_handle,
@@ -1009,7 +1079,7 @@ int libsmraw_handle_open_wide(
 
 				return( -1 );
 			}
-			if( libbfio_pool_add_handle(
+			if( libbfio_pool_append_handle(
 			     file_io_pool,
 			     &pool_entry,
 			     file_io_handle,
@@ -1229,7 +1299,8 @@ int libsmraw_handle_open_file_io_pool(
 	libbfio_handle_t *file_io_handle            = NULL;
 	libsmraw_internal_handle_t *internal_handle = NULL;
 	static char *function                       = "libsmraw_handle_open_file_io_pool";
-	size64_t file_size                          = 0;
+	size64_t file_io_handle_size                = 0;
+	size64_t maximum_segment_size               = 0;
 	int number_of_file_io_handles               = 0;
 	int file_io_flags                           = 0;
 	int file_io_handle_iterator                 = 0;
@@ -1269,6 +1340,18 @@ int libsmraw_handle_open_file_io_pool(
 
 		return( -1 );
 	}
+	if( ( ( flags & LIBSMRAW_FLAG_READ ) != LIBSMRAW_FLAG_READ )
+	 && ( ( flags & LIBSMRAW_FLAG_WRITE ) != LIBSMRAW_FLAG_WRITE ) )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
+		 "%s: unsupported flags.",
+		 function );
+
+		return( -1 );
+	}
 	if( libbfio_pool_get_number_of_handles(
 	     file_io_pool,
 	     &number_of_file_io_handles,
@@ -1283,20 +1366,33 @@ int libsmraw_handle_open_file_io_pool(
 
 		return( -1 );
 	}
-	if( ( ( flags & LIBSMRAW_FLAG_READ ) != LIBSMRAW_FLAG_READ )
-	 && ( ( flags & LIBSMRAW_FLAG_WRITE ) != LIBSMRAW_FLAG_WRITE ) )
-	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
-		 "%s: unsupported flags.",
-		 function );
-
-		return( -1 );
-	}
 	if( ( flags & LIBSMRAW_FLAG_READ ) == LIBSMRAW_FLAG_READ )
 	{
+		if( number_of_file_io_handles <= 0 )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+			 "%s: missing file IO handles.",
+			 function );
+
+			return( -1 );
+		}
+		if( libmfdata_segment_table_resize(
+		     internal_handle->segment_table,
+		     number_of_file_io_handles,
+		     error ) != 1 )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to resize segment table.",
+			 function );
+
+			return( -1 );
+		}
 		if( ( flags & LIBSMRAW_FLAG_WRITE ) == LIBSMRAW_FLAG_WRITE )
 		{
 			file_io_flags = LIBBFIO_OPEN_READ_WRITE;
@@ -1305,8 +1401,6 @@ int libsmraw_handle_open_file_io_pool(
 		{
 			file_io_flags = LIBBFIO_OPEN_READ;
 		}
-		internal_handle->maximum_segment_size = 0;
-
 		for( file_io_handle_iterator = 0;
 		     file_io_handle_iterator < number_of_file_io_handles;
 		     file_io_handle_iterator++ )
@@ -1324,6 +1418,10 @@ int libsmraw_handle_open_file_io_pool(
 				 "%s: unable to retrieve file IO handle from pool entry: %d.",
 				 function,
 				 file_io_handle_iterator );
+
+				libmfdata_segment_table_empty(
+				 internal_handle->segment_table,
+				 NULL );
 
 				return( -1 );
 			}
@@ -1350,12 +1448,16 @@ int libsmraw_handle_open_file_io_pool(
 				 function,
 				 file_io_handle_iterator );
 
+				libmfdata_segment_table_empty(
+				 internal_handle->segment_table,
+				 NULL );
+
 				return( -1 );
 			}
 			if( libbfio_pool_get_size(
 			     file_io_pool,
 			     file_io_handle_iterator,
-			     &file_size,
+			     &file_io_handle_size,
 			     error ) != 1 )
 			{
 				liberror_error_set(
@@ -1366,18 +1468,66 @@ int libsmraw_handle_open_file_io_pool(
 				 function,
 				 file_io_handle_iterator );
 
+				libmfdata_segment_table_empty(
+				 internal_handle->segment_table,
+				 NULL );
+
 				return( -1 );
 			}
-			file_io_handle = NULL;
-
-			internal_handle->media_size += file_size;
-
-			if( file_size > internal_handle->maximum_segment_size )
+			if( libmfdata_segment_table_set_segment_by_index(
+			     internal_handle->segment_table,
+			     file_io_handle_iterator,
+			     file_io_handle_iterator,
+			     file_io_handle_size,
+			     error ) != 1 )
 			{
-				internal_handle->maximum_segment_size = file_size;
+				liberror_error_set(
+				 error,
+				 LIBERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+				 "%s: unable to set name in file IO handle.",
+				 function );
+
+				libmfdata_segment_table_empty(
+				 internal_handle->segment_table,
+				 NULL );
+
+				return( -1 );
+			}
+			if( file_io_handle_size > maximum_segment_size )
+			{
+				maximum_segment_size = file_io_handle_size;
 			}
 		}
+		if( libmfdata_segment_table_set_maximum_segment_size(
+		     internal_handle->segment_table,
+		     maximum_segment_size,
+		     error ) != 1 )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to set maximum segment size in segment table.",
+			 function );
+
+			return( -1 );
+		}
 		internal_handle->read_values_initialized = 1;
+	}
+	if( libmfdata_segment_table_get_value_size(
+	     internal_handle->segment_table,
+	     &( internal_handle->media_size ),
+	     error ) != 1 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve value size from segment table.",
+		 function );
+
+		return( -1 );
 	}
 	internal_handle->file_io_pool = file_io_pool;
 
@@ -1651,12 +1801,25 @@ int libsmraw_handle_close(
 			liberror_error_set(
 			 error,
 			 LIBERROR_ERROR_DOMAIN_IO,
-			 LIBERROR_IO_ERROR_OPEN_FAILED,
+			 LIBERROR_IO_ERROR_CLOSE_FAILED,
 			 "%s: unable to close information file.",
 			 function );
 
-			return( -1 );
+			result = -1;
 		}
+	}
+	if( libmfdata_segment_table_empty(
+	     internal_handle->segment_table,
+	     error ) != 1 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+		 "%s: unable to empty segment table.",
+		 function );
+
+		result = -1;
 	}
 	if( internal_handle->file_io_pool_created_in_library != 0 )
 	{
@@ -1675,24 +1838,39 @@ int libsmraw_handle_close(
 
 				result = -1;
 			}
-		}
-	}
-	if( internal_handle->information_file != NULL )
-	{
-		if( libsmraw_information_file_close(
-		     internal_handle->information_file,
-		     error ) != 0 )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_IO,
-			 LIBERROR_IO_ERROR_CLOSE_FAILED,
-			 "%s: unable to close information file.",
-			 function );
+			if( libbfio_pool_free(
+			     &( internal_handle->file_io_pool ),
+			     error ) != 1 )
+			{
+				liberror_error_set(
+				 error,
+				 LIBERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+				 "%s: unable to free file io pool.",
+				 function );
 
-			result = -1;
+				result = -1;
+			}
 		}
 	}
+	if( libmfdata_segment_table_set_maximum_segment_size(
+	     internal_handle->segment_table,
+	     LIBSMRAW_DEFAULT_MAXIMUM_SEGMENT_SIZE,
+	     error ) != 1 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to set maximum segment size in segment table.",
+		 function );
+
+		result = -1;
+	}
+	internal_handle->file_io_pool             = NULL;
+	internal_handle->read_values_initialized  = 0;
+	internal_handle->write_values_initialized = 0;
+
 	return( result );
 }
 
@@ -1707,12 +1885,7 @@ ssize_t libsmraw_handle_read_buffer(
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
 	static char *function                       = "libsmraw_handle_read_buffer";
-	off64_t file_offset                         = 0;
-	size64_t file_size                          = 0;
-	size_t buffer_offset                        = 0;
-	size_t read_size                            = 0;
 	ssize_t read_count                          = 0;
-	int number_of_file_io_handles               = 0;
 
 	if( handle == NULL )
 	{
@@ -1738,170 +1911,25 @@ ssize_t libsmraw_handle_read_buffer(
 
 		return( -1 );
 	}
-	if( internal_handle->offset < 0 )
+	read_count = libmfdata_segment_table_read_buffer(
+	              internal_handle->segment_table,
+	              internal_handle->file_io_pool,
+	              (uint8_t *) buffer,
+	              buffer_size,
+	              error );
+
+	if( read_count == -1 )
 	{
 		liberror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
-		 "%s: invalid handle - offset value out of bounds.",
+		 LIBERROR_ERROR_DOMAIN_IO,
+		 LIBERROR_IO_ERROR_READ_FAILED,
+		 "%s: unable to read buffer from segment table.",
 		 function );
 
 		return( -1 );
 	}
-	if( buffer == NULL )
-	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid buffer.",
-		 function );
-
-		return( -1 );
-	}
-	if( buffer_size > (size_t) SSIZE_MAX )
-	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
-		 "%s: invalid buffer size value exceeds maximum.",
-		 function );
-
-		return( -1 );
-	}
-	if( ( (size64_t) internal_handle->offset >= internal_handle->media_size )
-	 || ( buffer_size == 0 ) )
-	{
-		return( 0 );
-	}
-	while( buffer_size > 0 )
-	{
-		if( libbfio_pool_get_size(
-		     internal_handle->file_io_pool,
-		     internal_handle->current_file_io_pool_entry,
-		     &file_size,
-		     error ) != 1 )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-			 "%s: unable to retrieve file size from entry: %d.",
-			 function,
-			 internal_handle->current_file_io_pool_entry );
-
-			return( -1 );
-		}
-		if( libbfio_pool_get_offset(
-		     internal_handle->file_io_pool,
-		     internal_handle->current_file_io_pool_entry,
-		     &file_offset,
-		     error ) != 1 )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-			 "%s: unable to retrieve file offset from entry: %d.",
-			 function,
-			 internal_handle->current_file_io_pool_entry );
-
-			return( -1 );
-		}
-		if( file_offset > (off64_t) file_size )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
-			 "%s: file offset exceeds file size of entry: %d.",
-			 function,
-			 internal_handle->current_file_io_pool_entry );
-
-			return( -1 );
-		}
-		read_size = buffer_size;
-
-		if( ( (size64_t) read_size + (size64_t) file_offset ) > file_size )
-		{
-			read_size = (size_t) ( file_size - file_offset );
-		}
-		if( read_size == 0 )
-		{
-			/* TODO test and fix this */
-			break;
-		}
-		read_count = libbfio_pool_read(
-		              internal_handle->file_io_pool,
-		              internal_handle->current_file_io_pool_entry,
-		              &( ( (uint8_t *) buffer )[ buffer_offset ] ),
-		              read_size,
-		              error );
-
-		if( read_count < 0 )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_IO,
-			 LIBERROR_IO_ERROR_READ_FAILED,
-			 "%s: unable to read data from entry: %d.",
-			 function,
-			 internal_handle->current_file_io_pool_entry );
-
-			return( -1 );
-		}
-		internal_handle->offset += (off64_t) read_count;
-
-		if( ( (size64_t) file_offset + (size64_t) read_count ) == file_size )
-		{
-			internal_handle->current_file_io_pool_entry += 1;
-
-			if( libbfio_pool_get_number_of_handles(
-			     internal_handle->file_io_pool,
-			     &number_of_file_io_handles,
-			     error ) != 1 )
-			{
-				liberror_error_set(
-				 error,
-				 LIBERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-				 "%s: unable to retrieve the number of handles in the file io pool.",
-				 function );
-
-				return( -1 );
-			}
-			if( internal_handle->current_file_io_pool_entry < number_of_file_io_handles )
-			{
-				if( libbfio_pool_seek_offset(
-				     internal_handle->file_io_pool,
-				     internal_handle->current_file_io_pool_entry,
-				     0,
-				     SEEK_SET,
-				     error ) != 0 )
-				{
-					liberror_error_set(
-					 error,
-					 LIBERROR_ERROR_DOMAIN_IO,
-					 LIBERROR_IO_ERROR_SEEK_FAILED,
-					 "%s: unable to seek offset: 0 in entry: %d.",
-					 function,
-					 internal_handle->current_file_io_pool_entry );
-
-					return( -1 );
-				}
-			}
-		}
-		buffer_size   -= (size_t) read_count;
-		buffer_offset += (size_t) read_count;
-
-		if( (size64_t) internal_handle->offset >= internal_handle->media_size )
-		{
-			break;
-		}
-	}
-	return( (ssize_t) buffer_offset );
+	return( read_count );
 }
 
 /* Writes a buffer
@@ -1913,18 +1941,9 @@ ssize_t libsmraw_handle_write_buffer(
          size_t buffer_size,
          liberror_error_t **error )
 {
-	libbfio_handle_t *file_io_handle                = NULL;
-	libsmraw_internal_handle_t *internal_handle     = NULL;
-	libcstring_system_character_t *segment_filename = NULL;
-	static char *function                           = "libsmraw_handle_write_buffer";
-	off64_t file_offset                             = 0;
-	size64_t file_size                              = 0;
-	size_t buffer_offset                            = 0;
-	size_t segment_filename_size                    = 0;
-	size_t write_size                               = 0;
-	ssize_t write_count                             = 0;
-	int number_of_file_io_handles                   = 0;
-	int pool_entry                                  = 0;
+	libsmraw_internal_handle_t *internal_handle = NULL;
+	static char *function                       = "libsmraw_handle_write_buffer";
+	ssize_t write_count                         = 0;
 
 	if( handle == NULL )
 	{
@@ -1946,18 +1965,6 @@ ssize_t libsmraw_handle_write_buffer(
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
 		 "%s: invalid handle - missing file io pool.",
-		 function );
-
-		return( -1 );
-	}
-	if( ( internal_handle->offset < 0 )
-	 || ( internal_handle->offset > (off64_t) internal_handle->media_size ) )
-	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
-		 "%s: invalid handle - offset value out of bounds.",
 		 function );
 
 		return( -1 );
@@ -1978,6 +1985,7 @@ ssize_t libsmraw_handle_write_buffer(
 			return( -1 );
 		}
 	}
+/* TODO
 	if( ( internal_handle->current_file_io_pool_entry < 0 )
 	 || ( internal_handle->current_file_io_pool_entry >= internal_handle->total_number_of_file_io_pool_entries ) )
 	{
@@ -1990,230 +1998,26 @@ ssize_t libsmraw_handle_write_buffer(
 
 		return( -1 );
 	}
-	if( buffer == NULL )
+*/
+	write_count = libmfdata_segment_table_write_buffer(
+	               internal_handle->segment_table,
+	               internal_handle->file_io_pool,
+	               (uint8_t *) buffer,
+	               buffer_size,
+	               error );
+
+	if( write_count == -1 )
 	{
 		liberror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid buffer.",
+		 LIBERROR_ERROR_DOMAIN_IO,
+		 LIBERROR_IO_ERROR_READ_FAILED,
+		 "%s: unable to write buffer to segment table.",
 		 function );
 
 		return( -1 );
 	}
-	if( buffer_size > (size_t) SSIZE_MAX )
-	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
-		 "%s: invalid buffer size value exceeds maximum.",
-		 function );
-
-		return( -1 );
-	}
-	if( buffer_size == 0 )
-	{
-		return( 0 );
-	}
-	if( libbfio_pool_get_number_of_handles(
-	     internal_handle->file_io_pool,
-	     &number_of_file_io_handles,
-	     error ) != 1 )
-	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve the number of handles in the file io pool.",
-		 function );
-
-		return( -1 );
-	}
-	while( buffer_size > 0 )
-	{
-		if( internal_handle->current_file_io_pool_entry >= number_of_file_io_handles )
-		{
-			if( libsmraw_filename_create(
-			     &segment_filename,
-			     &segment_filename_size,
-			     internal_handle->basename,
-			     internal_handle->basename_size,
-			     internal_handle->total_number_of_file_io_pool_entries,
-			     internal_handle->current_file_io_pool_entry,
-			     error ) != 1 )
-			{
-				liberror_error_set(
-				 error,
-				 LIBERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-				 "%s: unable to create segment filename number: %d.",
-				 function,
-				 internal_handle->current_file_io_pool_entry );
-
-				return( -1 );
-			}
-			if( libbfio_file_initialize(
-			     &file_io_handle,
-			     error ) != 1 )
-			{
-				liberror_error_set(
-				 error,
-				 LIBERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-				 "%s: unable to create file IO handle.",
-				 function );
-
-				memory_free(
-				 segment_filename );
-
-				return( -1 );
-			}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
-			if( libbfio_file_set_name_wide(
-			     file_io_handle,
-			     segment_filename,
-			     segment_filename_size,
-			     error ) != 1 )
-#else
-			if( libbfio_file_set_name(
-			     file_io_handle,
-			     segment_filename,
-			     segment_filename_size,
-			     error ) != 1 )
-#endif
-			{
-				liberror_error_set(
-				 error,
-				 LIBERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBERROR_RUNTIME_ERROR_SET_FAILED,
-				 "%s: unable to set name in file IO handle.",
-				 function );
-
-				libbfio_handle_free(
-				 &file_io_handle,
-				 NULL );
-				memory_free(
-				 segment_filename );
-
-				return( -1 );
-			}
-			memory_free(
-			 segment_filename );
-
-			if( libbfio_pool_add_handle(
-			     internal_handle->file_io_pool,
-			     &pool_entry,
-			     file_io_handle,
-			     LIBSMRAW_OPEN_WRITE_TRUNCATE,
-			     error ) != 1 )
-			{
-				liberror_error_set(
-				 error,
-				 LIBERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBERROR_RUNTIME_ERROR_APPEND_FAILED,
-				 "%s: unable to append file IO handle to pool.",
-				 function );
-
-				libbfio_handle_free(
-				 &file_io_handle,
-				 NULL );
-
-				return( -1 );
-			}
-			number_of_file_io_handles++;
-
-			if( libbfio_pool_open(
-			     internal_handle->file_io_pool,
-			     pool_entry,
-			     LIBSMRAW_OPEN_WRITE_TRUNCATE,
-			     error ) != 1 )
-			{
-				liberror_error_set(
-				 error,
-				 LIBERROR_ERROR_DOMAIN_IO,
-				 LIBERROR_IO_ERROR_OPEN_FAILED,
-				 "%s: unable to open file: %" PRIs_LIBCSTRING_SYSTEM ".",
-				 function,
-				 segment_filename );
-
-				return( -1 );
-			}
-			file_io_handle = NULL;
-		}
-		if( libbfio_pool_get_size(
-		     internal_handle->file_io_pool,
-		     internal_handle->current_file_io_pool_entry,
-		     &file_size,
-		     error ) != 1 )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-			 "%s: unable to retrieve file size from entry: %d.",
-			 function,
-			 internal_handle->current_file_io_pool_entry );
-
-			return( -1 );
-		}
-		if( libbfio_pool_get_offset(
-		     internal_handle->file_io_pool,
-		     internal_handle->current_file_io_pool_entry,
-		     &file_offset,
-		     error ) != 1 )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-			 "%s: unable to retrieve file offset from entry: %d.",
-			 function,
-			 internal_handle->current_file_io_pool_entry );
-
-			return( -1 );
-		}
-		write_size = buffer_size;
-
-		if( ( internal_handle->maximum_segment_size != 0 )
-		 && ( ( (size64_t) write_size + (size64_t) file_offset ) >= internal_handle->maximum_segment_size ) )
-		{
-			write_size = (size_t) ( internal_handle->maximum_segment_size - file_offset );
-		}
-		if( write_size == 0 )
-		{
-			break;
-		}
-		write_count = libbfio_pool_write(
-		               internal_handle->file_io_pool,
-		               internal_handle->current_file_io_pool_entry,
-		               &( ( (uint8_t *) buffer )[ buffer_offset ] ),
-		               write_size,
-		               error );
-
-		if( write_count < 0 )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_IO,
-			 LIBERROR_IO_ERROR_WRITE_FAILED,
-			 "%s: unable to write data to entry: %d.",
-			 function,
-			 internal_handle->current_file_io_pool_entry );
-
-			return( -1 );
-		}
-		internal_handle->offset += write_count;
-
-		if( ( internal_handle->maximum_segment_size != 0 )
-		 && ( ( (size64_t) write_size + (size64_t) file_offset ) >= internal_handle->maximum_segment_size ) )
-		{
-			internal_handle->current_file_io_pool_entry += 1;
-		}
-		buffer_size   -= write_count;
-		buffer_offset += write_count;
-	}
-	return( (ssize_t) buffer_offset );
+	return( write_count );
 }
 
 /* Seeks a certain offset
@@ -2227,10 +2031,6 @@ off64_t libsmraw_handle_seek_offset(
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
 	static char *function                       = "libsmraw_handle_seek_offset";
-	off64_t file_offset                         = 0;
-	size64_t file_size                          = 0;
-	int number_of_file_io_handles               = 0;
-	int file_io_pool_entry                      = 0;
 
 	if( handle == NULL )
 	{
@@ -2256,119 +2056,24 @@ off64_t libsmraw_handle_seek_offset(
 
 		return( -1 );
 	}
-	if( ( whence != SEEK_CUR )
-	 && ( whence != SEEK_END )
-	 && ( whence != SEEK_SET ) )
+	offset = libmfdata_segment_table_seek_offset(
+	          internal_handle->segment_table,
+	          internal_handle->file_io_pool,
+	          offset,
+	          whence,
+	          error );
+
+	if( offset == -1 )
 	{
 		liberror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
-		 "%s: unsupported whence.",
+		 LIBERROR_ERROR_DOMAIN_IO,
+		 LIBERROR_IO_ERROR_READ_FAILED,
+		 "%s: unable to seek offset in segment table.",
 		 function );
 
 		return( -1 );
 	}
-	if( whence == SEEK_CUR )
-	{
-		offset += internal_handle->offset;
-	}
-	else if( whence == SEEK_END )
-	{
-		offset += (off64_t) internal_handle->media_size;
-	}
-	if( offset < 0 )
-	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
-		 "%s: invalid offset value out of bounds.",
-		 function );
-
-		return( -1 );
-	}
-	if( offset < (off64_t) internal_handle->media_size )
-	{
-		if( libbfio_pool_get_number_of_handles(
-		     internal_handle->file_io_pool,
-		     &number_of_file_io_handles,
-		     error ) != 1 )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-			 "%s: unable to retrieve the number of handles in the file io pool.",
-			 function );
-
-			return( -1 );
-		}
-		file_offset = offset;
-
-		for( file_io_pool_entry = 0;
-		     file_io_pool_entry < number_of_file_io_handles;
-		     file_io_pool_entry++ )
-		{
-			if( file_offset == 0 )
-			{
-				break;
-			}
-			if( libbfio_pool_get_size(
-			     internal_handle->file_io_pool,
-			     file_io_pool_entry,
-			     &file_size,
-			     error ) != 1 )
-			{
-				liberror_error_set(
-				 error,
-				 LIBERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-				 "%s: unable to retrieve file size from entry: %d.",
-				 function,
-				 file_io_pool_entry );
-
-				return( -1 );
-			}
-			if( file_offset < (off64_t) file_size )
-			{
-				break;
-			}
-			file_offset -= (off64_t) file_size;
-		}
-		if( file_io_pool_entry >= number_of_file_io_handles )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
-			 "%s: invalid pool entry value out of bounds.",
-			 function );
-
-			return( -1 );
-		}
-		if( libbfio_pool_seek_offset(
-		     internal_handle->file_io_pool,
-		     file_io_pool_entry,
-		     file_offset,
-		     SEEK_SET,
-		     error ) == -1 )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_IO,
-			 LIBERROR_IO_ERROR_SEEK_FAILED,
-			 "%s: unable to seek offset: %" PRIi64 " in entry: %d.",
-			 function,
-			 file_offset,
-			 file_io_pool_entry );
-
-			return( -1 );
-		}
-		internal_handle->current_file_io_pool_entry = file_io_pool_entry;
-	}
-	internal_handle->offset = offset;
-
 	return( offset );
 }
 
@@ -2396,19 +2101,20 @@ int libsmraw_handle_get_offset(
 	}
 	internal_handle = (libsmraw_internal_handle_t *) handle;
 
-	if( offset == NULL )
+	if( libmfdata_segment_table_get_value_offset(
+	     internal_handle->segment_table,
+	     offset,
+	     error ) != 1 )
 	{
 		liberror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid offset.",
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve value offset from segment table.",
 		 function );
 
 		return( -1 );
 	}
-	*offset = internal_handle->offset;
-
 	return( 1 );
 }
 
@@ -2454,6 +2160,84 @@ int libsmraw_handle_set_maximum_number_of_open_handles(
 		}
 	}
 	internal_handle->maximum_number_of_open_handles = maximum_number_of_open_handles;
+
+	return( 1 );
+}
+
+/* Set the name of the segment
+ * Returns 1 if successful or -1 on error
+ */
+int libsmraw_handle_set_segment_name(
+     intptr_t *io_handle,
+     libbfio_handle_t *file_io_handle,
+     int segment_index,
+     liberror_error_t **error )
+{
+	libcstring_system_character_t *segment_filename = NULL;
+	libsmraw_internal_handle_t *internal_handle     = NULL;
+	static char *function                           = "libsmraw_handle_set_segment_name";
+	size_t segment_filename_size                    = 0;
+
+	if( io_handle == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid handle.",
+		 function );
+
+		return( -1 );
+	}
+	internal_handle = (libsmraw_internal_handle_t *) io_handle;
+
+	if( libsmraw_filename_create(
+	     &segment_filename,
+	     &segment_filename_size,
+	     internal_handle->basename,
+	     internal_handle->basename_size,
+	     internal_handle->total_number_of_file_io_pool_entries,
+	     segment_index,
+	     error ) != 1 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 "%s: unable to create segment filename: %d.",
+		 function,
+		 segment_index );
+
+		return( -1 );
+	}
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+	if( libbfio_file_set_name_wide(
+	     file_io_handle,
+	     segment_filename,
+	     segment_filename_size,
+	     error ) != 1 )
+#else
+	if( libbfio_file_set_name(
+	     file_io_handle,
+	     segment_filename,
+	     segment_filename_size,
+	     error ) != 1 )
+#endif
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to set name in file IO handle.",
+		 function );
+
+		memory_free(
+		 segment_filename );
+
+		return( -1 );
+	}
+	memory_free(
+	 segment_filename );
 
 	return( 1 );
 }
@@ -3566,19 +3350,20 @@ int libsmraw_handle_get_maximum_segment_size(
 	}
 	internal_handle = (libsmraw_internal_handle_t *) handle;
 
-	if( maximum_segment_size == NULL )
+	if( libmfdata_segment_table_get_maximum_segment_size(
+	     internal_handle->segment_table,
+	     maximum_segment_size,
+	     error ) != 1 )
 	{
 		liberror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid segment file size.",
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve maximum segment size from segment table.",
 		 function );
 
 		return( -1 );
 	}
-	*maximum_segment_size = internal_handle->maximum_segment_size;
-
 	return( 1 );
 }
 
@@ -3618,19 +3403,20 @@ int libsmraw_handle_set_maximum_segment_size(
 
 		return( -1 );
 	}
-	if( maximum_segment_size > (size64_t) INT64_MAX )
+	if( libmfdata_segment_table_set_maximum_segment_size(
+	     internal_handle->segment_table,
+	     maximum_segment_size,
+	     error ) != 1 )
 	{
 		liberror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
-		 "%s: invalid segment file size value exceeds maximum.",
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to set maximum segment size in segment table.",
 		 function );
 
 		return( -1 );
 	}
-	internal_handle->maximum_segment_size = maximum_segment_size;
-
 	return( 1 );
 }
 
@@ -3893,6 +3679,7 @@ int libsmraw_handle_get_file_io_handle(
 
 		return( -1 );
 	}
+/* TODO implement in segment table
 	if( libbfio_pool_get_handle(
 	     internal_handle->file_io_pool,
 	     internal_handle->current_file_io_pool_entry,
@@ -3911,5 +3698,7 @@ int libsmraw_handle_get_file_io_handle(
 		return( -1 );
 	}
 	return( 1 );
+*/
+	return( -1 );
 }
 

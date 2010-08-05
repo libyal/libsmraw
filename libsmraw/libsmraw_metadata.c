@@ -20,7 +20,6 @@
  */
 
 #include <common.h>
-#include <memory.h>
 #include <types.h>
 
 #include <libcstring.h>
@@ -30,7 +29,6 @@
 #include "libsmraw_definitions.h"
 #include "libsmraw_handle.h"
 #include "libsmraw_libbfio.h"
-#include "libsmraw_libfvalue.h"
 #include "libsmraw_string.h"
 #include "libsmraw_types.h"
 
@@ -133,11 +131,11 @@ int libsmraw_handle_get_bytes_per_sector(
      uint32_t *bytes_per_sector,
      liberror_error_t **error )
 {
+	libcstring_character_t value_string[ 11 ];
+
 	libsmraw_internal_handle_t *internal_handle = NULL;
-	libfvalue_value_t *value                    = NULL;
 	static char *function                       = "libsmraw_handle_get_bytes_per_sector";
-	const char *identifier                      = "bytes_per_sector";
-	size_t identifier_size                      = 16;
+	size_t value_string_size                    = 0;
 	uint64_t value_64bit                        = 0;
 	int result                                  = 0;
 
@@ -154,24 +152,24 @@ int libsmraw_handle_get_bytes_per_sector(
 	}
 	internal_handle = (libsmraw_internal_handle_t *) handle;
 
-	if( bytes_per_sector == NULL )
+	if( internal_handle->file_io_pool == NULL )
 	{
 		liberror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid bytes per sector.",
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid handle - missing file io pool.",
 		 function );
 
 		return( -1 );
 	}
 	*bytes_per_sector = 0;
 
-	result = libfvalue_table_get_value_by_identifier(
+	result = libsmraw_values_table_get_value_size(
 	          internal_handle->media_values,
-	          (uint8_t *) identifier,
-	          identifier_size,
-	          &value,
+	          _LIBCSTRING_STRING( "bytes_per_sector" ),
+	          16,
+	          &value_string_size,
 	          error );
 
 	if( result == -1 )
@@ -180,17 +178,45 @@ int libsmraw_handle_get_bytes_per_sector(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve value: %s from media values table.",
-		 function,
-		 identifier );
+		 "%s: unable to retrieve media value size for identifier: media_type.",
+		 function );
 
 		return( -1 );
 	}
 	else if( result != 0 )
 	{
-		/* TODO change to copy_to_32bit ? */
-		if( libfvalue_value_copy_to_64bit(
-		     value,
+		if( value_string_size != 11 )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
+			 LIBERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
+			 "%s: unsupported value string size: %" PRIzd ".",
+			 function,
+			 value_string_size );
+
+			return( -1 );
+		}
+		if( libsmraw_values_table_get_value(
+		     internal_handle->media_values,
+		     _LIBCSTRING_STRING( "bytes_per_sector" ),
+		     16,
+		     value_string,
+		     11,
+		     error ) != 1 )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve media value for identifier: bytes_per_sector.",
+			 function );
+
+			return( -1 );
+		}
+		if( libsmraw_string_copy_to_64bit_hexadecimal(
+		     value_string,
+		     11,
 		     &value_64bit,
 		     error ) != 1 )
 		{
@@ -198,7 +224,7 @@ int libsmraw_handle_get_bytes_per_sector(
 			 error,
 			 LIBERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBERROR_RUNTIME_ERROR_COPY_FAILED,
-			 "%s: unable to copy value to a 64-bit value.",
+			 "%s: unable to copy string to 64-bit value.",
 			 function );
 
 			return( -1 );
@@ -227,12 +253,11 @@ int libsmraw_handle_set_bytes_per_sector(
      uint32_t bytes_per_sector,
      liberror_error_t **error )
 {
+	libcstring_character_t value_string[ 11 ];
+
 	libsmraw_internal_handle_t *internal_handle = NULL;
-	libfvalue_value_t *value                    = NULL;
 	static char *function                       = "libsmraw_handle_set_bytes_per_sector";
-	const char *identifier                      = "bytes_per_sector";
-	size_t identifier_size                      = 16;
-	int result                                  = 0;
+	int print_count                             = 0;
 
 	if( handle == NULL )
 	{
@@ -254,81 +279,42 @@ int libsmraw_handle_set_bytes_per_sector(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_SET_FAILED,
-		 "%s: media values cannot be changed.",
+		 "%s: bytes per sector cannot be changed.",
 		 function );
 
 		return( -1 );
 	}
-	result = libfvalue_table_get_value_by_identifier(
-	          internal_handle->media_values,
-	          (uint8_t *) identifier,
-	          identifier_size,
-	          &value,
-	          error );
+	print_count = libcstring_string_snprintf(
+	               value_string,
+	               11,
+	               "0x%08" PRIx32 "",
+	               bytes_per_sector );
 
-	if( result == -1 )
+	if( ( print_count < 0 )
+	 || ( print_count > 11 ) )
 	{
 		liberror_error_set(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve value: %s from media values table.",
-		 function,
-		 identifier );
+		 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to set bytes per sector value string.",
+		 function );
 
 		return( -1 );
 	}
-	else if( result == 0 )
-	{
-		if( libfvalue_value_initialize(
-		     &value,
-		     (uint8_t *) identifier,
-		     identifier_size,
-		     LIBFVALUE_VALUE_TYPE_UNSIGNED_INTEGER_64BIT,
-		     LIBFVALUE_VALUE_FLAG_IDENTIFIER_MANAGED | LIBFVALUE_VALUE_FLAG_DATA_MANAGED,
-		     error ) != 1 )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-			 "%s: unable to create value: %s.",
-			 function,
-			 identifier );
-
-			return( -1 );
-		}
-		if( libfvalue_table_set_value(
-		     internal_handle->media_values,
-		     value,
-		     error ) != 1 )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_SET_FAILED,
-			 "%s: unable to set value: %s in media values table.",
-			 function,
-			 identifier );
-
-			libfvalue_value_free(
-			 (intptr_t *) value,
-			 NULL );
-
-			return( -1 );
-		}
-	}
-	/* TODO change to copy_from_32bit ? */
-	if( libfvalue_value_copy_from_64bit(
-	     value,
-	     (uint64_t) bytes_per_sector,
+	if( libsmraw_values_table_set_value(
+	     internal_handle->media_values,
+	     _LIBCSTRING_STRING( "bytes_per_sector" ),
+	     16,
+	     value_string,
+	     11,
 	     error ) != 1 )
 	{
 		liberror_error_set(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_COPY_FAILED,
-		 "%s: unable to copy value from a 64-bit value.",
+		 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to set media value for identifier: bytes_per_sector.",
 		 function );
 
 		return( -1 );
@@ -344,15 +330,11 @@ int libsmraw_handle_get_media_type(
      uint8_t *media_type,
      liberror_error_t **error )
 {
+	libcstring_character_t value_string[ 10 ];
+
 	libsmraw_internal_handle_t *internal_handle = NULL;
-	libfvalue_value_t *value                    = NULL;
-	uint8_t *value_data                         = NULL;
 	static char *function                       = "libsmraw_handle_get_media_type";
-	const char *identifier                      = "media_type";
-	size_t identifier_size                      = 10;
-	size_t value_data_size                      = 0;
-	uint8_t value_byte_order                    = 0;
-	uint8_t value_format                        = 0;
+	size_t value_string_size                    = 0;
 	int result                                  = 0;
 
 	if( handle == NULL )
@@ -392,11 +374,11 @@ int libsmraw_handle_get_media_type(
 	}
 	*media_type = LIBSMRAW_MEDIA_TYPE_UNKNOWN;
 
-	result = libfvalue_table_get_value_by_identifier(
+	result = libsmraw_values_table_get_value_size(
 	          internal_handle->media_values,
-	          (uint8_t *) identifier,
-	          identifier_size,
-	          &value,
+	          _LIBCSTRING_STRING( "media_type" ),
+	          10,
+	          &value_string_size,
 	          error );
 
 	if( result == -1 )
@@ -405,78 +387,65 @@ int libsmraw_handle_get_media_type(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve value: %s from media values table.",
-		 function,
-		 identifier );
+		 "%s: unable to retrieve media value size for identifier: media_type.",
+		 function );
 
 		return( -1 );
 	}
 	else if( result != 0 )
 	{
-		if( libfvalue_value_get_data(
-		     value,
-		     &value_data,
-		     &value_data_size,
-		     &value_byte_order,
-		     &value_format,
+		if( libsmraw_values_table_get_value(
+		     internal_handle->media_values,
+		     _LIBCSTRING_STRING( "media_type" ),
+		     10,
+		     value_string,
+		     10,
 		     error ) != 1 )
 		{
 			liberror_error_set(
 			 error,
 			 LIBERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-			 "%s: unable to retrieve value data.",
+			 "%s: unable to retrieve media value for identifier: media_type.",
 			 function );
 
 			return( -1 );
 		}
-		if( value_data == NULL )
+		if( value_string_size == 6 )
 		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
-			 "%s: missing value data.",
-			 function );
-
-			return( -1 );
-		}
-		/* TODO improve this enumeration function ? */
-		if( value_data_size == 6 )
-		{
-			if( libcstring_narrow_string_compare(
-			     "fixed",
-			     value_data,
+			if( libcstring_string_compare(
+			     _LIBCSTRING_STRING( "fixed" ),
+			     value_string,
 			     5 ) == 0 )
 			{
 				*media_type = LIBSMRAW_MEDIA_TYPE_FIXED;
 			}
 		}
-		else if( value_data_size == 7 )
+		else if( value_string_size == 7 )
 		{
-			if( libcstring_narrow_string_compare(
-			     "memory",
-			     value_data,
+			if( libcstring_string_compare(
+			     _LIBCSTRING_STRING( "memory" ),
+			     value_string,
 			     6 ) == 0 )
 			{
 				*media_type = LIBSMRAW_MEDIA_TYPE_MEMORY;
 			}
 		}
-		else if( value_data_size == 8 )
+		else if( value_string_size == 8 )
 		{
-			if( libcstring_narrow_string_compare(
-			     "optical",
-			     value_data,
+			if( libcstring_string_compare(
+			     _LIBCSTRING_STRING( "optical" ),
+			     value_string,
 			     7 ) == 0 )
 			{
 				*media_type = LIBSMRAW_MEDIA_TYPE_OPTICAL;
 			}
 		}
-		else if( value_data_size == 10 )
+		else if( value_string_size == 10 )
 		{
-			if( libcstring_narrow_string_compare(
-			     "removable",
-			     value_data,
+			if( libcstring_string_compare(
+			     _LIBCSTRING_STRING( "removable" ),
+			     value_string,
 			     9 ) == 0 )
 			{
 				*media_type = LIBSMRAW_MEDIA_TYPE_REMOVABLE;
@@ -494,14 +463,12 @@ int libsmraw_handle_set_media_type(
      uint8_t media_type,
      liberror_error_t **error )
 {
+	libcstring_character_t value_string[ 10 ];
+
+	libcstring_character_t *result              = NULL;
 	libsmraw_internal_handle_t *internal_handle = NULL;
-	libfvalue_value_t *value                    = NULL;
 	static char *function                       = "libsmraw_handle_set_media_type";
-	const char *identifier                      = "media_type";
-	const char *value_string                    = NULL;
-	size_t identifier_size                      = 10;
 	size_t value_string_length                  = 0;
-	int result                                  = 0;
 
 	if( handle == NULL )
 	{
@@ -522,7 +489,7 @@ int libsmraw_handle_set_media_type(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_SET_FAILED,
-		 "%s: media values cannot be changed.",
+		 "%s: media size cannot be changed.",
 		 function );
 
 		return( -1 );
@@ -530,27 +497,39 @@ int libsmraw_handle_set_media_type(
 	switch( media_type )
 	{
 		case LIBSMRAW_MEDIA_TYPE_FIXED:
-			value_string        = "fixed";
 			value_string_length = 5;
 
+			result = libcstring_string_copy(
+				  value_string,
+				  _LIBCSTRING_STRING( "fixed" ),
+				  value_string_length );
 			break;
 
 		case LIBSMRAW_MEDIA_TYPE_MEMORY:
-			value_string        = "memory";
 			value_string_length = 6;
 
+			result = libcstring_string_copy(
+				  value_string,
+				  _LIBCSTRING_STRING( "memory" ),
+				  value_string_length );
 			break;
 
 		case LIBSMRAW_MEDIA_TYPE_OPTICAL:
-			value_string        = "optical";
 			value_string_length = 7;
 
+			result = libcstring_string_copy(
+				  value_string,
+				  _LIBCSTRING_STRING( "optical" ),
+				  value_string_length );
 			break;
 
 		case LIBSMRAW_MEDIA_TYPE_REMOVABLE:
-			value_string        = "removable";
 			value_string_length = 9;
 
+			result = libcstring_string_copy(
+				  value_string,
+				  _LIBCSTRING_STRING( "removable" ),
+				  value_string_length );
 			break;
 
 		default:
@@ -564,76 +543,32 @@ int libsmraw_handle_set_media_type(
 
 			return( -1 );
 	}
-	result = libfvalue_table_get_value_by_identifier(
-	          internal_handle->media_values,
-	          (uint8_t *) identifier,
-	          identifier_size,
-	          &value,
-	          error );
+	value_string[ value_string_length ] = 0;
 
-	if( result == -1 )
+	if( result == NULL )
 	{
 		liberror_error_set(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve value: %s from media values table.",
-		 function,
-		 identifier );
+		 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to set media type value string.",
+		 function );
 
 		return( -1 );
 	}
-	else if( result == 0 )
-	{
-		if( libfvalue_value_initialize(
-		     &value,
-		     (uint8_t *) identifier,
-		     identifier_size,
-		     LIBFVALUE_VALUE_TYPE_STRING_UTF8,
-		     LIBFVALUE_VALUE_FLAG_IDENTIFIER_MANAGED | LIBFVALUE_VALUE_FLAG_DATA_MANAGED,
-		     error ) != 1 )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-			 "%s: unable to create value: %s.",
-			 function,
-			 identifier );
-
-			return( -1 );
-		}
-		if( libfvalue_table_set_value(
-		     internal_handle->media_values,
-		     value,
-		     error ) != 1 )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_SET_FAILED,
-			 "%s: unable to set value: %s in media values table.",
-			 function,
-			 identifier );
-
-			libfvalue_value_free(
-			 (intptr_t *) value,
-			 NULL );
-
-			return( -1 );
-		}
-	}
-	if( libfvalue_value_copy_from_utf8_string(
-	     value,
-	     (uint8_t *) value_string,
+	if( libsmraw_values_table_set_value(
+	     internal_handle->media_values,
+	     _LIBCSTRING_STRING( "media_type" ),
+	     10,
+	     value_string,
 	     value_string_length,
 	     error ) != 1 )
 	{
 		liberror_error_set(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_COPY_FAILED,
-		 "%s: unable to copy value from an UTF-8 string.",
+		 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to set media value for identifier: media_type.",
 		 function );
 
 		return( -1 );
@@ -649,15 +584,11 @@ int libsmraw_handle_get_media_flags(
      uint8_t *media_flags,
      liberror_error_t **error )
 {
+	libcstring_character_t value_string[ 9 ];
+
 	libsmraw_internal_handle_t *internal_handle = NULL;
-	libfvalue_value_t *value                    = NULL;
-	uint8_t *value_data                         = NULL;
 	static char *function                       = "libsmraw_handle_get_media_flags";
-	const char *identifier                      = "media_flags";
-	size_t identifier_size                      = 11;
-	size_t value_data_size                      = 0;
-	uint8_t value_byte_order                    = 0;
-	uint8_t value_format                        = 0;
+	size_t value_string_size                    = 0;
 	int result                                  = 0;
 
 	if( handle == NULL )
@@ -695,11 +626,11 @@ int libsmraw_handle_get_media_flags(
 
 		return( -1 );
 	}
-	result = libfvalue_table_get_value_by_identifier(
+	result = libsmraw_values_table_get_value_size(
 	          internal_handle->media_values,
-	          (uint8_t *) identifier,
-	          identifier_size,
-	          &value,
+	          _LIBCSTRING_STRING( "media_flags" ),
+	          11,
+	          &value_string_size,
 	          error );
 
 	if( result == -1 )
@@ -708,58 +639,45 @@ int libsmraw_handle_get_media_flags(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve value: %s from media values table.",
-		 function,
-		 identifier );
+		 "%s: unable to retrieve media value size for identifier: media_flags.",
+		 function );
 
 		return( -1 );
 	}
 	else if( result != 0 )
 	{
-		if( libfvalue_value_get_data(
-		     value,
-		     &value_data,
-		     &value_data_size,
-		     &value_byte_order,
-		     &value_format,
+		if( libsmraw_values_table_get_value(
+		     internal_handle->media_values,
+		     _LIBCSTRING_STRING( "media_flags" ),
+		     11,
+		     value_string,
+		     9,
 		     error ) != 1 )
 		{
 			liberror_error_set(
 			 error,
 			 LIBERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-			 "%s: unable to retrieve value data.",
+			 "%s: unable to retrieve media value for identifier: media_flags.",
 			 function );
 
 			return( -1 );
 		}
-		if( value_data == NULL )
+		if( value_string_size == 8 )
 		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
-			 "%s: missing value data.",
-			 function );
-
-			return( -1 );
-		}
-		/* TODO improve this enumeration function ? */
-		if( value_data_size == 8 )
-		{
-			if( libcstring_narrow_string_compare(
-			     "logical",
-			     value_data,
+			if( libcstring_string_compare(
+			     _LIBCSTRING_STRING( "logical" ),
+			     value_string,
 			     7 ) == 0 )
 			{
 				*media_flags &= ~( LIBSMRAW_MEDIA_FLAG_PHYSICAL );
 			}
 		}
-		else if( value_data_size == 9 )
+		else if( value_string_size == 9 )
 		{
-			if( libcstring_narrow_string_compare(
-			     "physical",
-			     value_data,
+			if( libcstring_string_compare(
+			     _LIBCSTRING_STRING( "physical" ),
+			     value_string,
 			     8 ) == 0 )
 			{
 				*media_flags |= LIBSMRAW_MEDIA_FLAG_PHYSICAL;
@@ -777,14 +695,12 @@ int libsmraw_handle_set_media_flags(
      uint8_t media_flags,
      liberror_error_t **error )
 {
+	libcstring_character_t value_string[ 9 ];
+
+	libcstring_character_t *result              = NULL;
 	libsmraw_internal_handle_t *internal_handle = NULL;
-	libfvalue_value_t *value                    = NULL;
 	static char *function                       = "libsmraw_handle_set_media_flags";
-	const char *identifier                      = "media_flags";
-	const char *value_string                    = NULL;
-	size_t identifier_size                      = 11;
 	size_t value_string_length                  = 0;
-	int result                                  = 0;
 
 	if( handle == NULL )
 	{
@@ -824,73 +740,53 @@ int libsmraw_handle_set_media_flags(
 	}
 	if( ( media_flags & LIBSMRAW_MEDIA_FLAG_PHYSICAL ) != 0 )
 	{
-		value_string        = "physical";
 		value_string_length = 8;
+
+		result = libcstring_string_copy(
+			  value_string,
+			  _LIBCSTRING_STRING( "physical" ),
+			  value_string_length );
 	}
 	else
 	{
-		value_string        = "logical";
 		value_string_length = 7;
-	}
-	result = libfvalue_table_get_value_by_identifier(
-	          internal_handle->media_values,
-	          (uint8_t *) identifier,
-	          identifier_size,
-	          &value,
-	          error );
 
-	if( result == -1 )
+		result = libcstring_string_copy(
+			  value_string,
+			  _LIBCSTRING_STRING( "logical" ),
+			  value_string_length );
+	}
+	value_string[ value_string_length ] = 0;
+
+	if( result == NULL )
 	{
 		liberror_error_set(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve value: %s from media values table.",
-		 function,
-		 identifier );
+		 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to set media flags value string.",
+		 function );
 
 		return( -1 );
 	}
-	else if( result == 0 )
+	if( libsmraw_values_table_set_value(
+	     internal_handle->media_values,
+	     _LIBCSTRING_STRING( "media_flags" ),
+	     11,
+	     value_string,
+	     value_string_length,
+	     error ) != 1 )
 	{
-		if( libfvalue_value_initialize(
-		     &value,
-		     (uint8_t *) identifier,
-		     identifier_size,
-		     LIBFVALUE_VALUE_TYPE_STRING_UTF8,
-		     LIBFVALUE_VALUE_FLAG_IDENTIFIER_MANAGED | LIBFVALUE_VALUE_FLAG_DATA_MANAGED,
-		     error ) != 1 )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-			 "%s: unable to create value: %s.",
-			 function,
-			 identifier );
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to set media value for identifier: media_flags.",
+		 function );
 
-			return( -1 );
-		}
-		if( libfvalue_table_set_value(
-		     internal_handle->media_values,
-		     value,
-		     error ) != 1 )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_SET_FAILED,
-			 "%s: unable to set value: %s in media values table.",
-			 function,
-			 identifier );
-
-			libfvalue_value_free(
-			 (intptr_t *) value,
-			 NULL );
-
-			return( -1 );
-		}
+		return( -1 );
 	}
+
 	return( 1 );
 }
 
@@ -929,7 +825,18 @@ int libsmraw_handle_get_number_of_information_values(
 
 		return( -1 );
 	}
-	if( libfvalue_table_get_number_of_values(
+	if( internal_handle->information_values == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid handle - missing information values.",
+		 function );
+
+		return( -1 );
+	}
+	if( libsmraw_values_table_get_number_of_values(
 	     internal_handle->information_values,
 	     number_of_information_values,
 	     error ) != 1 )
@@ -946,20 +853,18 @@ int libsmraw_handle_get_number_of_information_values(
 	return( 1 );
 }
 
-/* Retrieves the size of a specific UTF-8 encoded information value identifier
+/* Retrieves an information value identifier size
  * The identifier size includes the end of string character
  * Returns 1 if successful or -1 on error
  */
-int libsmraw_handle_get_utf8_information_value_identifier_size(
+int libsmraw_handle_get_information_value_identifier_size(
      libsmraw_handle_t *handle,
      int information_value_index,
      size_t *identifier_size,
      liberror_error_t **error )
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
-	libfvalue_value_t *value                    = NULL;
-	uint8_t *value_identifier                   = NULL;
-	static char *function                       = "libsmraw_handle_get_utf8_information_value_identifier_size";
+	static char *function                       = "libsmraw_handle_get_information_value_identifier_size";
 
 	if( handle == NULL )
 	{
@@ -985,25 +890,20 @@ int libsmraw_handle_get_utf8_information_value_identifier_size(
 
 		return( -1 );
 	}
-	if( libfvalue_table_get_value_by_index(
-	     internal_handle->information_values,
-	     information_value_index,
-	     &value,
-	     error ) != 1 )
+	if( internal_handle->information_values == NULL )
 	{
 		liberror_error_set(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve value: %d from information values table.",
-		 function,
-		 information_value_index );
+		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid handle - missing information values.",
+		 function );
 
 		return( -1 );
 	}
-	if( libfvalue_value_get_identifier(
-	     value,
-	     &value_identifier,
+	if( libsmraw_values_table_get_identifier_size(
+	     internal_handle->information_values,
+	     information_value_index,
 	     identifier_size,
 	     error ) != 1 )
 	{
@@ -1011,19 +911,7 @@ int libsmraw_handle_get_utf8_information_value_identifier_size(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve value identifier: %d.",
-		 function,
-		 information_value_index );
-
-		return( -1 );
-	}
-	if( value_identifier == NULL )
-	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: missing value identifier: %d.",
+		 "%s: unable to retrieve information value identifier size for index: %d.",
 		 function,
 		 information_value_index );
 
@@ -1032,11 +920,12 @@ int libsmraw_handle_get_utf8_information_value_identifier_size(
 	return( 1 );
 }
 
-/* Retrieves a specific UTF-8 encoded information value identifier
+/* Retrieves an information value identifier
+ * The strings are encoded in UTF-8
  * The identifier size should include the end of string character
  * Returns 1 if successful or -1 on error
  */
-int libsmraw_handle_get_utf8_information_value_identifier(
+int libsmraw_handle_get_information_value_identifier(
      libsmraw_handle_t *handle,
      int information_value_index,
      uint8_t *identifier,
@@ -1044,10 +933,7 @@ int libsmraw_handle_get_utf8_information_value_identifier(
      liberror_error_t **error )
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
-	libfvalue_value_t *value                    = NULL;
-	uint8_t *value_identifier                   = NULL;
-	static char *function                       = "libsmraw_handle_get_utf8_information_value_identifier";
-	size_t value_identifier_size                = 0;
+	static char *function                       = "libsmraw_handle_get_information_value_identifier";
 
 	if( handle == NULL )
 	{
@@ -1073,92 +959,50 @@ int libsmraw_handle_get_utf8_information_value_identifier(
 
 		return( -1 );
 	}
-	if( libfvalue_table_get_value_by_index(
-	     internal_handle->information_values,
-	     information_value_index,
-	     &value,
-	     error ) != 1 )
-	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve value: %d from information values table.",
-		 function,
-		 information_value_index );
-
-		return( -1 );
-	}
-	if( libfvalue_value_get_identifier(
-	     value,
-	     &value_identifier,
-	     &value_identifier_size,
-	     error ) != 1 )
-	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve value identifier: %d.",
-		 function,
-		 information_value_index );
-
-		return( -1 );
-	}
-	if( value_identifier == NULL )
+	if( internal_handle->information_values == NULL )
 	{
 		liberror_error_set(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: missing value identifier: %d.",
+		 "%s: invalid handle - missing information values.",
+		 function );
+
+		return( -1 );
+	}
+	if( libsmraw_values_table_get_identifier(
+	     internal_handle->information_values,
+	     information_value_index,
+	     identifier,
+	     identifier_size,
+	     error ) != 1 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve information value identifier for index: %d.",
 		 function,
 		 information_value_index );
-
-		return( -1 );
-	}
-	if( identifier_size < value_identifier_size )
-	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_VALUE_TOO_SMALL,
-		 "%s: identifier too small.",
-		 function );
-
-		return( -1 );
-	}
-	if( memory_copy(
-	     identifier,
-	     value_identifier,
-	     value_identifier_size ) == NULL )
-	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_MEMORY,
-		 LIBERROR_MEMORY_ERROR_COPY_FAILED,
-		 "%s: unable to copy identifier.",
-		 function );
 
 		return( -1 );
 	}
 	return( 1 );
 }
 
-/* Retrieves the size of an UTF-8 encoded information value for the specific identifier
+/* Retrieves an information value size
  * The value size includes the end of string character
  * Returns 1 if successful, 0 if value not present or -1 on error
  */
-int libsmraw_handle_get_utf8_information_value_size(
+int libsmraw_handle_get_information_value_size(
      libsmraw_handle_t *handle,
      const uint8_t *identifier,
-     size_t identifier_size,
-     size_t *utf8_string_size,
+     size_t identifier_length,
+     size_t *value_size,
      liberror_error_t **error )
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
-	libfvalue_value_t *value                    = NULL;
-	static char *function                       = "libsmraw_handle_get_utf8_information_value_size";
+	static char *function                       = "libsmraw_handle_get_information_value_size";
 	int result                                  = 0;
 
 	if( handle == NULL )
@@ -1185,6 +1029,17 @@ int libsmraw_handle_get_utf8_information_value_size(
 
 		return( -1 );
 	}
+	if( internal_handle->information_values == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid handle - missing information values.",
+		 function );
+
+		return( -1 );
+	}
 	if( identifier == NULL )
 	{
 		liberror_error_set(
@@ -1196,11 +1051,11 @@ int libsmraw_handle_get_utf8_information_value_size(
 
 		return( -1 );
 	}
-	result = libfvalue_table_get_value_by_identifier(
+	result = libsmraw_values_table_get_value_size(
 	          internal_handle->information_values,
 	          identifier,
-	          identifier_size,
-	          &value,
+	          identifier_length,
+	          value_size,
 	          error );
 
 	if( result == -1 )
@@ -1209,48 +1064,30 @@ int libsmraw_handle_get_utf8_information_value_size(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve value: %s from information values table.",
+		 "%s: unable to retrieve information value size for identifier: %" PRIs_LIBCSTRING ".",
 		 function,
-		 (char *) identifier );
+		 identifier );
 
 		return( -1 );
-	}
-	else if( result != 0 )
-	{
-		if( libfvalue_value_get_utf8_string_size(
-		     value,
-		     utf8_string_size,
-		     error ) != 1 )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-			 "%s: unable to retrieve value: %s UTF-8 string size.",
-			 function,
-			 (char *) identifier );
-
-			return( -1 );
-		}
 	}
 	return( result );
 }
 
-/* Retrieves an UTF-8 encoded information value for the specific identifier
+/* Retrieves an information value
+ * The strings are encoded in UTF-8
  * The value size should include the end of string character
  * Returns 1 if successful, 0 if value not present or -1 on error
  */
-int libsmraw_handle_get_utf8_information_value(
+int libsmraw_handle_get_information_value(
      libsmraw_handle_t *handle,
      const uint8_t *identifier,
-     size_t identifier_size,
-     uint8_t *utf8_string,
-     size_t utf8_string_size,
+     size_t identifier_length,
+     uint8_t *value,
+     size_t value_size,
      liberror_error_t **error )
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
-	libfvalue_value_t *value                    = NULL;
-	static char *function                       = "libsmraw_handle_get_utf8_information_value";
+	static char *function                       = "libsmraw_handle_get_information_value";
 	int result                                  = 0;
 
 	if( handle == NULL )
@@ -1277,6 +1114,17 @@ int libsmraw_handle_get_utf8_information_value(
 
 		return( -1 );
 	}
+	if( internal_handle->information_values == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid handle - missing information values.",
+		 function );
+
+		return( -1 );
+	}
 	if( identifier == NULL )
 	{
 		liberror_error_set(
@@ -1288,11 +1136,12 @@ int libsmraw_handle_get_utf8_information_value(
 
 		return( -1 );
 	}
-	result = libfvalue_table_get_value_by_identifier(
+	result = libsmraw_values_table_get_value(
 	          internal_handle->information_values,
 	          identifier,
-	          identifier_size,
-	          &value,
+	          identifier_length,
+	          value,
+	          value_size,
 	          error );
 
 	if( result == -1 )
@@ -1301,49 +1150,29 @@ int libsmraw_handle_get_utf8_information_value(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve value: %s from information values table.",
+		 "%s: unable to retrieve information value for identifier: %" PRIs_LIBCSTRING ".",
 		 function,
-		 (char *) identifier );
+		 identifier );
 
 		return( -1 );
-	}
-	else if( result != 0 )
-	{
-		if( libfvalue_value_copy_to_utf8_string(
-		     value,
-		     utf8_string,
-		     utf8_string_size,
-		     error ) != 1 )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_COPY_FAILED,
-			 "%s: unable to copy value: %s to an UTF-8 string.",
-			 function,
-			 (char *) identifier );
-
-			return( -1 );
-		}
 	}
 	return( result );
 }
 
-/* Sets an UTF-8 encoded information value for the specific identifier
+/* Sets an information value
+ * The strings are encoded in UTF-8
  * Returns the 1 if succesful or -1 on error
  */
-int libsmraw_handle_set_utf8_information_value(
+int libsmraw_handle_set_information_value(
      libsmraw_handle_t *handle,
      const uint8_t *identifier,
-     size_t identifier_size,
-     const uint8_t *utf8_string,
-     size_t utf8_string_length,
+     size_t identifier_length,
+     const uint8_t *value,
+     size_t value_length,
      liberror_error_t **error )
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
-	libfvalue_value_t *value                    = NULL;
-	static char *function                       = "libsmraw_handle_set_utf8_information_value";
-	int result                                  = 0;
+	static char *function                       = "libsmraw_handle_set_information_value";
 
 	if( handle == NULL )
 	{
@@ -1364,7 +1193,18 @@ int libsmraw_handle_set_utf8_information_value(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_SET_FAILED,
-		 "%s: information values cannot be changed.",
+		 "%s: media size cannot be changed.",
+		 function );
+
+		return( -1 );
+	}
+	if( internal_handle->information_values == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid handle - missing information values.",
 		 function );
 
 		return( -1 );
@@ -1380,101 +1220,23 @@ int libsmraw_handle_set_utf8_information_value(
 
 		return( -1 );
 	}
-	result = libfvalue_table_get_value_by_identifier(
-	          internal_handle->information_values,
-	          identifier,
-	          identifier_size,
-	          &value,
-	          error );
-
-	if( result == -1 )
+	if( libsmraw_values_table_set_value(
+	     internal_handle->information_values,
+	     identifier,
+	     identifier_length,
+	     value,
+	     value_length,
+	     error ) != 1 )
 	{
 		liberror_error_set(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve value: %s from information values table.",
+		 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to set information value for identifier: %" PRIs_LIBCSTRING ".",
 		 function,
-		 (char *) identifier );
+		 identifier );
 
 		return( -1 );
-	}
-	else if( result == 0 )
-	{
-		if( libfvalue_value_initialize(
-		     &value,
-		     identifier,
-		     identifier_size,
-		     LIBFVALUE_VALUE_TYPE_STRING_UTF8,
-		     LIBFVALUE_VALUE_FLAG_IDENTIFIER_MANAGED | LIBFVALUE_VALUE_FLAG_DATA_MANAGED,
-		     error ) != 1 )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-			 "%s: unable to create value: %s.",
-			 function,
-			 (char *) identifier );
-
-			return( -1 );
-		}
-		if( libfvalue_table_set_value(
-		     internal_handle->information_values,
-		     value,
-		     error ) != 1 )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_SET_FAILED,
-			 "%s: unable to set value: %s in information values table.",
-			 function,
-			 (char *) identifier );
-
-			libfvalue_value_free(
-			 (intptr_t *) value,
-			 NULL );
-
-			return( -1 );
-		}
-		if( libfvalue_value_set_data(
-		     value,
-		     utf8_string,
-		     utf8_string_length + 1,
-		     LIBFVALUE_ENDIAN_UNDEFINED,
-		     LIBFVALUE_VALUE_FORMAT_UNDEFINED,
-		     error ) != 1 )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_SET_FAILED,
-			 "%s: unable to set value: %s data .",
-			 function,
-			 (char *) identifier );
-
-			return( -1 );
-		}
-	}
-	else
-	{
-		if( libfvalue_value_copy_from_utf8_string(
-		     value,
-		     utf8_string,
-		     utf8_string_length + 1,
-		     error ) != 1 )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_COPY_FAILED,
-			 "%s: unable to copy value: %s from an UTF-8 string.",
-			 function,
-			 (char *) identifier );
-
-			return( -1 );
-		}
 	}
 	return( 1 );
 }
@@ -1514,7 +1276,18 @@ int libsmraw_handle_get_number_of_integrity_hash_values(
 
 		return( -1 );
 	}
-	if( libfvalue_table_get_number_of_values(
+	if( internal_handle->integrity_hash_values == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid handle - missing integrity hash values.",
+		 function );
+
+		return( -1 );
+	}
+	if( libsmraw_values_table_get_number_of_values(
 	     internal_handle->integrity_hash_values,
 	     number_of_integrity_hash_values,
 	     error ) != 1 )
@@ -1531,20 +1304,18 @@ int libsmraw_handle_get_number_of_integrity_hash_values(
 	return( 1 );
 }
 
-/* Retrieves the size of a specific UTF-8 encoded integrity hash value identifier
+/* Retrieves an integrity hash value identifier size
  * The identifier size includes the end of string character
  * Returns 1 if successful or -1 on error
  */
-int libsmraw_handle_get_utf8_integrity_hash_value_identifier_size(
+int libsmraw_handle_get_integrity_hash_value_identifier_size(
      libsmraw_handle_t *handle,
      int integrity_hash_value_index,
      size_t *identifier_size,
      liberror_error_t **error )
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
-	libfvalue_value_t *value                    = NULL;
-	uint8_t *value_identifier                   = NULL;
-	static char *function                       = "libsmraw_handle_get_utf8_integrity_hash_value_identifier_size";
+	static char *function                       = "libsmraw_handle_get_integrity_hash_value_identifier_size";
 
 	if( handle == NULL )
 	{
@@ -1570,25 +1341,20 @@ int libsmraw_handle_get_utf8_integrity_hash_value_identifier_size(
 
 		return( -1 );
 	}
-	if( libfvalue_table_get_value_by_index(
-	     internal_handle->integrity_hash_values,
-	     integrity_hash_value_index,
-	     &value,
-	     error ) != 1 )
+	if( internal_handle->integrity_hash_values == NULL )
 	{
 		liberror_error_set(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve value: %d from integrity hash values table.",
-		 function,
-		 integrity_hash_value_index );
+		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid handle - missing integrity hash values.",
+		 function );
 
 		return( -1 );
 	}
-	if( libfvalue_value_get_identifier(
-	     value,
-	     &value_identifier,
+	if( libsmraw_values_table_get_identifier_size(
+	     internal_handle->integrity_hash_values,
+	     integrity_hash_value_index,
 	     identifier_size,
 	     error ) != 1 )
 	{
@@ -1596,19 +1362,7 @@ int libsmraw_handle_get_utf8_integrity_hash_value_identifier_size(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve value identifier: %d.",
-		 function,
-		 integrity_hash_value_index );
-
-		return( -1 );
-	}
-	if( value_identifier == NULL )
-	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: missing value identifier: %d.",
+		 "%s: unable to retrieve integrity hash value identifier size for index: %d.",
 		 function,
 		 integrity_hash_value_index );
 
@@ -1617,11 +1371,12 @@ int libsmraw_handle_get_utf8_integrity_hash_value_identifier_size(
 	return( 1 );
 }
 
-/* Retrieves a specific UTF-8 encoded integrity hash value identifier
+/* Retrieves an integrity hash value identifier
+ * The strings are encoded in UTF-8
  * The identifier size should include the end of string character
  * Returns 1 if successful or -1 on error
  */
-int libsmraw_handle_get_utf8_integrity_hash_value_identifier(
+int libsmraw_handle_get_integrity_hash_value_identifier(
      libsmraw_handle_t *handle,
      int integrity_hash_value_index,
      uint8_t *identifier,
@@ -1629,10 +1384,7 @@ int libsmraw_handle_get_utf8_integrity_hash_value_identifier(
      liberror_error_t **error )
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
-	libfvalue_value_t *value                    = NULL;
-	uint8_t *value_identifier                   = NULL;
-	static char *function                       = "libsmraw_handle_get_utf8_integrity_hash_value_identifier";
-	size_t value_identifier_size                = 0;
+	static char *function                       = "libsmraw_handle_get_integrity_hash_value_identifier";
 
 	if( handle == NULL )
 	{
@@ -1658,92 +1410,50 @@ int libsmraw_handle_get_utf8_integrity_hash_value_identifier(
 
 		return( -1 );
 	}
-	if( libfvalue_table_get_value_by_index(
-	     internal_handle->integrity_hash_values,
-	     integrity_hash_value_index,
-	     &value,
-	     error ) != 1 )
-	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve value: %d from integrity hash values table.",
-		 function,
-		 integrity_hash_value_index );
-
-		return( -1 );
-	}
-	if( libfvalue_value_get_identifier(
-	     value,
-	     &value_identifier,
-	     &value_identifier_size,
-	     error ) != 1 )
-	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve value identifier: %d.",
-		 function,
-		 integrity_hash_value_index );
-
-		return( -1 );
-	}
-	if( value_identifier == NULL )
+	if( internal_handle->integrity_hash_values == NULL )
 	{
 		liberror_error_set(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: missing value identifier: %d.",
+		 "%s: invalid handle - missing integrity hash values.",
+		 function );
+
+		return( -1 );
+	}
+	if( libsmraw_values_table_get_identifier(
+	     internal_handle->integrity_hash_values,
+	     integrity_hash_value_index,
+	     identifier,
+	     identifier_size,
+	     error ) != 1 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve integrity hash value identifier for index: %d.",
 		 function,
 		 integrity_hash_value_index );
-
-		return( -1 );
-	}
-	if( identifier_size < value_identifier_size )
-	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_VALUE_TOO_SMALL,
-		 "%s: identifier too small.",
-		 function );
-
-		return( -1 );
-	}
-	if( memory_copy(
-	     identifier,
-	     value_identifier,
-	     value_identifier_size ) == NULL )
-	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_MEMORY,
-		 LIBERROR_MEMORY_ERROR_COPY_FAILED,
-		 "%s: unable to copy identifier.",
-		 function );
 
 		return( -1 );
 	}
 	return( 1 );
 }
 
-/* Retrieves the size of an UTF-8 encoded integrity hash value for the specific identifier
+/* Retrieves an integrity hash value size
  * The value size includes the end of string character
  * Returns 1 if successful, 0 if value not present or -1 on error
  */
-int libsmraw_handle_get_utf8_integrity_hash_value_size(
+int libsmraw_handle_get_integrity_hash_value_size(
      libsmraw_handle_t *handle,
      const uint8_t *identifier,
-     size_t identifier_size,
-     size_t *utf8_string_size,
+     size_t identifier_length,
+     size_t *value_size,
      liberror_error_t **error )
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
-	libfvalue_value_t *value                    = NULL;
-	static char *function                       = "libsmraw_handle_get_utf8_integrity_hash_value_size";
+	static char *function                       = "libsmraw_handle_get_integrity_hash_value_size";
 	int result                                  = 0;
 
 	if( handle == NULL )
@@ -1770,6 +1480,17 @@ int libsmraw_handle_get_utf8_integrity_hash_value_size(
 
 		return( -1 );
 	}
+	if( internal_handle->integrity_hash_values == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid handle - missing integrity hash values.",
+		 function );
+
+		return( -1 );
+	}
 	if( identifier == NULL )
 	{
 		liberror_error_set(
@@ -1781,11 +1502,11 @@ int libsmraw_handle_get_utf8_integrity_hash_value_size(
 
 		return( -1 );
 	}
-	result = libfvalue_table_get_value_by_identifier(
+	result = libsmraw_values_table_get_value_size(
 	          internal_handle->integrity_hash_values,
 	          identifier,
-	          identifier_size,
-	          &value,
+	          identifier_length,
+	          value_size,
 	          error );
 
 	if( result == -1 )
@@ -1794,48 +1515,30 @@ int libsmraw_handle_get_utf8_integrity_hash_value_size(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve value: %s from integrity hash values table.",
+		 "%s: unable to retrieve integrity hash value size for identifier: %" PRIs_LIBCSTRING ".",
 		 function,
-		 (char *) identifier );
+		 identifier );
 
 		return( -1 );
-	}
-	else if( result != 0 )
-	{
-		if( libfvalue_value_get_utf8_string_size(
-		     value,
-		     utf8_string_size,
-		     error ) != 1 )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-			 "%s: unable to retrieve value: %s UTF-8 string size.",
-			 function,
-			 (char *) identifier );
-
-			return( -1 );
-		}
 	}
 	return( result );
 }
 
-/* Retrieves an UTF-8 encoded integrity hash value for the specific identifier
+/* Retrieves an integrity hash value
+ * The strings are encoded in UTF-8
  * The value size should include the end of string character
  * Returns 1 if successful, 0 if value not present or -1 on error
  */
-int libsmraw_handle_get_utf8_integrity_hash_value(
+int libsmraw_handle_get_integrity_hash_value(
      libsmraw_handle_t *handle,
      const uint8_t *identifier,
-     size_t identifier_size,
-     uint8_t *utf8_string,
-     size_t utf8_string_size,
+     size_t identifier_length,
+     uint8_t *value,
+     size_t value_size,
      liberror_error_t **error )
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
-	libfvalue_value_t *value                    = NULL;
-	static char *function                       = "libsmraw_handle_get_utf8_integrity_hash_value";
+	static char *function                       = "libsmraw_handle_get_integrity_hash_value";
 	int result                                  = 0;
 
 	if( handle == NULL )
@@ -1862,6 +1565,17 @@ int libsmraw_handle_get_utf8_integrity_hash_value(
 
 		return( -1 );
 	}
+	if( internal_handle->integrity_hash_values == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid handle - missing integrity hash values.",
+		 function );
+
+		return( -1 );
+	}
 	if( identifier == NULL )
 	{
 		liberror_error_set(
@@ -1873,11 +1587,12 @@ int libsmraw_handle_get_utf8_integrity_hash_value(
 
 		return( -1 );
 	}
-	result = libfvalue_table_get_value_by_identifier(
+	result = libsmraw_values_table_get_value(
 	          internal_handle->integrity_hash_values,
 	          identifier,
-	          identifier_size,
-	          &value,
+	          identifier_length,
+	          value,
+	          value_size,
 	          error );
 
 	if( result == -1 )
@@ -1886,49 +1601,29 @@ int libsmraw_handle_get_utf8_integrity_hash_value(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve value: %s from integrity hash values table.",
+		 "%s: unable to retrieve integrity hash value for identifier: %" PRIs_LIBCSTRING ".",
 		 function,
-		 (char *) identifier );
+		 identifier );
 
 		return( -1 );
-	}
-	else if( result != 0 )
-	{
-		if( libfvalue_value_copy_to_utf8_string(
-		     value,
-		     utf8_string,
-		     utf8_string_size,
-		     error ) != 1 )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_COPY_FAILED,
-			 "%s: unable to copy value: %s to an UTF-8 string.",
-			 function,
-			 (char *) identifier );
-
-			return( -1 );
-		}
 	}
 	return( result );
 }
 
-/* Sets an UTF-8 encoded integrity hash value for the specific identifier
+/* Sets an integrity hash value
+ * The strings are encoded in UTF-8
  * Returns the 1 if succesful or -1 on error
  */
-int libsmraw_handle_set_utf8_integrity_hash_value(
+int libsmraw_handle_set_integrity_hash_value(
      libsmraw_handle_t *handle,
      const uint8_t *identifier,
-     size_t identifier_size,
-     const uint8_t *utf8_string,
-     size_t utf8_string_length,
+     size_t identifier_length,
+     const uint8_t *value,
+     size_t value_length,
      liberror_error_t **error )
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
-	libfvalue_value_t *value                    = NULL;
-	static char *function                       = "libsmraw_handle_set_utf8_integrity_hash_value";
-	int result                                  = 0;
+	static char *function                       = "libsmraw_handle_set_integrity_hash_value";
 
 	if( handle == NULL )
 	{
@@ -1949,7 +1644,18 @@ int libsmraw_handle_set_utf8_integrity_hash_value(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_SET_FAILED,
-		 "%s: integrity hash values cannot be changed.",
+		 "%s: media size cannot be changed.",
+		 function );
+
+		return( -1 );
+	}
+	if( internal_handle->integrity_hash_values == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid handle - missing integrity hash values.",
 		 function );
 
 		return( -1 );
@@ -1965,101 +1671,23 @@ int libsmraw_handle_set_utf8_integrity_hash_value(
 
 		return( -1 );
 	}
-	result = libfvalue_table_get_value_by_identifier(
-	          internal_handle->integrity_hash_values,
-	          identifier,
-	          identifier_size,
-	          &value,
-	          error );
-
-	if( result == -1 )
+	if( libsmraw_values_table_set_value(
+	     internal_handle->integrity_hash_values,
+	     identifier,
+	     identifier_length,
+	     value,
+	     value_length,
+	     error ) != 1 )
 	{
 		liberror_error_set(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve value: %s from integrity hash values table.",
+		 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to set integrity hash value for identifier: %" PRIs_LIBCSTRING ".",
 		 function,
-		 (char *) identifier );
+		 identifier );
 
 		return( -1 );
-	}
-	else if( result == 0 )
-	{
-		if( libfvalue_value_initialize(
-		     &value,
-		     identifier,
-		     identifier_size,
-		     LIBFVALUE_VALUE_TYPE_STRING_UTF8,
-		     LIBFVALUE_VALUE_FLAG_IDENTIFIER_MANAGED | LIBFVALUE_VALUE_FLAG_DATA_MANAGED,
-		     error ) != 1 )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-			 "%s: unable to create value: %s.",
-			 function,
-			 (char *) identifier );
-
-			return( -1 );
-		}
-		if( libfvalue_table_set_value(
-		     internal_handle->integrity_hash_values,
-		     value,
-		     error ) != 1 )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_SET_FAILED,
-			 "%s: unable to set value: %s in integrity hash values table.",
-			 function,
-			 (char *) identifier );
-
-			libfvalue_value_free(
-			 (intptr_t *) value,
-			 NULL );
-
-			return( -1 );
-		}
-		if( libfvalue_value_set_data(
-		     value,
-		     utf8_string,
-		     utf8_string_length + 1,
-		     LIBFVALUE_ENDIAN_UNDEFINED,
-		     LIBFVALUE_VALUE_FORMAT_UNDEFINED,
-		     error ) != 1 )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_SET_FAILED,
-			 "%s: unable to set value: %s data .",
-			 function,
-			 (char *) identifier );
-
-			return( -1 );
-		}
-	}
-	else
-	{
-		if( libfvalue_value_copy_from_utf8_string(
-		     value,
-		     utf8_string,
-		     utf8_string_length + 1,
-		     error ) != 1 )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_COPY_FAILED,
-			 "%s: unable to copy value: %s from an UTF-8 string.",
-			 function,
-			 (char *) identifier );
-
-			return( -1 );
-		}
 	}
 	return( 1 );
 }

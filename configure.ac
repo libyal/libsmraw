@@ -2,7 +2,7 @@ AC_PREREQ( 2.59 )
 
 AC_INIT(
  [libsmraw],
-  [20100721],
+  [20100805],
   [jbmetz@users.sourceforge.net])
 
 AC_CONFIG_SRCDIR(
@@ -113,6 +113,9 @@ AC_CHECK_HEADERS([limits.h])
 
 dnl Headers included in common/memory.h and libcstring/libcstring_narrow_string.h
 AC_CHECK_HEADERS([stdlib.h string.h])
+
+dnl Headers included in libcstring/libcstring_locale.c
+AC_CHECK_HEADERS([langinfo.h locale.h])
 
 dnl Headers included in liberror/liberror_error.c and libnotify/libnotify_print.c
 AC_CHECK_HEADERS([stdarg.h])
@@ -294,6 +297,24 @@ AC_CHECK_FUNCS(
   [Missing function: realloc],
   [1]) ])
 
+dnl Check for environment functions in libcstring/libcstring_locale.c
+AC_CHECK_FUNCS(
+ [getenv],
+ [],
+ [AC_MSG_FAILURE(
+  [Missing function: getenv],
+  [1]) ])
+
+dnl Check for localization functions in libcstring/libcstring_locale.c
+AC_CHECK_FUNCS(
+ [setlocale],
+ [],
+ [AC_MSG_FAILURE(
+  [Missing function: setlocale],
+  [1]) ])
+
+LIBSMRAW_CHECK_FUNC_LANGINFO_CODESET
+
 dnl Narrow character string functions used in libcstring/libcstring_narrow_string.h
 AC_CHECK_FUNCS(
  [fgets],
@@ -385,6 +406,13 @@ AC_CHECK_FUNCS(
   [AC_MSG_FAILURE(
    [Missing functions: strncasecmp and strcasecmp],
    [1]) ]) ])
+
+AC_CHECK_FUNCS(
+ [strstr],
+ [],
+ [AC_MSG_FAILURE(
+  [Missing function: strstr],
+  [1]) ])
 
 AC_CHECK_FUNCS(
  [strtoll],
@@ -593,6 +621,70 @@ AS_IF(
 AM_CONDITIONAL(
  [HAVE_LOCAL_LIBBFIO],
  [test "x$ac_libsmraw_have_libbfio" = xlocal])
+
+dnl Check for enabling libmfdata for multi-file data support
+AC_CHECK_HEADERS(
+ [libmfdata.h],
+ [],
+ [ac_libsmraw_have_libmfdata=no])
+
+AS_IF(
+	[test "x$ac_libsmraw_have_libmfdata" != xno],
+	[ac_libsmraw_have_libmfdata=yes
+	AC_CHECK_LIB(
+	 mfdata,
+	 libmfdata_get_version,
+	 [],
+	 [ac_libsmraw_have_libmfdata=no])
+
+	])
+
+AS_IF(
+[test "x$ac_libsmraw_have_libmfdata" = xyes],
+ [dnl libmfdata is available
+ AC_SUBST(
+  [libsmraw_pc_libs_private_libmfdata],
+  [-lmfdata])
+ AC_SUBST(
+  [libsmraw_spec_requires_libmfdata],
+  [libmfdata])
+ AC_SUBST(
+  [libsmraw_spec_build_requires_libmfdata],
+  [libmfdata-devel])
+ AC_SUBST(
+  [LIBMFDATA_CPPFLAGS],
+  [])
+ AC_SUBST(
+  [LIBMFDATA_LIBADD],
+  []) ],
+ [dnl libmfdata is not available, using the (local) version that came with the source package
+ AC_DEFINE(
+  [HAVE_LOCAL_LIBMFDATA],
+  [1],
+  [Define to 1 if the local version of libmfdata is used.])
+ AC_SUBST(
+  [HAVE_LOCAL_LIBMFDATA],
+  [1])
+ AC_SUBST(
+  [libsmraw_pc_libs_private_libmfdata],
+  [])
+ AC_SUBST(
+  [libsmraw_spec_requires_libmfdata],
+  [])
+ AC_SUBST(
+  [libsmraw_spec_build_requires_libmfdata],
+  [])
+ AC_SUBST(
+  [LIBMFDATA_CPPFLAGS],
+  [-I../libmfdata])
+ AC_SUBST(
+  [LIBMFDATA_LIBADD],
+  [../libmfdata/libmfdata.la])
+ ac_libsmraw_have_libmfdata=local])
+
+AM_CONDITIONAL(
+ [HAVE_LOCAL_LIBMFDATA],
+ [test "x$ac_libsmraw_have_libmfdata" = xlocal])
 
 dnl Check for enabling libfvalue for file value support
 AC_CHECK_HEADERS(
@@ -899,6 +991,13 @@ AS_IF(
      [1]) ]) ]) ])
 
  AC_CHECK_FUNCS(
+  [wcsstr],
+  [],
+  [AC_MSG_FAILURE(
+   [Missing function: wcsstr],
+   [1]) ])
+
+ AC_CHECK_FUNCS(
   [wcstoll],
   [],
   [AC_MSG_FAILURE(
@@ -951,6 +1050,23 @@ AS_IF(
   [Define to 1 if debug output should be used] )
  ac_cv_libsmraw_enable_debug_output=yes])
 
+dnl Check if requires and build requires should be set in spec file
+AS_IF(
+ [test "x$ac_libsmraw_have_libuna" = xyes || test "x$ac_libsmraw_have_libbfio" = xyes || test "x$ac_libsmraw_have_libfvalue" = xyes || test "x$ac_libsmraw_have_libmfdata" = xyes],
+ [AC_SUBST(
+  [libsmraw_spec_requires],
+  [Requires:])
+ AC_SUBST(
+  [libsmraw_spec_build_requires],
+  [BuildRequires:]) ],
+ [AC_SUBST(
+  [libsmraw_spec_requires],
+  [])
+ AC_SUBST(
+  [libsmraw_spec_build_requires],
+  [])
+ ac_libsmraw_dummy=yes])
+
 dnl Set memwatch support
 ac_libsmraw_have_memwatch=no
 
@@ -992,6 +1108,7 @@ AC_CONFIG_FILES([libnotify/Makefile])
 AC_CONFIG_FILES([libuna/Makefile])
 AC_CONFIG_FILES([libbfio/Makefile])
 AC_CONFIG_FILES([libfvalue/Makefile])
+AC_CONFIG_FILES([libmfdata/Makefile])
 AC_CONFIG_FILES([libsmraw/Makefile])
 AC_CONFIG_FILES([manuals/Makefile])
 AC_CONFIG_FILES([tests/Makefile])
@@ -1017,6 +1134,7 @@ AC_MSG_NOTICE([
 Building:
    libuna support:                                  $ac_libsmraw_have_libuna
    libbfio support:                                 $ac_libsmraw_have_libbfio
+   libmfdata support:                               $ac_libsmraw_have_libmfdata
    libfvalue support:                               $ac_libsmraw_have_libfvalue
    MD5 support:                                     $ac_libsmraw_have_libcrypto_md5
 

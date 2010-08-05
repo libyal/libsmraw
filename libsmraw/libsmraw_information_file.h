@@ -29,7 +29,7 @@
 #include <libcstring.h>
 #include <liberror.h>
 
-#include "libsmraw_libfvalue.h"
+#include "libsmraw_values_table.h"
 
 #if defined( __cplusplus )
 extern "C" {
@@ -79,14 +79,14 @@ int libsmraw_information_file_read_section(
      libsmraw_information_file_t *information_file,
      const uint8_t *section_identifier,
      size_t section_identifier_length,
-     libfvalue_table_t *values_table,
+     libsmraw_values_table_t *values_table,
      liberror_error_t **error );
 
 int libsmraw_information_file_write_section(
      libsmraw_information_file_t *information_file,
      const uint8_t *section_identifier,
      size_t section_identifier_length,
-     libfvalue_table_t *values_table,
+     libsmraw_values_table_t *values_table,
      liberror_error_t **error );
 
 #if defined( __cplusplus )

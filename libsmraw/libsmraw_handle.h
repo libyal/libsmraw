@@ -31,8 +31,9 @@
 #include "libsmraw_extern.h"
 #include "libsmraw_information_file.h"
 #include "libsmraw_libbfio.h"
-#include "libsmraw_libfvalue.h"
+#include "libsmraw_libmfdata.h"
 #include "libsmraw_types.h"
+#include "libsmraw_values_table.h"
 
 #if defined( _MSC_VER ) || defined( __BORLANDC__ )
 
@@ -59,15 +60,15 @@ struct libsmraw_internal_handle
 	 */
         size_t basename_size;
 
-	/* The current file io pool entry
-	 */
-	int current_file_io_pool_entry;
-
 	/* The total number of pool entries
 	 */
 	int total_number_of_file_io_pool_entries;
 
-	/* A pool of file IO handles
+	/* The segment (file) table
+	 */
+	libmfdata_segment_table_t *segment_table;
+
+	/* The pool of file IO handles
 	 */
 	libbfio_pool_t *file_io_pool;
 
@@ -100,25 +101,17 @@ struct libsmraw_internal_handle
 	 */
         size64_t media_size;
 
-	/* The current media offset
+	/* The media values (table)
 	 */
-	off64_t offset;
+	libsmraw_values_table_t *media_values;
 
-	/* The maximum segment size
+	/* The information values (table)
 	 */
-	size64_t maximum_segment_size;
+	libsmraw_values_table_t *information_values;
 
-	/* The media values table
+	/* The integrity hash values (table)
 	 */
-	libfvalue_table_t *media_values;
-
-	/* The information values table
-	 */
-	libfvalue_table_t *information_values;
-
-	/* The integrity hash values table
-	 */
-	libfvalue_table_t *integrity_hash_values;
+	libsmraw_values_table_t *integrity_hash_values;
 
 	/* Value to indicate if abort was signalled
 	 */
@@ -198,6 +191,12 @@ LIBSMRAW_EXTERN int libsmraw_handle_set_maximum_number_of_open_handles(
                      libsmraw_handle_t *handle,
                      int maximum_number_of_open_handles,
                      liberror_error_t **error );
+
+int libsmraw_handle_set_segment_name(
+     intptr_t *io_handle,
+     libbfio_handle_t *file_io_handle,
+     int segment_index,
+     liberror_error_t **error );
 
 LIBSMRAW_EXTERN int libsmraw_handle_get_segment_filename_size(
                      libsmraw_handle_t *handle,
