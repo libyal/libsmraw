@@ -122,10 +122,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\libsmraw\libsmraw_string.c"
-				>
-			</File>
-			<File
 				RelativePath="..\..\libsmraw\libsmraw_support.c"
 				>
 			</File>
@@ -177,10 +173,6 @@
 			</File>
 			<File
 				RelativePath="..\..\libsmraw\libsmraw_notify.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\libsmraw\libsmraw_string.h"
 				>
 			</File>
 			<File

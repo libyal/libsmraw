@@ -39,6 +39,30 @@ const char *libsmraw_get_version(
 	return( (const char *) LIBSMRAW_VERSION_STRING );
 }
 
+/* Returns the access flags for reading
+ */
+uint8_t libsmraw_get_access_flags_read(
+         void )
+{
+	return( (uint8_t) LIBSMRAW_ACCESS_FLAG_READ );
+}
+
+/* Returns the access flags for reading and writing
+ */
+uint8_t libsmraw_get_access_flags_read_write(
+         void )
+{
+	return( (uint8_t) ( LIBSMRAW_ACCESS_FLAG_READ | LIBSMRAW_ACCESS_FLAG_WRITE ) );
+}
+
+/* Returns the access flags for writing
+ */
+uint8_t libsmraw_get_access_flags_write(
+         void )
+{
+	return( (uint8_t) LIBSMRAW_ACCESS_FLAG_WRITE );
+}
+
 /* Retrieves the narrow system string codepage
  * A value of 0 represents no codepage, UTF-8 encoding is used instead
  * Returns 1 if successful or -1 on error

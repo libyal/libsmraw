@@ -16,13 +16,14 @@ SUBDIRS = \
 	borlandc \
 	msvscpp
 
-REDHAT_FILES = \
+SPEC_FILES = \
 	libsmraw.spec \
 	libsmraw.spec.in
 
 EXTRA_DIST = \
-        $(REDHAT_FILES) \
-	libsmraw.pc.in
+	libsmraw.pc.in \
+	README.mingw \
+        $(SPEC_FILES)
 
 MAINTAINERCLEANFILES = \
 	Makefile.in

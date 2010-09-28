@@ -237,7 +237,24 @@ int libsmraw_handle_free(
 	if( *handle != NULL )
 	{
 		internal_handle = (libsmraw_internal_handle_t *) *handle;
-		*handle         = NULL;
+
+		if( internal_handle->file_io_pool != NULL )
+		{
+			if( libsmraw_handle_close(
+			     *handle,
+			     error ) != 0 )
+			{
+				liberror_error_set(
+				 error,
+				 LIBERROR_ERROR_DOMAIN_IO,
+				 LIBERROR_IO_ERROR_CLOSE_FAILED,
+				 "%s: unable to close handle.",
+				 function );
+
+				result = -1;
+			}
+		}
+		*handle = NULL;
 
 		if( libmfdata_segment_table_free(
 		     &( internal_handle->segment_table ),
@@ -401,11 +418,11 @@ int libsmraw_internal_handle_initialize_write_values(
 	if( ( internal_handle->media_size > 0 )
 	 && ( maximum_segment_size > 0 ) )
 	{
-		internal_handle->total_number_of_file_io_pool_entries = (int) ( internal_handle->media_size / maximum_segment_size );
+		internal_handle->total_number_of_segments = (int) ( internal_handle->media_size / maximum_segment_size );
 
 		if( ( internal_handle->media_size % maximum_segment_size ) != 0 )
 		{
-			internal_handle->total_number_of_file_io_pool_entries += 1;
+			internal_handle->total_number_of_segments += 1;
 		}
 	}
 	internal_handle->write_values_initialized = 1;
@@ -420,7 +437,7 @@ int libsmraw_handle_open(
      libsmraw_handle_t *handle,
      char * const filenames[],
      int number_of_filenames,
-     uint8_t flags,
+     uint8_t access_flags,
      liberror_error_t **error )
 {
 	libbfio_handle_t *file_io_handle                    = NULL;
@@ -432,7 +449,7 @@ int libsmraw_handle_open(
 	size_t information_filename_length                  = 0;
 	ssize_t print_count                                 = 0;
 	int filename_iterator                               = 0;
-	int file_io_flags                                   = 0;
+	int bfio_access_flags                               = 0;
 	int pool_entry                                      = 0;
 
 	if( handle == NULL )
@@ -481,29 +498,29 @@ int libsmraw_handle_open(
 
 		return( -1 );
 	}
-	if( ( ( flags & LIBSMRAW_FLAG_READ ) != LIBSMRAW_FLAG_READ )
-	 && ( ( flags & LIBSMRAW_FLAG_WRITE ) != LIBSMRAW_FLAG_WRITE ) )
+	if( ( ( access_flags & LIBSMRAW_ACCESS_FLAG_READ ) == 0 )
+	 && ( ( access_flags & LIBSMRAW_ACCESS_FLAG_WRITE ) == 0 ) )
 	{
 		liberror_error_set(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
-		 "%s: unsupported flags.",
+		 "%s: unsupported access flags.",
 		 function );
 
 		return( -1 );
 	}
 	/* Open for read only or read/write
 	 */
-	if( ( flags & LIBSMRAW_FLAG_READ ) == LIBSMRAW_FLAG_READ )
+	if( ( access_flags & LIBSMRAW_ACCESS_FLAG_READ ) != 0 )
 	{
-		if( ( flags & LIBSMRAW_FLAG_READ ) != 0 )
+		if( ( access_flags & LIBSMRAW_ACCESS_FLAG_READ ) != 0 )
 		{
-			file_io_flags |= LIBBFIO_FLAG_READ;
+			bfio_access_flags |= LIBBFIO_FLAG_READ;
 		}
-		if( ( flags & LIBSMRAW_FLAG_WRITE ) != 0 )
+		if( ( access_flags & LIBSMRAW_ACCESS_FLAG_WRITE ) != 0 )
 		{
-			file_io_flags |= LIBBFIO_FLAG_WRITE;
+			bfio_access_flags |= LIBBFIO_FLAG_WRITE;
 		}
 		/* Set the basename
 		 */
@@ -642,7 +659,7 @@ int libsmraw_handle_open(
 			     file_io_pool,
 			     &pool_entry,
 			     file_io_handle,
-			     file_io_flags,
+			     bfio_access_flags,
 			     error ) != 1 )
 			{
 				liberror_error_set(
@@ -666,7 +683,7 @@ int libsmraw_handle_open(
 	}
 	/* Open for write only
 	 */
-	else if( ( flags & LIBSMRAW_FLAG_WRITE ) == LIBSMRAW_FLAG_WRITE )
+	else if( ( access_flags & LIBSMRAW_ACCESS_FLAG_WRITE ) != 0 )
 	{
 		/* Set the basename
 		 */
@@ -720,7 +737,7 @@ int libsmraw_handle_open(
 	if( libsmraw_handle_open_file_io_pool(
 	     handle,
 	     file_io_pool,
-	     flags,
+	     access_flags,
 	     error ) != 1 )
 	{
 		liberror_error_set(
@@ -814,7 +831,7 @@ int libsmraw_handle_open(
 
 			return( -1 );
 		}
-		if( ( flags & LIBSMRAW_FLAG_READ ) == LIBSMRAW_FLAG_READ )
+		if( ( access_flags & LIBSMRAW_ACCESS_FLAG_READ ) != 0 )
 		{
 			if( libsmraw_handle_read_information_file(
 			     internal_handle,
@@ -836,7 +853,7 @@ int libsmraw_handle_open(
 		memory_free(
 		 information_filename );
 
-		if( ( flags & LIBSMRAW_FLAG_WRITE ) == LIBSMRAW_FLAG_WRITE )
+		if( ( access_flags & LIBSMRAW_ACCESS_FLAG_WRITE ) != 0 )
 		{
 			internal_handle->write_information_on_close = 1;
 		}
@@ -853,7 +870,7 @@ int libsmraw_handle_open_wide(
      libsmraw_handle_t *handle,
      wchar_t * const filenames[],
      int number_of_filenames,
-     uint8_t flags,
+     uint8_t access_flags,
      liberror_error_t **error )
 {
 	libbfio_handle_t *file_io_handle                    = NULL;
@@ -865,7 +882,7 @@ int libsmraw_handle_open_wide(
 	size_t information_filename_length                  = 0;
 	ssize_t print_count                                 = 0;
 	int filename_iterator                               = 0;
-	int file_io_flags                                   = 0;
+	int bfio_access_flags                               = 0;
 	int pool_entry                                      = 0;
 
 	if( handle == NULL )
@@ -914,29 +931,29 @@ int libsmraw_handle_open_wide(
 
 		return( -1 );
 	}
-	if( ( ( flags & LIBSMRAW_FLAG_READ ) != LIBSMRAW_FLAG_READ )
-	 && ( ( flags & LIBSMRAW_FLAG_WRITE ) != LIBSMRAW_FLAG_WRITE ) )
+	if( ( ( access_flags & LIBSMRAW_ACCESS_FLAG_READ ) == 0 )
+	 && ( ( access_flags & LIBSMRAW_ACCESS_FLAG_WRITE ) == 0 ) )
 	{
 		liberror_error_set(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
-		 "%s: unsupported flags.",
+		 "%s: unsupported access flags.",
 		 function );
 
 		return( -1 );
 	}
 	/* Open for read only or read/write
 	 */
-	if( ( flags & LIBSMRAW_FLAG_READ ) == LIBSMRAW_FLAG_READ )
+	if( ( access_flags & LIBSMRAW_ACCESS_FLAG_READ ) != 0 )
 	{
-		if( ( flags & LIBSMRAW_FLAG_READ ) != 0 )
+		if( ( access_flags & LIBSMRAW_ACCESS_FLAG_READ ) != 0 )
 		{
-			file_io_flags |= LIBBFIO_FLAG_READ;
+			bfio_access_flags |= LIBBFIO_FLAG_READ;
 		}
-		if( ( flags & LIBSMRAW_FLAG_WRITE ) != 0 )
+		if( ( access_flags & LIBSMRAW_ACCESS_FLAG_WRITE ) != 0 )
 		{
-			file_io_flags |= LIBBFIO_FLAG_WRITE;
+			bfio_access_flags |= LIBBFIO_FLAG_WRITE;
 		}
 		/* Set the basename
 		 */
@@ -1075,7 +1092,7 @@ int libsmraw_handle_open_wide(
 			     file_io_pool,
 			     &pool_entry,
 			     file_io_handle,
-			     file_io_flags,
+			     bfio_access_flags,
 			     error ) != 1 )
 			{
 				liberror_error_set(
@@ -1099,7 +1116,7 @@ int libsmraw_handle_open_wide(
 	}
 	/* Open for write only
 	 */
-	else if( ( flags & LIBSMRAW_FLAG_WRITE ) == LIBSMRAW_FLAG_WRITE )
+	else if( ( access_flags & LIBSMRAW_ACCESS_FLAG_WRITE ) != 0 )
 	{
 		/* Set the basename
 		 */
@@ -1153,7 +1170,7 @@ int libsmraw_handle_open_wide(
 	if( libsmraw_handle_open_file_io_pool(
 	     handle,
 	     file_io_pool,
-	     flags,
+	     access_flags,
 	     error ) != 1 )
 	{
 		liberror_error_set(
@@ -1247,7 +1264,7 @@ int libsmraw_handle_open_wide(
 
 			return( -1 );
 		}
-		if( ( flags & LIBSMRAW_FLAG_READ ) == LIBSMRAW_FLAG_READ )
+		if( ( access_flags & LIBSMRAW_ACCESS_FLAG_READ ) != 0 )
 		{
 			if( libsmraw_handle_read_information_file(
 			     internal_handle,
@@ -1269,7 +1286,7 @@ int libsmraw_handle_open_wide(
 		memory_free(
 		 information_filename );
 
-		if( ( flags & LIBSMRAW_FLAG_WRITE ) == LIBSMRAW_FLAG_WRITE )
+		if( ( access_flags & LIBSMRAW_ACCESS_FLAG_WRITE ) != 0 )
 		{
 			internal_handle->write_information_on_close = 1;
 		}
@@ -1285,7 +1302,7 @@ int libsmraw_handle_open_wide(
 int libsmraw_handle_open_file_io_pool(
      libsmraw_handle_t *handle,
      libbfio_pool_t *file_io_pool,
-     uint8_t flags,
+     uint8_t access_flags,
      liberror_error_t **error )
 {
 	libbfio_handle_t *file_io_handle            = NULL;
@@ -1294,7 +1311,7 @@ int libsmraw_handle_open_file_io_pool(
 	size64_t file_io_handle_size                = 0;
 	size64_t maximum_segment_size               = 0;
 	int number_of_file_io_handles               = 0;
-	int file_io_flags                           = 0;
+	int bfio_access_flags                       = 0;
 	int file_io_handle_iterator                 = 0;
 
 	if( handle == NULL )
@@ -1332,14 +1349,14 @@ int libsmraw_handle_open_file_io_pool(
 
 		return( -1 );
 	}
-	if( ( ( flags & LIBSMRAW_FLAG_READ ) != LIBSMRAW_FLAG_READ )
-	 && ( ( flags & LIBSMRAW_FLAG_WRITE ) != LIBSMRAW_FLAG_WRITE ) )
+	if( ( ( access_flags & LIBSMRAW_ACCESS_FLAG_READ ) == 0 )
+	 && ( ( access_flags & LIBSMRAW_ACCESS_FLAG_WRITE ) == 0 ) )
 	{
 		liberror_error_set(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
-		 "%s: unsupported flags.",
+		 "%s: unsupported access flags.",
 		 function );
 
 		return( -1 );
@@ -1358,7 +1375,7 @@ int libsmraw_handle_open_file_io_pool(
 
 		return( -1 );
 	}
-	if( ( flags & LIBSMRAW_FLAG_READ ) == LIBSMRAW_FLAG_READ )
+	if( ( access_flags & LIBSMRAW_ACCESS_FLAG_READ ) != 0 )
 	{
 		if( number_of_file_io_handles <= 0 )
 		{
@@ -1385,13 +1402,13 @@ int libsmraw_handle_open_file_io_pool(
 
 			return( -1 );
 		}
-		if( ( flags & LIBSMRAW_FLAG_WRITE ) == LIBSMRAW_FLAG_WRITE )
+		if( ( access_flags & LIBSMRAW_ACCESS_FLAG_WRITE ) != 0 )
 		{
-			file_io_flags = LIBBFIO_OPEN_READ_WRITE;
+			bfio_access_flags = LIBBFIO_OPEN_READ_WRITE;
 		}
 		else
 		{
-			file_io_flags = LIBBFIO_OPEN_READ;
+			bfio_access_flags = LIBBFIO_OPEN_READ;
 		}
 		for( file_io_handle_iterator = 0;
 		     file_io_handle_iterator < number_of_file_io_handles;
@@ -1417,7 +1434,7 @@ int libsmraw_handle_open_file_io_pool(
 
 				return( -1 );
 			}
-#if defined( HAVE_VERBOSE_OUTPUT )
+#if defined( HAVE_DEBUG_OUTPUT )
 			if( libnotify_verbose != 0 )
 			{
 				libnotify_printf(
@@ -1429,7 +1446,7 @@ int libsmraw_handle_open_file_io_pool(
 			if( libbfio_pool_open(
 			     file_io_pool,
 			     file_io_handle_iterator,
-			     file_io_flags,
+			     bfio_access_flags,
 			     error ) != 1 )
 			{
 				liberror_error_set(
@@ -1845,6 +1862,9 @@ int libsmraw_handle_close(
 			}
 		}
 	}
+	internal_handle->file_io_pool                    = NULL;
+	internal_handle->file_io_pool_created_in_library = 0;
+
 	if( libmfdata_segment_table_set_maximum_segment_size(
 	     internal_handle->segment_table,
 	     LIBSMRAW_DEFAULT_MAXIMUM_SEGMENT_SIZE,
@@ -1859,7 +1879,6 @@ int libsmraw_handle_close(
 
 		result = -1;
 	}
-	internal_handle->file_io_pool             = NULL;
 	internal_handle->read_values_initialized  = 0;
 	internal_handle->write_values_initialized = 0;
 
@@ -1936,6 +1955,7 @@ ssize_t libsmraw_handle_write_buffer(
 	libsmraw_internal_handle_t *internal_handle = NULL;
 	static char *function                       = "libsmraw_handle_write_buffer";
 	ssize_t write_count                         = 0;
+	int number_of_segments                      = 0;
 
 	if( handle == NULL )
 	{
@@ -1977,20 +1997,35 @@ ssize_t libsmraw_handle_write_buffer(
 			return( -1 );
 		}
 	}
-/* TODO
-	if( ( internal_handle->current_file_io_pool_entry < 0 )
-	 || ( internal_handle->current_file_io_pool_entry >= internal_handle->total_number_of_file_io_pool_entries ) )
+	if( libmfdata_segment_table_get_number_of_segments(
+	     internal_handle->segment_table,
+	     &number_of_segments,
+	     error ) != 1 )
 	{
 		liberror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
-		 "%s: invalid handle - current pool entry value out of bounds.",
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve number of segments from segment table.",
 		 function );
 
 		return( -1 );
 	}
-*/
+	if( internal_handle->total_number_of_segments != 0 )
+	{
+		if( ( number_of_segments < 0 )
+		 || ( number_of_segments > internal_handle->total_number_of_segments ) )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
+			 LIBERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
+			 "%s: invalid number of segments value out of bounds.",
+			 function );
+
+			return( -1 );
+		}
+	}
 	write_count = libmfdata_segment_table_write_buffer(
 	               internal_handle->segment_table,
 	               internal_handle->file_io_pool,
@@ -2188,7 +2223,7 @@ int libsmraw_handle_set_segment_name(
 	     &segment_filename_size,
 	     internal_handle->basename,
 	     internal_handle->basename_size,
-	     internal_handle->total_number_of_file_io_pool_entries,
+	     internal_handle->total_number_of_segments,
 	     segment_index,
 	     error ) != 1 )
 	{
@@ -3660,21 +3695,9 @@ int libsmraw_handle_get_file_io_handle(
 	}
 	internal_handle = (libsmraw_internal_handle_t *) handle;
 
-	if( internal_handle->file_io_pool == NULL )
-	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid handle - missing file IO pool.",
-		 function );
-
-		return( -1 );
-	}
-/* TODO implement in segment table
-	if( libbfio_pool_get_handle(
+	if( libmfdata_segment_table_get_file_io_handle(
+	     internal_handle->segment_table,
 	     internal_handle->file_io_pool,
-	     internal_handle->current_file_io_pool_entry,
 	     file_io_handle,
 	     error ) != 1 )
 	{
@@ -3682,15 +3705,11 @@ int libsmraw_handle_get_file_io_handle(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve file IO handle for pool entry: %d (offset: %" PRIi64 ").",
-		 function,
-		 internal_handle->current_file_io_pool_entry,
-		 internal_handle->offset );
+		 "%s: unable to retrieve file IO handle from segment table.", 
+		 function );
 
 		return( -1 );
 	}
 	return( 1 );
-*/
-	return( -1 );
 }
 

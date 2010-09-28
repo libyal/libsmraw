@@ -119,18 +119,12 @@
 			<CppCompile Include="..\..\..\libsmraw\libsmraw.c">
 				<BuildOrder>23</BuildOrder>
 			</CppCompile>
-			<None Include="..\..\..\libsmraw\libsmraw_string.h">
-				<BuildOrder>24</BuildOrder>
-			</None>
 			<None Include="..\..\..\libsmraw\libsmraw_types.h">
 				<BuildOrder>25</BuildOrder>
 			</None>
 			<None Include="..\..\..\libsmraw\libsmraw_support.h">
 				<BuildOrder>26</BuildOrder>
 			</None>
-			<CppCompile Include="..\..\..\libsmraw\libsmraw_string.c">
-				<BuildOrder>27</BuildOrder>
-			</CppCompile>
 			<LibFiles Include="..\Release\libmfdata.lib">
 				<IgnorePath>true</IgnorePath>
 				<BuildOrder>28</BuildOrder>

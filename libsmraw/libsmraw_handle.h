@@ -60,9 +60,9 @@ struct libsmraw_internal_handle
 	 */
         size_t basename_size;
 
-	/* The total number of pool entries
+	/* The total number of segments
 	 */
-	int total_number_of_file_io_pool_entries;
+	int total_number_of_segments;
 
 	/* The segment (file) table
 	 */
@@ -138,7 +138,7 @@ LIBSMRAW_EXTERN int libsmraw_handle_open(
                      libsmraw_handle_t *handle,
                      char * const filenames[],
                      int number_of_filenames,
-                     uint8_t flags,
+                     uint8_t access_flags,
                      liberror_error_t **error );
 
 #if defined( HAVE_WIDE_CHARACTER_TYPE )
@@ -146,14 +146,14 @@ LIBSMRAW_EXTERN int libsmraw_handle_open_wide(
                      libsmraw_handle_t *handle,
                      wchar_t * const filenames[],
                      int number_of_filenames,
-                     uint8_t flags,
+                     uint8_t access_flags,
                      liberror_error_t **error );
 #endif
 
 LIBSMRAW_EXTERN int libsmraw_handle_open_file_io_pool(
                      libsmraw_handle_t *handle,
                      libbfio_pool_t *file_io_pool,
-                     uint8_t flags,
+                     uint8_t access_flags,
                      liberror_error_t **error );
 
 int libsmraw_handle_read_information_file(

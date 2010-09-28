@@ -64,6 +64,15 @@ enum LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMAS
 LIBSMRAW_EXTERN const char *libsmraw_get_version(
                              void );
 
+LIBSMRAW_EXTERN uint8_t libsmraw_get_access_flags_read(
+                         void );
+
+LIBSMRAW_EXTERN uint8_t libsmraw_get_access_flags_read_write(
+                         void );
+
+LIBSMRAW_EXTERN uint8_t libsmraw_get_access_flags_write(
+                         void );
+
 LIBSMRAW_EXTERN int libsmraw_get_codepage(
                      int *codepage,
                      liberror_error_t **error );

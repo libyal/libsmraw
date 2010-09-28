@@ -23,6 +23,12 @@ Test
 Beta release
 * remove deprecated functions in libsmraw_legacy.[ch]
 
+20100928
+* updated liberror, libnotify, libbfio, libfvalue
+* code clean
+* added access flags API functions
+* worked on TODOs
+
 20100805
 * textual changes
 * updated libcstring, libbfio, libfvalue

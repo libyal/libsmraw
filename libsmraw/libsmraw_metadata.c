@@ -31,7 +31,6 @@
 #include "libsmraw_handle.h"
 #include "libsmraw_libbfio.h"
 #include "libsmraw_libfvalue.h"
-#include "libsmraw_string.h"
 #include "libsmraw_types.h"
 
 /* Retrieves the media size

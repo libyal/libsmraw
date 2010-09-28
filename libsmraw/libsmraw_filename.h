@@ -37,7 +37,7 @@ int libsmraw_filename_create(
      size_t *filename_size,
      libcstring_system_character_t *basename,
      size_t basename_size,
-     int total_number_of_file_io_pool_entries,
+     int total_number_of_segments,
      int current_file_io_pool_entry,
      liberror_error_t **error );
 
