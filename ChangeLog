@@ -1,5 +1,5 @@
 TODO
-* check TODOs
+* why is empty information value section written in info file
 
 * complete libfvalue and test information file read/write
 * configure validate libuna and libbfio check
@@ -22,6 +22,9 @@ Test
 
 Beta release
 * remove deprecated functions in libsmraw_legacy.[ch]
+
+20101014
+* updated libmfdata, common, liberror, libbfio, libfvalue
 
 20100928
 * updated liberror, libnotify, libbfio, libfvalue
