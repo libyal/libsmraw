@@ -13,6 +13,7 @@
 			<Base>true</Base>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base)'!=''">
+			<DCC_DebugInformation>false</DCC_DebugInformation>
 			<_TCHARMapping>wchar_t</_TCHARMapping>
 			<BCC_SmartPCHCache>false</BCC_SmartPCHCache>
 			<BCC_PCHUsage>None</BCC_PCHUsage>
@@ -38,15 +39,6 @@
 			<TASM_Debugging>None</TASM_Debugging>
 		</PropertyGroup>
 		<ItemGroup>
-			<CppCompile Include="..\..\..\libnotify\libnotify_print.c">
-				<BuildOrder>3</BuildOrder>
-			</CppCompile>
-			<None Include="..\..\..\libnotify\libnotify_print.h">
-				<BuildOrder>4</BuildOrder>
-			</None>
-			<CppCompile Include="..\..\..\libnotify\libnotify_stream.c">
-				<BuildOrder>5</BuildOrder>
-			</CppCompile>
 			<None Include="..\..\..\libnotify\libnotify_stream.h">
 				<BuildOrder>0</BuildOrder>
 			</None>
@@ -56,6 +48,15 @@
 			<None Include="..\..\..\libnotify\libnotify.h">
 				<BuildOrder>2</BuildOrder>
 			</None>
+			<CppCompile Include="..\..\..\libnotify\libnotify_print.c">
+				<BuildOrder>3</BuildOrder>
+			</CppCompile>
+			<None Include="..\..\..\libnotify\libnotify_print.h">
+				<BuildOrder>4</BuildOrder>
+			</None>
+			<CppCompile Include="..\..\..\libnotify\libnotify_stream.c">
+				<BuildOrder>5</BuildOrder>
+			</CppCompile>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>

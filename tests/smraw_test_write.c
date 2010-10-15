@@ -20,6 +20,7 @@
  */
 
 #include <common.h>
+#include <memory.h>
 
 #include <libcstring.h>
 
@@ -31,27 +32,52 @@
 
 #include <libsmraw.h>
 
-/* The main program
- */
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
-int wmain( int argc, wchar_t * const argv[] )
-#else
-int main( int argc, char * const argv[] )
-#endif
+#include "digest_context.h"
+#include "digest_hash.h"
+#include "md5.h"
+
+int smraw_test_write(
+     const char *filename,
+     size_t media_size,
+     size_t maximum_segment_size )
 {
+	uint8_t buffer[ 4096 ];
+
+	digest_hash_t md5_hash[ DIGEST_HASH_SIZE_MD5 ];
+
+	md5_context_t md5_context;
+
 	libsmraw_error_t *error   = NULL;
 	libsmraw_handle_t *handle = NULL;
+	size_t md5_hash_size      = DIGEST_HASH_SIZE_MD5;
+	size_t write_size         = 0;
+	ssize_t write_count       = 0;
+	int result                = 1;
+	int sector_iterator       = 0;
 
-	if( argc < 2 )
+	fprintf(
+	 stdout,
+	 "Testing writing media size: %" PRIzd ", with maximum segment size: %" PRIzd "\t",
+	 media_size,
+	 maximum_segment_size );
+
+	if( md5_initialize(
+	     &md5_context,
+	     &error ) != 1 )
 	{
 		fprintf(
 		 stderr,
-		 "Filename missing.\n" );
+		 "Unable to initialize MD5 context.\n" );
 
-		return( EXIT_FAILURE );
+		libsmraw_error_backtrace_fprint(
+		 error,
+		 stderr );
+
+		libsmraw_error_free(
+		 &error );
+
+		return( -1 );
 	}
-	/* Initialization
-	 */
 	if( libsmraw_handle_initialize(
 	     &handle,
 	     &error ) != 1 )
@@ -67,21 +93,21 @@ int main( int argc, char * const argv[] )
 		libsmraw_error_free(
 		 &error );
 
-		return( EXIT_FAILURE );
+		return( -1 );
 	}
 #if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
 	if( libsmraw_handle_open_wide(
 	     handle,
-	     argv,
-	     argc,
-	     LIBSMRAW_OPEN_READ,
+	     (wchar_t * const *) &filename,
+	     1,
+	     LIBSMRAW_OPEN_WRITE,
 	     &error ) != 1 )
 #else
 	if( libsmraw_handle_open(
 	     handle,
-	     argv,
-	     argc,
-	     LIBSMRAW_OPEN_READ,
+	     (char * const *) &filename,
+	     1,
+	     LIBSMRAW_OPEN_WRITE,
 	     &error ) != 1 )
 #endif
 	{
@@ -89,9 +115,213 @@ int main( int argc, char * const argv[] )
 		 stderr,
 		 "Unable to open file(s).\n" );
 
+		libsmraw_error_backtrace_fprint(
+		 error,
+		 stderr );
+
+		libsmraw_error_free(
+		 &error );
 		libsmraw_handle_free(
 		 &handle,
 		 NULL );
+
+		return( -1 );
+	}
+	if( media_size > 0 )
+	{
+		if( libsmraw_handle_set_media_size(
+		     handle,
+		     media_size,
+		     &error ) != 1 )
+		{
+			fprintf(
+			 stderr,
+			 "Unable set media size.\n" );
+
+			libsmraw_error_backtrace_fprint(
+			 error,
+			 stderr );
+
+			libsmraw_error_free(
+			 &error );
+			libsmraw_handle_close(
+			 handle,
+			 NULL );
+			libsmraw_handle_free(
+			 &handle,
+			 NULL );
+
+			return( -1 );
+		}
+	}
+	if( libsmraw_handle_set_maximum_segment_size(
+	     handle,
+	     maximum_segment_size,
+	     &error ) != 1 )
+	{
+		fprintf(
+		 stderr,
+		 "Unable set maximum segment size.\n" );
+
+		libsmraw_error_backtrace_fprint(
+		 error,
+		 stderr );
+
+		libsmraw_error_free(
+		 &error );
+		libsmraw_handle_close(
+		 handle,
+		 NULL );
+		libsmraw_handle_free(
+		 &handle,
+		 NULL );
+
+		return( -1 );
+	}
+	write_size = 512;
+
+	for( sector_iterator = 0;
+	     sector_iterator < 26;
+	     sector_iterator++ )
+	{
+		if( memory_set(
+		     buffer,
+		     (int) 'A' + sector_iterator,
+		     write_size ) == NULL )
+		{
+			fprintf(
+			 stderr,
+			 "Unable to initialize buffer with: %d.\n",
+			 sector_iterator );
+
+			libsmraw_handle_close(
+			 handle,
+			 NULL );
+			libsmraw_handle_free(
+			 &handle,
+			 NULL );
+
+			return( -1 );
+		}
+		md5_update(
+		 &md5_context,
+		 buffer,
+		 write_size,
+		 &error );
+
+		write_count = libsmraw_handle_write_buffer(
+		               handle,
+		               buffer,
+		               write_size,
+		               &error );
+
+		if( write_count != (ssize_t) write_size )
+		{
+			if( write_count != (ssize_t) media_size )
+			{
+				fprintf(
+				 stderr,
+				 "Unable write block of %" PRIzd " bytes to file(s).\n",
+				 write_size );
+
+				libsmraw_error_backtrace_fprint(
+				 error,
+				 stderr );
+
+				libsmraw_error_free(
+				 &error );
+				libsmraw_handle_close(
+				 handle,
+				 NULL );
+				libsmraw_handle_free(
+				 &handle,
+				 NULL );
+
+				return( -1 );
+			}
+		}
+		if( media_size > 0 )
+		{
+			media_size -= write_count;
+		}
+	}
+	write_size = 3751;
+
+	for( sector_iterator = 0;
+	     sector_iterator < 26;
+	     sector_iterator++ )
+	{
+		if( memory_set(
+		     buffer,
+		     (int) 'a' + sector_iterator,
+		     write_size ) == NULL )
+		{
+			fprintf(
+			 stderr,
+			 "Unable to initialize buffer with: %d.\n",
+			 sector_iterator );
+
+			libsmraw_handle_close(
+			 handle,
+			 NULL );
+			libsmraw_handle_free(
+			 &handle,
+			 NULL );
+
+			return( -1 );
+		}
+		md5_update(
+		 &md5_context,
+		 buffer,
+		 write_size,
+		 &error );
+
+		write_count = libsmraw_handle_write_buffer(
+		               handle,
+		               buffer,
+		               write_size,
+		               &error );
+
+		if( write_count != (ssize_t) write_size )
+		{
+			if( write_count != (ssize_t) media_size )
+			{
+				fprintf(
+				 stderr,
+				 "Unable write block of %" PRIzd " bytes to file(s).\n",
+				 write_size );
+
+				libsmraw_error_backtrace_fprint(
+				 error,
+				 stderr );
+
+				libsmraw_error_free(
+				 &error );
+
+				libsmraw_handle_close(
+				 handle,
+				 NULL );
+				libsmraw_handle_free(
+				 &handle,
+				 NULL );
+
+				return( -1 );
+			}
+		}
+		if( media_size > 0 )
+		{
+			media_size -= write_count;
+		}
+	}
+	if( md5_finalize(
+	     &md5_context,
+	     md5_hash,
+	     &md5_hash_size,
+	     &error ) != 1 )
+	{
+		fprintf(
+		 stderr,
+		 "Unable to finalize MD5 context.\n" );
 
 		libsmraw_error_backtrace_fprint(
 		 error,
@@ -100,7 +330,14 @@ int main( int argc, char * const argv[] )
 		libsmraw_error_free(
 		 &error );
 
-		return( EXIT_FAILURE );
+		libsmraw_handle_close(
+		 handle,
+		 NULL );
+		libsmraw_handle_free(
+		 &handle,
+		 NULL );
+
+		return( -1 );
 	}
 	/* Clean up
 	 */
@@ -112,10 +349,6 @@ int main( int argc, char * const argv[] )
 		 stderr,
 		 "Unable to close file(s).\n" );
 
-		libsmraw_handle_free(
-		 &handle,
-		 NULL );
-
 		libsmraw_error_backtrace_fprint(
 		 error,
 		 stderr );
@@ -123,7 +356,11 @@ int main( int argc, char * const argv[] )
 		libsmraw_error_free(
 		 &error );
 
-		return( EXIT_FAILURE );
+		libsmraw_handle_free(
+		 &handle,
+		 NULL );
+
+		return( -1 );
 	}
 	if( libsmraw_handle_free(
 	     &handle,
@@ -133,16 +370,87 @@ int main( int argc, char * const argv[] )
 		 stderr,
 		 "Unable to free handle.\n" );
 
-		libsmraw_handle_free(
-		 &handle,
-		 NULL );
-
 		libsmraw_error_backtrace_fprint(
 		 error,
 		 stderr );
 
 		libsmraw_error_free(
 		 &error );
+
+		libsmraw_handle_free(
+		 &handle,
+		 NULL );
+
+		return( -1 );
+	}
+	if( result != 0 )
+	{
+		fprintf(
+		 stdout,
+		 "(PASS)" );
+	}
+	else
+	{
+		fprintf(
+		 stdout,
+		 "(FAIL)" );
+	}
+	fprintf(
+	 stdout,
+	 "\n" );
+
+	return( result );
+}
+
+/* The main program
+ */
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+int wmain( int argc, wchar_t * const argv[] )
+#else
+int main( int argc, char * const argv[] )
+#endif
+{
+	if( smraw_test_write(
+	     _LIBCSTRING_SYSTEM_STRING( "test1" ),
+	     0,
+	     0 ) != 1 )
+	{
+		fprintf(
+		 stderr,
+		 "Unable to test write.\n" );
+
+		return( EXIT_FAILURE );
+	}
+	if( smraw_test_write(
+	     _LIBCSTRING_SYSTEM_STRING( "test2" ),
+	     0,
+	     10000 ) != 1 )
+	{
+		fprintf(
+		 stderr,
+		 "Unable to test write.\n" );
+
+		return( EXIT_FAILURE );
+	}
+	if( smraw_test_write(
+	     _LIBCSTRING_SYSTEM_STRING( "test3" ),
+	     100000,
+	     0 ) != 1 )
+	{
+		fprintf(
+		 stderr,
+		 "Unable to test write.\n" );
+
+		return( EXIT_FAILURE );
+	}
+	if( smraw_test_write(
+	     _LIBCSTRING_SYSTEM_STRING( "test4" ),
+	     100000,
+	     10000 ) != 1 )
+	{
+		fprintf(
+		 stderr,
+		 "Unable to test write.\n" );
 
 		return( EXIT_FAILURE );
 	}

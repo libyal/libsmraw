@@ -23,6 +23,12 @@ Test
 Beta release
 * remove deprecated functions in libsmraw_legacy.[ch]
 
+20101015
+* added write test
+* write no longer requires media size to be set
+* media size now limits the write
+* updated codegear files
+
 20101014
 * updated libmfdata, common, liberror, libbfio, libfvalue
 

@@ -11,13 +11,15 @@ TESTS = \
 	test_glob.sh \
 	test_seek.sh \
 	test_read.sh \
-	test_compare.sh
+	test_compare.sh \
+	test_write.sh
 
 check_SCRIPTS = \
 	test_compare.sh \
 	test_glob.sh \
 	test_read.sh \
-	test_seek.sh
+	test_seek.sh \
+	test_write.sh
 
 EXTRA_DIST = \
 	$(check_SCRIPTS)
@@ -76,11 +78,15 @@ smraw_test_seek_LDADD = \
         @MEMWATCH_LIBADD@
 
 smraw_test_write_SOURCES = \
+	digest_context.c digest_context.h \
+	digest_hash.c digest_hash.h \
+	md5.h \
 	smraw_test_write.c
 
 smraw_test_write_LDADD = \
 	../libcstring/libcstring.la \
 	../libsmraw/libsmraw.la \
+	@LIBCRYPTO_LIBADD@ \
         @MEMWATCH_LIBADD@
 
 MAINTAINERCLEANFILES = \

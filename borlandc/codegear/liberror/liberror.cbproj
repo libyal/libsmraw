@@ -13,6 +13,7 @@
 			<Base>true</Base>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base)'!=''">
+			<DCC_DebugInformation>false</DCC_DebugInformation>
 			<_TCHARMapping>wchar_t</_TCHARMapping>
 			<BCC_SmartPCHCache>false</BCC_SmartPCHCache>
 			<BCC_PCHUsage>None</BCC_PCHUsage>
@@ -38,15 +39,6 @@
 			<TASM_Debugging>None</TASM_Debugging>
 		</PropertyGroup>
 		<ItemGroup>
-			<None Include="..\..\..\liberror\liberror_error.h">
-				<BuildOrder>0</BuildOrder>
-			</None>
-			<None Include="..\..\..\liberror\liberror_system_string.h">
-				<BuildOrder>1</BuildOrder>
-			</None>
-			<None Include="..\..\..\liberror\liberror_types.h">
-				<BuildOrder>2</BuildOrder>
-			</None>
 			<None Include="..\..\..\liberror\liberror.h">
 				<BuildOrder>3</BuildOrder>
 			</None>
@@ -56,6 +48,15 @@
 			<CppCompile Include="..\..\..\liberror\liberror_error.c">
 				<BuildOrder>5</BuildOrder>
 			</CppCompile>
+			<None Include="..\..\..\liberror\liberror_error.h">
+				<BuildOrder>0</BuildOrder>
+			</None>
+			<None Include="..\..\..\liberror\liberror_system_string.h">
+				<BuildOrder>1</BuildOrder>
+			</None>
+			<None Include="..\..\..\liberror\liberror_types.h">
+				<BuildOrder>2</BuildOrder>
+			</None>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>

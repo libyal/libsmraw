@@ -415,15 +415,25 @@ int libsmraw_internal_handle_initialize_write_values(
 
 		return( -1 );
 	}
-	if( ( internal_handle->media_size > 0 )
-	 && ( maximum_segment_size > 0 ) )
+	if( maximum_segment_size > 0 )
 	{
-		internal_handle->total_number_of_segments = (int) ( internal_handle->media_size / maximum_segment_size );
-
-		if( ( internal_handle->media_size % maximum_segment_size ) != 0 )
+		if( internal_handle->media_size > 0 )
 		{
-			internal_handle->total_number_of_segments += 1;
+			internal_handle->total_number_of_segments = (int) ( internal_handle->media_size / maximum_segment_size );
+
+			if( ( internal_handle->media_size % maximum_segment_size ) != 0 )
+			{
+				internal_handle->total_number_of_segments += 1;
+			}
 		}
+		else
+		{
+			internal_handle->total_number_of_segments = 0;
+		}
+	}
+	else
+	{
+		internal_handle->total_number_of_segments = 1;
 	}
 	internal_handle->write_values_initialized = 1;
 
@@ -1954,6 +1964,7 @@ ssize_t libsmraw_handle_write_buffer(
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
 	static char *function                       = "libsmraw_handle_write_buffer";
+	off64_t value_offset                        = 0;
 	ssize_t write_count                         = 0;
 	int number_of_segments                      = 0;
 
@@ -1997,6 +2008,38 @@ ssize_t libsmraw_handle_write_buffer(
 			return( -1 );
 		}
 	}
+	if( libmfdata_segment_table_get_value_offset(
+	     internal_handle->segment_table,
+	     &value_offset,
+	     error ) != 1 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve value offset from segment table.",
+		 function );
+
+		return( -1 );
+	}
+	if( value_offset < 0 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
+		 "%s: invalid value offset value out of bounds.",
+		 function );
+
+		return( -1 );
+	}
+	/* Do not write beyond the media size
+	 */
+	if( ( internal_handle->media_size > 0 )
+	 && ( (size64_t) value_offset >= internal_handle->media_size ) )
+	{
+		return( 0 );
+	}
 	if( libmfdata_segment_table_get_number_of_segments(
 	     internal_handle->segment_table,
 	     &number_of_segments,
@@ -2025,6 +2068,11 @@ ssize_t libsmraw_handle_write_buffer(
 
 			return( -1 );
 		}
+	}
+	if( ( internal_handle->media_size > 0 )
+	 && ( (size64_t) value_offset + buffer_size ) >= internal_handle->media_size )
+	{
+		buffer_size = (size_t) ( internal_handle->media_size - (size64_t) value_offset );
 	}
 	write_count = libmfdata_segment_table_write_buffer(
 	               internal_handle->segment_table,

@@ -745,6 +745,7 @@ LIBSMRAW_EXTERN int libsmraw_handle_set_integrity_hash_value(
                      const uint8_t *value,
                      size_t value_length,
                      libsmraw_error_t **error );
+
 #if defined( __cplusplus )
 }
 #endif

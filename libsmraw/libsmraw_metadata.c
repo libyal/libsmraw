@@ -108,7 +108,8 @@ int libsmraw_handle_set_media_size(
 	}
 	internal_handle = (libsmraw_internal_handle_t *) handle;
 
-	if( internal_handle->read_values_initialized != 0 )
+	if( ( internal_handle->read_values_initialized != 0 )
+	 || ( internal_handle->write_values_initialized != 0 ) )
 	{
 		liberror_error_set(
 		 error,
@@ -534,7 +535,8 @@ int libsmraw_handle_set_media_type(
 	}
 	internal_handle = (libsmraw_internal_handle_t *) handle;
 
-	if( internal_handle->read_values_initialized != 0 )
+	if( ( internal_handle->read_values_initialized != 0 )
+	 || ( internal_handle->write_values_initialized != 0 ) )
 	{
 		liberror_error_set(
 		 error,
@@ -834,7 +836,8 @@ int libsmraw_handle_set_media_flags(
 	}
 	internal_handle = (libsmraw_internal_handle_t *) handle;
 
-	if( internal_handle->read_values_initialized != 0 )
+	if( ( internal_handle->read_values_initialized != 0 )
+	 || ( internal_handle->write_values_initialized != 0 ) )
 	{
 		liberror_error_set(
 		 error,

@@ -47,8 +47,9 @@ int libsmraw_filename_create(
      int current_file_io_pool_entry,
      liberror_error_t **error )
 {
-	static char *function    = "filename_create";
-	size_t additional_length = 4;
+	static char *function    = "libsmraw_filename_create";
+	size_t additional_length = 0;
+	size_t filename_index    = 0;
 	int print_count          = 0;
 
 	if( filename == NULL )
@@ -106,7 +107,7 @@ int libsmraw_filename_create(
 
 		return( -1 );
 	}
-	if( ( total_number_of_segments <= 0 )
+	if( ( total_number_of_segments < 0 )
 	 || ( total_number_of_segments >= 1000 ) )
 	{
 		liberror_error_set(
@@ -118,19 +119,26 @@ int libsmraw_filename_create(
 
 		return( -1 );
 	}
-	if( ( current_file_io_pool_entry < 0 )
-	 || ( current_file_io_pool_entry > total_number_of_segments ) )
+	if( total_number_of_segments > 0 )
 	{
-		liberror_error_set(
-		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
-		 "%s: invalid current pool entry value out of bounds.",
-		 function );
+		if( ( current_file_io_pool_entry < 0 )
+		 || ( current_file_io_pool_entry > total_number_of_segments ) )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
+			 LIBERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
+			 "%s: invalid current pool entry value out of bounds.",
+			 function );
 
-		return( -1 );
+			return( -1 );
+		}
 	}
-	if( total_number_of_segments > 1 )
+	if( total_number_of_segments == 1 )
+	{
+		additional_length = 4;
+	}
+	else
 	{
 		additional_length = 8;
 	}
@@ -145,44 +153,85 @@ int libsmraw_filename_create(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_MEMORY,
 		 LIBERROR_MEMORY_ERROR_INSUFFICIENT,
-		 "%s: unable to allocate segment filename.",
+		 "%s: unable to create segment filename.",
 		 function );
+
+		*filename_size = 0;
 
 		return( -1 );
 	}
-	if( total_number_of_segments == 1 )
-	{
-		print_count = libcstring_system_string_sprintf(
-		               *filename,
-		               *filename_size,
-		               _LIBCSTRING_SYSTEM_STRING( "%" ) _LIBCSTRING_SYSTEM_STRING( PRIs_LIBCSTRING_SYSTEM ) _LIBCSTRING_SYSTEM_STRING( ".raw" ),
-		               basename );
-	}
-	else
-	{
-		print_count = libcstring_system_string_sprintf(
-		               *filename,
-		               *filename_size,
-		               _LIBCSTRING_SYSTEM_STRING( "%" ) _LIBCSTRING_SYSTEM_STRING( PRIs_LIBCSTRING_SYSTEM ) _LIBCSTRING_SYSTEM_STRING( ".raw.%03d" ),
-		               basename,
-		               current_file_io_pool_entry );
-	}
-	if( ( print_count < 0 )
-	 && ( (size_t) print_count > *filename_size ) )
+	if( libcstring_system_string_copy(
+	     *filename,
+	     basename,
+	     basename_size - 1 ) == NULL )
 	{
 		liberror_error_set(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_SET_FAILED,
-		 "%s: unable to set segment filename.",
+		 LIBERROR_RUNTIME_ERROR_COPY_FAILED,
+		 "%s: unable to copy basename to segment filename.",
 		 function );
 
 		memory_free(
 		 *filename );
 
-		*filename = NULL;
+		*filename      = NULL;
+		*filename_size = 0;
 
 		return( -1 );
+	}
+	filename_index = basename_size - 1;
+
+	if( libcstring_system_string_copy(
+	     &( ( *filename )[ filename_index ] ),
+	     _LIBCSTRING_SYSTEM_STRING( ".raw" ),
+	     4 ) == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_COPY_FAILED,
+		 "%s: unable to copy extension to segment filename.",
+		 function );
+
+		memory_free(
+		 *filename );
+
+		*filename      = NULL;
+		*filename_size = 0;
+
+		return( -1 );
+	}
+	filename_index += 4;
+
+	( *filename )[ filename_index ] = 0;
+
+	if( total_number_of_segments != 1 )
+	{
+		print_count = libcstring_system_string_sprintf(
+		               &( ( *filename )[ filename_index ] ),
+		               *filename_size - filename_index,
+		               _LIBCSTRING_SYSTEM_STRING( ".%03d" ),
+		               current_file_io_pool_entry );
+
+		if( ( print_count < 0 )
+		 && ( (size_t) print_count > ( *filename_size - filename_index ) ) )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+			 "%s: unable to set segment filename.",
+			 function );
+
+			memory_free(
+			 *filename );
+
+			*filename      = NULL;
+			*filename_size = 0;
+
+			return( -1 );
+		}
 	}
 	return( 1 );
 }

@@ -22,6 +22,8 @@
 #if !defined( _LIBSMRAW_ERROR_H )
 #define _LIBSMRAW_ERROR_H
 
+#include <libsmraw/types.h>
+
 /* External error type definition hides internal structure
  */
 typedef intptr_t libsmraw_error_t;
