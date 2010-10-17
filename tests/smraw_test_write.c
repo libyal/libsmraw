@@ -1,5 +1,5 @@
 /*
- * Storage media (SM) RAW library read testing program
+ * Storage media (SM) RAW library write testing program
  *
  * Copyright (c) 2010, Joachim Metz <jbmetz@users.sourceforge.net>
  *
