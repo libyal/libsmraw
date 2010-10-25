@@ -23,6 +23,9 @@ Test
 Beta release
 * remove deprecated functions in libsmraw_legacy.[ch]
 
+20101025
+* updated libfvalue
+
 20101015
 * added write test
 * write no longer requires media size to be set

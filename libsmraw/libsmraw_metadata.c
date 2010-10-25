@@ -1519,7 +1519,7 @@ int libsmraw_handle_set_utf8_information_value(
 		     utf8_string,
 		     utf8_string_length + 1,
 		     LIBFVALUE_ENDIAN_NATIVE,
-		     LIBFVALUE_VALUE_FORMAT_UNDEFINED,
+		     0,
 		     error ) != 1 )
 		{
 			liberror_error_set(
@@ -2126,7 +2126,7 @@ int libsmraw_handle_set_utf8_integrity_hash_value(
 		     utf8_string,
 		     utf8_string_length + 1,
 		     LIBFVALUE_ENDIAN_NATIVE,
-		     LIBFVALUE_VALUE_FORMAT_UNDEFINED,
+		     0,
 		     error ) != 1 )
 		{
 			liberror_error_set(
