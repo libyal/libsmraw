@@ -11,7 +11,8 @@ EXTRA_DIST = \
 	smraw_test_compare/smraw_test_compare.vcproj \
 	smraw_test_read/smraw_test_read.vcproj \
 	smraw_test_seek/smraw_test_seek.vcproj \
-	smraw_test_write/smraw_test_write.vcproj
+	smraw_test_write/smraw_test_write.vcproj \
+	smraw.net_dll/smraw.net_dll.vcproj
 
 MAINTAINERCLEANFILES = \
 	Makefile.in

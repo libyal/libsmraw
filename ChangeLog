@@ -23,6 +23,9 @@ Test
 Beta release
 * remove deprecated functions in libsmraw_legacy.[ch]
 
+20101102
+* added smraw.net files
+
 20101025
 * updated libfvalue
 

@@ -11,6 +11,7 @@ SUBDIRS = \
 	libmfdata \
 	libfvalue \
 	libsmraw \
+	smraw.net \
 	manuals \
 	tests \
 	borlandc \
