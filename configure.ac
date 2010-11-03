@@ -2,7 +2,7 @@ AC_PREREQ( 2.59 )
 
 AC_INIT(
  [libsmraw],
-  [20101102],
+  [20101103],
   [jbmetz@users.sourceforge.net])
 
 AC_CONFIG_SRCDIR(
@@ -57,39 +57,29 @@ AC_C_VOLATILE
 
 dnl Check for headers
 dnl Headers included in include/libsmraw/types.h
-AC_CHECK_HEADER(
- [sys/types.h],
- [AC_DEFINE(
-  [HAVE_SYS_TYPES_H],
-  [1],
-  [Define to 1 if you have the <sys/types.h> header file.])
- AC_SUBST(
+AC_CHECK_HEADERS([sys/types.h inttypes.h stdint.h])
+
+AS_IF(
+ [test "x$ac_cv_header_sys_types_h" = xyes],
+ [AC_SUBST(
   [HAVE_SYS_TYPES_H],
   [1])],
  [AC_SUBST(
   [HAVE_SYS_TYPES_H],
   [0])])
 
-AC_CHECK_HEADER(
- [inttypes.h],
- [AC_DEFINE(
-  [HAVE_INTTYPES_H],
-  [1],
-  [Define to 1 if you have the <inttypes.h> header file.])
- AC_SUBST(
+AS_IF(
+ [test "x$ac_cv_header_inttypes_h" = xyes],
+ [AC_SUBST(
   [HAVE_INTTYPES_H],
   [1])],
  [AC_SUBST(
   [HAVE_INTTYPES_H],
   [0])])
 
-AC_CHECK_HEADER(
- [stdint.h],
- [AC_DEFINE(
-  [HAVE_STDINT_H],
-  [1],
-  [Define to 1 if you have the <stdint.h> header file.])
- AC_SUBST(
+AS_IF(
+ [test "x$ac_cv_header_stdint_h" = xyes],
+ [AC_SUBST(
   [HAVE_STDINT_H],
   [1])],
  [AC_SUBST(
@@ -1101,6 +1091,7 @@ AC_CONFIG_FILES([libsmraw/Makefile])
 AC_CONFIG_FILES([smraw.net/Makefile])
 AC_CONFIG_FILES([manuals/Makefile])
 AC_CONFIG_FILES([tests/Makefile])
+AC_CONFIG_FILES([examples/Makefile])
 AC_CONFIG_FILES([borlandc/Makefile])
 AC_CONFIG_FILES([msvscpp/Makefile])
 dnl Have configure make the include files

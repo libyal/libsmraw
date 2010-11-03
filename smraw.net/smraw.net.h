@@ -23,18 +23,14 @@
 
 using namespace System;
 
-#pragma managed( push, off )
-#include <libsmraw.h>
-#pragma managed( pop )
+#define SMRAW_NET_ERROR_STRING_SIZE	512
 
 namespace SMRaw {
 
-System::String^ GetVersion( void );
-
-System::Byte GetAccessFlagsRead( void );
-System::Byte GetAccessFlagsReadWrite( void );
-System::Byte GetAccessFlagsWrite( void );
-
-array<System::String^>^ Glob( System::String^ filename );
+public ref class SMRaw sealed
+{
+	public:
+		System::String^ GetVersion( void );
+};
 
 } // namespace SMRaw

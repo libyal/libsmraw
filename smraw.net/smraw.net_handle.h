@@ -22,10 +22,7 @@
 #using <mscorlib.dll>
 
 using namespace System;
-
-#pragma managed( push, off )
-#include <libsmraw.h>
-#pragma managed( pop )
+using namespace System::IO;
 
 namespace SMRaw {
 
@@ -38,10 +35,27 @@ public ref class Handle sealed
 		Handle( void );
 		~Handle( void );
 
+		System::Byte GetAccessFlagsRead( void );
+		System::Byte GetAccessFlagsReadWrite( void );
+		System::Byte GetAccessFlagsWrite( void );
+
+		array<System::String^>^ Glob( System::String^ filename );
+
 		void Open( array<System::String^>^ filenames,
-			       System::Byte access_flags );
+		           System::Byte access_flags );
 
 		void Close( void );
+
+		int ReadBuffer( array<System::Byte>^ buffer, int size );
+
+		int WriteBuffer( array<System::Byte>^ buffer, int size );
+
+		System::Int64 SeekOffset( System::Int64 offset, System::IO::SeekOrigin origin );
+
+		System::Int64 GetOffset( void );
+
+		System::UInt64 GetMediaSize( void );
 };
 
 } // namespace SMRaw
+

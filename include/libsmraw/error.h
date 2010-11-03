@@ -292,7 +292,11 @@ enum LIBSMRAW_RUNTIME_ERROR
  */
 enum LIBSMRAW_OUTPUT_ERROR
 {
-	LIBSMRAW_OUTPUT_ERROR_GENERIC			= 0
+	LIBSMRAW_OUTPUT_ERROR_GENERIC			= 0,
+
+	/* There is insuficient space to write the output
+	 */
+	LIBSMRAW_OUTPUT_ERROR_INSUFFICIENT_SPACE	= 1
 };
 
 #endif

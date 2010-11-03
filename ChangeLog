@@ -15,6 +15,10 @@ Features
 Tooling
 * detect maximum possible segment size on file system (e.g. FAT)
 
+smraw.net
+* implement other functions ?
+* in examples print exception/backtrace on error
+
 Test
 * retrieve data from the information file on open
 * make sure certain values cannot be changed if writing/reading from raw files
@@ -22,6 +26,13 @@ Test
 
 Beta release
 * remove deprecated functions in libsmraw_legacy.[ch]
+
+20101103
+* worked on smraw.net
+* added const to write
+* updated configure.ac
+* updated include/error.h, include/types.h
+* updated liberror, libbfio, libmfdata
 
 20101102
 * added smraw.net files

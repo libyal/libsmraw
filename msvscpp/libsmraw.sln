@@ -68,6 +68,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libmfdata", "libmfdata\libm
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "smraw.net_dll", "smraw.net_dll\smraw.net_dll.vcproj", "{C9D11A1A-EF3A-4411-B8EA-1437B7511E5A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B5225323-AC67-411D-8FBA-199E9467FAB5} = {B5225323-AC67-411D-8FBA-199E9467FAB5}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -14,6 +14,7 @@ SUBDIRS = \
 	smraw.net \
 	manuals \
 	tests \
+	examples \
 	borlandc \
 	msvscpp
 
@@ -24,7 +25,7 @@ SPEC_FILES = \
 EXTRA_DIST = \
 	libsmraw.pc.in \
 	README.mingw \
-        $(SPEC_FILES)
+	$(SPEC_FILES)
 
 MAINTAINERCLEANFILES = \
 	Makefile.in

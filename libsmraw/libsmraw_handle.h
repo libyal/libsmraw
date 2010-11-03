@@ -172,7 +172,7 @@ LIBSMRAW_EXTERN ssize_t libsmraw_handle_read_buffer(
 
 LIBSMRAW_EXTERN ssize_t libsmraw_handle_write_buffer(
                          libsmraw_handle_t *handle,
-                         void *buffer,
+                         const void *buffer,
                          size_t buffer_size,
                          liberror_error_t **error );
 
