@@ -2,7 +2,7 @@ AC_PREREQ( 2.59 )
 
 AC_INIT(
  [libsmraw],
-  [20101103],
+  [20101105],
   [jbmetz@users.sourceforge.net])
 
 AC_CONFIG_SRCDIR(
@@ -1102,6 +1102,7 @@ AC_CONFIG_FILES([include/libsmraw/types.h])
 AC_CONFIG_FILES([libsmraw/libsmraw_definitions.h])
 dnl Have configure make distribution specific files
 AC_CONFIG_FILES([common/types.h])
+AC_CONFIG_FILES([libsmraw/libsmraw.rc])
 AC_CONFIG_FILES([libsmraw.pc])
 AC_CONFIG_FILES([libsmraw.spec])
 dnl Have configure write its configuration
