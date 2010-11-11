@@ -52,6 +52,7 @@ MAINTAINERCLEANFILES = \
 
 distclean: clean
 	/bin/rm -f libsmraw_definitions.h
+	/bin/rm -f libsmraw.rc
 	/bin/rm -f Makefile
 
 splint:
