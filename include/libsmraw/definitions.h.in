@@ -26,7 +26,7 @@
 
 #define LIBSMRAW_VERSION				@VERSION@
 
-/* The libsmraw version string
+/* The version string
  */
 #define LIBSMRAW_VERSION_STRING				"@VERSION@"
 
@@ -43,7 +43,7 @@ enum LIBSMRAW_ACCESS_FLAGS
 	LIBSMRAW_ACCESS_FLAG_TRUNCATE			= 0x04
 };
 
-/* The libewf file access macros
+/* The file access macros
  */
 #define LIBSMRAW_OPEN_READ				( LIBSMRAW_ACCESS_FLAG_READ )
 #define LIBSMRAW_OPEN_READ_WRITE			( LIBSMRAW_ACCESS_FLAG_READ | LIBSMRAW_ACCESS_FLAG_WRITE )
