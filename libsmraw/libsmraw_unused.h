@@ -1,5 +1,5 @@
 /*
- * Library to support the storage media (SM) (split) RAW format
+ * The internal unused definition
  *
  * Copyright (c) 2010, Joachim Metz <jbmetz@users.sourceforge.net>
  *
@@ -19,45 +19,26 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#if !defined( _LIBSMRAW_INTERNAL_UNUSED_H )
+#define _LIBSMRAW_INTERNAL_UNUSED_H
+
 #include <common.h>
 
-#if defined( WINAPI )
-
-#include <windows.h>
-
-#include "libsmraw_unused.h"
-
-#if defined( _MANAGED )
-#pragma managed( push, off )
+#if !defined( LIBSMRAW_ATTRIBUTE_UNUSED )
+#if defined( __GNUC__ ) && __GNUC__ >= 3
+#define LIBSMRAW_ATTRIBUTE_UNUSED	__attribute__ ((__unused__))
+#else
+#define LIBSMRAW_ATTRIBUTE_UNUSED
+#endif
 #endif
 
-/* Defines the entry point for the DLL
- */
-BOOL WINAPI DllMain(
-             HINSTANCE hinstDLL,
-             DWORD fdwReason,
-             LPVOID lpvReserved )
-{
-	LIBSMRAW_UNREFERENCED_PARAMETER( lpvReserved )
-
-	switch( fdwReason )
-	{
-		case DLL_PROCESS_ATTACH:
-			DisableThreadLibraryCalls(
-			 hinstDLL );
-		break;
-
-		case DLL_THREAD_ATTACH:
-			break;
-
-		case DLL_THREAD_DETACH:
-			break;
-
-		case DLL_PROCESS_DETACH:
-			break;
-	}
-	return( TRUE );
-}
+#if defined( _MSC_VER )
+#define LIBSMRAW_UNREFERENCED_PARAMETER( parameter ) \
+	UNREFERENCED_PARAMETER( parameter );
+#else
+#define LIBSMRAW_UNREFERENCED_PARAMETER( parameter ) \
+	/* parameter */
+#endif
 
 #endif
 

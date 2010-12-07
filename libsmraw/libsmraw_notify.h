@@ -37,19 +37,23 @@ extern "C" {
 
 #if !defined( HAVE_LOCAL_LIBSMRAW )
 
-LIBSMRAW_EXTERN void libsmraw_notify_set_verbose(
-                      int verbose );
+LIBSMRAW_EXTERN \
+void libsmraw_notify_set_verbose(
+      int verbose );
 
-LIBSMRAW_EXTERN int libsmraw_notify_set_stream(
-                     FILE *stream,
-                     liberror_error_t **error );
+LIBSMRAW_EXTERN \
+int libsmraw_notify_set_stream(
+     FILE *stream,
+     liberror_error_t **error );
 
-LIBSMRAW_EXTERN int libsmraw_notify_stream_open(
-                     const char *filename,
-                     liberror_error_t **error );
+LIBSMRAW_EXTERN \
+int libsmraw_notify_stream_open(
+     const char *filename,
+     liberror_error_t **error );
 
-LIBSMRAW_EXTERN int libsmraw_notify_stream_close(
-                     liberror_error_t **error );
+LIBSMRAW_EXTERN \
+int libsmraw_notify_stream_close(
+     liberror_error_t **error );
 
 #endif /* !defined( HAVE_LOCAL_LIBSMRAW ) */
 

@@ -39,26 +39,31 @@ extern "C" {
 
 #if !defined( HAVE_LOCAL_LIBSMRAW )
 
-LIBSMRAW_EXTERN void libsmraw_error_free(
-                     libsmraw_error_t **error );
+LIBSMRAW_EXTERN \
+void libsmraw_error_free(
+      libsmraw_error_t **error );
 
-LIBSMRAW_EXTERN int libsmraw_error_fprint(
-                    libsmraw_error_t *error,
-                    FILE *stream );
+LIBSMRAW_EXTERN \
+int libsmraw_error_fprint(
+     libsmraw_error_t *error,
+     FILE *stream );
 
-LIBSMRAW_EXTERN int libsmraw_error_sprint(
-                    libsmraw_error_t *error,
-                    char *string,
-                    size_t size );
+LIBSMRAW_EXTERN \
+int libsmraw_error_sprint(
+     libsmraw_error_t *error,
+     char *string,
+     size_t size );
 
-LIBSMRAW_EXTERN int libsmraw_error_backtrace_fprint(
-                    libsmraw_error_t *error,
-                    FILE *stream );
+LIBSMRAW_EXTERN \
+int libsmraw_error_backtrace_fprint(
+     libsmraw_error_t *error,
+     FILE *stream );
 
-LIBSMRAW_EXTERN int libsmraw_error_backtrace_sprint(
-                    libsmraw_error_t *error,
-                    char *string,
-                    size_t size );
+LIBSMRAW_EXTERN \
+int libsmraw_error_backtrace_sprint(
+     libsmraw_error_t *error,
+     char *string,
+     size_t size );
 
 #endif
 

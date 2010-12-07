@@ -404,6 +404,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\libuna\libuna_unused.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\libuna\libuna_url_stream.h"
 				>
 			</File>

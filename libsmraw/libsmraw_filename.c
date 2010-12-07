@@ -50,7 +50,6 @@ int libsmraw_filename_create(
 	static char *function    = "libsmraw_filename_create";
 	size_t additional_length = 0;
 	size_t filename_index    = 0;
-	int print_count          = 0;
 
 	if( filename == NULL )
 	{
@@ -156,9 +155,7 @@ int libsmraw_filename_create(
 		 "%s: unable to create segment filename.",
 		 function );
 
-		*filename_size = 0;
-
-		return( -1 );
+		goto on_error;
 	}
 	if( libcstring_system_string_copy(
 	     *filename,
@@ -172,13 +169,7 @@ int libsmraw_filename_create(
 		 "%s: unable to copy basename to segment filename.",
 		 function );
 
-		memory_free(
-		 *filename );
-
-		*filename      = NULL;
-		*filename_size = 0;
-
-		return( -1 );
+		goto on_error;
 	}
 	filename_index = basename_size - 1;
 
@@ -194,45 +185,39 @@ int libsmraw_filename_create(
 		 "%s: unable to copy extension to segment filename.",
 		 function );
 
-		memory_free(
-		 *filename );
-
-		*filename      = NULL;
-		*filename_size = 0;
-
-		return( -1 );
+		goto on_error;
 	}
 	filename_index += 4;
 
-	( *filename )[ filename_index ] = 0;
-
 	if( total_number_of_segments != 1 )
 	{
-		print_count = libcstring_system_string_sprintf(
-		               &( ( *filename )[ filename_index ] ),
-		               *filename_size - filename_index,
-		               _LIBCSTRING_SYSTEM_STRING( ".%03d" ),
-		               current_file_io_pool_entry );
+		( *filename )[ filename_index++ ] = (libcstring_system_character_t) '0'
+		                                  + (libcstring_system_character_t) ( current_file_io_pool_entry / 100 );
 
-		if( ( print_count < 0 )
-		 && ( (size_t) print_count > ( *filename_size - filename_index ) ) )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_SET_FAILED,
-			 "%s: unable to set segment filename.",
-			 function );
+		current_file_io_pool_entry %= 100;
 
-			memory_free(
-			 *filename );
+		( *filename )[ filename_index++ ] = (libcstring_system_character_t) '0'
+		                                  + (libcstring_system_character_t) ( current_file_io_pool_entry / 10 );
 
-			*filename      = NULL;
-			*filename_size = 0;
+		current_file_io_pool_entry %= 10;
 
-			return( -1 );
-		}
+		( *filename )[ filename_index++ ] = (libcstring_system_character_t) '0'
+		                                  + (libcstring_system_character_t) current_file_io_pool_entry;
 	}
+	( *filename )[ filename_index ] = 0;
+
 	return( 1 );
+
+on_error:
+	if( *filename != NULL )
+	{
+		memory_free(
+		 *filename );
+
+		*filename = NULL;
+	}
+	*filename_size = 0;
+
+	return( -1 );
 }
 

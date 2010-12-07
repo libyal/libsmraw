@@ -61,8 +61,8 @@ int libsmraw_handle_initialize(
 	}
 	if( *handle == NULL )
 	{
-		internal_handle = (libsmraw_internal_handle_t *) memory_allocate(
-		                                                  sizeof( libsmraw_internal_handle_t ) );
+		internal_handle = memory_allocate_structure(
+		                   libsmraw_internal_handle_t );
 
 		if( internal_handle == NULL )
 		{
@@ -73,7 +73,7 @@ int libsmraw_handle_initialize(
 			 "%s: unable to create internal handle.",
 			 function );
 
-			return( -1 );
+			goto on_error;
 		}
 		if( memory_set(
 		     internal_handle,
@@ -87,10 +87,7 @@ int libsmraw_handle_initialize(
 			 "%s: unable to clear handle.",
 			 function );
 
-			memory_free(
-			 internal_handle );
-
-			return( -1 );
+			goto on_error;
 		}
 		if( libmfdata_segment_table_initialize(
 		     &( internal_handle->segment_table ),
@@ -111,10 +108,7 @@ int libsmraw_handle_initialize(
 			 "%s: unable to create segment table.",
 			 function );
 
-			memory_free(
-			 internal_handle );
-
-			return( -1 );
+			goto on_error;
 		}
 		if( libmfdata_segment_table_set_maximum_segment_size(
 		     internal_handle->segment_table,
@@ -128,13 +122,7 @@ int libsmraw_handle_initialize(
 			 "%s: unable to set maximum segment size in segment table.",
 			 function );
 
-			libmfdata_segment_table_free(
-			 &( internal_handle->segment_table ),
-			 NULL );
-			memory_free(
-			 internal_handle );
-
-			return( -1 );
+			goto on_error;
 		}
 		if( libfvalue_table_initialize(
 		     &( internal_handle->media_values ),
@@ -148,13 +136,7 @@ int libsmraw_handle_initialize(
 			 "%s: unable to create media values table.",
 			 function );
 
-			libmfdata_segment_table_free(
-			 &( internal_handle->segment_table ),
-			 NULL );
-			memory_free(
-			 internal_handle );
-
-			return( -1 );
+			goto on_error;
 		}
 		if( libfvalue_table_initialize(
 		     &( internal_handle->information_values ),
@@ -168,16 +150,7 @@ int libsmraw_handle_initialize(
 			 "%s: unable to create information values table.",
 			 function );
 
-			libfvalue_table_free(
-			 (intptr_t *) internal_handle->media_values,
-			 NULL );
-			libmfdata_segment_table_free(
-			 &( internal_handle->segment_table ),
-			 NULL );
-			memory_free(
-			 internal_handle );
-
-			return( -1 );
+			goto on_error;
 		}
 		if( libfvalue_table_initialize(
 		     &( internal_handle->integrity_hash_values ),
@@ -191,25 +164,40 @@ int libsmraw_handle_initialize(
 			 "%s: unable to create integrity hash values table.",
 			 function );
 
-			libfvalue_table_free(
-			 (intptr_t *) internal_handle->information_values,
-			 NULL );
-			libfvalue_table_free(
-			 (intptr_t *) internal_handle->media_values,
-			 NULL );
-			libmfdata_segment_table_free(
-			 &( internal_handle->segment_table ),
-			 NULL );
-			memory_free(
-			 internal_handle );
-
-			return( -1 );
+			goto on_error;
 		}
 		internal_handle->maximum_number_of_open_handles = LIBBFIO_POOL_UNLIMITED_NUMBER_OF_OPEN_HANDLES;
 
 		*handle = (libsmraw_handle_t *) internal_handle;
 	}
 	return( 1 );
+
+on_error:
+	if( internal_handle != NULL )
+	{
+		if( internal_handle->information_values != NULL )
+		{
+			libfvalue_table_free(
+			 (intptr_t *) internal_handle->information_values,
+			 NULL );
+		}
+		if( internal_handle->media_values != NULL )
+		{
+			libfvalue_table_free(
+			 (intptr_t *) internal_handle->media_values,
+			 NULL );
+		}
+		if( internal_handle->segment_table != NULL )
+		{
+			libmfdata_segment_table_free(
+			 &( internal_handle->segment_table ),
+			 NULL );
+		}
+		memory_free(
+		 internal_handle );
+	}
+	return( -1 );
+
 }
 
 /* Frees the handle
@@ -455,9 +443,9 @@ int libsmraw_handle_open(
 	libsmraw_internal_handle_t *internal_handle         = NULL;
 	libcstring_system_character_t *information_filename = NULL;
 	static char *function                               = "libsmraw_handle_open";
+	size_t filename_index                               = 0;
 	size_t filename_length                              = 0;
 	size_t information_filename_length                  = 0;
-	ssize_t print_count                                 = 0;
 	int filename_iterator                               = 0;
 	int bfio_access_flags                               = 0;
 	int pool_entry                                      = 0;
@@ -546,7 +534,7 @@ int libsmraw_handle_open(
 			 "%s: missing basename.",
 			 function );
 
-			return( -1 );
+			goto on_error;
 		}
 		if( libsmraw_handle_set_segment_filename(
 		     handle,
@@ -561,7 +549,7 @@ int libsmraw_handle_open(
 			 "%s: unable to set basename.",
 			function );
 
-			return( -1 );
+			goto on_error;
 		}
 		/* Initialize the file io pool 
 		 */
@@ -578,7 +566,7 @@ int libsmraw_handle_open(
 			 "%s: unable to create file io pool.",
 			 function );
 
-			return( -1 );
+			goto on_error;
 		}
 		for( filename_iterator = 0;
 		     filename_iterator < number_of_filenames;
@@ -597,11 +585,7 @@ int libsmraw_handle_open(
 				 function,
 				 filename_iterator );
 
-				libbfio_pool_free(
-				 &file_io_pool,
-				 NULL );
-
-				return( -1 );
+				goto on_error;
 			}
 			if( libbfio_file_initialize(
 			     &file_io_handle,
@@ -614,11 +598,7 @@ int libsmraw_handle_open(
 				 "%s: unable to create file IO handle.",
 				 function );
 
-				libbfio_pool_free(
-				 &file_io_pool,
-				 NULL );
-
-				return( -1 );
+				goto on_error;
 			}
 #if defined( HAVE_DEBUG_OUTPUT )
 			if( libbfio_handle_set_track_offsets_read(
@@ -633,14 +613,7 @@ int libsmraw_handle_open(
 		                 "%s: unable to set track offsets read in file IO handle.",
 		                 function );
 
-				libbfio_handle_free(
-				 &file_io_handle,
-				 NULL );
-				libbfio_pool_free(
-				 &file_io_pool,
-				 NULL );
-
-		                return( -1 );
+				goto on_error;
 			}
 #endif
 			if( libbfio_file_set_name(
@@ -656,14 +629,7 @@ int libsmraw_handle_open(
 				 "%s: unable to set name in file IO handle.",
 				 function );
 
-				libbfio_handle_free(
-				 &file_io_handle,
-				 NULL );
-				libbfio_pool_free(
-				 &file_io_pool,
-				 NULL );
-
-				return( -1 );
+				goto on_error;
 			}
 			if( libbfio_pool_append_handle(
 			     file_io_pool,
@@ -679,14 +645,7 @@ int libsmraw_handle_open(
 				 "%s: unable to append file IO handle to pool.",
 				 function );
 
-				libbfio_handle_free(
-				 &file_io_handle,
-				 NULL );
-				libbfio_pool_free(
-				 &file_io_pool,
-				 NULL );
-
-				return( -1 );
+				goto on_error;
 			}
 			file_io_handle = NULL;
 		}
@@ -709,7 +668,7 @@ int libsmraw_handle_open(
 			 "%s: missing basename.",
 			 function );
 
-			return( -1 );
+			goto on_error;
 		}
 		if( libsmraw_handle_set_segment_filename(
 		     handle,
@@ -724,7 +683,7 @@ int libsmraw_handle_open(
 			 "%s: unable to set basename.",
 			function );
 
-			return( -1 );
+			goto on_error;
 		}
 		/* Initialize the file io pool 
 		 */
@@ -741,7 +700,7 @@ int libsmraw_handle_open(
 			 "%s: unable to create file io pool.",
 			 function );
 
-			return( -1 );
+			goto on_error;
 		}
 	}
 	if( libsmraw_handle_open_file_io_pool(
@@ -757,11 +716,7 @@ int libsmraw_handle_open(
 		 "%s: unable to open handle using file io pool.",
 		 function );
 
-		libbfio_pool_free(
-		 &file_io_pool,
-		 NULL );
-
-		return( -1 );
+		goto on_error;
 	}
 	internal_handle->file_io_pool_created_in_library = 1;
 
@@ -785,20 +740,16 @@ int libsmraw_handle_open(
 
 			return( -1 );
 		}
-		print_count = libcstring_system_string_sprintf(
-			       information_filename,
-			       information_filename_length + 1,
-			       _LIBCSTRING_SYSTEM_STRING( "%s.raw.info" ),
-			       internal_handle->basename );
-
-		if( ( print_count < 0 )
-		 || ( (size_t) print_count > ( information_filename_length + 1 ) ) )
+		if( libcstring_system_string_copy(
+		     information_filename,
+		     internal_handle->basename,
+		     internal_handle->basename_size - 1 ) == NULL )
 		{
 			liberror_error_set(
 			 error,
 			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_SET_FAILED,
-			 "%s: unable to set information filename.",
+			 LIBERROR_RUNTIME_ERROR_COPY_FAILED,
+			 "%s: unable to copy basename to information filename.",
 			 function );
 
 			memory_free(
@@ -806,6 +757,29 @@ int libsmraw_handle_open(
 
 			return( -1 );
 		}
+		filename_index = internal_handle->basename_size - 1;
+
+		if( libcstring_system_string_copy(
+		     &( information_filename[ filename_index ] ),
+		     _LIBCSTRING_SYSTEM_STRING( ".raw.info" ),
+		     9 ) == NULL )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBERROR_RUNTIME_ERROR_COPY_FAILED,
+			 "%s: unable to copy extension to information filename.",
+			 function );
+
+			memory_free(
+			 information_filename );
+
+			return( -1 );
+		}
+		filename_index += 9;
+
+		information_filename[ filename_index ] = 0;
+
 		if( libsmraw_information_file_initialize(
 		     &( internal_handle->information_file ),
 		     error ) != 1 )
@@ -869,6 +843,21 @@ int libsmraw_handle_open(
 		}
 	}
 	return( 1 );
+
+on_error:
+	if( file_io_handle != NULL )
+	{
+		libbfio_handle_free(
+		 &file_io_handle,
+		 NULL );
+	}
+	if( file_io_pool != NULL )
+	{
+		libbfio_pool_free(
+		 &file_io_pool,
+		 NULL );
+	}
+	return( -1 );
 }
 
 #if defined( HAVE_WIDE_CHARACTER_TYPE )
@@ -888,9 +877,9 @@ int libsmraw_handle_open_wide(
 	libsmraw_internal_handle_t *internal_handle         = NULL;
 	libcstring_system_character_t *information_filename = NULL;
 	static char *function                               = "libsmraw_handle_open_wide";
+	size_t filename_index                               = 0;
 	size_t filename_length                              = 0;
 	size_t information_filename_length                  = 0;
-	ssize_t print_count                                 = 0;
 	int filename_iterator                               = 0;
 	int bfio_access_flags                               = 0;
 	int pool_entry                                      = 0;
@@ -979,7 +968,7 @@ int libsmraw_handle_open_wide(
 			 "%s: missing basename.",
 			 function );
 
-			return( -1 );
+			goto on_error;
 		}
 		if( libsmraw_handle_set_segment_filename_wide(
 		     handle,
@@ -994,7 +983,7 @@ int libsmraw_handle_open_wide(
 			 "%s: unable to set basename.",
 			function );
 
-			return( -1 );
+			goto on_error;
 		}
 		/* Initialize the file io pool 
 		 */
@@ -1011,7 +1000,7 @@ int libsmraw_handle_open_wide(
 			 "%s: unable to create file io pool.",
 			 function );
 
-			return( -1 );
+			goto on_error;
 		}
 		for( filename_iterator = 0;
 		     filename_iterator < number_of_filenames;
@@ -1030,11 +1019,7 @@ int libsmraw_handle_open_wide(
 				 function,
 				 filename_iterator );
 
-				libbfio_pool_free(
-				 &file_io_pool,
-				 NULL );
-
-				return( -1 );
+				goto on_error;
 			}
 			if( libbfio_file_initialize(
 			     &file_io_handle,
@@ -1047,11 +1032,7 @@ int libsmraw_handle_open_wide(
 				 "%s: unable to create file IO handle.",
 				 function );
 
-				libbfio_pool_free(
-				 &file_io_pool,
-				 NULL );
-
-				return( -1 );
+				goto on_error;
 			}
 #if defined( HAVE_DEBUG_OUTPUT )
 			if( libbfio_handle_set_track_offsets_read(
@@ -1066,14 +1047,7 @@ int libsmraw_handle_open_wide(
 		                 "%s: unable to set track offsets read in file IO handle.",
 		                 function );
 
-				libbfio_handle_free(
-				 &file_io_handle,
-				 NULL );
-				libbfio_pool_free(
-				 &file_io_pool,
-				 NULL );
-
-		                return( -1 );
+		                goto on_error;
 			}
 #endif
 			if( libbfio_file_set_name_wide(
@@ -1089,14 +1063,7 @@ int libsmraw_handle_open_wide(
 				 "%s: unable to set name in file IO handle.",
 				 function );
 
-				libbfio_handle_free(
-				 &file_io_handle,
-				 NULL );
-				libbfio_pool_free(
-				 &file_io_pool,
-				 NULL );
-
-				return( -1 );
+				goto on_error;
 			}
 			if( libbfio_pool_append_handle(
 			     file_io_pool,
@@ -1112,14 +1079,7 @@ int libsmraw_handle_open_wide(
 				 "%s: unable to append file IO handle to pool.",
 				 function );
 
-				libbfio_handle_free(
-				 &file_io_handle,
-				 NULL );
-				libbfio_pool_free(
-				 &file_io_pool,
-				 NULL );
-
-				return( -1 );
+				goto on_error;
 			}
 			file_io_handle = NULL;
 		}
@@ -1142,7 +1102,7 @@ int libsmraw_handle_open_wide(
 			 "%s: missing basename.",
 			 function );
 
-			return( -1 );
+			goto on_error;
 		}
 		if( libsmraw_handle_set_segment_filename_wide(
 		     handle,
@@ -1157,7 +1117,7 @@ int libsmraw_handle_open_wide(
 			 "%s: unable to set basename.",
 			function );
 
-			return( -1 );
+			goto on_error;
 		}
 		/* Initialize the file io pool 
 		 */
@@ -1174,7 +1134,7 @@ int libsmraw_handle_open_wide(
 			 "%s: unable to create file io pool.",
 			 function );
 
-			return( -1 );
+			goto on_error;
 		}
 	}
 	if( libsmraw_handle_open_file_io_pool(
@@ -1190,11 +1150,7 @@ int libsmraw_handle_open_wide(
 		 "%s: unable to open handle using file io pool.",
 		 function );
 
-		libbfio_pool_free(
-		 &file_io_pool,
-		 NULL );
-
-		return( -1 );
+		goto on_error;
 	}
 	internal_handle->file_io_pool_created_in_library = 1;
 
@@ -1218,20 +1174,16 @@ int libsmraw_handle_open_wide(
 
 			return( -1 );
 		}
-		print_count = libcstring_system_string_sprintf(
-			       information_filename,
-			       information_filename_length + 1,
-			       _LIBCSTRING_SYSTEM_STRING( "%s.raw.info" ),
-			       internal_handle->basename );
-
-		if( ( print_count < 0 )
-		 || ( (size_t) print_count > ( information_filename_length + 1 ) ) )
+		if( libcstring_system_string_copy(
+		     information_filename,
+		     internal_handle->basename,
+		     internal_handle->basename_size - 1 ) == NULL )
 		{
 			liberror_error_set(
 			 error,
 			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_SET_FAILED,
-			 "%s: unable to set information filename.",
+			 LIBERROR_RUNTIME_ERROR_COPY_FAILED,
+			 "%s: unable to copy basename to information filename.",
 			 function );
 
 			memory_free(
@@ -1239,6 +1191,29 @@ int libsmraw_handle_open_wide(
 
 			return( -1 );
 		}
+		filename_index = internal_handle->basename_size - 1;
+
+		if( libcstring_system_string_copy(
+		     &( information_filename[ filename_index ] ),
+		     _LIBCSTRING_SYSTEM_STRING( ".raw.info" ),
+		     9 ) == NULL )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBERROR_RUNTIME_ERROR_COPY_FAILED,
+			 "%s: unable to copy extension to information filename.",
+			 function );
+
+			memory_free(
+			 information_filename );
+
+			return( -1 );
+		}
+		filename_index += 9;
+
+		information_filename[ filename_index ] = 0;
+
 		if( libsmraw_information_file_initialize(
 		     &( internal_handle->information_file ),
 		     error ) != 1 )
@@ -1302,6 +1277,21 @@ int libsmraw_handle_open_wide(
 		}
 	}
 	return( 1 );
+
+on_error:
+	if( file_io_handle != NULL )
+	{
+		libbfio_handle_free(
+		 &file_io_handle,
+		 NULL );
+	}
+	if( file_io_pool != NULL )
+	{
+		libbfio_pool_free(
+		 &file_io_pool,
+		 NULL );
+	}
+	return( -1 );
 }
 
 #endif
@@ -1383,7 +1373,7 @@ int libsmraw_handle_open_file_io_pool(
 		 "%s: unable to retrieve the number of handles in the file io pool.",
 		 function );
 
-		return( -1 );
+		goto on_error;
 	}
 	if( ( access_flags & LIBSMRAW_ACCESS_FLAG_READ ) != 0 )
 	{
@@ -1396,7 +1386,7 @@ int libsmraw_handle_open_file_io_pool(
 			 "%s: missing file IO handles.",
 			 function );
 
-			return( -1 );
+			goto on_error;
 		}
 		if( libmfdata_segment_table_resize(
 		     internal_handle->segment_table,
@@ -1410,7 +1400,7 @@ int libsmraw_handle_open_file_io_pool(
 			 "%s: unable to resize segment table.",
 			 function );
 
-			return( -1 );
+			goto on_error;
 		}
 		if( ( access_flags & LIBSMRAW_ACCESS_FLAG_WRITE ) != 0 )
 		{
@@ -1438,11 +1428,7 @@ int libsmraw_handle_open_file_io_pool(
 				 function,
 				 file_io_handle_iterator );
 
-				libmfdata_segment_table_empty(
-				 internal_handle->segment_table,
-				 NULL );
-
-				return( -1 );
+				goto on_error;
 			}
 #if defined( HAVE_DEBUG_OUTPUT )
 			if( libnotify_verbose != 0 )
@@ -1467,11 +1453,7 @@ int libsmraw_handle_open_file_io_pool(
 				 function,
 				 file_io_handle_iterator );
 
-				libmfdata_segment_table_empty(
-				 internal_handle->segment_table,
-				 NULL );
-
-				return( -1 );
+				goto on_error;
 			}
 			if( libbfio_pool_get_size(
 			     file_io_pool,
@@ -1487,11 +1469,7 @@ int libsmraw_handle_open_file_io_pool(
 				 function,
 				 file_io_handle_iterator );
 
-				libmfdata_segment_table_empty(
-				 internal_handle->segment_table,
-				 NULL );
-
-				return( -1 );
+				goto on_error;
 			}
 			if( libmfdata_segment_table_set_segment_by_index(
 			     internal_handle->segment_table,
@@ -1507,11 +1485,7 @@ int libsmraw_handle_open_file_io_pool(
 				 "%s: unable to set name in file IO handle.",
 				 function );
 
-				libmfdata_segment_table_empty(
-				 internal_handle->segment_table,
-				 NULL );
-
-				return( -1 );
+				goto on_error;
 			}
 			if( file_io_handle_size > maximum_segment_size )
 			{
@@ -1530,7 +1504,7 @@ int libsmraw_handle_open_file_io_pool(
 			 "%s: unable to set maximum segment size in segment table.",
 			 function );
 
-			return( -1 );
+			goto on_error;
 		}
 		internal_handle->read_values_initialized = 1;
 	}
@@ -1546,11 +1520,20 @@ int libsmraw_handle_open_file_io_pool(
 		 "%s: unable to retrieve value size from segment table.",
 		 function );
 
-		return( -1 );
+		goto on_error;
 	}
 	internal_handle->file_io_pool = file_io_pool;
 
 	return( 1 );
+
+on_error:
+	libmfdata_segment_table_empty(
+	 internal_handle->segment_table,
+	 NULL );
+
+	internal_handle->read_values_initialized = 0;
+
+	return( -1 );
 }
 
 /* Read an information file using a Basic File IO (bfio) handle
@@ -1620,11 +1603,7 @@ int libsmraw_handle_read_information_file(
 		 "%s: unable to set name in file IO handle.",
 		 function );
 
-		libbfio_handle_free(
-		 &file_io_handle,
-		 NULL );
-
-		return( -1 );
+		goto on_error;
 	}
 	result = libbfio_handle_exists(
 		  file_io_handle,
@@ -1639,11 +1618,7 @@ int libsmraw_handle_read_information_file(
 		 "%s: unable to determine if information filename exists.",
 		 function );
 
-		libbfio_handle_free(
-		 &file_io_handle,
-		 NULL );
-
-		return( -1 );
+		goto on_error;
 	}
 	if( libbfio_handle_free(
 	     &file_io_handle,
@@ -1656,7 +1631,7 @@ int libsmraw_handle_read_information_file(
 		 "%s: unable to free file IO handle.",
 		 function );
 
-		return( -1 );
+		goto on_error;
 	}
 	/* Only read the information file if it exists
 	 */
@@ -1674,7 +1649,7 @@ int libsmraw_handle_read_information_file(
 			 "%s: unable to open information file.",
 			 function );
 
-			return( -1 );
+			goto on_error;
 		}
 		if( libsmraw_information_file_read_section(
 		     internal_handle->information_file,
@@ -1690,7 +1665,11 @@ int libsmraw_handle_read_information_file(
 			 "%s: unable to read media values from information file.",
 			 function );
 
-			return( -1 );
+			libsmraw_information_file_close(
+			 internal_handle->information_file,
+			 NULL );
+
+			goto on_error;
 		}
 		if( libsmraw_information_file_read_section(
 		     internal_handle->information_file,
@@ -1706,7 +1685,11 @@ int libsmraw_handle_read_information_file(
 			 "%s: unable to read information values from information file.",
 			 function );
 
-			return( -1 );
+			libsmraw_information_file_close(
+			 internal_handle->information_file,
+			 NULL );
+
+			goto on_error;
 		}
 		if( libsmraw_information_file_read_section(
 		     internal_handle->information_file,
@@ -1722,7 +1705,11 @@ int libsmraw_handle_read_information_file(
 			 "%s: unable to read integrity hash values from information file.",
 			 function );
 
-			return( -1 );
+			libsmraw_information_file_close(
+			 internal_handle->information_file,
+			 NULL );
+
+			goto on_error;
 		}
 		if( libsmraw_information_file_close(
 		     internal_handle->information_file,
@@ -1735,10 +1722,19 @@ int libsmraw_handle_read_information_file(
 			 "%s: unable to close information file.",
 			 function );
 
-			return( -1 );
+			goto on_error;
 		}
 	}
 	return( 1 );
+
+on_error:
+	if( file_io_handle != NULL )
+	{
+		libbfio_handle_free(
+		 &file_io_handle,
+		 NULL );
+	}
+	return( -1 );
 }
 
 /* Closes a RAW handle

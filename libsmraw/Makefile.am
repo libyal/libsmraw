@@ -29,7 +29,8 @@ libsmraw_la_SOURCES = \
 	libsmraw_metadata.c libsmraw_metadata.h \
 	libsmraw_notify.c libsmraw_notify.h \
 	libsmraw_support.c libsmraw_support.h \
-	libsmraw_types.h
+	libsmraw_types.h \
+	libsmraw_unused.h
 
 libsmraw_la_LIBADD = \
 	../libcstring/libcstring.la \

@@ -58,8 +58,8 @@ int libsmraw_information_file_initialize(
 	}
 	if( *information_file == NULL )
 	{
-		*information_file = (libsmraw_information_file_t *) memory_allocate(
-		                                                     sizeof( libsmraw_information_file_t ) );
+		*information_file = memory_allocate_structure(
+		                     libsmraw_information_file_t );
 
 		if( *information_file == NULL )
 		{
@@ -70,7 +70,7 @@ int libsmraw_information_file_initialize(
 			 "%s: unable to create information file.",
 			 function );
 
-			return( -1 );
+			goto on_error;
 		}
 		if( memory_set(
 		     *information_file,
@@ -84,15 +84,20 @@ int libsmraw_information_file_initialize(
 			 "%s: unable to clear information file.",
 			 function );
 
-			memory_free(
-			 *information_file );
-
-			*information_file = NULL;
-
-			return( -1 );
+			goto on_error;
 		}
 	}
 	return( 1 );
+
+on_error:
+	if( *information_file != NULL )
+	{
+		memory_free(
+		 *information_file );
+
+		*information_file = NULL;
+	}
+	return( -1 );
 }
 
 /* Frees the information file

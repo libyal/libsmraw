@@ -61,25 +61,31 @@ enum LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMAS
 	LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_X_OF_N	= (uint8_t) 'x'
 };
 
-LIBSMRAW_EXTERN const char *libsmraw_get_version(
-                             void );
+LIBSMRAW_EXTERN \
+const char *libsmraw_get_version(
+             void );
 
-LIBSMRAW_EXTERN uint8_t libsmraw_get_access_flags_read(
-                         void );
+LIBSMRAW_EXTERN \
+uint8_t libsmraw_get_access_flags_read(
+         void );
 
-LIBSMRAW_EXTERN uint8_t libsmraw_get_access_flags_read_write(
-                         void );
+LIBSMRAW_EXTERN \
+uint8_t libsmraw_get_access_flags_read_write(
+         void );
 
-LIBSMRAW_EXTERN uint8_t libsmraw_get_access_flags_write(
-                         void );
+LIBSMRAW_EXTERN \
+uint8_t libsmraw_get_access_flags_write(
+         void );
 
-LIBSMRAW_EXTERN int libsmraw_get_codepage(
-                     int *codepage,
-                     liberror_error_t **error );
+LIBSMRAW_EXTERN \
+int libsmraw_get_codepage(
+     int *codepage,
+     liberror_error_t **error );
 
-LIBSMRAW_EXTERN int libsmraw_set_codepage(
-                     int codepage,
-                     liberror_error_t **error );
+LIBSMRAW_EXTERN \
+int libsmraw_set_codepage(
+     int codepage,
+     liberror_error_t **error );
 
 int libsmraw_glob_append_segment_file(
      char **filenames[],
@@ -103,17 +109,19 @@ int libsmraw_glob_determine_naming_schema(
      uint8_t *naming_schema,
      liberror_error_t **error );
 
-LIBSMRAW_EXTERN int libsmraw_glob(
-                     const char *filename,
-                     size_t filename_length,
-                     char **filenames[],
-                     int *number_of_filenames,
-                     liberror_error_t **error );
+LIBSMRAW_EXTERN \
+int libsmraw_glob(
+     const char *filename,
+     size_t filename_length,
+     char **filenames[],
+     int *number_of_filenames,
+     liberror_error_t **error );
 
-LIBSMRAW_EXTERN int libsmraw_glob_free(
-                     char *filenames[],
-                     int number_of_filenames,
-                     liberror_error_t **error );
+LIBSMRAW_EXTERN \
+int libsmraw_glob_free(
+     char *filenames[],
+     int number_of_filenames,
+     liberror_error_t **error );
 
 #if defined( HAVE_WIDE_CHARACTER_TYPE )
 int libsmraw_glob_wide_append_segment_file(
@@ -138,17 +146,20 @@ int libsmraw_glob_wide_determine_naming_schema(
      uint8_t *naming_schema,
      liberror_error_t **error );
 
-LIBSMRAW_EXTERN int libsmraw_glob_wide(
-                     const wchar_t *filename,
-                     size_t filename_length,
-                     wchar_t **filenames[],
-                     int *number_of_filenames,
-                     liberror_error_t **error );
+LIBSMRAW_EXTERN \
+int libsmraw_glob_wide(
+     const wchar_t *filename,
+     size_t filename_length,
+     wchar_t **filenames[],
+     int *number_of_filenames,
+     liberror_error_t **error );
 
-LIBSMRAW_EXTERN int libsmraw_glob_wide_free(
-                     wchar_t *filenames[],
-                     int number_of_filenames,
-                     liberror_error_t **error );
+LIBSMRAW_EXTERN \
+int libsmraw_glob_wide_free(
+     wchar_t *filenames[],
+     int number_of_filenames,
+     liberror_error_t **error );
+
 #endif
 
 #if defined( __cplusplus )

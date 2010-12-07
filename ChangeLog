@@ -27,6 +27,12 @@ Test
 Beta release
 * remove deprecated functions in libsmraw_legacy.[ch]
 
+20101207
+* updated configure.ac, common, libcstring, liberror, libnotify, libuna,
+  libbfio, libfvalue
+* code clean up
+* fix for mingw compilation in configure.ac
+
 20101113
 * textual corrections
 
