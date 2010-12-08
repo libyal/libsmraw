@@ -191,6 +191,8 @@ int libsmraw_filename_create(
 
 	if( total_number_of_segments != 1 )
 	{
+		( *filename )[ filename_index++ ] = (libcstring_system_character_t) '.';
+
 		( *filename )[ filename_index++ ] = (libcstring_system_character_t) '0'
 		                                  + (libcstring_system_character_t) ( current_file_io_pool_entry / 100 );
 
