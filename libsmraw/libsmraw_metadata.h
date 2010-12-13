@@ -38,7 +38,7 @@ LIBSMRAW_EXTERN \
 int libsmraw_handle_get_media_size(
      libsmraw_handle_t *handle,
      size64_t *media_size,
-                     liberror_error_t **error );
+     liberror_error_t **error );
 
 LIBSMRAW_EXTERN \
 int libsmraw_handle_set_media_size(
