@@ -12,19 +12,28 @@ SUBDIRS = \
 	libfvalue \
 	libsmraw \
 	smraw.net \
+	po \
 	manuals \
 	tests \
 	examples \
 	borlandc \
 	msvscpp
 
+GETTEXT_FILES = \
+	config.rpath \
+	po/Makevars.in
+
+PKGCONFIG_FILES = \
+	libsmraw.pc.in
+
 SPEC_FILES = \
 	libsmraw.spec \
 	libsmraw.spec.in
 
 EXTRA_DIST = \
-	libsmraw.pc.in \
 	README.mingw \
+	$(GETTEXT_FILES) \
+	$(PKGCONFIG_FILES) \
 	$(SPEC_FILES)
 
 MAINTAINERCLEANFILES = \
@@ -50,6 +59,7 @@ library:
 	(cd $(srcdir)/libmfdata && $(MAKE) $(AM_MAKEFLAGS))
 	(cd $(srcdir)/libfvalue && $(MAKE) $(AM_MAKEFLAGS))
 	(cd $(srcdir)/libsmraw && $(MAKE) $(AM_MAKEFLAGS))
+	(cd $(srcdir)/po && $(MAKE) $(AM_MAKEFLAGS))
 
 distclean: clean
 	/bin/rm -f Makefile
@@ -72,4 +82,6 @@ splint:
 	(cd $(srcdir)/libmfdata && $(MAKE) splint $(AM_MAKEFLAGS))
 	(cd $(srcdir)/libfvalue && $(MAKE) splint $(AM_MAKEFLAGS))
 	(cd $(srcdir)/libsmraw && $(MAKE) splint $(AM_MAKEFLAGS))
+	(cd $(srcdir)/po && $(MAKE) splint $(AM_MAKEFLAGS))
+	(cd $(srcdir)/tests && $(MAKE) splint $(AM_MAKEFLAGS))
 

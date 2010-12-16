@@ -312,7 +312,7 @@ int libsmraw_handle_set_bytes_per_sector(
 			 function );
 
 			libfvalue_value_free(
-			 (intptr_t *) value,
+			 &value,
 			 NULL );
 
 			return( -1 );
@@ -331,7 +331,7 @@ int libsmraw_handle_set_bytes_per_sector(
 			 identifier );
 
 			libfvalue_value_free(
-			 (intptr_t *) value,
+			 &value,
 			 NULL );
 
 			return( -1 );
@@ -635,7 +635,7 @@ int libsmraw_handle_set_media_type(
 			 function );
 
 			libfvalue_value_free(
-			 (intptr_t *) value,
+			 &value,
 			 NULL );
 
 			return( -1 );
@@ -654,7 +654,7 @@ int libsmraw_handle_set_media_type(
 			 identifier );
 
 			libfvalue_value_free(
-			 (intptr_t *) value,
+			 &value,
 			 NULL );
 
 			return( -1 );
@@ -921,7 +921,7 @@ int libsmraw_handle_set_media_flags(
 			 function );
 
 			libfvalue_value_free(
-			 (intptr_t *) value,
+			 &value,
 			 NULL );
 
 			return( -1 );
@@ -940,7 +940,7 @@ int libsmraw_handle_set_media_flags(
 			 identifier );
 
 			libfvalue_value_free(
-			 (intptr_t *) value,
+			 &value,
 			 NULL );
 
 			return( -1 );
@@ -1490,7 +1490,7 @@ int libsmraw_handle_set_utf8_information_value(
 			 function );
 
 			libfvalue_value_free(
-			 (intptr_t *) value,
+			 &value,
 			 NULL );
 
 			return( -1 );
@@ -1509,7 +1509,7 @@ int libsmraw_handle_set_utf8_information_value(
 			 (char *) identifier );
 
 			libfvalue_value_free(
-			 (intptr_t *) value,
+			 &value,
 			 NULL );
 
 			return( -1 );
@@ -2097,7 +2097,7 @@ int libsmraw_handle_set_utf8_integrity_hash_value(
 			 function );
 
 			libfvalue_value_free(
-			 (intptr_t *) value,
+			 &value,
 			 NULL );
 
 			return( -1 );
@@ -2116,7 +2116,7 @@ int libsmraw_handle_set_utf8_integrity_hash_value(
 			 (char *) identifier );
 
 			libfvalue_value_free(
-			 (intptr_t *) value,
+			 &value,
 			 NULL );
 
 			return( -1 );

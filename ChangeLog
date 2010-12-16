@@ -27,6 +27,10 @@ Test
 Beta release
 * remove deprecated functions in libsmraw_legacy.[ch]
 
+20101216
+* updated configure, added gettext support
+* updated libbfio, libfvalue
+
 20101208
 * bug fix in write segment filename extension
 

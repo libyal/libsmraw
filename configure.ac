@@ -2,7 +2,7 @@ AC_PREREQ( 2.59 )
 
 AC_INIT(
  [libsmraw],
- [20101213],
+ [20101216],
  [jbmetz@users.sourceforge.net])
 
 AC_CONFIG_SRCDIR(
@@ -28,7 +28,7 @@ LIBSMRAW_TEST_ENABLE(
  [winapi],
  [winapi],
  [enable WINAPI support for cross-compilation],
- [no])
+ [auto-detect])
 LIBSMRAW_TEST_ENABLE(
  [verbose-output],
  [verbose_output],
@@ -51,9 +51,29 @@ AC_PROG_INSTALL
 AC_PROG_LIBTOOL
 AC_SUBST(LIBTOOL_DEPS)
 
+dnl Support of internationalization (i18n)
+AM_GNU_GETTEXT([external])
+
 dnl Check for compiler language support
 AC_C_CONST
 AC_C_VOLATILE
+
+dnl Automatically enable winapi support for mingw
+AS_IF(
+ [test "x$ac_cv_libsmraw_enable_winapi" = xauto-detect],
+ [ac_libsmraw_target_string="$target";
+
+ AS_IF(
+  [test "x$ac_libsmraw_target_string" = x],
+  [ac_libsmraw_target_string="$build"])
+
+ AS_CASE(
+  [$ac_libsmraw_target_string],
+  [*mingw*],[AC_MSG_NOTICE(
+             [Detected MinGW enabling WINAPI support for cross-compilation])
+            ac_cv_libsmraw_enable_winapi=yes],
+  [*],[ac_cv_libsmraw_enable_winapi=no])
+ ])
 
 dnl Check for headers
 dnl Headers included in include/libsmraw/types.h
@@ -1089,6 +1109,8 @@ AC_CONFIG_FILES([libfvalue/Makefile])
 AC_CONFIG_FILES([libmfdata/Makefile])
 AC_CONFIG_FILES([libsmraw/Makefile])
 AC_CONFIG_FILES([smraw.net/Makefile])
+AC_CONFIG_FILES([po/Makefile.in])
+AC_CONFIG_FILES([po/Makevars])
 AC_CONFIG_FILES([manuals/Makefile])
 AC_CONFIG_FILES([tests/Makefile])
 AC_CONFIG_FILES([examples/Makefile])

@@ -178,13 +178,13 @@ on_error:
 		if( internal_handle->information_values != NULL )
 		{
 			libfvalue_table_free(
-			 (intptr_t *) internal_handle->information_values,
+			 &( internal_handle->information_values ),
 			 NULL );
 		}
 		if( internal_handle->media_values != NULL )
 		{
 			libfvalue_table_free(
-			 (intptr_t *) internal_handle->media_values,
+			 &( internal_handle->media_values ),
 			 NULL );
 		}
 		if( internal_handle->segment_table != NULL )
@@ -276,7 +276,7 @@ int libsmraw_handle_free(
 		if( internal_handle->media_values != NULL )
 		{
 			if( libfvalue_table_free(
-			     (intptr_t *) internal_handle->media_values,
+			     &( internal_handle->media_values ),
 			     error ) != 1 )
 			{
 				liberror_error_set(
@@ -292,7 +292,7 @@ int libsmraw_handle_free(
 		if( internal_handle->information_values != NULL )
 		{
 			if( libfvalue_table_free(
-			     (intptr_t *) internal_handle->information_values,
+			     &( internal_handle->information_values ),
 			     error ) != 1 )
 			{
 				liberror_error_set(
@@ -308,7 +308,7 @@ int libsmraw_handle_free(
 		if( internal_handle->integrity_hash_values != NULL )
 		{
 			if( libfvalue_table_free(
-			     (intptr_t *) internal_handle->integrity_hash_values,
+			     &( internal_handle->integrity_hash_values ),
 			     error ) != 1 )
 			{
 				liberror_error_set(

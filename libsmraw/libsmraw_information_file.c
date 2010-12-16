@@ -588,7 +588,7 @@ int libsmraw_information_file_read_section(
 					 function,
 					 value_identifier );
 
-					return( -1 );
+					goto on_error;
 				}
 				if( libfvalue_value_set_identifier(
 				     value,
@@ -604,30 +604,7 @@ int libsmraw_information_file_read_section(
 					 function,
 					 value_identifier );
 
-					libfvalue_value_free(
-					 (intptr_t *) value,
-					 NULL );
-
-					return( -1 );
-				}
-				if( libfvalue_table_set_value(
-				     values_table,
-				     value,
-				     error ) != 1 )
-				{
-					liberror_error_set(
-					 error,
-					 LIBERROR_ERROR_DOMAIN_RUNTIME,
-					 LIBERROR_RUNTIME_ERROR_SET_FAILED,
-					 "%s: unable to set value: %s in values table.",
-					 function,
-					 value_identifier );
-
-					libfvalue_value_free(
-					 (intptr_t *) value,
-					 NULL );
-
-					return( -1 );
+					goto on_error;
 				}
 				if( libfvalue_value_set_data(
 				     value,
@@ -645,8 +622,24 @@ int libsmraw_information_file_read_section(
 					 function,
 					 value_identifier );
 
-					return( -1 );
+					goto on_error;
 				}
+				if( libfvalue_table_set_value(
+				     values_table,
+				     value,
+				     error ) != 1 )
+				{
+					liberror_error_set(
+					 error,
+					 LIBERROR_ERROR_DOMAIN_RUNTIME,
+					 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+					 "%s: unable to set value: %s in values table.",
+					 function,
+					 value_identifier );
+
+					goto on_error;
+				}
+				value = NULL;
 			}
 		}
 		else
@@ -666,6 +659,15 @@ int libsmraw_information_file_read_section(
 		}
 	}
 	return( result );
+
+on_error:
+	if( value != NULL )
+	{
+		libfvalue_value_free(
+		 &value,
+		 NULL );
+	}
+	return( -1 );
 }
 
 /* Write a section with its values to the information file
