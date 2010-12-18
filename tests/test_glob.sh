@@ -27,11 +27,25 @@ EXIT_IGNORE=77;
 TMP="tmp";
 
 CMP="cmp";
-SEQ="seq";
 
 SMRAW_TEST_GLOB="smraw_test_glob";
 
-function test_glob
+seq()
+{
+	VALUE=$1;
+	SEQUENCE="";
+
+	while [ ${VALUE} -le $2 ];
+	do
+		SEQUENCE="${SEQUENCE} ${VALUE}";
+
+		VALUE=$(( ${VALUE} + 1 ));
+	done
+
+	echo ${SEQUENCE};
+}
+
+test_glob()
 { 
 	BASENAME=$1;
 	SCHEMA=$2;
@@ -70,14 +84,14 @@ function test_glob
 	return ${RESULT};
 }
 
-function test_glob_sequence
+test_glob_sequence()
 { 
 	BASENAME=$1;
 	SCHEMA=$2;
 	FILENAME=$3;
 	LAST=$4;
 
-	SEQUENCE=`${SEQ} 1 ${LAST}`;
+	SEQUENCE=`seq 1 ${LAST}`;
 	FILENAMES=`for NUMBER in ${SEQUENCE}; do echo -n "${FILENAME}.${NUMBER}of${LAST} "; echo $FILE; done`;
 
 	mkdir ${TMP};

@@ -43,7 +43,7 @@ COMPARE_MULTI="usb256_multi.raw";
 
 SMRAW_TEST_COMPARE="smraw_test_compare";
 
-function test_compare
+test_compare()
 { 
 	echo "Testing seek and read compare of input:" $*;
 

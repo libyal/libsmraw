@@ -27,6 +27,9 @@ Test
 Beta release
 * remove deprecated functions in libsmraw_legacy.[ch]
 
+20101218
+* updated test scripts
+
 20101216
 * updated configure, added gettext support
 * updated libbfio, libfvalue

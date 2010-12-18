@@ -37,7 +37,7 @@ WC="wc";
 
 SMRAW_TEST_SEEK="smraw_test_seek";
 
-function test_seek
+test_seek()
 { 
 	echo "Testing seek offset of input:" $*;
 

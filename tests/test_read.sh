@@ -37,7 +37,7 @@ WC="wc";
 
 SMRAW_TEST_READ="smraw_test_read";
 
-function test_read
+test_read()
 { 
 	echo "Testing read of input:" $*;
 

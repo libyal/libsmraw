@@ -28,7 +28,7 @@ TMP="tmp";
 
 SMRAW_TEST_WRITE="smraw_test_write";
 
-function test_write
+test_write()
 { 
 	mkdir ${TMP};
 	cd ${TMP};
