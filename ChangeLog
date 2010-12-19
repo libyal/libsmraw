@@ -27,6 +27,10 @@ Test
 Beta release
 * remove deprecated functions in libsmraw_legacy.[ch]
 
+20101219
+* updated libcstring, libbfio, libfvalue, libmfdata
+* code clean up
+
 20101218
 * updated test scripts
 

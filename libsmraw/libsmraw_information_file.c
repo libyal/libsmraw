@@ -180,8 +180,8 @@ int libsmraw_information_file_set_name(
 
 		return( -1 );
 	}
-	information_file->name = (libcstring_system_character_t *) memory_allocate(
-	                                                            sizeof( libcstring_system_character_t ) * ( name_length + 1 ) );
+	information_file->name = libcstring_system_string_allocate(
+	                          name_length + 1 );
 
 	if( information_file->name == NULL )
 	{

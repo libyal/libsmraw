@@ -72,7 +72,7 @@ struct libsmraw_internal_handle
 	 */
 	libbfio_pool_t *file_io_pool;
 
-	/* Value to indicate if the pool was created inside the library
+	/* Value to indicate if the file IO pool was created inside the library
 	 */
 	uint8_t file_io_pool_created_in_library;
 

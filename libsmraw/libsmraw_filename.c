@@ -143,8 +143,8 @@ int libsmraw_filename_create(
 	}
 	*filename_size = basename_size + additional_length;
 
-	*filename = (libcstring_system_character_t *) memory_allocate(
-	                                               sizeof( libcstring_system_character_t ) * *filename_size );
+	*filename = libcstring_system_string_allocate(
+	             *filename_size );
 
 	if( *filename == NULL )
 	{

@@ -87,7 +87,10 @@ int libsmraw_handle_initialize(
 			 "%s: unable to clear handle.",
 			 function );
 
-			goto on_error;
+			memory_free(
+			 internal_handle );
+
+			return( -1 );
 		}
 		if( libmfdata_segment_table_initialize(
 		     &( internal_handle->segment_table ),
@@ -446,9 +449,8 @@ int libsmraw_handle_open(
 	size_t filename_index                               = 0;
 	size_t filename_length                              = 0;
 	size_t information_filename_length                  = 0;
-	int filename_iterator                               = 0;
 	int bfio_access_flags                               = 0;
-	int pool_entry                                      = 0;
+	int filename_iterator                               = 0;
 
 	if( handle == NULL )
 	{
@@ -551,11 +553,9 @@ int libsmraw_handle_open(
 
 			goto on_error;
 		}
-		/* Initialize the file io pool 
-		 */
 		if( libbfio_pool_initialize(
 		     &file_io_pool,
-		     0,
+		     number_of_filenames,
 		     internal_handle->maximum_number_of_open_handles,
 		     error ) != 1 )
 		{
@@ -563,7 +563,7 @@ int libsmraw_handle_open(
 			 error,
 			 LIBERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-			 "%s: unable to create file io pool.",
+			 "%s: unable to create file IO pool.",
 			 function );
 
 			goto on_error;
@@ -579,8 +579,8 @@ int libsmraw_handle_open(
 			{
 				liberror_error_set(
 				 error,
-				 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-				 LIBERROR_ARGUMENT_ERROR_VALUE_TOO_SMALL,
+				 LIBERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
 				 "%s: missing filename: %d.",
 				 function,
 				 filename_iterator );
@@ -595,8 +595,9 @@ int libsmraw_handle_open(
 				 error,
 				 LIBERROR_ERROR_DOMAIN_RUNTIME,
 				 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-				 "%s: unable to create file IO handle.",
-				 function );
+				 "%s: unable to create file IO handle: %d.",
+				 function,
+				 filename_iterator );
 
 				goto on_error;
 			}
@@ -610,8 +611,9 @@ int libsmraw_handle_open(
 		                 error,
 		                 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		                 LIBERROR_RUNTIME_ERROR_SET_FAILED,
-		                 "%s: unable to set track offsets read in file IO handle.",
-		                 function );
+		                 "%s: unable to set track offsets read in file IO handle: %d.",
+		                 function,
+				 filename_iterator );
 
 				goto on_error;
 			}
@@ -626,14 +628,15 @@ int libsmraw_handle_open(
 				 error,
 				 LIBERROR_ERROR_DOMAIN_RUNTIME,
 				 LIBERROR_RUNTIME_ERROR_SET_FAILED,
-				 "%s: unable to set name in file IO handle.",
-				 function );
+				 "%s: unable to set name in file IO handle: %d.",
+				 function,
+				 filename_iterator );
 
 				goto on_error;
 			}
-			if( libbfio_pool_append_handle(
+			if( libbfio_pool_set_handle(
 			     file_io_pool,
-			     &pool_entry,
+			     filename_iterator,
 			     file_io_handle,
 			     bfio_access_flags,
 			     error ) != 1 )
@@ -642,8 +645,9 @@ int libsmraw_handle_open(
 				 error,
 				 LIBERROR_ERROR_DOMAIN_RUNTIME,
 				 LIBERROR_RUNTIME_ERROR_APPEND_FAILED,
-				 "%s: unable to append file IO handle to pool.",
-				 function );
+				 "%s: unable to set file IO handle: %d in pool.",
+				 function,
+				 filename_iterator );
 
 				goto on_error;
 			}
@@ -685,7 +689,7 @@ int libsmraw_handle_open(
 
 			goto on_error;
 		}
-		/* Initialize the file io pool 
+		/* Initialize the file IO pool 
 		 */
 		if( libbfio_pool_initialize(
 		     &file_io_pool,
@@ -697,7 +701,7 @@ int libsmraw_handle_open(
 			 error,
 			 LIBERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-			 "%s: unable to create file io pool.",
+			 "%s: unable to create file IO pool.",
 			 function );
 
 			goto on_error;
@@ -713,7 +717,7 @@ int libsmraw_handle_open(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_IO,
 		 LIBERROR_IO_ERROR_OPEN_FAILED,
-		 "%s: unable to open handle using file io pool.",
+		 "%s: unable to open handle using file IO pool.",
 		 function );
 
 		goto on_error;
@@ -726,8 +730,8 @@ int libsmraw_handle_open(
 	{
 		information_filename_length = internal_handle->basename_size + 8;
 
-		information_filename = (libcstring_system_character_t *) memory_allocate(
-		                                                          sizeof( libcstring_system_character_t ) * ( information_filename_length + 1 ) );
+		information_filename = libcstring_system_string_allocate(
+		                        information_filename_length + 1 );
 
 		if( information_filename == NULL )
 		{
@@ -880,9 +884,8 @@ int libsmraw_handle_open_wide(
 	size_t filename_index                               = 0;
 	size_t filename_length                              = 0;
 	size_t information_filename_length                  = 0;
-	int filename_iterator                               = 0;
 	int bfio_access_flags                               = 0;
-	int pool_entry                                      = 0;
+	int filename_iterator                               = 0;
 
 	if( handle == NULL )
 	{
@@ -985,11 +988,9 @@ int libsmraw_handle_open_wide(
 
 			goto on_error;
 		}
-		/* Initialize the file io pool 
-		 */
 		if( libbfio_pool_initialize(
 		     &file_io_pool,
-		     0,
+		     number_of_filenames,
 		     internal_handle->maximum_number_of_open_handles,
 		     error ) != 1 )
 		{
@@ -997,7 +998,7 @@ int libsmraw_handle_open_wide(
 			 error,
 			 LIBERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-			 "%s: unable to create file io pool.",
+			 "%s: unable to create file IO pool.",
 			 function );
 
 			goto on_error;
@@ -1013,8 +1014,8 @@ int libsmraw_handle_open_wide(
 			{
 				liberror_error_set(
 				 error,
-				 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-				 LIBERROR_ARGUMENT_ERROR_VALUE_TOO_SMALL,
+				 LIBERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
 				 "%s: missing filename: %d.",
 				 function,
 				 filename_iterator );
@@ -1029,8 +1030,9 @@ int libsmraw_handle_open_wide(
 				 error,
 				 LIBERROR_ERROR_DOMAIN_RUNTIME,
 				 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-				 "%s: unable to create file IO handle.",
-				 function );
+				 "%s: unable to create file IO handle: %d.",
+				 function,
+				 filename_iterator );
 
 				goto on_error;
 			}
@@ -1044,8 +1046,9 @@ int libsmraw_handle_open_wide(
 		                 error,
 		                 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		                 LIBERROR_RUNTIME_ERROR_SET_FAILED,
-		                 "%s: unable to set track offsets read in file IO handle.",
-		                 function );
+		                 "%s: unable to set track offsets read in file IO handle: %d.",
+		                 function,
+				 filename_iterator );
 
 		                goto on_error;
 			}
@@ -1060,14 +1063,15 @@ int libsmraw_handle_open_wide(
 				 error,
 				 LIBERROR_ERROR_DOMAIN_RUNTIME,
 				 LIBERROR_RUNTIME_ERROR_SET_FAILED,
-				 "%s: unable to set name in file IO handle.",
-				 function );
+				 "%s: unable to set name in file IO handle: %d.",
+				 function,
+				 filename_iterator );
 
 				goto on_error;
 			}
 			if( libbfio_pool_append_handle(
 			     file_io_pool,
-			     &pool_entry,
+			     filename_iterator,
 			     file_io_handle,
 			     bfio_access_flags,
 			     error ) != 1 )
@@ -1075,9 +1079,10 @@ int libsmraw_handle_open_wide(
 				liberror_error_set(
 				 error,
 				 LIBERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBERROR_RUNTIME_ERROR_APPEND_FAILED,
-				 "%s: unable to append file IO handle to pool.",
-				 function );
+				 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+				 "%s: unable to set file IO handle: %d in pool.",
+				 function,
+				 filename_iterator );
 
 				goto on_error;
 			}
@@ -1119,7 +1124,7 @@ int libsmraw_handle_open_wide(
 
 			goto on_error;
 		}
-		/* Initialize the file io pool 
+		/* Initialize the file IO pool 
 		 */
 		if( libbfio_pool_initialize(
 		     &file_io_pool,
@@ -1131,7 +1136,7 @@ int libsmraw_handle_open_wide(
 			 error,
 			 LIBERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-			 "%s: unable to create file io pool.",
+			 "%s: unable to create file IO pool.",
 			 function );
 
 			goto on_error;
@@ -1147,7 +1152,7 @@ int libsmraw_handle_open_wide(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_IO,
 		 LIBERROR_IO_ERROR_OPEN_FAILED,
-		 "%s: unable to open handle using file io pool.",
+		 "%s: unable to open handle using file IO pool.",
 		 function );
 
 		goto on_error;
@@ -1160,8 +1165,8 @@ int libsmraw_handle_open_wide(
 	{
 		information_filename_length = internal_handle->basename_size + 8;
 
-		information_filename = (libcstring_system_character_t *) memory_allocate(
-		                                                          sizeof( libcstring_system_character_t ) * ( information_filename_length + 1 ) );
+		information_filename = libcstring_system_string_allocate(
+		                        information_filename_length + 1 );
 
 		if( information_filename == NULL )
 		{
@@ -1333,7 +1338,7 @@ int libsmraw_handle_open_file_io_pool(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
-		 "%s: invalid handle - file io pool already exists.",
+		 "%s: invalid handle - file IO pool already exists.",
 		 function );
 
 		return( -1 );
@@ -1344,7 +1349,7 @@ int libsmraw_handle_open_file_io_pool(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid file io pool.",
+		 "%s: invalid file IO pool.",
 		 function );
 
 		return( -1 );
@@ -1370,7 +1375,7 @@ int libsmraw_handle_open_file_io_pool(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve the number of handles in the file io pool.",
+		 "%s: unable to retrieve the number of handles in the file IO pool.",
 		 function );
 
 		goto on_error;
@@ -1848,7 +1853,7 @@ int libsmraw_handle_close(
 				 error,
 				 LIBERROR_ERROR_DOMAIN_IO,
 				 LIBERROR_IO_ERROR_GENERIC,
-				 "%s: unable close file io pool.",
+				 "%s: unable close file IO pool.",
 				 function );
 
 				result = -1;
@@ -1861,7 +1866,7 @@ int libsmraw_handle_close(
 				 error,
 				 LIBERROR_ERROR_DOMAIN_RUNTIME,
 				 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-				 "%s: unable to free file io pool.",
+				 "%s: unable to free file IO pool.",
 				 function );
 
 				result = -1;
@@ -1923,7 +1928,7 @@ ssize_t libsmraw_handle_read_buffer(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid handle - missing file io pool.",
+		 "%s: invalid handle - missing file IO pool.",
 		 function );
 
 		return( -1 );
@@ -1983,7 +1988,7 @@ ssize_t libsmraw_handle_write_buffer(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid handle - missing file io pool.",
+		 "%s: invalid handle - missing file IO pool.",
 		 function );
 
 		return( -1 );
@@ -2122,7 +2127,7 @@ off64_t libsmraw_handle_seek_offset(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid handle - missing file io pool.",
+		 "%s: invalid handle - missing file IO pool.",
 		 function );
 
 		return( -1 );
@@ -2757,8 +2762,8 @@ int libsmraw_handle_set_segment_filename(
 #else
 	internal_handle->basename_size = filename_length + 1;
 #endif
-	internal_handle->basename = (libcstring_system_character_t *) memory_allocate(
-	                                                               sizeof( libcstring_system_character_t ) * internal_handle->basename_size );
+	internal_handle->basename = libcstring_system_string_allocate(
+	                             internal_handle->basename_size );
 
 	if( internal_handle->basename == NULL )
 	{
@@ -3293,8 +3298,8 @@ int libsmraw_handle_set_segment_filename_wide(
 	}
 #endif /* defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER ) */
 
-	internal_handle->basename = (libcstring_system_character_t *) memory_allocate(
-	                                                               sizeof( libcstring_system_character_t ) * internal_handle->basename_size );
+	internal_handle->basename = libcstring_system_string_allocate(
+	                             internal_handle->basename_size );
 
 	if( internal_handle->basename == NULL )
 	{
