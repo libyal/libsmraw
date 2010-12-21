@@ -27,6 +27,9 @@ Test
 Beta release
 * remove deprecated functions in libsmraw_legacy.[ch]
 
+20101221
+* fixed error in wide character open introduced by code clean up
+
 20101219
 * updated libcstring, libbfio, libfvalue, libmfdata
 * code clean up

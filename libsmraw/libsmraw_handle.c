@@ -644,7 +644,7 @@ int libsmraw_handle_open(
 				liberror_error_set(
 				 error,
 				 LIBERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBERROR_RUNTIME_ERROR_APPEND_FAILED,
+				 LIBERROR_RUNTIME_ERROR_SET_FAILED,
 				 "%s: unable to set file IO handle: %d in pool.",
 				 function,
 				 filename_iterator );
@@ -1069,7 +1069,7 @@ int libsmraw_handle_open_wide(
 
 				goto on_error;
 			}
-			if( libbfio_pool_append_handle(
+			if( libbfio_pool_set_handle(
 			     file_io_pool,
 			     filename_iterator,
 			     file_io_handle,
