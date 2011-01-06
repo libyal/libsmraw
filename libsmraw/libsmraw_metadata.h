@@ -130,6 +130,32 @@ int libsmraw_handle_set_utf8_information_value(
      liberror_error_t **error );
 
 LIBSMRAW_EXTERN \
+int libsmraw_handle_get_utf16_information_value_size(
+     libsmraw_handle_t *handle,
+     const uint8_t *identifier,
+     size_t identifier_size,
+     size_t *utf16_string_size,
+     liberror_error_t **error );
+
+LIBSMRAW_EXTERN \
+int libsmraw_handle_get_utf16_information_value(
+     libsmraw_handle_t *handle,
+     const uint8_t *identifier,
+     size_t identifier_size,
+     uint16_t *utf16_string,
+     size_t utf16_string_size,
+     liberror_error_t **error );
+
+LIBSMRAW_EXTERN \
+int libsmraw_handle_set_utf16_information_value(
+     libsmraw_handle_t *handle,
+     const uint8_t *identifier,
+     size_t identifier_size,
+     const uint16_t *utf16_string,
+     size_t utf16_string_length,
+     liberror_error_t **error );
+
+LIBSMRAW_EXTERN \
 int libsmraw_handle_get_number_of_integrity_hash_values(
      libsmraw_handle_t *handle,
      int *number_of_integrity_hash_values,
@@ -174,6 +200,32 @@ int libsmraw_handle_set_utf8_integrity_hash_value(
      size_t identifier_size,
      const uint8_t *utf8_string,
      size_t utf8_string_length,
+     liberror_error_t **error );
+
+LIBSMRAW_EXTERN \
+int libsmraw_handle_get_utf16_integrity_hash_value_size(
+     libsmraw_handle_t *handle,
+     const uint8_t *identifier,
+     size_t identifier_size,
+     size_t *utf16_string_size,
+     liberror_error_t **error );
+
+LIBSMRAW_EXTERN \
+int libsmraw_handle_get_utf16_integrity_hash_value(
+     libsmraw_handle_t *handle,
+     const uint8_t *identifier,
+     size_t identifier_size,
+     uint16_t *utf16_string,
+     size_t utf16_string_size,
+     liberror_error_t **error );
+
+LIBSMRAW_EXTERN \
+int libsmraw_handle_set_utf16_integrity_hash_value(
+     libsmraw_handle_t *handle,
+     const uint8_t *identifier,
+     size_t identifier_size,
+     const uint16_t *utf16_string,
+     size_t utf16_string_length,
      liberror_error_t **error );
 
 #if defined( __cplusplus )

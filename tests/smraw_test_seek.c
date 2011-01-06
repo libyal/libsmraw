@@ -146,14 +146,7 @@ int main( int argc, char * const argv[] )
 		 stderr,
 		 "Unable to create handle.\n" );
 
-		libsmraw_error_backtrace_fprint(
-		 error,
-		 stderr );
-
-		libsmraw_error_free(
-		 &error );
-
-		return( EXIT_FAILURE );
+		goto on_error;
 	}
 #if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
 	if( libsmraw_handle_open_wide(
@@ -175,18 +168,7 @@ int main( int argc, char * const argv[] )
 		 stderr,
 		 "Unable to open file(s).\n" );
 
-		libsmraw_handle_free(
-		 &handle,
-		 NULL );
-
-		libsmraw_error_backtrace_fprint(
-		 error,
-		 stderr );
-
-		libsmraw_error_free(
-		 &error );
-
-		return( EXIT_FAILURE );
+		goto on_error;
 	}
 	if( libsmraw_handle_get_media_size(
 	     handle,
@@ -197,20 +179,7 @@ int main( int argc, char * const argv[] )
 		 stderr,
 		 "Unable to retrieve media size.\n" );
 
-		libsmraw_error_backtrace_fprint(
-		 error,
-		 stderr );
-
-		libsmraw_error_free(
-		 &error );
-		libsmraw_handle_close(
-		 handle,
-		 NULL );
-		libsmraw_handle_free(
-		 &handle,
-		 NULL );
-
-		return( EXIT_FAILURE );
+		goto on_error;
 	}
 	if( media_size > (size64_t) INT64_MAX )
 	{
@@ -218,20 +187,7 @@ int main( int argc, char * const argv[] )
 		 stderr,
 		 "Media size exceeds maximum.\n" );
 
-		libsmraw_error_backtrace_fprint(
-		 error,
-		 stderr );
-
-		libsmraw_error_free(
-		 &error );
-		libsmraw_handle_close(
-		 handle,
-		 NULL );
-		libsmraw_handle_free(
-		 &handle,
-		 NULL );
-
-		return( EXIT_FAILURE );
+		goto on_error;
 	}
 	/* Test: SEEK_SET offset: 0
 	 * Expected result: 0
@@ -246,14 +202,7 @@ int main( int argc, char * const argv[] )
 		 stderr,
 		 "Unable to test seek offset.\n" );
 
-		libsmraw_handle_close(
-		 handle,
-		 NULL );
-		libsmraw_handle_free(
-		 &handle,
-		 NULL );
-
-		return( EXIT_FAILURE );
+		goto on_error;
 	}
 	/* Test: SEEK_SET offset: <media_size>
 	 * Expected result: <media_size>
@@ -268,14 +217,7 @@ int main( int argc, char * const argv[] )
 		 stderr,
 		 "Unable to test seek offset.\n" );
 
-		libsmraw_handle_close(
-		 handle,
-		 NULL );
-		libsmraw_handle_free(
-		 &handle,
-		 NULL );
-
-		return( EXIT_FAILURE );
+		goto on_error;
 	}
 	/* Test: SEEK_SET offset: <media_size / 5>
 	 * Expected result: <media_size / 5>
@@ -290,14 +232,7 @@ int main( int argc, char * const argv[] )
 		 stderr,
 		 "Unable to test seek offset.\n" );
 
-		libsmraw_handle_close(
-		 handle,
-		 NULL );
-		libsmraw_handle_free(
-		 &handle,
-		 NULL );
-
-		return( EXIT_FAILURE );
+		goto on_error;
 	}
 	/* Test: SEEK_SET offset: <media_size + 987>
 	 * Expected result: <media_size + 987>
@@ -312,14 +247,7 @@ int main( int argc, char * const argv[] )
 		 stderr,
 		 "Unable to test seek offset.\n" );
 
-		libsmraw_handle_close(
-		 handle,
-		 NULL );
-		libsmraw_handle_free(
-		 &handle,
-		 NULL );
-
-		return( EXIT_FAILURE );
+		goto on_error;
 	}
 	/* Test: SEEK_SET offset: -987
 	 * Expected result: -1
@@ -334,14 +262,7 @@ int main( int argc, char * const argv[] )
 		 stderr,
 		 "Unable to test seek offset.\n" );
 
-		libsmraw_handle_close(
-		 handle,
-		 NULL );
-		libsmraw_handle_free(
-		 &handle,
-		 NULL );
-
-		return( EXIT_FAILURE );
+		goto on_error;
 	}
 	/* Test: SEEK_CUR offset: 0
 	 * Expected result: <media_size + 987>
@@ -356,14 +277,7 @@ int main( int argc, char * const argv[] )
 		 stderr,
 		 "Unable to test seek offset.\n" );
 
-		libsmraw_handle_close(
-		 handle,
-		 NULL );
-		libsmraw_handle_free(
-		 &handle,
-		 NULL );
-
-		return( EXIT_FAILURE );
+		goto on_error;
 	}
 	/* Test: SEEK_CUR offset: <-1 * (media_size + 987)>
 	 * Expected result: 0
@@ -378,14 +292,7 @@ int main( int argc, char * const argv[] )
 		 stderr,
 		 "Unable to test seek offset.\n" );
 
-		libsmraw_handle_close(
-		 handle,
-		 NULL );
-		libsmraw_handle_free(
-		 &handle,
-		 NULL );
-
-		return( EXIT_FAILURE );
+		goto on_error;
 	}
 	/* Test: SEEK_CUR offset: <media_size / 3>
 	 * Expected result: <media_size / 3>
@@ -400,14 +307,7 @@ int main( int argc, char * const argv[] )
 		 stderr,
 		 "Unable to test seek offset.\n" );
 
-		libsmraw_handle_close(
-		 handle,
-		 NULL );
-		libsmraw_handle_free(
-		 &handle,
-		 NULL );
-
-		return( EXIT_FAILURE );
+		goto on_error;
 	}
 	if( media_size == 0 )
 	{
@@ -424,14 +324,7 @@ int main( int argc, char * const argv[] )
 			 stderr,
 			 "Unable to test seek offset.\n" );
 
-			libsmraw_handle_close(
-			 handle,
-			 NULL );
-			libsmraw_handle_free(
-			 &handle,
-			 NULL );
-
-			return( EXIT_FAILURE );
+			goto on_error;
 		}
 	}
 	else
@@ -449,14 +342,7 @@ int main( int argc, char * const argv[] )
 			 stderr,
 			 "Unable to test seek offset.\n" );
 
-			libsmraw_handle_close(
-			 handle,
-			 NULL );
-			libsmraw_handle_free(
-			 &handle,
-			 NULL );
-
-			return( EXIT_FAILURE );
+			goto on_error;
 		}
 	}
 	/* Test: SEEK_END offset: 0
@@ -472,14 +358,7 @@ int main( int argc, char * const argv[] )
 		 stderr,
 		 "Unable to test seek offset.\n" );
 
-		libsmraw_handle_close(
-		 handle,
-		 NULL );
-		libsmraw_handle_free(
-		 &handle,
-		 NULL );
-
-		return( EXIT_FAILURE );
+		goto on_error;
 	}
 	/* Test: SEEK_END offset: <-1 * media_size>
 	 * Expected result: 0
@@ -494,14 +373,7 @@ int main( int argc, char * const argv[] )
 		 stderr,
 		 "Unable to test seek offset.\n" );
 
-		libsmraw_handle_close(
-		 handle,
-		 NULL );
-		libsmraw_handle_free(
-		 &handle,
-		 NULL );
-
-		return( EXIT_FAILURE );
+		goto on_error;
 	}
 	/* Test: SEEK_END offset: <-1 * (media_size / 4)>
 	 * Expected result: <media_size - (media_size / 4)>
@@ -516,14 +388,7 @@ int main( int argc, char * const argv[] )
 		 stderr,
 		 "Unable to test seek offset.\n" );
 
-		libsmraw_handle_close(
-		 handle,
-		 NULL );
-		libsmraw_handle_free(
-		 &handle,
-		 NULL );
-
-		return( EXIT_FAILURE );
+		goto on_error;
 	}
 	/* Test: SEEK_END offset: 542
 	 * Expected result: <media_size + 542>
@@ -538,14 +403,7 @@ int main( int argc, char * const argv[] )
 		 stderr,
 		 "Unable to test seek offset.\n" );
 
-		libsmraw_handle_close(
-		 handle,
-		 NULL );
-		libsmraw_handle_free(
-		 &handle,
-		 NULL );
-
-		return( EXIT_FAILURE );
+		goto on_error;
 	}
 	/* Test: SEEK_END offset: <-1 * (media_size + 542)>
 	 * Expected result: -1
@@ -560,14 +418,7 @@ int main( int argc, char * const argv[] )
 		 stderr,
 		 "Unable to test seek offset.\n" );
 
-		libsmraw_handle_close(
-		 handle,
-		 NULL );
-		libsmraw_handle_free(
-		 &handle,
-		 NULL );
-
-		return( EXIT_FAILURE );
+		goto on_error;
 	}
 	/* Test: UNKNOWN (88) offset: 0
 	 * Expected result: -1
@@ -582,14 +433,7 @@ int main( int argc, char * const argv[] )
 		 stderr,
 		 "Unable to test seek offset.\n" );
 
-		libsmraw_handle_close(
-		 handle,
-		 NULL );
-		libsmraw_handle_free(
-		 &handle,
-		 NULL );
-
-		return( EXIT_FAILURE );
+		goto on_error;
 	}
 	/* Clean up
 	 */
@@ -601,17 +445,7 @@ int main( int argc, char * const argv[] )
 		 stderr,
 		 "Unable to close file(s).\n" );
 
-		libsmraw_error_backtrace_fprint(
-		 error,
-		 stderr );
-
-		libsmraw_error_free(
-		 &error );
-		libsmraw_handle_free(
-		 &handle,
-		 NULL );
-
-		return( EXIT_FAILURE );
+		goto on_error;
 	}
 	if( libsmraw_handle_free(
 	     &handle,
@@ -621,15 +455,28 @@ int main( int argc, char * const argv[] )
 		 stderr,
 		 "Unable to free handle.\n" );
 
+		goto on_error;
+	}
+	return( EXIT_SUCCESS );
+
+on_error:
+	if( error != NULL )
+	{
 		libsmraw_error_backtrace_fprint(
 		 error,
 		 stderr );
-
 		libsmraw_error_free(
 		 &error );
-
-		return( EXIT_FAILURE );
 	}
-	return( EXIT_SUCCESS );
+	if( handle != NULL )
+	{
+		libsmraw_handle_close(
+		 handle,
+		 NULL );
+		libsmraw_handle_free(
+		 &handle,
+		 NULL );
+	}
+	return( EXIT_FAILURE );
 }
 

@@ -1951,14 +1951,7 @@ int main( int argc, char * const argv[] )
 		 stderr,
 		 "Unable to create handle.\n" );
 
-		libsmraw_error_backtrace_fprint(
-		 error,
-		 stderr );
-
-		libsmraw_error_free(
-		 &error );
-
-		return( EXIT_FAILURE );
+		goto on_error;
 	}
 #if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
 	if( libsmraw_handle_open_wide(
@@ -1980,17 +1973,7 @@ int main( int argc, char * const argv[] )
 		 stderr,
 		 "Unable to open file(s).\n" );
 
-		libsmraw_error_backtrace_fprint(
-		 error,
-		 stderr );
-
-		libsmraw_error_free(
-		 &error );
-		libsmraw_handle_free(
-		 &handle_single,
-		 NULL );
-
-		return( EXIT_FAILURE );
+		goto on_error;
 	}
 	if( libsmraw_handle_get_media_size(
 	     handle_single,
@@ -2001,20 +1984,7 @@ int main( int argc, char * const argv[] )
 		 stderr,
 		 "Unable to retrieve media size.\n" );
 
-		libsmraw_error_backtrace_fprint(
-		 error,
-		 stderr );
-
-		libsmraw_error_free(
-		 &error );
-		libsmraw_handle_close(
-		 handle_single,
-		 NULL );
-		libsmraw_handle_free(
-		 &handle_single,
-		 NULL );
-
-		return( EXIT_FAILURE );
+		goto on_error;
 	}
 	if( media_size_single > (size64_t) INT64_MAX )
 	{
@@ -2022,20 +1992,7 @@ int main( int argc, char * const argv[] )
 		 stderr,
 		 "Media size exceeds maximum.\n" );
 
-		libsmraw_error_backtrace_fprint(
-		 error,
-		 stderr );
-
-		libsmraw_error_free(
-		 &error );
-		libsmraw_handle_close(
-		 handle_single,
-		 NULL );
-		libsmraw_handle_free(
-		 &handle_single,
-		 NULL );
-
-		return( EXIT_FAILURE );
+		goto on_error;
 	}
 	/* Initialization multi
 	 */
@@ -2061,20 +2018,7 @@ int main( int argc, char * const argv[] )
 		 stderr,
 		 "Unable to glob filenames.\n" );
 
-		libsmraw_error_backtrace_fprint(
-		 error,
-		 stderr );
-
-		libsmraw_error_free(
-		 &error );
-		libsmraw_handle_close(
-		 handle_single,
-		 NULL );
-		libsmraw_handle_free(
-		 &handle_single,
-		 NULL );
-
-		return( EXIT_FAILURE );
+		goto on_error;
 	}
 	if( libsmraw_handle_initialize(
 	     &handle_multi,
@@ -2084,12 +2028,6 @@ int main( int argc, char * const argv[] )
 		 stderr,
 		 "Unable to create handle.\n" );
 
-		libsmraw_error_backtrace_fprint(
-		 error,
-		 stderr );
-
-		libsmraw_error_free(
-		 &error );
 #if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
 		libsmraw_glob_wide_free(
 		 filenames_multi,
@@ -2101,14 +2039,7 @@ int main( int argc, char * const argv[] )
 		 number_of_filenames_multi,
 		 NULL );
 #endif
-		libsmraw_handle_close(
-		 handle_single,
-		 NULL );
-		libsmraw_handle_free(
-		 &handle_single,
-		 NULL );
-
-		return( EXIT_FAILURE );
+		goto on_error;
 	}
 #if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
 	if( libsmraw_handle_open_wide(
@@ -2130,12 +2061,6 @@ int main( int argc, char * const argv[] )
 		 stderr,
 		 "Unable to open file(s).\n" );
 
-		libsmraw_error_backtrace_fprint(
-		 error,
-		 stderr );
-
-		libsmraw_error_free(
-		 &error );
 #if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
 		libsmraw_glob_wide_free(
 		 filenames_multi,
@@ -2147,17 +2072,7 @@ int main( int argc, char * const argv[] )
 		 number_of_filenames_multi,
 		 NULL );
 #endif
-		libsmraw_handle_free(
-		 &handle_multi,
-		 NULL );
-		libsmraw_handle_close(
-		 handle_single,
-		 NULL );
-		libsmraw_handle_free(
-		 &handle_single,
-		 NULL );
-
-		return( EXIT_FAILURE );
+		goto on_error;
 	}
 #if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
 	if( libsmraw_glob_wide_free(
@@ -2175,26 +2090,7 @@ int main( int argc, char * const argv[] )
 		 stderr,
 		 "Unable to free glob.\n" );
 
-		libsmraw_error_backtrace_fprint(
-		 error,
-		 stderr );
-
-		libsmraw_error_free(
-		 &error );
-		libsmraw_handle_close(
-		 handle_multi,
-		 NULL );
-		libsmraw_handle_free(
-		 &handle_multi,
-		 NULL );
-		libsmraw_handle_close(
-		 handle_single,
-		 NULL );
-		libsmraw_handle_free(
-		 &handle_single,
-		 NULL );
-
-		return( EXIT_FAILURE );
+		goto on_error;
 	}
 	if( libsmraw_handle_get_media_size(
 	     handle_multi,
@@ -2205,26 +2101,7 @@ int main( int argc, char * const argv[] )
 		 stderr,
 		 "Unable to retrieve media size.\n" );
 
-		libsmraw_error_backtrace_fprint(
-		 error,
-		 stderr );
-
-		libsmraw_error_free(
-		 &error );
-		libsmraw_handle_close(
-		 handle_multi,
-		 NULL );
-		libsmraw_handle_free(
-		 &handle_multi,
-		 NULL );
-		libsmraw_handle_close(
-		 handle_single,
-		 NULL );
-		libsmraw_handle_free(
-		 &handle_single,
-		 NULL );
-
-		return( EXIT_FAILURE );
+		goto on_error;
 	}
 	if( media_size_multi > (size64_t) INT64_MAX )
 	{
@@ -2232,26 +2109,7 @@ int main( int argc, char * const argv[] )
 		 stderr,
 		 "Media size exceeds maximum.\n" );
 
-		libsmraw_error_backtrace_fprint(
-		 error,
-		 stderr );
-
-		libsmraw_error_free(
-		 &error );
-		libsmraw_handle_close(
-		 handle_multi,
-		 NULL );
-		libsmraw_handle_free(
-		 &handle_multi,
-		 NULL );
-		libsmraw_handle_close(
-		 handle_single,
-		 NULL );
-		libsmraw_handle_free(
-		 &handle_single,
-		 NULL );
-
-		return( EXIT_FAILURE );
+		goto on_error;
 	}
 	if( media_size_single != media_size_multi )
 	{
@@ -2259,20 +2117,7 @@ int main( int argc, char * const argv[] )
 		 stderr,
 		 "Mismatch in media size.\n" );
 
-		libsmraw_handle_close(
-		 handle_single,
-		 NULL );
-		libsmraw_handle_free(
-		 &handle_single,
-		 NULL );
-		libsmraw_handle_close(
-		 handle_single,
-		 NULL );
-		libsmraw_handle_free(
-		 &handle_single,
-		 NULL );
-
-		return( EXIT_FAILURE );
+		goto on_error;
 	}
 	fprintf(
 	 stdout,
@@ -2288,20 +2133,7 @@ int main( int argc, char * const argv[] )
 		 stderr,
 		 "Unable to test case: 0.\n" );
 
-		libsmraw_handle_close(
-		 handle_single,
-		 NULL );
-		libsmraw_handle_free(
-		 &handle_single,
-		 NULL );
-		libsmraw_handle_close(
-		 handle_single,
-		 NULL );
-		libsmraw_handle_free(
-		 &handle_single,
-		 NULL );
-
-		return( EXIT_FAILURE );
+		goto on_error;
 	}
 	if( smraw_test_compare_case1(
 	     handle_single,
@@ -2312,20 +2144,7 @@ int main( int argc, char * const argv[] )
 		 stderr,
 		 "Unable to test case: 1.\n" );
 
-		libsmraw_handle_close(
-		 handle_single,
-		 NULL );
-		libsmraw_handle_free(
-		 &handle_single,
-		 NULL );
-		libsmraw_handle_close(
-		 handle_single,
-		 NULL );
-		libsmraw_handle_free(
-		 &handle_single,
-		 NULL );
-
-		return( EXIT_FAILURE );
+		goto on_error;
 	}
 	if( smraw_test_compare_case2(
 	     handle_single,
@@ -2336,20 +2155,7 @@ int main( int argc, char * const argv[] )
 		 stderr,
 		 "Unable to test case: 2.\n" );
 
-		libsmraw_handle_close(
-		 handle_single,
-		 NULL );
-		libsmraw_handle_free(
-		 &handle_single,
-		 NULL );
-		libsmraw_handle_close(
-		 handle_single,
-		 NULL );
-		libsmraw_handle_free(
-		 &handle_single,
-		 NULL );
-
-		return( EXIT_FAILURE );
+		goto on_error;
 	}
 	if( smraw_test_compare_case3(
 	     handle_single,
@@ -2360,20 +2166,7 @@ int main( int argc, char * const argv[] )
 		 stderr,
 		 "Unable to test case: 3.\n" );
 
-		libsmraw_handle_close(
-		 handle_single,
-		 NULL );
-		libsmraw_handle_free(
-		 &handle_single,
-		 NULL );
-		libsmraw_handle_close(
-		 handle_single,
-		 NULL );
-		libsmraw_handle_free(
-		 &handle_single,
-		 NULL );
-
-		return( EXIT_FAILURE );
+		goto on_error;
 	}
 	if( smraw_test_compare_case4a(
 	     handle_single,
@@ -2384,20 +2177,7 @@ int main( int argc, char * const argv[] )
 		 stderr,
 		 "Unable to test case: 4a.\n" );
 
-		libsmraw_handle_close(
-		 handle_single,
-		 NULL );
-		libsmraw_handle_free(
-		 &handle_single,
-		 NULL );
-		libsmraw_handle_close(
-		 handle_single,
-		 NULL );
-		libsmraw_handle_free(
-		 &handle_single,
-		 NULL );
-
-		return( EXIT_FAILURE );
+		goto on_error;
 	}
 	if( smraw_test_compare_case4b(
 	     handle_single,
@@ -2408,20 +2188,7 @@ int main( int argc, char * const argv[] )
 		 stderr,
 		 "Unable to test case: 4b.\n" );
 
-		libsmraw_handle_close(
-		 handle_single,
-		 NULL );
-		libsmraw_handle_free(
-		 &handle_single,
-		 NULL );
-		libsmraw_handle_close(
-		 handle_single,
-		 NULL );
-		libsmraw_handle_free(
-		 &handle_single,
-		 NULL );
-
-		return( EXIT_FAILURE );
+		goto on_error;
 	}
 	if( smraw_test_compare_case5a(
 	     handle_single,
@@ -2432,20 +2199,7 @@ int main( int argc, char * const argv[] )
 		 stderr,
 		 "Unable to test case: 5a.\n" );
 
-		libsmraw_handle_close(
-		 handle_single,
-		 NULL );
-		libsmraw_handle_free(
-		 &handle_single,
-		 NULL );
-		libsmraw_handle_close(
-		 handle_single,
-		 NULL );
-		libsmraw_handle_free(
-		 &handle_single,
-		 NULL );
-
-		return( EXIT_FAILURE );
+		goto on_error;
 	}
 	if( smraw_test_compare_case5b(
 	     handle_single,
@@ -2456,20 +2210,7 @@ int main( int argc, char * const argv[] )
 		 stderr,
 		 "Unable to test case: 5b.\n" );
 
-		libsmraw_handle_close(
-		 handle_single,
-		 NULL );
-		libsmraw_handle_free(
-		 &handle_single,
-		 NULL );
-		libsmraw_handle_close(
-		 handle_single,
-		 NULL );
-		libsmraw_handle_free(
-		 &handle_single,
-		 NULL );
-
-		return( EXIT_FAILURE );
+		goto on_error;
 	}
 	/* Clean up multi
 	 */
@@ -2481,23 +2222,7 @@ int main( int argc, char * const argv[] )
 		 stderr,
 		 "Unable to close file(s).\n" );
 
-		libsmraw_error_backtrace_fprint(
-		 error,
-		 stderr );
-
-		libsmraw_error_free(
-		 &error );
-		libsmraw_handle_free(
-		 &handle_multi,
-		 NULL );
-		libsmraw_handle_close(
-		 handle_single,
-		 NULL );
-		libsmraw_handle_free(
-		 &handle_single,
-		 NULL );
-
-		return( EXIT_FAILURE );
+		goto on_error;
 	}
 	if( libsmraw_handle_free(
 	     &handle_multi,
@@ -2507,20 +2232,7 @@ int main( int argc, char * const argv[] )
 		 stderr,
 		 "Unable to free handle.\n" );
 
-		libsmraw_error_backtrace_fprint(
-		 error,
-		 stderr );
-
-		libsmraw_error_free(
-		 &error );
-		libsmraw_handle_close(
-		 handle_single,
-		 NULL );
-		libsmraw_handle_free(
-		 &handle_single,
-		 NULL );
-
-		return( EXIT_FAILURE );
+		goto on_error;
 	}
 	/* Clean up single
 	 */
@@ -2532,17 +2244,7 @@ int main( int argc, char * const argv[] )
 		 stderr,
 		 "Unable to close file(s).\n" );
 
-		libsmraw_error_backtrace_fprint(
-		 error,
-		 stderr );
-
-		libsmraw_error_free(
-		 &error );
-		libsmraw_handle_free(
-		 &handle_single,
-		 NULL );
-
-		return( EXIT_FAILURE );
+		goto on_error;
 	}
 	if( libsmraw_handle_free(
 	     &handle_single,
@@ -2552,15 +2254,37 @@ int main( int argc, char * const argv[] )
 		 stderr,
 		 "Unable to free handle.\n" );
 
+		goto on_error;
+	}
+	return( EXIT_SUCCESS );
+
+on_error:
+	if( error != NULL )
+	{
 		libsmraw_error_backtrace_fprint(
 		 error,
 		 stderr );
-
 		libsmraw_error_free(
 		 &error );
-
-		return( EXIT_FAILURE );
 	}
-	return( EXIT_SUCCESS );
+	if( handle_multi != NULL )
+	{
+		libsmraw_handle_close(
+		 handle_multi,
+		 NULL );
+		libsmraw_handle_free(
+		 &handle_multi,
+		 NULL );
+	}
+	if( handle_single != NULL )
+	{
+		libsmraw_handle_close(
+		 handle_single,
+		 NULL );
+		libsmraw_handle_free(
+		 &handle_single,
+		 NULL );
+	}
+	return( EXIT_FAILURE );
 }
 

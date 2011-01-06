@@ -36,19 +36,21 @@
 #include "digest_hash.h"
 #include "md5.h"
 
+#define SMRAW_TEST_BUFFER_SIZE	4096
+
 int smraw_test_write(
      const char *filename,
      size_t media_size,
-     size_t maximum_segment_size )
+     size_t maximum_segment_size,
+     liberror_error_t **error )
 {
-	uint8_t buffer[ 4096 ];
-
 	digest_hash_t md5_hash[ DIGEST_HASH_SIZE_MD5 ];
 
 	md5_context_t md5_context;
 
-	libsmraw_error_t *error   = NULL;
 	libsmraw_handle_t *handle = NULL;
+	uint8_t *buffer           = NULL;
+	static char *function     = "smraw_test_write";
 	size_t md5_hash_size      = DIGEST_HASH_SIZE_MD5;
 	size_t write_size         = 0;
 	ssize_t write_count       = 0;
@@ -63,37 +65,29 @@ int smraw_test_write(
 
 	if( md5_initialize(
 	     &md5_context,
-	     &error ) != 1 )
+	     error ) != 1 )
 	{
-		fprintf(
-		 stderr,
-		 "Unable to initialize MD5 context.\n" );
-
-		libsmraw_error_backtrace_fprint(
+		liberror_error_set(
 		 error,
-		 stderr );
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 "%s: unable to initialize MD5 context.",
+		 function );
 
-		libsmraw_error_free(
-		 &error );
-
-		return( -1 );
+		goto on_error;
 	}
 	if( libsmraw_handle_initialize(
 	     &handle,
-	     &error ) != 1 )
+	     error ) != 1 )
 	{
-		fprintf(
-		 stderr,
-		 "Unable to create handle.\n" );
-
-		libsmraw_error_backtrace_fprint(
+		liberror_error_set(
 		 error,
-		 stderr );
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 "%s: unable to create handle.",
+		 function );
 
-		libsmraw_error_free(
-		 &error );
-
-		return( -1 );
+		goto on_error;
 	}
 #if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
 	if( libsmraw_handle_open_wide(
@@ -101,82 +95,69 @@ int smraw_test_write(
 	     (wchar_t * const *) &filename,
 	     1,
 	     LIBSMRAW_OPEN_WRITE,
-	     &error ) != 1 )
+	     error ) != 1 )
 #else
 	if( libsmraw_handle_open(
 	     handle,
 	     (char * const *) &filename,
 	     1,
 	     LIBSMRAW_OPEN_WRITE,
-	     &error ) != 1 )
+	     error ) != 1 )
 #endif
 	{
-		fprintf(
-		 stderr,
-		 "Unable to open file(s).\n" );
-
-		libsmraw_error_backtrace_fprint(
+		liberror_error_set(
 		 error,
-		 stderr );
+		 LIBERROR_ERROR_DOMAIN_IO,
+		 LIBERROR_IO_ERROR_OPEN_FAILED,
+		 "%s: unable to open handle.",
+		 function );
 
-		libsmraw_error_free(
-		 &error );
-		libsmraw_handle_free(
-		 &handle,
-		 NULL );
-
-		return( -1 );
+		goto on_error;
 	}
 	if( media_size > 0 )
 	{
 		if( libsmraw_handle_set_media_size(
 		     handle,
 		     media_size,
-		     &error ) != 1 )
+		     error ) != 1 )
 		{
-			fprintf(
-			 stderr,
-			 "Unable set media size.\n" );
-
-			libsmraw_error_backtrace_fprint(
+			liberror_error_set(
 			 error,
-			 stderr );
+			 LIBERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+			 "%s: unable set media size.",
+			 function );
 
-			libsmraw_error_free(
-			 &error );
-			libsmraw_handle_close(
-			 handle,
-			 NULL );
-			libsmraw_handle_free(
-			 &handle,
-			 NULL );
-
-			return( -1 );
+			goto on_error;
 		}
 	}
 	if( libsmraw_handle_set_maximum_segment_size(
 	     handle,
 	     maximum_segment_size,
-	     &error ) != 1 )
+	     error ) != 1 )
 	{
-		fprintf(
-		 stderr,
-		 "Unable set maximum segment size.\n" );
-
-		libsmraw_error_backtrace_fprint(
+		liberror_error_set(
 		 error,
-		 stderr );
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable set maximum segment size.",
+		 function );
 
-		libsmraw_error_free(
-		 &error );
-		libsmraw_handle_close(
-		 handle,
-		 NULL );
-		libsmraw_handle_free(
-		 &handle,
-		 NULL );
+		goto on_error;
+	}
+	buffer = (uint8_t *) memory_allocate(
+	                      SMRAW_TEST_BUFFER_SIZE );
 
-		return( -1 );
+	if( buffer == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_MEMORY,
+		 LIBERROR_MEMORY_ERROR_INSUFFICIENT,
+		 "%s: unable create buffer.",
+		 function );
+
+		goto on_error;
 	}
 	write_size = 512;
 
@@ -189,55 +170,40 @@ int smraw_test_write(
 		     (int) 'A' + sector_iterator,
 		     write_size ) == NULL )
 		{
-			fprintf(
-			 stderr,
-			 "Unable to initialize buffer with: %d.\n",
-			 sector_iterator );
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_MEMORY,
+			 LIBERROR_MEMORY_ERROR_SET_FAILED,
+			 "%s: unable set value in buffer.",
+			 function );
 
-			libsmraw_handle_close(
-			 handle,
-			 NULL );
-			libsmraw_handle_free(
-			 &handle,
-			 NULL );
-
-			return( -1 );
+			goto on_error;
 		}
 		md5_update(
 		 &md5_context,
 		 buffer,
 		 write_size,
-		 &error );
+		 error );
 
 		write_count = libsmraw_handle_write_buffer(
 		               handle,
 		               buffer,
 		               write_size,
-		               &error );
+		               error );
 
 		if( write_count != (ssize_t) write_size )
 		{
 			if( write_count != (ssize_t) media_size )
 			{
-				fprintf(
-				 stderr,
-				 "Unable write block of %" PRIzd " bytes to file(s).\n",
+				liberror_error_set(
+				 error,
+				 LIBERROR_ERROR_DOMAIN_IO,
+				 LIBERROR_IO_ERROR_WRITE_FAILED,
+				 "%s: unable write buffer of size: %" PRIzd ".",
+				 function,
 				 write_size );
 
-				libsmraw_error_backtrace_fprint(
-				 error,
-				 stderr );
-
-				libsmraw_error_free(
-				 &error );
-				libsmraw_handle_close(
-				 handle,
-				 NULL );
-				libsmraw_handle_free(
-				 &handle,
-				 NULL );
-
-				return( -1 );
+				goto on_error;
 			}
 		}
 		if( media_size > 0 )
@@ -256,56 +222,40 @@ int smraw_test_write(
 		     (int) 'a' + sector_iterator,
 		     write_size ) == NULL )
 		{
-			fprintf(
-			 stderr,
-			 "Unable to initialize buffer with: %d.\n",
-			 sector_iterator );
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_MEMORY,
+			 LIBERROR_MEMORY_ERROR_SET_FAILED,
+			 "%s: unable set value in buffer.",
+			 function );
 
-			libsmraw_handle_close(
-			 handle,
-			 NULL );
-			libsmraw_handle_free(
-			 &handle,
-			 NULL );
-
-			return( -1 );
+			goto on_error;
 		}
 		md5_update(
 		 &md5_context,
 		 buffer,
 		 write_size,
-		 &error );
+		 error );
 
 		write_count = libsmraw_handle_write_buffer(
 		               handle,
 		               buffer,
 		               write_size,
-		               &error );
+		               error );
 
 		if( write_count != (ssize_t) write_size )
 		{
 			if( write_count != (ssize_t) media_size )
 			{
-				fprintf(
-				 stderr,
-				 "Unable write block of %" PRIzd " bytes to file(s).\n",
+				liberror_error_set(
+				 error,
+				 LIBERROR_ERROR_DOMAIN_IO,
+				 LIBERROR_IO_ERROR_WRITE_FAILED,
+				 "%s: unable write buffer of size: %" PRIzd ".",
+				 function,
 				 write_size );
 
-				libsmraw_error_backtrace_fprint(
-				 error,
-				 stderr );
-
-				libsmraw_error_free(
-				 &error );
-
-				libsmraw_handle_close(
-				 handle,
-				 NULL );
-				libsmraw_handle_free(
-				 &handle,
-				 NULL );
-
-				return( -1 );
+				goto on_error;
 			}
 		}
 		if( media_size > 0 )
@@ -317,71 +267,49 @@ int smraw_test_write(
 	     &md5_context,
 	     md5_hash,
 	     &md5_hash_size,
-	     &error ) != 1 )
+	     error ) != 1 )
 	{
-		fprintf(
-		 stderr,
-		 "Unable to finalize MD5 context.\n" );
-
-		libsmraw_error_backtrace_fprint(
+		liberror_error_set(
 		 error,
-		 stderr );
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+		 "%s: unable to finalize MD5 context.",
+		 function );
 
-		libsmraw_error_free(
-		 &error );
-
-		libsmraw_handle_close(
-		 handle,
-		 NULL );
-		libsmraw_handle_free(
-		 &handle,
-		 NULL );
-
-		return( -1 );
+		goto on_error;
 	}
+	memory_free(
+	 buffer );
+
+	buffer = NULL;
+
 	/* Clean up
 	 */
 	if( libsmraw_handle_close(
 	     handle,
-	     &error ) != 0 )
+	     error ) != 0 )
 	{
-		fprintf(
-		 stderr,
-		 "Unable to close file(s).\n" );
-
-		libsmraw_error_backtrace_fprint(
+		liberror_error_set(
 		 error,
-		 stderr );
+		 LIBERROR_ERROR_DOMAIN_IO,
+		 LIBERROR_IO_ERROR_CLOSE_FAILED,
+		 "%s: unable to close handle.",
+		 function );
 
-		libsmraw_error_free(
-		 &error );
-
-		libsmraw_handle_free(
-		 &handle,
-		 NULL );
-
-		return( -1 );
+		goto on_error;
 	}
 	if( libsmraw_handle_free(
 	     &handle,
-	     &error ) != 1 )
+	     error ) != 1 )
 	{
-		fprintf(
-		 stderr,
-		 "Unable to free handle.\n" );
-
-		libsmraw_error_backtrace_fprint(
+		liberror_error_set(
 		 error,
-		 stderr );
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+		 "%s: unable to free handle.",
+		 function );
 
-		libsmraw_error_free(
-		 &error );
-
-		libsmraw_handle_free(
-		 &handle,
-		 NULL );
-
-		return( -1 );
+		goto on_error;
 	}
 	if( result != 0 )
 	{
@@ -400,6 +328,23 @@ int smraw_test_write(
 	 "\n" );
 
 	return( result );
+
+on_error:
+	if( buffer != NULL )
+	{
+		memory_free(
+		 buffer );
+	}
+	if( handle != NULL )
+	{
+		libsmraw_handle_close(
+		 handle,
+		 NULL );
+		libsmraw_handle_free(
+		 &handle,
+		 NULL );
+	}
+	return( -1 );
 }
 
 /* The main program
@@ -410,50 +355,67 @@ int wmain( int argc, wchar_t * const argv[] )
 int main( int argc, char * const argv[] )
 #endif
 {
+	libsmraw_error_t *error = NULL;
+
 	if( smraw_test_write(
 	     _LIBCSTRING_SYSTEM_STRING( "test1" ),
 	     0,
-	     0 ) != 1 )
+	     0,
+	     &error ) != 1 )
 	{
 		fprintf(
 		 stderr,
 		 "Unable to test write.\n" );
 
-		return( EXIT_FAILURE );
+		goto on_error;
 	}
 	if( smraw_test_write(
 	     _LIBCSTRING_SYSTEM_STRING( "test2" ),
 	     0,
-	     10000 ) != 1 )
+	     10000,
+	     &error ) != 1 )
 	{
 		fprintf(
 		 stderr,
 		 "Unable to test write.\n" );
 
-		return( EXIT_FAILURE );
+		goto on_error;
 	}
 	if( smraw_test_write(
 	     _LIBCSTRING_SYSTEM_STRING( "test3" ),
 	     100000,
-	     0 ) != 1 )
+	     0,
+	     &error ) != 1 )
 	{
 		fprintf(
 		 stderr,
 		 "Unable to test write.\n" );
 
-		return( EXIT_FAILURE );
+		goto on_error;
 	}
 	if( smraw_test_write(
 	     _LIBCSTRING_SYSTEM_STRING( "test4" ),
 	     100000,
-	     10000 ) != 1 )
+	     10000,
+	     &error ) != 1 )
 	{
 		fprintf(
 		 stderr,
 		 "Unable to test write.\n" );
 
-		return( EXIT_FAILURE );
+		goto on_error;
 	}
 	return( EXIT_SUCCESS );
+
+on_error:
+	if( error != NULL )
+	{
+		libsmraw_error_backtrace_fprint(
+		 error,
+		 stderr );
+		libsmraw_error_free(
+		 &error );
+	}
+	return( EXIT_FAILURE );
 }
 

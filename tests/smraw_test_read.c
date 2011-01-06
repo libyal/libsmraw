@@ -365,14 +365,7 @@ int main( int argc, char * const argv[] )
 		 stderr,
 		 "Unable to create handle.\n" );
 
-		libsmraw_error_backtrace_fprint(
-		 error,
-		 stderr );
-
-		libsmraw_error_free(
-		 &error );
-
-		return( EXIT_FAILURE );
+		goto on_error;
 	}
 #if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
 	if( libsmraw_handle_open_wide(
@@ -394,17 +387,7 @@ int main( int argc, char * const argv[] )
 		 stderr,
 		 "Unable to open file(s).\n" );
 
-		libsmraw_error_backtrace_fprint(
-		 error,
-		 stderr );
-
-		libsmraw_error_free(
-		 &error );
-		libsmraw_handle_free(
-		 &handle,
-		 NULL );
-
-		return( EXIT_FAILURE );
+		goto on_error;
 	}
 	if( libsmraw_handle_get_media_size(
 	     handle,
@@ -415,20 +398,7 @@ int main( int argc, char * const argv[] )
 		 stderr,
 		 "Unable to retrieve media size.\n" );
 
-		libsmraw_error_backtrace_fprint(
-		 error,
-		 stderr );
-
-		libsmraw_error_free(
-		 &error );
-		libsmraw_handle_close(
-		 handle,
-		 NULL );
-		libsmraw_handle_free(
-		 &handle,
-		 NULL );
-
-		return( EXIT_FAILURE );
+		goto on_error;
 	}
 	if( media_size > (size64_t) INT64_MAX )
 	{
@@ -436,20 +406,7 @@ int main( int argc, char * const argv[] )
 		 stderr,
 		 "Media size exceeds maximum.\n" );
 
-		libsmraw_error_backtrace_fprint(
-		 error,
-		 stderr );
-
-		libsmraw_error_free(
-		 &error );
-		libsmraw_handle_close(
-		 handle,
-		 NULL );
-		libsmraw_handle_free(
-		 &handle,
-		 NULL );
-
-		return( EXIT_FAILURE );
+		goto on_error;
 	}
 	fprintf(
 	 stdout,
@@ -474,14 +431,7 @@ int main( int argc, char * const argv[] )
 		 stderr,
 		 "Unable to test read.\n" );
 
-		libsmraw_handle_close(
-		 handle,
-		 NULL );
-		libsmraw_handle_free(
-		 &handle,
-		 NULL );
-
-		return( EXIT_FAILURE );
+		goto on_error;
 	}
 	/* Test: offset: 0 size: <media_size>
 	 * Expected result: offset: 0 size: <media_size>
@@ -498,14 +448,7 @@ int main( int argc, char * const argv[] )
 		 stderr,
 		 "Unable to test read.\n" );
 
-		libsmraw_handle_close(
-		 handle,
-		 NULL );
-		libsmraw_handle_free(
-		 &handle,
-		 NULL );
-
-		return( EXIT_FAILURE );
+		goto on_error;
 	}
 
 	/* Case 1: test random read
@@ -526,14 +469,7 @@ int main( int argc, char * const argv[] )
 		 stderr,
 		 "Unable to test read.\n" );
 
-		libsmraw_handle_close(
-		 handle,
-		 NULL );
-		libsmraw_handle_free(
-		 &handle,
-		 NULL );
-
-		return( EXIT_FAILURE );
+		goto on_error;
 	}
 	/* Test: offset: <media_size / 7> size: <media_size / 2>
 	 * Expected result: offset: <media_size / 7> size: <media_size / 2>
@@ -550,14 +486,7 @@ int main( int argc, char * const argv[] )
 		 stderr,
 		 "Unable to test read.\n" );
 
-		libsmraw_handle_close(
-		 handle,
-		 NULL );
-		libsmraw_handle_free(
-		 &handle,
-		 NULL );
-
-		return( EXIT_FAILURE );
+		goto on_error;
 	}
 
 	/* Case 3: test read beyond media size
@@ -580,14 +509,7 @@ int main( int argc, char * const argv[] )
 			 stderr,
 			 "Unable to test read.\n" );
 
-			libsmraw_handle_close(
-			 handle,
-			 NULL );
-			libsmraw_handle_free(
-			 &handle,
-			 NULL );
-
-			return( EXIT_FAILURE );
+			goto on_error;
 		}
 		/* Test: offset: <media_size - 1024> size: 4096
 		 * Expected result: offset: -1 size: <undetermined>
@@ -604,14 +526,7 @@ int main( int argc, char * const argv[] )
 			 stderr,
 			 "Unable to test read.\n" );
 
-			libsmraw_handle_close(
-			 handle,
-			 NULL );
-			libsmraw_handle_free(
-			 &handle,
-			 NULL );
-
-			return( EXIT_FAILURE );
+			goto on_error;
 		}
 	}
 	else
@@ -631,14 +546,7 @@ int main( int argc, char * const argv[] )
 			 stderr,
 			 "Unable to test read.\n" );
 
-			libsmraw_handle_close(
-			 handle,
-			 NULL );
-			libsmraw_handle_free(
-			 &handle,
-			 NULL );
-
-			return( EXIT_FAILURE );
+			goto on_error;
 		}
 		/* Test: offset: <media_size - 1024> size: 4096
 		 * Expected result: offset: <media_size - 1024> size: 1024
@@ -655,14 +563,7 @@ int main( int argc, char * const argv[] )
 			 stderr,
 			 "Unable to test read.\n" );
 
-			libsmraw_handle_close(
-			 handle,
-			 NULL );
-			libsmraw_handle_free(
-			 &handle,
-			 NULL );
-
-			return( EXIT_FAILURE );
+			goto on_error;
 		}
 	}
 	if( argc > 3 )
@@ -676,14 +577,7 @@ int main( int argc, char * const argv[] )
 			 stderr,
 			 "Unable to test read segment file.\n" );
 
-			libsmraw_handle_close(
-			 handle,
-			 NULL );
-			libsmraw_handle_free(
-			 &handle,
-			 NULL );
-
-			return( EXIT_FAILURE );
+			goto on_error;
 		}
 	}
 	/* Clean up
@@ -696,17 +590,7 @@ int main( int argc, char * const argv[] )
 		 stderr,
 		 "Unable to close file(s).\n" );
 
-		libsmraw_error_backtrace_fprint(
-		 error,
-		 stderr );
-
-		libsmraw_error_free(
-		 &error );
-		libsmraw_handle_free(
-		 &handle,
-		 NULL );
-
-		return( EXIT_FAILURE );
+		goto on_error;
 	}
 	if( libsmraw_handle_free(
 	     &handle,
@@ -716,15 +600,28 @@ int main( int argc, char * const argv[] )
 		 stderr,
 		 "Unable to free handle.\n" );
 
+		goto on_error;
+	}
+	return( EXIT_SUCCESS );
+
+on_error:
+	if( error != NULL )
+	{
 		libsmraw_error_backtrace_fprint(
 		 error,
 		 stderr );
-
 		libsmraw_error_free(
 		 &error );
-
-		return( EXIT_FAILURE );
 	}
-	return( EXIT_SUCCESS );
+	if( handle != NULL )
+	{
+		libsmraw_handle_close(
+		 handle,
+		 NULL );
+		libsmraw_handle_free(
+		 &handle,
+		 NULL );
+	}
+	return( EXIT_FAILURE );
 }
 

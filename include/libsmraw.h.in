@@ -628,6 +628,43 @@ int libsmraw_handle_set_utf8_information_value(
      size_t utf8_string_length,
      libsmraw_error_t **error );
 
+/* Retrieves the size of an UTF-16 encoded information value for the specific identifier
+ * The value size includes the end of string character
+ * Returns 1 if successful, 0 if value not present or -1 on error
+ */
+LIBSMRAW_EXTERN \
+int libsmraw_handle_get_utf16_information_value_size(
+     libsmraw_handle_t *handle,
+     const uint8_t *identifier,
+     size_t identifier_size,
+     size_t *utf16_string_size,
+     libsmraw_error_t **error );
+
+/* Retrieves an UTF-16 encoded information value for the specific identifier
+ * The value size should include the end of string character
+ * Returns 1 if successful, 0 if value not present or -1 on error
+ */
+LIBSMRAW_EXTERN \
+int libsmraw_handle_get_utf16_information_value(
+     libsmraw_handle_t *handle,
+     const uint8_t *identifier,
+     size_t identifier_size,
+     uint16_t *utf16_string,
+     size_t utf16_string_size,
+     libsmraw_error_t **error );
+
+/* Sets an UTF-16 encoded information value for the specific identifier
+ * Returns the 1 if succesful or -1 on error
+ */
+LIBSMRAW_EXTERN \
+int libsmraw_handle_set_utf16_information_value(
+     libsmraw_handle_t *handle,
+     const uint8_t *identifier,
+     size_t identifier_size,
+     const uint16_t *utf16_string,
+     size_t utf16_string_length,
+     libsmraw_error_t **error );
+
 /* Retrieves the number of integrity hash values
  * Returns 1 if successful or -1 on error
  */
@@ -695,6 +732,43 @@ int libsmraw_handle_set_utf8_integrity_hash_value(
      size_t identifier_size,
      const uint8_t *utf8_string,
      size_t utf8_string_length,
+     libsmraw_error_t **error );
+
+/* Retrieves the size of an UTF-16 encoded integrity hash value for the specific identifier
+ * The value size includes the end of string character
+ * Returns 1 if successful, 0 if value not present or -1 on error
+ */
+LIBSMRAW_EXTERN \
+int libsmraw_handle_get_utf16_integrity_hash_value_size(
+     libsmraw_handle_t *handle,
+     const uint8_t *identifier,
+     size_t identifier_size,
+     size_t *utf16_string_size,
+     libsmraw_error_t **error );
+
+/* Retrieves an UTF-16 encoded integrity hash value for the specific identifier
+ * The value size should include the end of string character
+ * Returns 1 if successful, 0 if value not present or -1 on error
+ */
+LIBSMRAW_EXTERN \
+int libsmraw_handle_get_utf16_integrity_hash_value(
+     libsmraw_handle_t *handle,
+     const uint8_t *identifier,
+     size_t identifier_size,
+     uint16_t *utf16_string,
+     size_t utf16_string_size,
+     libsmraw_error_t **error );
+
+/* Sets an UTF-16 encoded integrity hash value for the specific identifier
+ * Returns the 1 if succesful or -1 on error
+ */
+LIBSMRAW_EXTERN \
+int libsmraw_handle_set_utf16_integrity_hash_value(
+     libsmraw_handle_t *handle,
+     const uint8_t *identifier,
+     size_t identifier_size,
+     const uint16_t *utf16_string,
+     size_t utf16_string_length,
      libsmraw_error_t **error );
 
 /* -------------------------------------------------------------------------

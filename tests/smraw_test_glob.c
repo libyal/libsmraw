@@ -78,14 +78,7 @@ int main( int argc, char * const argv[] )
 		 stderr,
 		 "Unable to glob filenames.\n" );
 
-		libsmraw_error_backtrace_fprint(
-		 error,
-		 stderr );
-
-		libsmraw_error_free(
-		 &error );
-
-		return( EXIT_FAILURE );
+		goto on_error;
 	}
 	if( number_of_filenames < 0 )
 	{
@@ -93,7 +86,7 @@ int main( int argc, char * const argv[] )
 		 stderr,
 		 "Invalid number of filenames.\n" );
 
-		return( EXIT_FAILURE );
+		goto on_error;
 	}
 	else if( number_of_filenames == 0 )
 	{
@@ -101,7 +94,7 @@ int main( int argc, char * const argv[] )
 		 stderr,
 		 "Missing filenames.\n" );
 
-		return( EXIT_FAILURE );
+		goto on_error;
 	}
 	for( filename_iterator = 0;
 	     filename_iterator < number_of_filenames;
@@ -147,15 +140,19 @@ int main( int argc, char * const argv[] )
 		 stderr,
 		 "Unable to free glob.\n" );
 
+		goto on_error;
+	}
+	return( EXIT_SUCCESS );
+
+on_error:
+	if( error != NULL )
+	{
 		libsmraw_error_backtrace_fprint(
 		 error,
 		 stderr );
-
 		libsmraw_error_free(
 		 &error );
-
-		return( EXIT_FAILURE );
 	}
-	return( EXIT_SUCCESS );
+	return( EXIT_FAILURE );
 }
 
