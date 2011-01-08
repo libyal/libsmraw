@@ -27,6 +27,10 @@ Test
 Beta release
 * remove deprecated functions in libsmraw_legacy.[ch]
 
+20110108
+* updated configure.ac
+* updated common, libcstring, libuna, libbfio
+
 20110106
 * worked on UTF-16 functions
 * tests: code clean up

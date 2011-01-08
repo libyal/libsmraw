@@ -22,10 +22,16 @@
 #include <common.h>
 
 #if defined( WINAPI )
-
 #include <windows.h>
+#endif
 
 #include "libsmraw_unused.h"
+
+/* Define HAVE_LOCAL_LIBSMRAW for local use of libsmraw
+ */
+#if !defined( HAVE_LOCAL_LIBSMRAW )
+
+#if defined( WINAPI )
 
 #if defined( _MANAGED )
 #pragma managed( push, off )
@@ -59,5 +65,16 @@ BOOL WINAPI DllMain(
 	return( TRUE );
 }
 
-#endif
+/* Function that indicates the library is a DLL
+ * Returns 1
+ */
+int libsmraw_is_dll(
+     void )
+{
+	return( 1 );
+}
+
+#endif /* defined( WINAPI ) */
+
+#endif /* !defined( HAVE_LOCAL_LIBSMRAW ) */
 
