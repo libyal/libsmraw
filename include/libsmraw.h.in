@@ -52,20 +52,20 @@ const char *libsmraw_get_version(
 /* Returns the access flags for reading
  */
 LIBSMRAW_EXTERN \
-uint8_t libsmraw_get_access_flags_read(
-         void );
+int libsmraw_get_access_flags_read(
+     void );
 
 /* Returns the access flags for reading and writing
  */
 LIBSMRAW_EXTERN \
-uint8_t libsmraw_get_access_flags_read_write(
-         void );
+int libsmraw_get_access_flags_read_write(
+     void );
 
 /* Returns the access flags for writing
  */
 LIBSMRAW_EXTERN \
-uint8_t libsmraw_get_access_flags_write(
-         void );
+int libsmraw_get_access_flags_write(
+     void );
 
 /* Retrieves the narrow system string codepage
  * A value of 0 represents no codepage, UTF-8 encoding is used instead
@@ -290,6 +290,17 @@ ssize_t libsmraw_handle_read_buffer(
          size_t buffer_size,
          libsmraw_error_t **error );
 
+/* Reads (media) data at a specific offset
+ * Returns the number of bytes read or -1 on error
+ */
+LIBSMRAW_EXTERN \
+ssize_t libsmraw_handle_read_random(
+         libsmraw_handle_t *handle,
+         void *buffer,
+         size_t buffer_size,
+         off64_t offset,
+         libsmraw_error_t **error );
+
 /* Writes a buffer to the handle
  * Returns the number of bytes written or -1 on error
  */
@@ -298,6 +309,17 @@ ssize_t libsmraw_handle_write_buffer(
          libsmraw_handle_t *handle,
          const void *buffer,
          size_t buffer_size,
+         libsmraw_error_t **error );
+
+/* Writes (media) data at a specific offset,
+ * Returns the number of input bytes written, 0 when no longer bytes can be written or -1 on error
+ */
+LIBSMRAW_EXTERN \
+ssize_t libsmraw_handle_write_random(
+         libsmraw_handle_t *handle,
+         const void *buffer,
+         size_t buffer_size,
+         off64_t offset,
          libsmraw_error_t **error );
 
 /* Seeks an offset in the handle
@@ -599,7 +621,7 @@ LIBSMRAW_EXTERN \
 int libsmraw_handle_get_utf8_information_value_size(
      libsmraw_handle_t *handle,
      const uint8_t *identifier,
-     size_t identifier_size,
+     size_t identifier_length,
      size_t *utf8_string_size,
      libsmraw_error_t **error );
 
@@ -611,7 +633,7 @@ LIBSMRAW_EXTERN \
 int libsmraw_handle_get_utf8_information_value(
      libsmraw_handle_t *handle,
      const uint8_t *identifier,
-     size_t identifier_size,
+     size_t identifier_length,
      uint8_t *utf8_string,
      size_t utf8_string_size,
      libsmraw_error_t **error );
@@ -623,7 +645,7 @@ LIBSMRAW_EXTERN \
 int libsmraw_handle_set_utf8_information_value(
      libsmraw_handle_t *handle,
      const uint8_t *identifier,
-     size_t identifier_size,
+     size_t identifier_length,
      const uint8_t *utf8_string,
      size_t utf8_string_length,
      libsmraw_error_t **error );
@@ -636,7 +658,7 @@ LIBSMRAW_EXTERN \
 int libsmraw_handle_get_utf16_information_value_size(
      libsmraw_handle_t *handle,
      const uint8_t *identifier,
-     size_t identifier_size,
+     size_t identifier_length,
      size_t *utf16_string_size,
      libsmraw_error_t **error );
 
@@ -648,7 +670,7 @@ LIBSMRAW_EXTERN \
 int libsmraw_handle_get_utf16_information_value(
      libsmraw_handle_t *handle,
      const uint8_t *identifier,
-     size_t identifier_size,
+     size_t identifier_length,
      uint16_t *utf16_string,
      size_t utf16_string_size,
      libsmraw_error_t **error );
@@ -660,7 +682,7 @@ LIBSMRAW_EXTERN \
 int libsmraw_handle_set_utf16_information_value(
      libsmraw_handle_t *handle,
      const uint8_t *identifier,
-     size_t identifier_size,
+     size_t identifier_length,
      const uint16_t *utf16_string,
      size_t utf16_string_length,
      libsmraw_error_t **error );
@@ -705,7 +727,7 @@ LIBSMRAW_EXTERN \
 int libsmraw_handle_get_utf8_integrity_hash_value_size(
      libsmraw_handle_t *handle,
      const uint8_t *identifier,
-     size_t identifier_size,
+     size_t identifier_length,
      size_t *utf8_string_size,
      libsmraw_error_t **error );
 
@@ -717,7 +739,7 @@ LIBSMRAW_EXTERN \
 int libsmraw_handle_get_utf8_integrity_hash_value(
      libsmraw_handle_t *handle,
      const uint8_t *identifier,
-     size_t identifier_size,
+     size_t identifier_length,
      uint8_t *utf8_string,
      size_t utf8_string_size,
      libsmraw_error_t **error );
@@ -729,7 +751,7 @@ LIBSMRAW_EXTERN \
 int libsmraw_handle_set_utf8_integrity_hash_value(
      libsmraw_handle_t *handle,
      const uint8_t *identifier,
-     size_t identifier_size,
+     size_t identifier_length,
      const uint8_t *utf8_string,
      size_t utf8_string_length,
      libsmraw_error_t **error );
@@ -742,7 +764,7 @@ LIBSMRAW_EXTERN \
 int libsmraw_handle_get_utf16_integrity_hash_value_size(
      libsmraw_handle_t *handle,
      const uint8_t *identifier,
-     size_t identifier_size,
+     size_t identifier_length,
      size_t *utf16_string_size,
      libsmraw_error_t **error );
 
@@ -754,7 +776,7 @@ LIBSMRAW_EXTERN \
 int libsmraw_handle_get_utf16_integrity_hash_value(
      libsmraw_handle_t *handle,
      const uint8_t *identifier,
-     size_t identifier_size,
+     size_t identifier_length,
      uint16_t *utf16_string,
      size_t utf16_string_size,
      libsmraw_error_t **error );
@@ -766,7 +788,7 @@ LIBSMRAW_EXTERN \
 int libsmraw_handle_set_utf16_integrity_hash_value(
      libsmraw_handle_t *handle,
      const uint8_t *identifier,
-     size_t identifier_size,
+     size_t identifier_length,
      const uint16_t *utf16_string,
      size_t utf16_string_length,
      libsmraw_error_t **error );
@@ -798,7 +820,7 @@ LIBSMRAW_EXTERN \
 int libsmraw_handle_get_information_value_size(
      libsmraw_handle_t *handle,
      const uint8_t *identifier,
-     size_t identifier_size,
+     size_t identifier_length,
      size_t *value_size,
      libsmraw_error_t **error );
 
@@ -814,7 +836,7 @@ LIBSMRAW_EXTERN \
 int libsmraw_handle_get_information_value(
      libsmraw_handle_t *handle,
      const uint8_t *identifier,
-     size_t identifier_size,
+     size_t identifier_length,
      uint8_t *value,
      size_t value_size,
      libsmraw_error_t **error );
@@ -830,7 +852,7 @@ LIBSMRAW_EXTERN \
 int libsmraw_handle_set_information_value(
      libsmraw_handle_t *handle,
      const uint8_t *identifier,
-     size_t identifier_size,
+     size_t identifier_length,
      const uint8_t *value,
      size_t value_length,
      libsmraw_error_t **error );
@@ -858,7 +880,7 @@ LIBSMRAW_EXTERN \
 int libsmraw_handle_get_integrity_hash_value_size(
      libsmraw_handle_t *handle,
      const uint8_t *identifier,
-     size_t identifier_size,
+     size_t identifier_length,
      size_t *value_size,
      libsmraw_error_t **error );
 
@@ -874,7 +896,7 @@ LIBSMRAW_EXTERN \
 int libsmraw_handle_get_integrity_hash_value(
      libsmraw_handle_t *handle,
      const uint8_t *identifier,
-     size_t identifier_size,
+     size_t identifier_length,
      uint8_t *value,
      size_t value_size,
      libsmraw_error_t **error );
@@ -890,7 +912,7 @@ LIBSMRAW_EXTERN \
 int libsmraw_handle_set_integrity_hash_value(
      libsmraw_handle_t *handle,
      const uint8_t *identifier,
-     size_t identifier_size,
+     size_t identifier_length,
      const uint8_t *value,
      size_t value_length,
      libsmraw_error_t **error );

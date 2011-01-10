@@ -142,7 +142,7 @@ int libsmraw_handle_open(
      libsmraw_handle_t *handle,
      char * const filenames[],
      int number_of_filenames,
-     uint8_t access_flags,
+     int access_flags,
      liberror_error_t **error );
 
 #if defined( HAVE_WIDE_CHARACTER_TYPE )
@@ -151,7 +151,7 @@ int libsmraw_handle_open_wide(
      libsmraw_handle_t *handle,
      wchar_t * const filenames[],
      int number_of_filenames,
-     uint8_t access_flags,
+     int access_flags,
      liberror_error_t **error );
 #endif
 
@@ -159,7 +159,7 @@ LIBSMRAW_EXTERN \
 int libsmraw_handle_open_file_io_pool(
      libsmraw_handle_t *handle,
      libbfio_pool_t *file_io_pool,
-     uint8_t access_flags,
+     int access_flags,
      liberror_error_t **error );
 
 int libsmraw_handle_read_information_file(
@@ -179,10 +179,26 @@ ssize_t libsmraw_handle_read_buffer(
          liberror_error_t **error );
 
 LIBSMRAW_EXTERN \
+ssize_t libsmraw_handle_read_random(
+         libsmraw_handle_t *handle,
+         void *buffer,
+         size_t buffer_size,
+         off64_t offset,
+         liberror_error_t **error );
+
+LIBSMRAW_EXTERN \
 ssize_t libsmraw_handle_write_buffer(
          libsmraw_handle_t *handle,
          const void *buffer,
          size_t buffer_size,
+         liberror_error_t **error );
+
+LIBSMRAW_EXTERN \
+ssize_t libsmraw_handle_write_random(
+         libsmraw_handle_t *handle,
+         const void *buffer,
+         size_t buffer_size,
+         off64_t offset,
          liberror_error_t **error );
 
 LIBSMRAW_EXTERN \

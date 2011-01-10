@@ -27,6 +27,12 @@ Test
 Beta release
 * remove deprecated functions in libsmraw_legacy.[ch]
 
+20110110
+* updated libcstring, libuna, libbfio, libfvalue
+* correction for identifier size
+* correction for access flags
+* added read and write random functions
+
 20110108
 * updated configure.ac
 * updated common, libcstring, libuna, libbfio

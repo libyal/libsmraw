@@ -31,6 +31,8 @@
 #include "libsmraw_libbfio.h"
 #include "libsmraw_support.h"
 
+#if !defined( HAVE_LOCAL_LIBSMRAW )
+
 /* Returns the library version
  */
 const char *libsmraw_get_version(
@@ -41,26 +43,26 @@ const char *libsmraw_get_version(
 
 /* Returns the access flags for reading
  */
-uint8_t libsmraw_get_access_flags_read(
-         void )
+int libsmraw_get_access_flags_read(
+     void )
 {
-	return( (uint8_t) LIBSMRAW_ACCESS_FLAG_READ );
+	return( (int) LIBSMRAW_ACCESS_FLAG_READ );
 }
 
 /* Returns the access flags for reading and writing
  */
-uint8_t libsmraw_get_access_flags_read_write(
-         void )
+int libsmraw_get_access_flags_read_write(
+     void )
 {
-	return( (uint8_t) ( LIBSMRAW_ACCESS_FLAG_READ | LIBSMRAW_ACCESS_FLAG_WRITE ) );
+	return( (int) ( LIBSMRAW_ACCESS_FLAG_READ | LIBSMRAW_ACCESS_FLAG_WRITE ) );
 }
 
 /* Returns the access flags for writing
  */
-uint8_t libsmraw_get_access_flags_write(
-         void )
+int libsmraw_get_access_flags_write(
+     void )
 {
-	return( (uint8_t) LIBSMRAW_ACCESS_FLAG_WRITE );
+	return( (int) LIBSMRAW_ACCESS_FLAG_WRITE );
 }
 
 /* Retrieves the narrow system string codepage
@@ -141,6 +143,8 @@ int libsmraw_set_codepage(
 
 	return( 1 );
 }
+
+#endif /* !defined( HAVE_LOCAL_LIBSMRAW ) */
 
 /* Appends a globbed filename to the filenames
  * Returns 1 if successful or -1 on error

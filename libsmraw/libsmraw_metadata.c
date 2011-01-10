@@ -1207,7 +1207,7 @@ int libsmraw_handle_get_information_value_identifier(
 int libsmraw_handle_get_utf8_information_value_size(
      libsmraw_handle_t *handle,
      const uint8_t *identifier,
-     size_t identifier_size,
+     size_t identifier_length,
      size_t *utf8_string_size,
      liberror_error_t **error )
 {
@@ -1254,7 +1254,7 @@ int libsmraw_handle_get_utf8_information_value_size(
 	result = libfvalue_table_get_value_by_identifier(
 	          internal_handle->information_values,
 	          identifier,
-	          identifier_size,
+	          identifier_length + 1,
 	          &value,
 	          0,
 	          error );
@@ -1300,7 +1300,7 @@ int libsmraw_handle_get_utf8_information_value_size(
 int libsmraw_handle_get_utf8_information_value(
      libsmraw_handle_t *handle,
      const uint8_t *identifier,
-     size_t identifier_size,
+     size_t identifier_length,
      uint8_t *utf8_string,
      size_t utf8_string_size,
      liberror_error_t **error )
@@ -1348,7 +1348,7 @@ int libsmraw_handle_get_utf8_information_value(
 	result = libfvalue_table_get_value_by_identifier(
 	          internal_handle->information_values,
 	          identifier,
-	          identifier_size,
+	          identifier_length + 1,
 	          &value,
 	          0,
 	          error );
@@ -1394,7 +1394,7 @@ int libsmraw_handle_get_utf8_information_value(
 int libsmraw_handle_set_utf8_information_value(
      libsmraw_handle_t *handle,
      const uint8_t *identifier,
-     size_t identifier_size,
+     size_t identifier_length,
      const uint8_t *utf8_string,
      size_t utf8_string_length,
      liberror_error_t **error )
@@ -1442,7 +1442,7 @@ int libsmraw_handle_set_utf8_information_value(
 	result = libfvalue_table_get_value_by_identifier(
 	          internal_handle->information_values,
 	          identifier,
-	          identifier_size,
+	          identifier_length + 1,
 	          &value,
 	          0,
 	          error );
@@ -1479,7 +1479,7 @@ int libsmraw_handle_set_utf8_information_value(
 		if( libfvalue_value_set_identifier(
 		     value,
 		     identifier,
-		     identifier_size,
+		     identifier_length + 1,
 		     error ) != 1 )
 		{
 			liberror_error_set(
@@ -1542,7 +1542,7 @@ int libsmraw_handle_set_utf8_information_value(
 int libsmraw_handle_get_utf16_information_value_size(
      libsmraw_handle_t *handle,
      const uint8_t *identifier,
-     size_t identifier_size,
+     size_t identifier_length,
      size_t *utf16_string_size,
      liberror_error_t **error )
 {
@@ -1589,7 +1589,7 @@ int libsmraw_handle_get_utf16_information_value_size(
 	result = libfvalue_table_get_value_by_identifier(
 	          internal_handle->information_values,
 	          identifier,
-	          identifier_size,
+	          identifier_length + 1,
 	          &value,
 	          0,
 	          error );
@@ -1635,7 +1635,7 @@ int libsmraw_handle_get_utf16_information_value_size(
 int libsmraw_handle_get_utf16_information_value(
      libsmraw_handle_t *handle,
      const uint8_t *identifier,
-     size_t identifier_size,
+     size_t identifier_length,
      uint16_t *utf16_string,
      size_t utf16_string_size,
      liberror_error_t **error )
@@ -1683,7 +1683,7 @@ int libsmraw_handle_get_utf16_information_value(
 	result = libfvalue_table_get_value_by_identifier(
 	          internal_handle->information_values,
 	          identifier,
-	          identifier_size,
+	          identifier_length + 1,
 	          &value,
 	          0,
 	          error );
@@ -1729,7 +1729,7 @@ int libsmraw_handle_get_utf16_information_value(
 int libsmraw_handle_set_utf16_information_value(
      libsmraw_handle_t *handle,
      const uint8_t *identifier,
-     size_t identifier_size,
+     size_t identifier_length,
      const uint16_t *utf16_string,
      size_t utf16_string_length,
      liberror_error_t **error )
@@ -1777,7 +1777,7 @@ int libsmraw_handle_set_utf16_information_value(
 	result = libfvalue_table_get_value_by_identifier(
 	          internal_handle->information_values,
 	          identifier,
-	          identifier_size,
+	          identifier_length + 1,
 	          &value,
 	          0,
 	          error );
@@ -1814,7 +1814,7 @@ int libsmraw_handle_set_utf16_information_value(
 		if( libfvalue_value_set_identifier(
 		     value,
 		     identifier,
-		     identifier_size,
+		     identifier_length + 1,
 		     error ) != 1 )
 		{
 			liberror_error_set(
@@ -2128,7 +2128,7 @@ int libsmraw_handle_get_integrity_hash_value_identifier(
 int libsmraw_handle_get_utf8_integrity_hash_value_size(
      libsmraw_handle_t *handle,
      const uint8_t *identifier,
-     size_t identifier_size,
+     size_t identifier_length,
      size_t *utf8_string_size,
      liberror_error_t **error )
 {
@@ -2175,7 +2175,7 @@ int libsmraw_handle_get_utf8_integrity_hash_value_size(
 	result = libfvalue_table_get_value_by_identifier(
 	          internal_handle->integrity_hash_values,
 	          identifier,
-	          identifier_size,
+	          identifier_length + 1,
 	          &value,
 	          0,
 	          error );
@@ -2221,7 +2221,7 @@ int libsmraw_handle_get_utf8_integrity_hash_value_size(
 int libsmraw_handle_get_utf8_integrity_hash_value(
      libsmraw_handle_t *handle,
      const uint8_t *identifier,
-     size_t identifier_size,
+     size_t identifier_length,
      uint8_t *utf8_string,
      size_t utf8_string_size,
      liberror_error_t **error )
@@ -2269,7 +2269,7 @@ int libsmraw_handle_get_utf8_integrity_hash_value(
 	result = libfvalue_table_get_value_by_identifier(
 	          internal_handle->integrity_hash_values,
 	          identifier,
-	          identifier_size,
+	          identifier_length + 1,
 	          &value,
 	          0,
 	          error );
@@ -2315,7 +2315,7 @@ int libsmraw_handle_get_utf8_integrity_hash_value(
 int libsmraw_handle_set_utf8_integrity_hash_value(
      libsmraw_handle_t *handle,
      const uint8_t *identifier,
-     size_t identifier_size,
+     size_t identifier_length,
      const uint8_t *utf8_string,
      size_t utf8_string_length,
      liberror_error_t **error )
@@ -2363,7 +2363,7 @@ int libsmraw_handle_set_utf8_integrity_hash_value(
 	result = libfvalue_table_get_value_by_identifier(
 	          internal_handle->integrity_hash_values,
 	          identifier,
-	          identifier_size,
+	          identifier_length + 1,
 	          &value,
 	          0,
 	          error );
@@ -2400,7 +2400,7 @@ int libsmraw_handle_set_utf8_integrity_hash_value(
 		if( libfvalue_value_set_identifier(
 		     value,
 		     identifier,
-		     identifier_size,
+		     identifier_length + 1,
 		     error ) != 1 )
 		{
 			liberror_error_set(
@@ -2463,7 +2463,7 @@ int libsmraw_handle_set_utf8_integrity_hash_value(
 int libsmraw_handle_get_utf16_integrity_hash_value_size(
      libsmraw_handle_t *handle,
      const uint8_t *identifier,
-     size_t identifier_size,
+     size_t identifier_length,
      size_t *utf16_string_size,
      liberror_error_t **error )
 {
@@ -2510,7 +2510,7 @@ int libsmraw_handle_get_utf16_integrity_hash_value_size(
 	result = libfvalue_table_get_value_by_identifier(
 	          internal_handle->integrity_hash_values,
 	          identifier,
-	          identifier_size,
+	          identifier_length + 1,
 	          &value,
 	          0,
 	          error );
@@ -2556,7 +2556,7 @@ int libsmraw_handle_get_utf16_integrity_hash_value_size(
 int libsmraw_handle_get_utf16_integrity_hash_value(
      libsmraw_handle_t *handle,
      const uint8_t *identifier,
-     size_t identifier_size,
+     size_t identifier_length,
      uint16_t *utf16_string,
      size_t utf16_string_size,
      liberror_error_t **error )
@@ -2604,7 +2604,7 @@ int libsmraw_handle_get_utf16_integrity_hash_value(
 	result = libfvalue_table_get_value_by_identifier(
 	          internal_handle->integrity_hash_values,
 	          identifier,
-	          identifier_size,
+	          identifier_length + 1,
 	          &value,
 	          0,
 	          error );
@@ -2650,7 +2650,7 @@ int libsmraw_handle_get_utf16_integrity_hash_value(
 int libsmraw_handle_set_utf16_integrity_hash_value(
      libsmraw_handle_t *handle,
      const uint8_t *identifier,
-     size_t identifier_size,
+     size_t identifier_length,
      const uint16_t *utf16_string,
      size_t utf16_string_length,
      liberror_error_t **error )
@@ -2698,7 +2698,7 @@ int libsmraw_handle_set_utf16_integrity_hash_value(
 	result = libfvalue_table_get_value_by_identifier(
 	          internal_handle->integrity_hash_values,
 	          identifier,
-	          identifier_size,
+	          identifier_length + 1,
 	          &value,
 	          0,
 	          error );
@@ -2735,7 +2735,7 @@ int libsmraw_handle_set_utf16_integrity_hash_value(
 		if( libfvalue_value_set_identifier(
 		     value,
 		     identifier,
-		     identifier_size,
+		     identifier_length + 1,
 		     error ) != 1 )
 		{
 			liberror_error_set(

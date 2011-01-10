@@ -61,21 +61,23 @@ enum LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMAS
 	LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_X_OF_N	= (uint8_t) 'x'
 };
 
+#if !defined( HAVE_LOCAL_LIBSMRAW )
+
 LIBSMRAW_EXTERN \
 const char *libsmraw_get_version(
              void );
 
 LIBSMRAW_EXTERN \
-uint8_t libsmraw_get_access_flags_read(
-         void );
+int libsmraw_get_access_flags_read(
+     void );
 
 LIBSMRAW_EXTERN \
-uint8_t libsmraw_get_access_flags_read_write(
-         void );
+int libsmraw_get_access_flags_read_write(
+     void );
 
 LIBSMRAW_EXTERN \
-uint8_t libsmraw_get_access_flags_write(
-         void );
+int libsmraw_get_access_flags_write(
+     void );
 
 LIBSMRAW_EXTERN \
 int libsmraw_get_codepage(
@@ -86,6 +88,8 @@ LIBSMRAW_EXTERN \
 int libsmraw_set_codepage(
      int codepage,
      liberror_error_t **error );
+
+#endif /* !defined( HAVE_LOCAL_LIBSMRAW ) */
 
 int libsmraw_glob_append_segment_file(
      char **filenames[],

@@ -438,7 +438,7 @@ int libsmraw_handle_open(
      libsmraw_handle_t *handle,
      char * const filenames[],
      int number_of_filenames,
-     uint8_t access_flags,
+     int access_flags,
      liberror_error_t **error )
 {
 	libbfio_handle_t *file_io_handle                    = NULL;
@@ -873,7 +873,7 @@ int libsmraw_handle_open_wide(
      libsmraw_handle_t *handle,
      wchar_t * const filenames[],
      int number_of_filenames,
-     uint8_t access_flags,
+     int access_flags,
      liberror_error_t **error )
 {
 	libbfio_handle_t *file_io_handle                    = NULL;
@@ -1307,7 +1307,7 @@ on_error:
 int libsmraw_handle_open_file_io_pool(
      libsmraw_handle_t *handle,
      libbfio_pool_t *file_io_pool,
-     uint8_t access_flags,
+     int access_flags,
      liberror_error_t **error )
 {
 	libbfio_handle_t *file_io_handle            = NULL;
@@ -1954,6 +1954,54 @@ ssize_t libsmraw_handle_read_buffer(
 	return( read_count );
 }
 
+/* Reads (media) data at a specific offset
+ * Returns the number of bytes read or -1 on error
+ */
+ssize_t libsmraw_handle_read_random(
+         libsmraw_handle_t *handle,
+         void *buffer,
+         size_t buffer_size,
+         off64_t offset,
+         liberror_error_t **error )
+{
+	static char *function = "libsmraw_handle_read_random";
+	ssize_t read_count    = 0;
+
+	if( libsmraw_handle_seek_offset(
+	     handle,
+	     offset,
+	     SEEK_SET,
+	     error ) == -1 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_IO,
+		 LIBERROR_IO_ERROR_SEEK_FAILED,
+		 "%s: unable to seek offset.",
+		 function );
+
+		return( -1 );
+	}
+	read_count = libsmraw_handle_read_buffer(
+	              handle,
+	              buffer,
+	              buffer_size,
+	              error );
+
+	if( read_count <= -1 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_IO,
+		 LIBERROR_IO_ERROR_READ_FAILED,
+		 "%s: unable to read buffer.",
+		 function );
+
+		return( -1 );
+	}
+	return( read_count );
+}
+
 /* Writes a buffer
  * Returns the number of bytes written or -1 on error
  */
@@ -2089,6 +2137,54 @@ ssize_t libsmraw_handle_write_buffer(
 		 LIBERROR_ERROR_DOMAIN_IO,
 		 LIBERROR_IO_ERROR_READ_FAILED,
 		 "%s: unable to write buffer to segment table.",
+		 function );
+
+		return( -1 );
+	}
+	return( write_count );
+}
+
+/* Writes (media) data at a specific offset,
+ * Returns the number of input bytes written, 0 when no longer bytes can be written or -1 on error
+ */
+ssize_t libsmraw_handle_write_random(
+         libsmraw_handle_t *handle,
+         const void *buffer,
+         size_t buffer_size,
+         off64_t offset,
+         liberror_error_t **error )
+{
+	static char *function = "libsmraw_handle_write_random";
+	ssize_t write_count   = 0;
+
+	if( libsmraw_handle_seek_offset(
+	     handle,
+	     offset,
+	     SEEK_SET,
+	     error ) == -1 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_IO,
+		 LIBERROR_IO_ERROR_SEEK_FAILED,
+		 "%s: unable to seek offset.",
+		 function );
+
+		return( -1 );
+	}
+	write_count = libsmraw_handle_write_buffer(
+	               handle,
+	               buffer,
+	               buffer_size,
+	               error );
+
+	if( write_count <= -1 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_IO,
+		 LIBERROR_IO_ERROR_WRITE_FAILED,
+		 "%s: unable to write buffer.",
 		 function );
 
 		return( -1 );
