@@ -119,22 +119,19 @@ Handle::~Handle( void )
 	}
 }
 
-System::Int Handle::GetAccessFlagsRead( void )
+int Handle::GetAccessFlagsRead( void )
 {
-	return( System::Int(
-	         libsmraw_get_access_flags_read() ) );
+	return( libsmraw_get_access_flags_read() );
 }
 
-System::Int Handle::GetAccessFlagsReadWrite( void )
+int Handle::GetAccessFlagsReadWrite( void )
 {
-	return( System::Int(
-	         libsmraw_get_access_flags_read_write() ) );
+	return( libsmraw_get_access_flags_read_write() );
 }
 
-System::Int Handle::GetAccessFlagsWrite( void )
+int Handle::GetAccessFlagsWrite( void )
 {
-	return( System::Int(
-	         libsmraw_get_access_flags_write() ) );
+	return( libsmraw_get_access_flags_write() );
 }
 
 array<System::String^>^ Handle::Glob( System::String^ filename )
@@ -225,7 +222,7 @@ array<System::String^>^ Handle::Glob( System::String^ filename )
 }
 
 void Handle::Open( array<System::String^>^ filenames,
-                   System::Int access_flags )
+                   int access_flags )
 {
 	char smraw_error_string[ SMRAW_NET_ERROR_STRING_SIZE ];
 
@@ -235,7 +232,6 @@ void Handle::Open( array<System::String^>^ filenames,
 	System::String^ function        = "Handle::Open";
 	wchar_t **smraw_filenames       = NULL;
 	pin_ptr<const wchar_t> filename = nullptr;
-	int smraw_access_flags          = 0;
 	int smraw_filename_index        = 0;
 	int smraw_number_of_filenames   = 0;
 
@@ -267,15 +263,11 @@ void Handle::Open( array<System::String^>^ filenames,
 
 		smraw_filenames[ smraw_filename_index ] = (wchar_t *) filename;
 	}
-	Marshal::WriteInt(
-	 (IntPtr) &smraw_access_flags,
-	 access_flags );
-
 	if( libsmraw_handle_open_wide(
 	     handle,
 	     (wchar_t * const *) smraw_filenames,
 	     smraw_number_of_filenames,
-	     smraw_access_flags,
+	     access_flags,
 	     &error ) != 1 )
 	{
 		error_string = gcnew System::String(
