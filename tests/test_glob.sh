@@ -39,7 +39,7 @@ seq()
 	do
 		SEQUENCE="${SEQUENCE} ${VALUE}";
 
-		VALUE=$(( ${VALUE} + 1 ));
+		VALUE=`expr ${VALUE} + 1`;
 	done
 
 	echo ${SEQUENCE};

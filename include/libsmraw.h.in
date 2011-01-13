@@ -302,7 +302,7 @@ ssize_t libsmraw_handle_read_random(
          libsmraw_error_t **error );
 
 /* Writes a buffer to the handle
- * Returns the number of bytes written or -1 on error
+ * Returns the number of input bytes written, 0 when no longer bytes can be written or -1 on error
  */
 LIBSMRAW_EXTERN \
 ssize_t libsmraw_handle_write_buffer(
