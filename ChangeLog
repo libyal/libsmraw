@@ -27,6 +27,9 @@ Test
 Beta release
 * remove deprecated functions in libsmraw_legacy.[ch]
 
+20110114
+* updated common, libuna, libbfio
+
 20110113
 * updated test scripts for SunOS 5.11 support
 
