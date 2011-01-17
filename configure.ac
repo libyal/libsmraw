@@ -2,7 +2,7 @@ AC_PREREQ( 2.59 )
 
 AC_INIT(
  [libsmraw],
- [20110114],
+ [20110117],
  [jbmetz@users.sourceforge.net])
 
 AC_CONFIG_SRCDIR(
