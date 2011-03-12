@@ -39,41 +39,75 @@
 			<TASM_Debugging>None</TASM_Debugging>
 		</PropertyGroup>
 		<ItemGroup>
-			<CppCompile Include="..\..\..\libmfdata\libmfdata_segment.c">
+			<None Include="..\..\..\libmfdata\libmfdata_unused.h">
+			</None>
+			<CppCompile Include="..\..\..\libmfdata\libmfdata_array_type.c">
 			</CppCompile>
-			<None Include="..\..\..\libmfdata\libmfdata_segment.h">
+			<None Include="..\..\..\libmfdata\libmfdata_array_type.h">
+			</None>
+			<CppCompile Include="..\..\..\libmfdata\libmfdata_cache.c">
+			</CppCompile>
+			<None Include="..\..\..\libmfdata\libmfdata_cache.h">
+			</None>
+			<CppCompile Include="..\..\..\libmfdata\libmfdata_cache_value.c">
+			</CppCompile>
+			<None Include="..\..\..\libmfdata\libmfdata_cache_value.h">
+			</None>
+			<None Include="..\..\..\libmfdata\libmfdata_date_time.h">
+			</None>
+			<None Include="..\..\..\libmfdata\libmfdata_definitions.h">
+			</None>
+			<CppCompile Include="..\..\..\libmfdata\libmfdata_error.c">
+			</CppCompile>
+			<None Include="..\..\..\libmfdata\libmfdata_error.h">
+			</None>
+			<None Include="..\..\..\libmfdata\libmfdata_extern.h">
+			</None>
+			<CppCompile Include="..\..\..\libmfdata\libmfdata_file.c">
+			</CppCompile>
+			<None Include="..\..\..\libmfdata\libmfdata_file.h">
+			</None>
+			<CppCompile Include="..\..\..\libmfdata\libmfdata_file_list.c">
+			</CppCompile>
+			<None Include="..\..\..\libmfdata\libmfdata_file_list.h">
+			</None>
+			<None Include="..\..\..\libmfdata\libmfdata_inline.h">
+			</None>
+			<None Include="..\..\..\libmfdata\libmfdata_libbfio.h">
+			</None>
+			<CppCompile Include="..\..\..\libmfdata\libmfdata_list.c">
+			</CppCompile>
+			<None Include="..\..\..\libmfdata\libmfdata_list.h">
+			</None>
+			<CppCompile Include="..\..\..\libmfdata\libmfdata_list_element.c">
+			</CppCompile>
+			<None Include="..\..\..\libmfdata\libmfdata_list_element.h">
+			</None>
+			<CppCompile Include="..\..\..\libmfdata\libmfdata_group.c">
+			</CppCompile>
+			<None Include="..\..\..\libmfdata\libmfdata_group.h">
+			</None>
+			<CppCompile Include="..\..\..\libmfdata\libmfdata_range.c">
+			</CppCompile>
+			<None Include="..\..\..\libmfdata\libmfdata_range.h">
 			</None>
 			<CppCompile Include="..\..\..\libmfdata\libmfdata_notify.c">
 			</CppCompile>
 			<None Include="..\..\..\libmfdata\libmfdata_notify.h">
 			</None>
-			<CppCompile Include="..\..\..\libmfdata\libmfdata_support.c">
+			<CppCompile Include="..\..\..\libmfdata\libmfdata_segment.c">
 			</CppCompile>
-			<None Include="..\..\..\libmfdata\libmfdata_support.h">
+			<None Include="..\..\..\libmfdata\libmfdata_segment.h">
 			</None>
 			<CppCompile Include="..\..\..\libmfdata\libmfdata_segment_table.c">
 			</CppCompile>
 			<None Include="..\..\..\libmfdata\libmfdata_segment_table.h">
 			</None>
-			<None Include="..\..\..\libmfdata\libmfdata_libbfio.h">
-			</None>
-			<None Include="..\..\..\libmfdata\libmfdata_array_type.h">
-			</None>
-			<None Include="..\..\..\libmfdata\libmfdata_definitions.h">
+			<CppCompile Include="..\..\..\libmfdata\libmfdata_support.c">
+			</CppCompile>
+			<None Include="..\..\..\libmfdata\libmfdata_support.h">
 			</None>
 			<None Include="..\..\..\libmfdata\libmfdata_types.h">
-			</None>
-			<None Include="..\..\..\libmfdata\libmfdata_unused.h">
-			</None>
-			<CppCompile Include="..\..\..\libmfdata\libmfdata_array_type.c">
-			</CppCompile>
-			<None Include="..\..\..\libmfdata\libmfdata_extern.h">
-			</None>
-			<None Include="..\..\..\libmfdata\libmfdata_inline.h">
-			</None>
-			<CppCompile Include="..\..\..\libmfdata\libmfdata_error.c">
-			</CppCompile>
-			<None Include="..\..\..\libmfdata\libmfdata_error.h">
 			</None>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
