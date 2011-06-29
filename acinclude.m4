@@ -26,7 +26,7 @@ AC_DEFUN([LIBSMRAW_CHECK_FUNC_LANGINFO_CODESET],
    AC_LINK_IFELSE(
     [AC_LANG_PROGRAM(
      [[#include <langinfo.h>]],
-     [[char* charset = nl_langinfo( CODESET );]]) ],
+     [[char* charset = nl_langinfo( CODESET );]] )],
     [ac_cv_libsmraw_langinfo_codeset=yes],
     [ac_cv_libsmraw_langinfo_codeset=no])
    AC_LANG_POP(C) ]) ],

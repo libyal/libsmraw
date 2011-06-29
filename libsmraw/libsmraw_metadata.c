@@ -946,6 +946,22 @@ int libsmraw_handle_set_media_flags(
 			return( -1 );
 		}
 	}
+	if( libfvalue_value_copy_from_utf8_string(
+	     value,
+	     0,
+	     (uint8_t *) value_string,
+	     value_string_length,
+	     error ) != 1 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_COPY_FAILED,
+		 "%s: unable to copy value from an UTF-8 string.",
+		 function );
+
+		return( -1 );
+	}
 	return( 1 );
 }
 

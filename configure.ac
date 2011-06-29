@@ -2,7 +2,7 @@ AC_PREREQ( 2.59 )
 
 AC_INIT(
  [libsmraw],
- [20110312],
+ [20110625],
  [jbmetz@users.sourceforge.net])
 
 AC_CONFIG_SRCDIR(
@@ -316,6 +316,15 @@ AC_CHECK_FUNCS(
   [1]) ])
 
 dnl Check for localization functions in libcstring/libcstring_locale.c
+AS_IF(
+ [test "x$ac_cv_libsmraw_enable_winapi" = xno],
+ [AC_CHECK_FUNCS(
+  [localeconv],
+  [],
+  [AC_MSG_FAILURE(
+   [Missing function: localeconv],
+   [1]) ]) ])
+
 AC_CHECK_FUNCS(
  [setlocale],
  [],
@@ -770,10 +779,10 @@ AS_IF(
   AC_MSG_CHECKING(
    [if openssl/evp.h can be used in combination with zlib.h])
   AC_LINK_IFELSE(
-   AC_LANG_PROGRAM(
+   [AC_LANG_PROGRAM(
     [[#include <zlib.h>
 #include <openssl/evp.h>]],
-    [[ ]]),
+    [[ ]] )],
     [AC_MSG_RESULT(
      [yes])
     AC_DEFINE(

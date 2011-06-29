@@ -100,9 +100,12 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				Optimization="0"
 				AdditionalIncludeDirectories="..\..\include;..\..\common;..\..\libcstring;..\..\liberror;..\..\libnotify;..\..\libuna"
 				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;HAVE_LOCAL_LIBUNA;HAVE_LOCAL_LIBFVALUE"
-				RuntimeLibrary="2"
+				BasicRuntimeChecks="3"
+				SmallerTypeCheck="true"
+				RuntimeLibrary="3"
 				WarningLevel="4"
 				DebugInformationFormat="3"
 				CompileAs="1"
@@ -153,6 +156,10 @@
 			</File>
 			<File
 				RelativePath="..\..\libfvalue\libfvalue_debug.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\libfvalue\libfvalue_split_string.c"
 				>
 			</File>
 			<File
@@ -207,6 +214,10 @@
 			</File>
 			<File
 				RelativePath="..\..\libfvalue\libfvalue_libuna.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\libfvalue\libfvalue_split_string.h"
 				>
 			</File>
 			<File

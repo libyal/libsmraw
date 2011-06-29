@@ -27,6 +27,11 @@ Test
 Beta release
 * remove deprecated functions in libsmraw_legacy.[ch]
 
+20110625
+* changes for: warning: AC_LANG_CONFTEST: no AC_LANG_SOURCE call detected in body
+* updated include/codepage.h, list type
+* updated common, libcstring, libuna, libbfio, libfvalue, libmfdata
+
 20110312
 * updated libcstring, libuna, libbfio, libmfdata
 * updated msvscpp and codegear project files
