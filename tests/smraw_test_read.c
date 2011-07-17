@@ -40,6 +40,47 @@
 
 #define SMRAW_TEST_READ_BUFFER_SIZE	4096
 
+/* Tests libsmraw_handle_get_offset
+ * Returns 1 if successful, 0 if not or -1 on error
+ */
+int smraw_test_get_offset(
+     libsmraw_handle_t *handle,
+     off64_t expected_offset,
+     liberror_error_t **error )
+{
+	static char *function = "smraw_test_get_offset";
+	off64_t result_offset = 0;
+
+	if( expected_offset != -1 )
+	{
+		if( libsmraw_handle_get_offset(
+		     handle,
+		     &result_offset,
+		     error ) != 1 )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve offset.",
+			 function );
+
+			return( -1 );
+		}
+		if( result_offset != expected_offset )
+		{
+			fprintf(
+			 stderr,
+			 "%s: unexpected result offset: %" PRIi64 "\n",
+			 function,
+			 result_offset );
+
+			return( 0 );
+		}
+	}
+	return( 1 );
+}
+
 /* Tests libsmraw_handle_seek_offset
  * Returns 1 if successful, 0 if not or -1 on error
  */
@@ -220,6 +261,16 @@ int smraw_test_read(
 				  handle,
 				  input_size,
 				  output_size );
+		}
+	}
+	if( result == 1 )
+	{
+		if( input_offset >= 0 )
+		{
+			result = smraw_test_get_offset(
+			          handle,
+			          input_offset + expected_size,
+			          &error );
 		}
 	}
 	if( result != 0 )

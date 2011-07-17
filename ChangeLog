@@ -27,6 +27,9 @@ Test
 Beta release
 * remove deprecated functions in libsmraw_legacy.[ch]
 
+20110717
+* added smraw_test_get_offset test to smraw_test_read
+
 20110625
 * changes for: warning: AC_LANG_CONFTEST: no AC_LANG_SOURCE call detected in body
 * updated include/codepage.h, list type
