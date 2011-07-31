@@ -189,7 +189,6 @@ int libsmraw_handle_get_bytes_per_sector(
 	}
 	else if( result != 0 )
 	{
-		/* TODO change to copy_to_32bit ? */
 		if( libfvalue_value_copy_to_64bit(
 		     value,
 		     0,
@@ -337,7 +336,6 @@ int libsmraw_handle_set_bytes_per_sector(
 			return( -1 );
 		}
 	}
-	/* TODO change to copy_from_32bit ? */
 	if( libfvalue_value_copy_from_64bit(
 	     value,
 	     0,
@@ -460,7 +458,6 @@ int libsmraw_handle_get_media_type(
 
 			return( -1 );
 		}
-		/* TODO improve this enumeration function ? */
 		if( value_data_size == 6 )
 		{
 			if( libcstring_narrow_string_compare(
@@ -781,7 +778,6 @@ int libsmraw_handle_get_media_flags(
 
 			return( -1 );
 		}
-		/* TODO improve this enumeration function ? */
 		if( value_data_size == 8 )
 		{
 			if( libcstring_narrow_string_compare(

@@ -22,6 +22,7 @@
 #include <common.h>
 
 #include <libcstring.h>
+#include <liberror.h>
 
 #if defined( HAVE_STDLIB_H ) || defined( WINAPI )
 #include <stdlib.h>
@@ -88,7 +89,7 @@ int smraw_test_seek_offset(
      libsmraw_handle_t *handle,
      off64_t input_offset,
      int input_whence,
-     off64_t output_offset )
+     off64_t expected_offset )
 {
 	libsmraw_error_t *error = NULL;
 	off64_t result_offset   = 0;
@@ -122,7 +123,7 @@ int smraw_test_seek_offset(
 		libsmraw_error_free(
 		 &error );
 	}
-	if( result_offset != output_offset )
+	if( result_offset != expected_offset )
 	{
 		fprintf(
 		 stderr,
@@ -142,7 +143,7 @@ int smraw_test_seek_offset(
 int smraw_test_read_buffer(
      libsmraw_handle_t *handle,
      size64_t input_size,
-     size64_t output_size )
+     size64_t expected_size )
 {
 	uint8_t buffer[ SMRAW_TEST_READ_BUFFER_SIZE ];
 
@@ -192,7 +193,7 @@ int smraw_test_read_buffer(
 			break;
 		}
 	}
-	if( output_size == result_size )
+	if( expected_size == result_size )
 	{
 		result = 1;
 	}
@@ -214,9 +215,10 @@ int smraw_test_read(
      off64_t input_offset,
      int input_whence,
      size64_t input_size,
-     off64_t output_offset,
-     size64_t output_size )
+     off64_t expected_offset,
+     size64_t expected_size )
 {
+	liberror_error_t *error   = NULL;
 	const char *whence_string = NULL;
 	int result                = 0;
 
@@ -251,7 +253,7 @@ int smraw_test_read(
 	          handle,
 	          input_offset,
 	          input_whence,
-	          output_offset );
+	          expected_offset );
 
 	if( result == 1 )
 	{
@@ -260,7 +262,7 @@ int smraw_test_read(
 			result = smraw_test_read_buffer(
 				  handle,
 				  input_size,
-				  output_size );
+				  expected_size );
 		}
 	}
 	if( result == 1 )
@@ -289,6 +291,15 @@ int smraw_test_read(
 	 stdout,
 	 "\n" );
 
+	if( result == -1 )
+	{
+		liberror_error_backtrace_fprint(
+		 error,
+		 stdout );
+
+		liberror_error_free(
+		 &error );
+	}
 	return( result );
 }
 

@@ -58,6 +58,7 @@ smraw_test_read_SOURCES = \
 
 smraw_test_read_LDADD = \
 	../libcstring/libcstring.la \
+	../liberror/liberror.la \
 	../libsmraw/libsmraw.la \
         @MEMWATCH_LIBADD@
 

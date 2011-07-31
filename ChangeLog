@@ -27,6 +27,9 @@ Test
 Beta release
 * remove deprecated functions in libsmraw_legacy.[ch]
 
+20110731
+* updated common, libfvalue, libmfdata
+
 20110717
 * added smraw_test_get_offset test to smraw_test_read
 
