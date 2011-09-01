@@ -43,70 +43,99 @@
 			<TASM_Debugging>None</TASM_Debugging>
 		</PropertyGroup>
 		<ItemGroup>
-			<None Include="..\..\..\libsmraw\libsmraw_metadata.h">
-			</None>
-			<CppCompile Include="..\..\..\libsmraw\libsmraw_notify.c">
-			</CppCompile>
-			<None Include="..\..\..\libsmraw\libsmraw_notify.h">
-			</None>
-			<CppCompile Include="..\..\..\libsmraw\libsmraw_metadata.c">
-			</CppCompile>
-			<None Include="..\..\..\libsmraw\libsmraw_information_file.h">
-			</None>
-			<None Include="..\..\..\libsmraw\libsmraw_libbfio.h">
-			</None>
-			<None Include="..\..\..\libsmraw\libsmraw_libuna.h">
-			</None>
-			<None Include="..\..\..\libsmraw\libsmraw_support.h">
-			</None>
-			<LibFiles Include="..\Release\libmfdata.lib">
-				<IgnorePath>true</IgnorePath>
-			</LibFiles>
-			<LibFiles Include="..\Release\libfvalue.lib">
-				<IgnorePath>true</IgnorePath>
-			</LibFiles>
-			<None Include="..\..\..\libsmraw\libsmraw_types.h">
-			</None>
-			<None Include="..\..\..\libsmraw\libsmraw_unused.h">
-			</None>
-			<CppCompile Include="..\..\..\libsmraw\libsmraw_support.c">
-			</CppCompile>
-			<CppCompile Include="..\..\..\libsmraw\libsmraw_information_file.c">
-			</CppCompile>
-			<CppCompile Include="..\..\..\libsmraw\libsmraw.c">
-			</CppCompile>
-			<None Include="..\..\..\libsmraw\libsmraw_codepage.h">
-			</None>
-			<None Include="..\..\..\libsmraw\libsmraw_definitions.h">
-			</None>
-			<LibFiles Include="..\Release\libbfio.lib">
-				<IgnorePath>true</IgnorePath>
-			</LibFiles>
-			<LibFiles Include="..\Release\libnotify.lib">
-				<IgnorePath>true</IgnorePath>
-			</LibFiles>
 			<LibFiles Include="..\Release\libuna.lib">
 				<IgnorePath>true</IgnorePath>
+				<BuildOrder>0</BuildOrder>
 			</LibFiles>
 			<LibFiles Include="..\Release\liberror.lib">
 				<IgnorePath>true</IgnorePath>
+				<BuildOrder>1</BuildOrder>
 			</LibFiles>
 			<None Include="..\..\..\libsmraw\libsmraw_filename.h">
+				<BuildOrder>2</BuildOrder>
 			</None>
-			<CppCompile Include="..\..\..\libsmraw\libsmraw_handle.c">
-			</CppCompile>
-			<None Include="..\..\..\libsmraw\libsmraw_handle.h">
+			<LibFiles Include="..\Release\libnotify.lib">
+				<IgnorePath>true</IgnorePath>
+				<BuildOrder>3</BuildOrder>
+			</LibFiles>
+			<None Include="..\..\..\libsmraw\libsmraw_codepage.h">
+				<BuildOrder>4</BuildOrder>
 			</None>
-			<CppCompile Include="..\..\..\libsmraw\libsmraw_filename.c">
-			</CppCompile>
-			<CppCompile Include="..\..\..\libsmraw\libsmraw_error.c">
-			</CppCompile>
+			<None Include="..\..\..\libsmraw\libsmraw_definitions.h">
+				<BuildOrder>5</BuildOrder>
+			</None>
+			<LibFiles Include="..\Release\libbfio.lib">
+				<IgnorePath>true</IgnorePath>
+				<BuildOrder>6</BuildOrder>
+			</LibFiles>
 			<None Include="..\..\..\libsmraw\libsmraw_error.h">
+				<BuildOrder>7</BuildOrder>
 			</None>
 			<None Include="..\..\..\libsmraw\libsmraw_extern.h">
+				<BuildOrder>8</BuildOrder>
 			</None>
 			<LibFiles Include="..\Release\libcstring.lib">
 				<IgnorePath>true</IgnorePath>
+				<BuildOrder>9</BuildOrder>
+			</LibFiles>
+			<CppCompile Include="..\..\..\libsmraw\libsmraw_error.c">
+				<BuildOrder>10</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\..\libsmraw\libsmraw_handle.c">
+				<BuildOrder>11</BuildOrder>
+			</CppCompile>
+			<None Include="..\..\..\libsmraw\libsmraw_handle.h">
+				<BuildOrder>12</BuildOrder>
+			</None>
+			<CppCompile Include="..\..\..\libsmraw\libsmraw_filename.c">
+				<BuildOrder>13</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\..\libsmraw\libsmraw.c">
+				<BuildOrder>14</BuildOrder>
+			</CppCompile>
+			<None Include="..\..\..\libsmraw\libsmraw_information_file.h">
+				<BuildOrder>15</BuildOrder>
+			</None>
+			<None Include="..\..\..\libsmraw\libsmraw_libbfio.h">
+				<BuildOrder>16</BuildOrder>
+			</None>
+			<None Include="..\..\..\libsmraw\libsmraw_libuna.h">
+				<BuildOrder>17</BuildOrder>
+			</None>
+			<CppCompile Include="..\..\..\libsmraw\libsmraw_metadata.c">
+				<BuildOrder>18</BuildOrder>
+			</CppCompile>
+			<None Include="..\..\..\libsmraw\libsmraw_metadata.h">
+				<BuildOrder>19</BuildOrder>
+			</None>
+			<CppCompile Include="..\..\..\libsmraw\libsmraw_notify.c">
+				<BuildOrder>20</BuildOrder>
+			</CppCompile>
+			<None Include="..\..\..\libsmraw\libsmraw_notify.h">
+				<BuildOrder>21</BuildOrder>
+			</None>
+			<None Include="..\..\..\libsmraw\libsmraw_unused.h">
+				<BuildOrder>22</BuildOrder>
+			</None>
+			<CppCompile Include="..\..\..\libsmraw\libsmraw_support.c">
+				<BuildOrder>23</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\..\libsmraw\libsmraw_information_file.c">
+				<BuildOrder>24</BuildOrder>
+			</CppCompile>
+			<None Include="..\..\..\libsmraw\libsmraw_types.h">
+				<BuildOrder>25</BuildOrder>
+			</None>
+			<None Include="..\..\..\libsmraw\libsmraw_support.h">
+				<BuildOrder>26</BuildOrder>
+			</None>
+			<LibFiles Include="..\Release\libmfdata.lib">
+				<IgnorePath>true</IgnorePath>
+				<BuildOrder>27</BuildOrder>
+			</LibFiles>
+			<LibFiles Include="..\Release\libfvalue.lib">
+				<IgnorePath>true</IgnorePath>
+				<BuildOrder>28</BuildOrder>
 			</LibFiles>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>

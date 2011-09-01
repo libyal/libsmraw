@@ -39,16 +39,19 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "smraw_test_seek", "smraw_test_seek\smraw_test_seek.vcproj", "{A7545354-5D50-49F6-A3D0-1F97F6228955}"
 	ProjectSection(ProjectDependencies) = postProject
 		{B5225323-AC67-411D-8FBA-199E9467FAB5} = {B5225323-AC67-411D-8FBA-199E9467FAB5}
+		{BD3A95FA-A3DE-4B79-A889-A7E5ECA4B69C} = {BD3A95FA-A3DE-4B79-A889-A7E5ECA4B69C}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "smraw_test_read", "smraw_test_read\smraw_test_read.vcproj", "{F7A2D803-FC42-4C42-B1E6-E794F94228BF}"
 	ProjectSection(ProjectDependencies) = postProject
 		{B5225323-AC67-411D-8FBA-199E9467FAB5} = {B5225323-AC67-411D-8FBA-199E9467FAB5}
+		{BD3A95FA-A3DE-4B79-A889-A7E5ECA4B69C} = {BD3A95FA-A3DE-4B79-A889-A7E5ECA4B69C}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "smraw_test_compare", "smraw_test_compare\smraw_test_compare.vcproj", "{D87EB591-F354-4B26-A7BA-8C3AEE940D7F}"
 	ProjectSection(ProjectDependencies) = postProject
 		{B5225323-AC67-411D-8FBA-199E9467FAB5} = {B5225323-AC67-411D-8FBA-199E9467FAB5}
+		{BD3A95FA-A3DE-4B79-A889-A7E5ECA4B69C} = {BD3A95FA-A3DE-4B79-A889-A7E5ECA4B69C}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libfvalue", "libfvalue\libfvalue.vcproj", "{85005D62-6AA7-4D8A-86CB-4061B23D7C6C}"

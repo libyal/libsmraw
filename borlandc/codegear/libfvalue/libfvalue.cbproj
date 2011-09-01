@@ -39,47 +39,68 @@
 			<TASM_Debugging>None</TASM_Debugging>
 		</PropertyGroup>
 		<ItemGroup>
-			<CppCompile Include="..\..\..\libfvalue\libfvalue_table.c">
-			</CppCompile>
-			<None Include="..\..\..\libfvalue\libfvalue_libuna.h">
-			</None>
-			<CppCompile Include="..\..\..\libfvalue\libfvalue_split_string.c">
-			</CppCompile>
-			<None Include="..\..\..\libfvalue\libfvalue_split_string.h">
-			</None>
-			<CppCompile Include="..\..\..\libfvalue\libfvalue_string.c">
-			</CppCompile>
-			<None Include="..\..\..\libfvalue\libfvalue_string.h">
-			</None>
-			<None Include="..\..\..\libfvalue\libfvalue_table.h">
-			</None>
-			<None Include="..\..\..\libfvalue\libfvalue_value.h">
-			</None>
-			<CppCompile Include="..\..\..\libfvalue\libfvalue_value_entry.c">
-			</CppCompile>
-			<None Include="..\..\..\libfvalue\libfvalue_types.h">
-			</None>
-			<CppCompile Include="..\..\..\libfvalue\libfvalue_value.c">
-			</CppCompile>
-			<None Include="..\..\..\libfvalue\libfvalue_libfguid.h">
-			</None>
-			<None Include="..\..\..\libfvalue\libfvalue_array_type.h">
-			</None>
-			<None Include="..\..\..\libfvalue\libfvalue_codepage.h">
-			</None>
 			<None Include="..\..\..\libfvalue\libfvalue_value_entry.h">
+				<BuildOrder>0</BuildOrder>
 			</None>
 			<CppCompile Include="..\..\..\libfvalue\libfvalue_array_type.c">
+				<BuildOrder>1</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="..\..\..\libfvalue\libfvalue_debug.c">
-			</CppCompile>
-			<None Include="..\..\..\libfvalue\libfvalue_extern.h">
+			<None Include="..\..\..\libfvalue\libfvalue_codepage.h">
+				<BuildOrder>2</BuildOrder>
 			</None>
-			<None Include="..\..\..\libfvalue\libfvalue_libfdatetime.h">
+			<None Include="..\..\..\libfvalue\libfvalue_libfguid.h">
+				<BuildOrder>3</BuildOrder>
+			</None>
+			<None Include="..\..\..\libfvalue\libfvalue_array_type.h">
+				<BuildOrder>4</BuildOrder>
 			</None>
 			<None Include="..\..\..\libfvalue\libfvalue_debug.h">
+				<BuildOrder>5</BuildOrder>
 			</None>
 			<None Include="..\..\..\libfvalue\libfvalue_definitions.h">
+				<BuildOrder>6</BuildOrder>
+			</None>
+			<None Include="..\..\..\libfvalue\libfvalue_libfdatetime.h">
+				<BuildOrder>7</BuildOrder>
+			</None>
+			<CppCompile Include="..\..\..\libfvalue\libfvalue_debug.c">
+				<BuildOrder>8</BuildOrder>
+			</CppCompile>
+			<None Include="..\..\..\libfvalue\libfvalue_extern.h">
+				<BuildOrder>9</BuildOrder>
+			</None>
+			<CppCompile Include="..\..\..\libfvalue\libfvalue_value.c">
+				<BuildOrder>10</BuildOrder>
+			</CppCompile>
+			<None Include="..\..\..\libfvalue\libfvalue_split_string.h">
+				<BuildOrder>11</BuildOrder>
+			</None>
+			<CppCompile Include="..\..\..\libfvalue\libfvalue_string.c">
+				<BuildOrder>12</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\..\libfvalue\libfvalue_split_string.c">
+				<BuildOrder>13</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\..\libfvalue\libfvalue_table.c">
+				<BuildOrder>14</BuildOrder>
+			</CppCompile>
+			<None Include="..\..\..\libfvalue\libfvalue_libuna.h">
+				<BuildOrder>15</BuildOrder>
+			</None>
+			<CppCompile Include="..\..\..\libfvalue\libfvalue_value_entry.c">
+				<BuildOrder>16</BuildOrder>
+			</CppCompile>
+			<None Include="..\..\..\libfvalue\libfvalue_types.h">
+				<BuildOrder>17</BuildOrder>
+			</None>
+			<None Include="..\..\..\libfvalue\libfvalue_value.h">
+				<BuildOrder>18</BuildOrder>
+			</None>
+			<None Include="..\..\..\libfvalue\libfvalue_string.h">
+				<BuildOrder>19</BuildOrder>
+			</None>
+			<None Include="..\..\..\libfvalue\libfvalue_table.h">
+				<BuildOrder>20</BuildOrder>
 			</None>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>

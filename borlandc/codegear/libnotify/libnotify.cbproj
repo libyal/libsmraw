@@ -39,15 +39,6 @@
 			<TASM_Debugging>None</TASM_Debugging>
 		</PropertyGroup>
 		<ItemGroup>
-			<None Include="..\..\..\libnotify\libnotify_stream.h">
-				<BuildOrder>0</BuildOrder>
-			</None>
-			<CppCompile Include="..\..\..\libnotify\libnotify.c">
-				<BuildOrder>1</BuildOrder>
-			</CppCompile>
-			<None Include="..\..\..\libnotify\libnotify.h">
-				<BuildOrder>2</BuildOrder>
-			</None>
 			<CppCompile Include="..\..\..\libnotify\libnotify_print.c">
 				<BuildOrder>3</BuildOrder>
 			</CppCompile>
@@ -57,6 +48,15 @@
 			<CppCompile Include="..\..\..\libnotify\libnotify_stream.c">
 				<BuildOrder>5</BuildOrder>
 			</CppCompile>
+			<None Include="..\..\..\libnotify\libnotify_stream.h">
+				<BuildOrder>0</BuildOrder>
+			</None>
+			<CppCompile Include="..\..\..\libnotify\libnotify.c">
+				<BuildOrder>1</BuildOrder>
+			</CppCompile>
+			<None Include="..\..\..\libnotify\libnotify.h">
+				<BuildOrder>2</BuildOrder>
+			</None>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>

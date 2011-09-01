@@ -27,6 +27,13 @@ Test
 Beta release
 * remove deprecated functions in libsmraw_legacy.[ch]
 
+20110901
+* updated libuna, libbfio, libfvalue
+* updated msvscpp files
+
+20110831
+* updated configure
+
 20110731
 * updated common, libfvalue, libmfdata
 
