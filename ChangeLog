@@ -1,4 +1,7 @@
 TODO
+* update spec file to contain smrawtools
+* use libhmac for test tools ?
+
 * why is empty information value section written in info file
 
 * complete libfvalue and test information file read/write
@@ -26,6 +29,9 @@ Test
 
 Beta release
 * remove deprecated functions in libsmraw_legacy.[ch]
+
+20110916
+* merged smrawmount branch
 
 20110901
 * updated libuna, libbfio, libfvalue

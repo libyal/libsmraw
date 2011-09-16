@@ -11,6 +11,8 @@ SUBDIRS = \
 	libmfdata \
 	libfvalue \
 	libsmraw \
+	libsystem \
+	smrawtools \
 	smraw.net \
 	po \
 	manuals \
@@ -82,6 +84,8 @@ splint:
 	(cd $(srcdir)/libmfdata && $(MAKE) splint $(AM_MAKEFLAGS))
 	(cd $(srcdir)/libfvalue && $(MAKE) splint $(AM_MAKEFLAGS))
 	(cd $(srcdir)/libsmraw && $(MAKE) splint $(AM_MAKEFLAGS))
+	(cd $(srcdir)/libsystem && $(MAKE) splint $(AM_MAKEFLAGS))
+	(cd $(srcdir)/smrawtools && $(MAKE) splint $(AM_MAKEFLAGS))
 	(cd $(srcdir)/po && $(MAKE) splint $(AM_MAKEFLAGS))
 	(cd $(srcdir)/tests && $(MAKE) splint $(AM_MAKEFLAGS))
 

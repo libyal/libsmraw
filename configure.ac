@@ -2,7 +2,7 @@ AC_PREREQ( 2.59 )
 
 AC_INIT(
  [libsmraw],
- [20110901],
+ [20110916],
  [jbmetz@users.sourceforge.net])
 
 AC_CONFIG_SRCDIR(
@@ -29,6 +29,11 @@ COMMON_ARG_ENABLE(
  [winapi],
  [enable WINAPI support for cross-compilation],
  [auto-detect])
+COMMON_ARG_ENABLE(
+ [static-executables],
+ [static_executables],
+ [build the smrawtools as static executables],
+ [no])
 COMMON_ARG_ENABLE(
  [verbose-output],
  [verbose_output],
@@ -62,6 +67,12 @@ COMMON_ARG_WITH(
  [libmfdata],
  [libmfdata],
  [search for libmfdata in includedir and libdir or in the specified DIR, or no if to use local version],
+ [auto-detect],
+ [DIR])
+COMMON_ARG_WITH(
+ [libfuse],
+ [libfuse],
+ [search for libfuse in includedir and libdir or in the specified DIR, or no if not to use libfuse],
  [auto-detect],
  [DIR])
 
@@ -103,6 +114,7 @@ AC_CHECK_LOCAL_COMMON
 AC_CHECK_LOCAL_LIBCSTRING
 AC_CHECK_LOCAL_LIBERROR
 AC_CHECK_LOCAL_LIBNOTIFY
+AC_CHECK_LOCAL_LIBSYSTEM
 
 dnl Check for enabling libuna for Unicode string support
 AC_CHECK_LIBUNA
@@ -110,17 +122,17 @@ AC_CHECK_LIBUNA
 AS_IF(
  [test "x$ac_cv_libuna" = xyes],
  [AC_SUBST(
-  [libewf_pc_libs_private_libuna],
+  [libsmraw_pc_libs_private_libuna],
   [-luna])
  ])
 
 AS_IF(
  [test "x$ac_cv_libuna" = xyes],
  [AC_SUBST(
-  [libewf_spec_requires_libuna],
+  [libsmraw_spec_requires_libuna],
   [libuna])
  AC_SUBST(
-  [libewf_spec_build_requires_libuna],
+  [libsmraw_spec_build_requires_libuna],
   [libuna-devel])
  ])
 
@@ -152,17 +164,17 @@ AC_CHECK_LIBBFIO
 AS_IF(
  [test "x$ac_cv_libbfio" = xyes],
  [AC_SUBST(
-  [libewf_pc_libs_private_libbfio],
+  [libsmraw_pc_libs_private_libbfio],
   [-lbfio])
  ])
 
 AS_IF(
  [test "x$ac_cv_libbfio" = xyes],
  [AC_SUBST(
-  [libewf_spec_requires_libbfio],
+  [libsmraw_spec_requires_libbfio],
   [libbfio])
  AC_SUBST(
-  [libewf_spec_build_requires_libbfio],
+  [libsmraw_spec_build_requires_libbfio],
   [libbfio-devel])
  ])
 
@@ -198,17 +210,17 @@ AC_CHECK_LIBMFDATA
 AS_IF(
  [test "x$ac_cv_libmfdata" = xyes],
  [AC_SUBST(
-  [libewf_pc_libs_private_libmfdata],
+  [libsmraw_pc_libs_private_libmfdata],
   [-lmfdata])
  ])
 
 AS_IF(
  [test "x$ac_cv_libmfdata" = xyes],
  [AC_SUBST(
-  [libewf_spec_requires_libmfdata],
+  [libsmraw_spec_requires_libmfdata],
   [libmfdata])
  AC_SUBST(
-  [libewf_spec_build_requires_libmfdata],
+  [libsmraw_spec_build_requires_libmfdata],
   [libmfdata-devel])
  ])
 
@@ -240,17 +252,17 @@ AC_CHECK_LIBFVALUE
 AS_IF(
  [test "x$ac_cv_libfvalue" = xyes],
  [AC_SUBST(
-  [libewf_pc_libs_private_libfvalue],
+  [libsmraw_pc_libs_private_libfvalue],
   [-lfvalue])
  ])
 
 AS_IF(
  [test "x$ac_cv_libfvalue" = xyes],
  [AC_SUBST(
-  [libewf_spec_requires_libfvalue],
+  [libsmraw_spec_requires_libfvalue],
   [libfvalue])
  AC_SUBST(
-  [libewf_spec_build_requires_libfvalue],
+  [libsmraw_spec_build_requires_libfvalue],
   [libfvalue-devel])
  ])
 
@@ -413,6 +425,31 @@ AS_IF(
   [No support for calculating MD5 hashes, if required install (openssl) libcrypto with MD5 support or Windows Crypto API.])
  ])
 
+dnl Check for libfuse Filesystem in Userspace (FUSE) support
+AC_CHECK_LIBFUSE
+
+AS_IF(
+ [test "x$ac_cv_libfuse" = xyes],
+ [AC_SUBST(
+  [libsmraw_spec_requires_libfuse],
+  [libfuse])
+ AC_SUBST(
+  [libsmraw_spec_build_requires_libfuse],
+  [libfuse-devel])
+ ])
+
+dnl Check if smrawtools should be build as static executables
+AS_IF(
+ [test "x$ac_cv_enable_static_executables" != xno],
+ [STATIC_LDFLAGS="-all-static";
+ AC_SUBST(
+  [STATIC_LDFLAGS])
+ AC_DEFINE(
+  [HAVE_STATIC_EXECUTABLES],
+  [1],
+  [Define if executables should be static compiled.])
+ ac_cv_enable_static_executables=yes])
+
 dnl Check if libsmraw should be build with verbose output
 AS_IF(
  [test "x$ac_cv_enable_verbose_output" != xno],
@@ -491,6 +528,8 @@ AC_CONFIG_FILES([libbfio/Makefile])
 AC_CONFIG_FILES([libfvalue/Makefile])
 AC_CONFIG_FILES([libmfdata/Makefile])
 AC_CONFIG_FILES([libsmraw/Makefile])
+AC_CONFIG_FILES([libsystem/Makefile])
+AC_CONFIG_FILES([smrawtools/Makefile])
 AC_CONFIG_FILES([smraw.net/Makefile])
 AC_CONFIG_FILES([po/Makefile.in])
 AC_CONFIG_FILES([po/Makevars])
@@ -523,9 +562,11 @@ Building:
    libmfdata support:                               $ac_cv_libmfdata
    libfvalue support:                               $ac_cv_libfvalue
    MD5 support:                                     $ac_cv_libcrypto_md5
+   FUSE support:                                    $ac_cv_libfuse
 
 Features:
    Wide character type support:                     $ac_cv_enable_wide_character_type
+   smrawtools are build as static executables:      $ac_cv_enable_static_executables
    Verbose output:                                  $ac_cv_enable_verbose_output
    Debug output:                                    $ac_cv_enable_debug_output
 ]);
