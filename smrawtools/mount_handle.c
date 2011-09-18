@@ -206,8 +206,8 @@ int mount_handle_open_input(
      liberror_error_t **error )
 {
 	libcstring_system_character_t **libsmraw_filenames = NULL;
-	static char *function                            = "mount_handle_open_input";
-	size_t first_filename_length                     = 0;
+	static char *function                              = "mount_handle_open_input";
+	size_t first_filename_length                       = 0;
 
 	if( mount_handle == NULL )
 	{

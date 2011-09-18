@@ -63,7 +63,7 @@ void usage_fprint(
 	{
 		return;
 	}
-	fprintf( stream, "Use smrawmount to mount a storage media (split) RAW (image file\n\n" );
+	fprintf( stream, "Use smrawmount to mount a storage media (split) RAW (image) file\n\n" );
 
 	fprintf( stream, "Usage: smrawmount [ -hvV ] smraw_files mount_point\n\n" );
 
@@ -79,10 +79,12 @@ void usage_fprint(
 /* Signal handler for smrawmount
  */
 void smrawmount_signal_handler(
-      libsystem_signal_t signal )
+      libsystem_signal_t signal LIBSYSTEM_ATTRIBUTE_UNUSED )
 {
 	liberror_error_t *error = NULL;
 	static char *function   = "smrawmount_signal_handler";
+
+	LIBSYSTEM_UNREFERENCED_PARAMETER( signal )
 
 	smrawmount_abort = 1;
 
@@ -119,7 +121,7 @@ void smrawmount_signal_handler(
 #error Size of off_t not supported
 #endif
 
-static char *smrawmount_fuse_path         = "/smraw1";
+static char *smrawmount_fuse_path         = "/raw1";
 static size_t smrawmount_fuse_path_length = 5;
 
 /* Opens a file
@@ -337,13 +339,16 @@ int smrawmount_fuse_readdir(
      const char *path,
      void *buffer,
      fuse_fill_dir_t filler,
-     off_t offset,
-     struct fuse_file_info *file_info )
+     off_t offset LIBSYSTEM_ATTRIBUTE_UNUSED,
+     struct fuse_file_info *file_info LIBSYSTEM_ATTRIBUTE_UNUSED )
 {
 	liberror_error_t *error = NULL;
 	static char *function   = "smrawmount_fuse_readdir";
 	size_t path_length      = 0;
 	int result              = 0;
+
+	LIBSYSTEM_UNREFERENCED_PARAMETER( offset )
+	LIBSYSTEM_UNREFERENCED_PARAMETER( file_info )
 
 	if( path == NULL )
 	{

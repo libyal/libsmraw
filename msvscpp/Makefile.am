@@ -3,6 +3,7 @@ EXTRA_DIST = \
 	libcstring/libcstring.vcproj \
 	liberror/liberror.vcproj \
 	libfvalue/libfvalue.vcproj \
+	libhmac/libhmac.vcproj \
 	libmfdata/libmfdata.vcproj \
 	libnotify/libnotify.vcproj \
 	libsmraw_dll/libsmraw_dll.vcproj \

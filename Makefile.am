@@ -12,6 +12,7 @@ SUBDIRS = \
 	libfvalue \
 	libsmraw \
 	libsystem \
+	libhmac \
 	smrawtools \
 	smraw.net \
 	po \

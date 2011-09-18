@@ -31,14 +31,7 @@
 
 #include <signal.h>
 
-/* If libtool DLL support is enabled set LIBSMRAW_DLL_IMPORT
- * before including libsmraw.h
- */
-#if defined( _WIN32 ) && defined( DLL_EXPORT )
-#define LIBSMRAW_DLL_IMPORT
-#endif
-
-#include <libsmraw.h>
+#include "smraw_test_libsmraw.h"
 
 #define SMRAW_TEST_READ_BUFFER_SIZE	4096
 

@@ -4,6 +4,7 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/libcstring \
 	-I$(top_srcdir)/liberror \
 	-I$(top_srcdir)/libsmraw \
+	@LIBHMAC_CPPFLAGS@ \
 	@MEMWATCH_CPPFLAGS@ \
 	@LIBSMRAW_DLL_IMPORT@
 
@@ -33,19 +34,22 @@ check_PROGRAMS = \
 	smraw_test_write
 
 smraw_test_compare_SOURCES = \
-	digest_context.c digest_context.h \
 	digest_hash.c digest_hash.h \
-	md5.h \
+	smraw_test_libhmac.h \
+	smraw_test_libsmraw.h \
 	smraw_test_compare.c
 
 smraw_test_compare_LDADD = \
 	../libcstring/libcstring.la \
 	../liberror/liberror.la \
 	../libsmraw/libsmraw.la \
+	@LIBHMAC_LIBADD@ \
 	@LIBCRYPTO_LIBADD@ \
+	@LIBDL_LIBADD@ \
         @MEMWATCH_LIBADD@
 
 smraw_test_glob_SOURCES = \
+	smraw_test_libsmraw.h \
 	smraw_test_glob.c
 
 smraw_test_glob_LDADD = \
@@ -54,6 +58,7 @@ smraw_test_glob_LDADD = \
         @MEMWATCH_LIBADD@
 
 smraw_test_read_SOURCES = \
+	smraw_test_libsmraw.h \
 	smraw_test_read.c
 
 smraw_test_read_LDADD = \
@@ -63,6 +68,7 @@ smraw_test_read_LDADD = \
         @MEMWATCH_LIBADD@
 
 smraw_test_read_loop_SOURCES = \
+	smraw_test_libsmraw.h \
 	smraw_test_read_loop.c
 
 smraw_test_read_loop_LDADD = \
@@ -71,6 +77,7 @@ smraw_test_read_loop_LDADD = \
         @MEMWATCH_LIBADD@
 
 smraw_test_seek_SOURCES = \
+	smraw_test_libsmraw.h \
 	smraw_test_seek.c
 
 smraw_test_seek_LDADD = \
@@ -79,15 +86,16 @@ smraw_test_seek_LDADD = \
         @MEMWATCH_LIBADD@
 
 smraw_test_write_SOURCES = \
-	digest_context.c digest_context.h \
-	digest_hash.c digest_hash.h \
-	md5.h \
+	smraw_test_libhmac.h \
+	smraw_test_libsmraw.h \
 	smraw_test_write.c
 
 smraw_test_write_LDADD = \
 	../libcstring/libcstring.la \
 	../libsmraw/libsmraw.la \
+	@LIBHMAC_LIBADD@ \
 	@LIBCRYPTO_LIBADD@ \
+	@LIBDL_LIBADD@ \
         @MEMWATCH_LIBADD@
 
 MAINTAINERCLEANFILES = \

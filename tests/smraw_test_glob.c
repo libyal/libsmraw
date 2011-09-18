@@ -29,7 +29,7 @@
 
 #include <stdio.h>
 
-#include <libsmraw.h>
+#include "smraw_test_libsmraw.h"
 
 /* The main program
  */

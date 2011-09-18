@@ -2,7 +2,7 @@ AC_PREREQ( 2.59 )
 
 AC_INIT(
  [libsmraw],
- [20110916],
+ [20110918],
  [jbmetz@users.sourceforge.net])
 
 AC_CONFIG_SRCDIR(
@@ -69,6 +69,20 @@ COMMON_ARG_WITH(
  [search for libmfdata in includedir and libdir or in the specified DIR, or no if to use local version],
  [auto-detect],
  [DIR])
+
+COMMON_ARG_WITH(
+ [libhmac],
+ [libhmac],
+ [search for libhmac in includedir and libdir or in the specified DIR, or no if to use local version],
+ [auto-detect],
+ [DIR])
+COMMON_ARG_WITH(
+ [openssl],
+ [openssl],
+ [search for openssl in includedir and libdir or in the specified DIR, or no if not to use openssl],
+ [auto-detect],
+ [DIR])
+
 COMMON_ARG_WITH(
  [libfuse],
  [libfuse],
@@ -288,141 +302,53 @@ AM_CONDITIONAL(
  [HAVE_LOCAL_LIBFVALUE],
  [test "x$ac_cv_libfvalue" = xlocal])
 
-dnl TODO use libhmac
-dnl Check for enabling crypographic digest hash support
-ac_cv_libcrypto=no
+dnl Check for enabling libhmac for message digest hash function support
+AC_CHECK_LIBHMAC
 
 AS_IF(
- [test "x$ac_cv_enable_winapi" = xyes],
+ [test "x$ac_cv_libhmac" = xyes],
  [AC_SUBST(
-  [LIBCRYPTO_LIBADD],
-  [-ladvapi32])
-  ac_cv_libcrypto=libadvapi32])
-
-dnl Check for libcrypto openssl EVP support
-AS_IF(
- [test "x$ac_cv_libcrypto" = xno],
- [AC_CHECK_HEADERS([openssl/evp.h openssl/opensslv.h])
-
- AS_IF(
-  [test "x$ac_cv_header_openssl_evp_h" = xyes],
-  [AC_LANG_PUSH(C)
-  AC_MSG_CHECKING(
-   [if openssl/evp.h can be used in combination with zlib.h])
-  AC_LINK_IFELSE(
-   [AC_LANG_PROGRAM(
-    [[#include <zlib.h>
-#include <openssl/evp.h>]],
-    [[ ]] )],
-    [AC_MSG_RESULT(
-     [yes])
-    AC_DEFINE(
-     [HAVE_OPENSSL_EVP_H],
-     [1],
-     [Define to 1 if you have the <openssl/evp.h> header file.])
-    AC_SUBST(
-     [HAVE_OPENSSL_EVP_H],
-     [1])
-    ac_cv_libcrypto=libcrypto_evp],
-   [AC_MSG_RESULT(
-    [no])
-   ac_cv_libcrypto=no])
-  AC_LANG_POP(C)],
-  [ac_cv_libcrypto=no])
- ])
-
-dnl Check if all required libcrypto openssl EVP functions are available
-AS_IF(
- [test "x$ac_cv_libcrypto" = xlibcrypto_evp],
- [AC_CHECK_LIB(
-  crypto,
-  EVP_md5,
-  [AC_SUBST(
-   [LIBCRYPTO_LIBADD],
-   [-lcrypto])
-  AC_DEFINE(
-   [HAVE_LIBCRYPTO],
-   [1],
-   [Define to 1 if you have the 'crypto' library (-lcrypto).]) ],
-  [ac_cv_libcrypto=no])
- AC_CHECK_LIB(
-  crypto,
-  EVP_MD_CTX_init,
-  [ac_cv_libsmraw_dummy=yes],
-  [ac_cv_libcrypto=no])
- AC_CHECK_LIB(
-  crypto,
-  EVP_MD_CTX_cleanup,
-  [ac_cv_libsmraw_dummy=yes],
-  [ac_cv_libcrypto=no])
- AC_CHECK_LIB(
-  crypto,
-  EVP_DigestInit_ex,
-  [ac_cv_libsmraw_dummy=yes],
-  [ac_cv_libcrypto=no])
- AC_CHECK_LIB(
-  crypto,
-  EVP_DigestUpdate,
-  [ac_cv_libsmraw_dummy=yes],
-  [ac_cv_libcrypto=no])
- AC_CHECK_LIB(
-  crypto,
-  EVP_DigestFinal_ex,
-  [ac_cv_libsmraw_dummy=yes],
-  [ac_cv_libcrypto=no])
+  [libsmraw_spec_requires_libhmac],
+  [libhmac])
+ AC_SUBST(
+  [libsmraw_spec_build_requires_libhmac],
+  [libhmac-devel])
  ])
 
 AS_IF(
- [test "x$ac_cv_libcrypto" = xlibadvapi32],
- [ac_cv_libcrypto_md5=libadvapi32])
+ [test "x$ac_cv_libhmac" != xyes],
+ [AC_DEFINE(
+  [HAVE_LOCAL_LIBHMAC],
+  [1],
+  [Define to 1 if the local version of libhmac is used.])
+ AC_SUBST(
+  [HAVE_LOCAL_LIBHMAC],
+  [1])
+ AC_SUBST(
+  [LIBHMAC_CPPFLAGS],
+  [-I../libhmac])
+ AC_SUBST(
+  [LIBHMAC_LIBADD],
+  [../libhmac/libhmac.la])
+ ac_cv_libhmac=local
+ ])
+
+AM_CONDITIONAL(
+ [HAVE_LOCAL_LIBHMAC],
+ [test "x$ac_cv_libhmac" = xlocal])
 
 AS_IF(
- [test "x$ac_cv_libcrypto" = xlibcrypto_evp],
- [ac_cv_libcrypto_md5=libcrypto_evp],
+ [test "x$ac_cv_libhmac" = xlocal],
+ [AC_CHECK_LOCAL_LIBHMAC])
+
+AS_IF(
+ [test "x$ac_cv_libcrypto" != xno],
  [AC_SUBST(
-  [HAVE_OPENSSL_EVP_H],
-  [0]) ])
-
-AS_IF(
- [test "x$ac_cv_libcrypto" = xno],
- [ac_cv_libcrypto_md5=no])
-
-dnl Check for libcrypto openssl MD5 support
-AS_IF(
- [test "x$ac_cv_libcrypto_md5" = xno],
- [AC_CHECK_HEADERS([openssl/md5.h])
-
- AS_IF(
-  [test "x$ac_cv_header_openssl_md5_h" = xyes],
-  [ac_cv_libcrypto_md5=libcrypto
-  AC_CHECK_LIB(
-   crypto,
-   MD5_Init,
-   [AC_SUBST(
-    [LIBCRYPTO_LIBADD],
-    [-lcrypto])
-   AC_DEFINE(
-    [HAVE_LIBCRYPTO],
-    [1],
-    [Define to 1 if you have the 'crypto' library (-lcrypto).]) ],
-   [ac_cv_libcrypto_md5=no])
-  AC_CHECK_LIB(
-   crypto,
-   MD5_Update,
-   [ac_cv_libsmraw_dummy=yes],
-   [ac_cv_libcrypto_md5=no])
-  AC_CHECK_LIB(
-   crypto,
-   MD5_Final,
-   [ac_cv_libsmraw_dummy=yes],
-   [ac_cv_libcrypto_md5=no])
-  ])
- ])
-
-AS_IF(
- [test "x$ac_cv_libcrypto_md5" = xno],
- [AC_MSG_NOTICE(
-  [No support for calculating MD5 hashes, if required install (openssl) libcrypto with MD5 support or Windows Crypto API.])
+  [libsmraw_spec_requires_libcrypto],
+  [openssl])
+ AC_SUBST(
+  [libsmraw_spec_build_requires_libcrypto],
+  [openssl-devel])
  ])
 
 dnl Check for libfuse Filesystem in Userspace (FUSE) support
@@ -476,14 +402,15 @@ AS_IF(
   [Requires:])
  AC_SUBST(
   [libsmraw_spec_build_requires],
-  [BuildRequires:]) ],
+  [BuildRequires:])
+ ])
+
+AS_IF(
+ [test "x$ac_cv_libfuse" = xyes],
  [AC_SUBST(
-  [libsmraw_spec_requires],
-  [])
- AC_SUBST(
-  [libsmraw_spec_build_requires],
-  [])
- ac_cv_libsmraw_dummy=yes])
+  [libsmraw_spec_tools_build_requires],
+  [BuildRequires:])
+ ])
 
 dnl Set memwatch support
 ac_libsmraw_have_memwatch=no
@@ -529,6 +456,7 @@ AC_CONFIG_FILES([libfvalue/Makefile])
 AC_CONFIG_FILES([libmfdata/Makefile])
 AC_CONFIG_FILES([libsmraw/Makefile])
 AC_CONFIG_FILES([libsystem/Makefile])
+AC_CONFIG_FILES([libhmac/Makefile])
 AC_CONFIG_FILES([smrawtools/Makefile])
 AC_CONFIG_FILES([smraw.net/Makefile])
 AC_CONFIG_FILES([po/Makefile.in])
@@ -561,7 +489,8 @@ Building:
    libbfio support:                                 $ac_cv_libbfio
    libmfdata support:                               $ac_cv_libmfdata
    libfvalue support:                               $ac_cv_libfvalue
-   MD5 support:                                     $ac_cv_libcrypto_md5
+   libhmac support:                                 $ac_cv_libhmac
+   MD5 support:                                     $ac_cv_libhmac_md5
    FUSE support:                                    $ac_cv_libfuse
 
 Features:

@@ -1,7 +1,7 @@
 /*
- * Crypographic digest hash
+ * The internal libhmac header
  *
- * Copyright (c) 2006-2011, Joachim Metz <jbmetz@users.sourceforge.net>
+ * Copyright (c) 2010-2011, Joachim Metz <jbmetz@users.sourceforge.net>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -19,28 +19,22 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _DIGEST_HASH_H )
-#define _DIGEST_HASH_H
+#if !defined( _EWFTOOLS_LIBHMAC_H )
+#define _EWFTOOLS_LIBHMAC_H
 
 #include <common.h>
-#include <types.h>
 
-#include <libcstring.h>
-#include <liberror.h>
+#if defined( HAVE_LOCAL_LIBHMAC )
+#include <libhmac_definitions.h>
+#include <libhmac_md5.h>
+#include <libhmac_sha1.h>
+#include <libhmac_sha256.h>
+#include <libhmac_support.h>
+#include <libhmac_types.h>
 
-#if defined( __cplusplus )
-extern "C" {
-#endif
+#elif defined( HAVE_LIBHMAC_H )
+#include <libhmac.h>
 
-int digest_hash_copy_to_string(
-     const uint8_t *digest_hash,
-     size_t digest_hash_size,
-     libcstring_system_character_t *string,
-     size_t string_size,
-     liberror_error_t **error );
-
-#if defined( __cplusplus )
-}
 #endif
 
 #endif

@@ -51,6 +51,7 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "smraw_test_compare", "smraw_test_compare\smraw_test_compare.vcproj", "{D87EB591-F354-4B26-A7BA-8C3AEE940D7F}"
 	ProjectSection(ProjectDependencies) = postProject
 		{B5225323-AC67-411D-8FBA-199E9467FAB5} = {B5225323-AC67-411D-8FBA-199E9467FAB5}
+		{D6DC307C-0CA0-4144-BB19-9C43B476280F} = {D6DC307C-0CA0-4144-BB19-9C43B476280F}
 		{BD3A95FA-A3DE-4B79-A889-A7E5ECA4B69C} = {BD3A95FA-A3DE-4B79-A889-A7E5ECA4B69C}
 	EndProjectSection
 EndProject
@@ -73,6 +74,12 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "smraw.net_dll", "smraw.net_dll\smraw.net_dll.vcproj", "{C9D11A1A-EF3A-4411-B8EA-1437B7511E5A}"
 	ProjectSection(ProjectDependencies) = postProject
 		{B5225323-AC67-411D-8FBA-199E9467FAB5} = {B5225323-AC67-411D-8FBA-199E9467FAB5}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libhmac", "libhmac\libhmac.vcproj", "{D6DC307C-0CA0-4144-BB19-9C43B476280F}"
+	ProjectSection(ProjectDependencies) = postProject
+		{20FFC4C9-F44C-45F6-A827-4819B4DF3C9F} = {20FFC4C9-F44C-45F6-A827-4819B4DF3C9F}
+		{BD3A95FA-A3DE-4B79-A889-A7E5ECA4B69C} = {BD3A95FA-A3DE-4B79-A889-A7E5ECA4B69C}
 	EndProjectSection
 EndProject
 Global
@@ -129,6 +136,10 @@ Global
 		{C9D11A1A-EF3A-4411-B8EA-1437B7511E5A}.Release|Win32.Build.0 = Release|Win32
 		{C9D11A1A-EF3A-4411-B8EA-1437B7511E5A}.VSDebug|Win32.ActiveCfg = VSDebug|Win32
 		{C9D11A1A-EF3A-4411-B8EA-1437B7511E5A}.VSDebug|Win32.Build.0 = VSDebug|Win32
+		{D6DC307C-0CA0-4144-BB19-9C43B476280F}.Release|Win32.ActiveCfg = Release|Win32
+		{D6DC307C-0CA0-4144-BB19-9C43B476280F}.Release|Win32.Build.0 = Release|Win32
+		{D6DC307C-0CA0-4144-BB19-9C43B476280F}.VSDebug|Win32.ActiveCfg = VSDebug|Win32
+		{D6DC307C-0CA0-4144-BB19-9C43B476280F}.VSDebug|Win32.Build.0 = VSDebug|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

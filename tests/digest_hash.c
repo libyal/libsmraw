@@ -1,7 +1,7 @@
 /*
  * Crypographic digest hash
  *
- * Copyright (c) 2010-2011, Joachim Metz <jbmetz@users.sourceforge.net>
+ * Copyright (c) 2006-2011, Joachim Metz <jbmetz@users.sourceforge.net>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -31,7 +31,7 @@
  * Returns 1 if successful or -1 on error
  */
 int digest_hash_copy_to_string(
-     digest_hash_t *digest_hash,
+     const uint8_t *digest_hash,
      size_t digest_hash_size,
      libcstring_system_character_t *string,
      size_t string_size,
@@ -99,7 +99,9 @@ int digest_hash_copy_to_string(
 
 		return( -1 );
 	}
-	for( digest_hash_iterator = 0; digest_hash_iterator < digest_hash_size; digest_hash_iterator++ )
+	for( digest_hash_iterator = 0;
+	     digest_hash_iterator < digest_hash_size;
+	     digest_hash_iterator++ )
 	{
 		digest_digit = digest_hash[ digest_hash_iterator ] / 16;
 

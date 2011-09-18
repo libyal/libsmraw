@@ -30,11 +30,8 @@
 
 #include <stdio.h>
 
-#include <libsmraw.h>
-
-#include "digest_context.h"
-#include "digest_hash.h"
-#include "md5.h"
+#include "smraw_test_libhmac.h"
+#include "smraw_test_libsmraw.h"
 
 #define SMRAW_TEST_BUFFER_SIZE	4096
 
@@ -44,18 +41,16 @@ int smraw_test_write(
      size_t maximum_segment_size,
      liberror_error_t **error )
 {
-	digest_hash_t md5_hash[ DIGEST_HASH_SIZE_MD5 ];
+	uint8_t md5_hash[ LIBHMAC_MD5_HASH_SIZE ];
 
-	md5_context_t md5_context;
-
-	libsmraw_handle_t *handle = NULL;
-	uint8_t *buffer           = NULL;
-	static char *function     = "smraw_test_write";
-	size_t md5_hash_size      = DIGEST_HASH_SIZE_MD5;
-	size_t write_size         = 0;
-	ssize_t write_count       = 0;
-	int result                = 1;
-	int sector_iterator       = 0;
+	libhmac_md5_context_t *md5_context = NULL;
+	libsmraw_handle_t *handle          = NULL;
+	uint8_t *buffer                    = NULL;
+	static char *function              = "smraw_test_write";
+	size_t write_size                  = 0;
+	ssize_t write_count                = 0;
+	int result                         = 1;
+	int sector_iterator                = 0;
 
 	fprintf(
 	 stdout,
@@ -63,7 +58,7 @@ int smraw_test_write(
 	 media_size,
 	 maximum_segment_size );
 
-	if( md5_initialize(
+	if( libhmac_md5_initialize(
 	     &md5_context,
 	     error ) != 1 )
 	{
@@ -179,12 +174,21 @@ int smraw_test_write(
 
 			goto on_error;
 		}
-		md5_update(
-		 &md5_context,
-		 buffer,
-		 write_size,
-		 error );
+		if( libhmac_md5_update(
+		     md5_context,
+		     buffer,
+		     write_size,
+		     error ) != 1 )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+			 "%s: unable update MD5 context.",
+			 function );
 
+			goto on_error;
+		}
 		write_count = libsmraw_handle_write_buffer(
 		               handle,
 		               buffer,
@@ -231,12 +235,21 @@ int smraw_test_write(
 
 			goto on_error;
 		}
-		md5_update(
-		 &md5_context,
-		 buffer,
-		 write_size,
-		 error );
+		if( libhmac_md5_update(
+		     md5_context,
+		     buffer,
+		     write_size,
+		     error ) != 1 )
+		{
+			liberror_error_set(
+			 error,
+			 LIBERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+			 "%s: unable update MD5 context.",
+			 function );
 
+			goto on_error;
+		}
 		write_count = libsmraw_handle_write_buffer(
 		               handle,
 		               buffer,
@@ -263,17 +276,30 @@ int smraw_test_write(
 			media_size -= write_count;
 		}
 	}
-	if( md5_finalize(
-	     &md5_context,
+	if( libhmac_md5_finalize(
+	     md5_context,
 	     md5_hash,
-	     &md5_hash_size,
+	     LIBHMAC_MD5_HASH_SIZE,
+	     error ) != 1 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to finalize MD5 context.",
+		 function );
+
+		goto on_error;
+	}
+	if( libhmac_md5_free(
+	     &md5_context,
 	     error ) != 1 )
 	{
 		liberror_error_set(
 		 error,
 		 LIBERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-		 "%s: unable to finalize MD5 context.",
+		 "%s: unable to free MD5 context.",
 		 function );
 
 		goto on_error;
@@ -330,6 +356,12 @@ int smraw_test_write(
 	return( result );
 
 on_error:
+	if( md5_context != NULL )
+	{
+		libhmac_md5_free(
+		 &md5_context,
+		 NULL );
+	}
 	if( buffer != NULL )
 	{
 		memory_free(

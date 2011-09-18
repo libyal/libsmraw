@@ -30,18 +30,9 @@
 
 #include <stdio.h>
 
-/* If libtool DLL support is enabled set LIBSMRAW_DLL_IMPORT
- * before including libsmraw.h
- */
-#if defined( _WIN32 ) && defined( DLL_EXPORT )
-#define LIBSMRAW_DLL_IMPORT
-#endif
-
-#include <libsmraw.h>
-
-#include "digest_context.h"
 #include "digest_hash.h"
-#include "md5.h"
+#include "smraw_test_libhmac.h"
+#include "smraw_test_libsmraw.h"
 
 #define SMRAW_TEST_READ_BUFFER_SIZE	4096
 
@@ -90,7 +81,7 @@ int smraw_test_seek_offset(
  */
 int smraw_test_read_hash(
      libsmraw_handle_t *handle,
-     md5_context_t *md5_context,
+     libhmac_md5_context_t *md5_context,
      off64_t input_offset,
      int input_whence,
      size64_t input_size,
@@ -173,13 +164,11 @@ int smraw_test_read_hash(
 			remaining_size -= (size64_t) read_count;
 			result_size    += (size64_t) read_count;
 
-			md5_update(
-			 md5_context,
-			 buffer,
-			 read_count,
-			 &error );
-
-			if( error != NULL )
+			if( libhmac_md5_update(
+			     md5_context,
+			     buffer,
+			     read_count,
+			     &error ) != 1 )
 			{
 				fprintf(
 				 stderr,
@@ -229,20 +218,18 @@ int smraw_test_compare_case0(
      libsmraw_handle_t *handle_multi,
       size64_t media_size )
 {
-	libcstring_system_character_t md5_hash_string[ DIGEST_HASH_STRING_SIZE_MD5 ];
+	libcstring_system_character_t md5_hash_string[ 33 ];
 
-	md5_context_t md5_context_multi;
-	md5_context_t md5_context_single;
+	uint8_t md5_hash_multi[ LIBHMAC_MD5_HASH_SIZE ];
+	uint8_t md5_hash_single[ LIBHMAC_MD5_HASH_SIZE ];
 
-	digest_hash_t md5_hash_multi[ DIGEST_HASH_SIZE_MD5 ];
-	digest_hash_t md5_hash_single[ DIGEST_HASH_SIZE_MD5 ];
+	libhmac_md5_context_t *md5_context_multi  = NULL;
+	libhmac_md5_context_t *md5_context_single = NULL;
+	libsmraw_error_t *error                   = NULL;
+	static char *function                     = "smraw_test_compare_case0";
+	int result                                = 0;
 
-	libsmraw_error_t *error     = NULL;
-	size_t md5_hash_size_multi  = DIGEST_HASH_SIZE_MD5;
-	size_t md5_hash_size_single = DIGEST_HASH_SIZE_MD5;
-	int result                  = 0;
-
-	if( md5_initialize(
+	if( libhmac_md5_initialize(
 	     &md5_context_single,
 	     &error ) != 1 )
 	{
@@ -250,16 +237,9 @@ int smraw_test_compare_case0(
 		 stderr,
 		 "Unable to initialize MD5 context.\n" );
 
-		libsmraw_error_backtrace_fprint(
-		 error,
-		 stderr );
-
-		libsmraw_error_free(
-		 &error );
-
-		return( -1 );
+		goto on_error;
 	}
-	if( md5_initialize(
+	if( libhmac_md5_initialize(
 	     &md5_context_multi,
 	     &error ) != 1 )
 	{
@@ -267,14 +247,7 @@ int smraw_test_compare_case0(
 		 stderr,
 		 "Unable to initialize MD5 context.\n" );
 
-		libsmraw_error_backtrace_fprint(
-		 error,
-		 stderr );
-
-		libsmraw_error_free(
-		 &error );
-
-		return( -1 );
+		goto on_error;
 	}
 	fprintf(
 	 stdout,
@@ -283,7 +256,7 @@ int smraw_test_compare_case0(
 
 	result = smraw_test_read_hash(
 	          handle_single,
-	          &md5_context_single,
+	          md5_context_single,
 	          0,
 	          SEEK_SET,
 	          media_size,
@@ -296,7 +269,7 @@ int smraw_test_compare_case0(
 		 stderr,
 		 "Unable to read buffer from single segment file RAW image.\n" );
 
-		return( -1 );
+		goto on_error;
 	}
 	else if( result == 0 )
 	{
@@ -304,7 +277,7 @@ int smraw_test_compare_case0(
 	}
 	result = smraw_test_read_hash(
 		  handle_multi,
-		  &md5_context_multi,
+		  md5_context_multi,
 	          0,
 	          SEEK_SET,
 	          media_size,
@@ -317,54 +290,40 @@ int smraw_test_compare_case0(
 		 stderr,
 		 "Unable to read buffer for multiple segment file RAW image.\n" );
 
-		return( -1 );
+		goto on_error;
 	}
 	else if( result == 0 )
 	{
 		return( 0 );
 	}
-	if( md5_finalize(
-	     &md5_context_single,
+	if( libhmac_md5_finalize(
+	     md5_context_single,
 	     md5_hash_single,
-	     &md5_hash_size_single,
+	     LIBHMAC_MD5_HASH_SIZE,
 	     &error ) != 1 )
 	{
 		fprintf(
 		 stderr,
 		 "Unable to finalize MD5 context.\n" );
 
-		libsmraw_error_backtrace_fprint(
-		 error,
-		 stderr );
-
-		libsmraw_error_free(
-		 &error );
-
-		return( -1 );
+		goto on_error;
 	}
-	if( md5_finalize(
-	     &md5_context_multi,
+	if( libhmac_md5_finalize(
+	     md5_context_multi,
 	     md5_hash_multi,
-	     &md5_hash_size_multi,
+	     LIBHMAC_MD5_HASH_SIZE,
 	     &error ) != 1 )
 	{
 		fprintf(
 		 stderr,
 		 "Unable to finalize MD5 context.\n" );
 
-		libsmraw_error_backtrace_fprint(
-		 error,
-		 stderr );
-
-		libsmraw_error_free(
-		 &error );
-
-		return( -1 );
+		goto on_error;
 	}
 	if( memory_compare(
 	     md5_hash_single,
 	     md5_hash_multi,
-	     DIGEST_HASH_SIZE_MD5 ) != 0 )
+	     LIBHMAC_MD5_HASH_SIZE ) != 0 )
 	{
 		fprintf(
 		 stderr,
@@ -374,23 +333,42 @@ int smraw_test_compare_case0(
 	}
 	if( digest_hash_copy_to_string(
 	     md5_hash_single,
-	     DIGEST_HASH_SIZE_MD5,
+	     LIBHMAC_MD5_HASH_SIZE,
 	     md5_hash_string,
-	     DIGEST_HASH_STRING_SIZE_MD5,
+	     33,
 	     &error ) != 1 )
 	{
 		fprintf(
 		 stderr,
 		 "Unable to create MD5 hash string.\n" );
 
-		libsmraw_error_backtrace_fprint(
-		 error,
-		 stderr );
+		goto on_error;
+	}
+	if( libhmac_md5_free(
+	     &md5_context_single,
+	     &error ) != 1 )
+	{
+		liberror_error_set(
+		 &error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+		 "%s: unable to free MD5 context.",
+		 function );
 
-		libsmraw_error_free(
-		 &error );
+		goto on_error;
+	}
+	if( libhmac_md5_free(
+	     &md5_context_multi,
+	     &error ) != 1 )
+	{
+		liberror_error_set(
+		 &error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+		 "%s: unable to free MD5 context.",
+		 function );
 
-		return( -1 );
+		goto on_error;
 	}
 	if( result != 0 )
 	{
@@ -414,6 +392,29 @@ int smraw_test_compare_case0(
 	 md5_hash_string );
 
 	return( result );
+
+on_error:
+	if( md5_context_multi != NULL )
+	{
+		libhmac_md5_free(
+		 &md5_context_multi,
+		 NULL );
+	}
+	if( md5_context_single != NULL )
+	{
+		libhmac_md5_free(
+		 &md5_context_single,
+		 NULL );
+	}
+	if( error != NULL )
+	{
+		libsmraw_error_backtrace_fprint(
+		 error,
+		 stderr );
+		libsmraw_error_free(
+		 &error );
+	}
+	return( -1 );
 }
 
 /* Case 1: Test SEEK_SET and read
@@ -424,18 +425,16 @@ int smraw_test_compare_case1(
      libsmraw_handle_t *handle_multi,
       size64_t media_size )
 {
-	md5_context_t md5_context_multi;
-	md5_context_t md5_context_single;
+	uint8_t md5_hash_multi[ LIBHMAC_MD5_HASH_SIZE ];
+	uint8_t md5_hash_single[ LIBHMAC_MD5_HASH_SIZE ];
 
-	digest_hash_t md5_hash_multi[ DIGEST_HASH_SIZE_MD5 ];
-	digest_hash_t md5_hash_single[ DIGEST_HASH_SIZE_MD5 ];
-
-	libsmraw_error_t *error     = NULL;
-	size_t md5_hash_size_multi  = DIGEST_HASH_SIZE_MD5;
-	size_t md5_hash_size_single = DIGEST_HASH_SIZE_MD5;
-	off64_t read_offset         = 0;
-	size64_t read_size          = 0;
-	int result                  = 0;
+	libhmac_md5_context_t *md5_context_multi  = NULL;
+	libhmac_md5_context_t *md5_context_single = NULL;
+	libsmraw_error_t *error                   = NULL;
+	static char *function                     = "smraw_test_compare_case1";
+	off64_t read_offset                       = 0;
+	size64_t read_size                        = 0;
+	int result                                = 0;
 
 	fprintf(
 	 stdout,
@@ -443,7 +442,7 @@ int smraw_test_compare_case1(
 
 	while( read_offset < (off64_t) media_size )
 	{
-		if( md5_initialize(
+		if( libhmac_md5_initialize(
 		     &md5_context_single,
 		     &error ) != 1 )
 		{
@@ -451,16 +450,9 @@ int smraw_test_compare_case1(
 			 stderr,
 			 "Unable to initialize MD5 context.\n" );
 
-			libsmraw_error_backtrace_fprint(
-			 error,
-			 stderr );
-
-			libsmraw_error_free(
-			 &error );
-
-			return( -1 );
+			goto on_error;
 		}
-		if( md5_initialize(
+		if( libhmac_md5_initialize(
 		     &md5_context_multi,
 		     &error ) != 1 )
 		{
@@ -468,14 +460,7 @@ int smraw_test_compare_case1(
 			 stderr,
 			 "Unable to initialize MD5 context.\n" );
 
-			libsmraw_error_backtrace_fprint(
-			 error,
-			 stderr );
-
-			libsmraw_error_free(
-			 &error );
-
-			return( -1 );
+			goto on_error;
 		}
 		read_size = 16 * 1024;
 
@@ -485,7 +470,7 @@ int smraw_test_compare_case1(
 		}
 		result = smraw_test_read_hash(
 			  handle_single,
-			  &md5_context_single,
+			  md5_context_single,
 		          read_offset,
 		          SEEK_SET,
 		          read_size,
@@ -498,7 +483,7 @@ int smraw_test_compare_case1(
 			 stderr,
 			 "Unable to read buffer from single segment file RAW image.\n" );
 
-			return( -1 );
+			goto on_error;
 		}
 		else if( result == 0 )
 		{
@@ -506,7 +491,7 @@ int smraw_test_compare_case1(
 		}
 		result = smraw_test_read_hash(
 			  handle_multi,
-			  &md5_context_multi,
+			  md5_context_multi,
 		          read_offset,
 		          SEEK_SET,
 		          read_size,
@@ -519,54 +504,40 @@ int smraw_test_compare_case1(
 			 stderr,
 			 "Unable to read buffer for multiple segment file RAW image.\n" );
 
-			return( -1 );
+			goto on_error;
 		}
 		else if( result == 0 )
 		{
 			return( 0 );
 		}
-		if( md5_finalize(
-		     &md5_context_single,
+		if( libhmac_md5_finalize(
+		     md5_context_single,
 		     md5_hash_single,
-		     &md5_hash_size_single,
+		     LIBHMAC_MD5_HASH_SIZE,
 		     &error ) != 1 )
 		{
 			fprintf(
 			 stderr,
 			 "Unable to finalize MD5 context.\n" );
 
-			libsmraw_error_backtrace_fprint(
-			 error,
-			 stderr );
-
-			libsmraw_error_free(
-			 &error );
-
-			return( -1 );
+			goto on_error;
 		}
-		if( md5_finalize(
-		     &md5_context_multi,
+		if( libhmac_md5_finalize(
+		     md5_context_multi,
 		     md5_hash_multi,
-		     &md5_hash_size_multi,
+		     LIBHMAC_MD5_HASH_SIZE,
 		     &error ) != 1 )
 		{
 			fprintf(
 			 stderr,
 			 "Unable to finalize MD5 context.\n" );
 
-			libsmraw_error_backtrace_fprint(
-			 error,
-			 stderr );
-
-			libsmraw_error_free(
-			 &error );
-
-			return( -1 );
+			goto on_error;
 		}
 		if( memory_compare(
 		     md5_hash_single,
 		     md5_hash_multi,
-		     DIGEST_HASH_SIZE_MD5 ) != 0 )
+		     LIBHMAC_MD5_HASH_SIZE ) != 0 )
 		{
 			fprintf(
 			 stderr,
@@ -577,6 +548,32 @@ int smraw_test_compare_case1(
 			break;
 		}
 		read_offset += 17 * 1024;
+	}
+	if( libhmac_md5_free(
+	     &md5_context_single,
+	     &error ) != 1 )
+	{
+		liberror_error_set(
+		 &error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+		 "%s: unable to free MD5 context.",
+		 function );
+
+		goto on_error;
+	}
+	if( libhmac_md5_free(
+	     &md5_context_multi,
+	     &error ) != 1 )
+	{
+		liberror_error_set(
+		 &error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+		 "%s: unable to free MD5 context.",
+		 function );
+
+		goto on_error;
 	}
 	if( result != 0 )
 	{
@@ -595,6 +592,29 @@ int smraw_test_compare_case1(
 	 "\n" );
 
 	return( result );
+
+on_error:
+	if( md5_context_multi != NULL )
+	{
+		libhmac_md5_free(
+		 &md5_context_multi,
+		 NULL );
+	}
+	if( md5_context_single != NULL )
+	{
+		libhmac_md5_free(
+		 &md5_context_single,
+		 NULL );
+	}
+	if( error != NULL )
+	{
+		libsmraw_error_backtrace_fprint(
+		 error,
+		 stderr );
+		libsmraw_error_free(
+		 &error );
+	}
+	return( -1 );
 }
 
 /* Case 2: Test SEEK_CUR and read
@@ -605,18 +625,16 @@ int smraw_test_compare_case2(
      libsmraw_handle_t *handle_multi,
       size64_t media_size )
 {
-	md5_context_t md5_context_multi;
-	md5_context_t md5_context_single;
+	uint8_t md5_hash_multi[ LIBHMAC_MD5_HASH_SIZE ];
+	uint8_t md5_hash_single[ LIBHMAC_MD5_HASH_SIZE ];
 
-	digest_hash_t md5_hash_multi[ DIGEST_HASH_SIZE_MD5 ];
-	digest_hash_t md5_hash_single[ DIGEST_HASH_SIZE_MD5 ];
-
-	libsmraw_error_t *error     = NULL;
-	size_t md5_hash_size_multi  = DIGEST_HASH_SIZE_MD5;
-	size_t md5_hash_size_single = DIGEST_HASH_SIZE_MD5;
-	off64_t read_offset         = 0;
-	size64_t read_size          = 0;
-	int result                  = 0;
+	libhmac_md5_context_t *md5_context_multi  = NULL;
+	libhmac_md5_context_t *md5_context_single = NULL;
+	libsmraw_error_t *error                   = NULL;
+	static char *function                     = "smraw_test_compare_case2";
+	off64_t read_offset                       = 0;
+	size64_t read_size                        = 0;
+	int result                                = 0;
 
 	fprintf(
 	 stdout,
@@ -634,7 +652,7 @@ int smraw_test_compare_case2(
 		 stderr,
 		 "Unable to seek offset: 0 of single segment file RAW image.\n" );
 
-		return( -1 );
+		goto on_error;
 	}
 	else if( result == 0 )
 	{
@@ -652,7 +670,7 @@ int smraw_test_compare_case2(
 		 stderr,
 		 "Unable to seek offset: 0 of multiple segment file RAW image.\n" );
 
-		return( -1 );
+		goto on_error;
 	}
 	else if( result == 0 )
 	{
@@ -662,7 +680,7 @@ int smraw_test_compare_case2(
 
 	while( read_offset < (off64_t) media_size )
 	{
-		if( md5_initialize(
+		if( libhmac_md5_initialize(
 		     &md5_context_single,
 		     &error ) != 1 )
 		{
@@ -670,16 +688,9 @@ int smraw_test_compare_case2(
 			 stderr,
 			 "Unable to initialize MD5 context.\n" );
 
-			libsmraw_error_backtrace_fprint(
-			 error,
-			 stderr );
-
-			libsmraw_error_free(
-			 &error );
-
-			return( -1 );
+			goto on_error;
 		}
-		if( md5_initialize(
+		if( libhmac_md5_initialize(
 		     &md5_context_multi,
 		     &error ) != 1 )
 		{
@@ -687,14 +698,7 @@ int smraw_test_compare_case2(
 			 stderr,
 			 "Unable to initialize MD5 context.\n" );
 
-			libsmraw_error_backtrace_fprint(
-			 error,
-			 stderr );
-
-			libsmraw_error_free(
-			 &error );
-
-			return( -1 );
+			goto on_error;
 		}
 		read_size    = 16 * 1024;
 		read_offset += 17 * 1024;
@@ -705,7 +709,7 @@ int smraw_test_compare_case2(
 		}
 		result = smraw_test_read_hash(
 			  handle_single,
-			  &md5_context_single,
+			  md5_context_single,
 		          17 * 1024,
 		          SEEK_CUR,
 		          read_size,
@@ -718,7 +722,7 @@ int smraw_test_compare_case2(
 			 stderr,
 			 "Unable to read buffer from single segment file RAW image.\n" );
 
-			return( -1 );
+			goto on_error;
 		}
 		else if( result == 0 )
 		{
@@ -726,7 +730,7 @@ int smraw_test_compare_case2(
 		}
 		result = smraw_test_read_hash(
 			  handle_multi,
-			  &md5_context_multi,
+			  md5_context_multi,
 		          17 * 1024,
 		          SEEK_CUR,
 		          read_size,
@@ -739,54 +743,40 @@ int smraw_test_compare_case2(
 			 stderr,
 			 "Unable to read buffer for multiple segment file RAW image.\n" );
 
-			return( -1 );
+			goto on_error;
 		}
 		else if( result == 0 )
 		{
 			return( 0 );
 		}
-		if( md5_finalize(
-		     &md5_context_single,
+		if( libhmac_md5_finalize(
+		     md5_context_single,
 		     md5_hash_single,
-		     &md5_hash_size_single,
+		     LIBHMAC_MD5_HASH_SIZE,
 		     &error ) != 1 )
 		{
 			fprintf(
 			 stderr,
 			 "Unable to finalize MD5 context.\n" );
 
-			libsmraw_error_backtrace_fprint(
-			 error,
-			 stderr );
-
-			libsmraw_error_free(
-			 &error );
-
-			return( -1 );
+			goto on_error;
 		}
-		if( md5_finalize(
-		     &md5_context_multi,
+		if( libhmac_md5_finalize(
+		     md5_context_multi,
 		     md5_hash_multi,
-		     &md5_hash_size_multi,
+		     LIBHMAC_MD5_HASH_SIZE,
 		     &error ) != 1 )
 		{
 			fprintf(
 			 stderr,
 			 "Unable to finalize MD5 context.\n" );
 
-			libsmraw_error_backtrace_fprint(
-			 error,
-			 stderr );
-
-			libsmraw_error_free(
-			 &error );
-
-			return( -1 );
+			goto on_error;
 		}
 		if( memory_compare(
 		     md5_hash_single,
 		     md5_hash_multi,
-		     DIGEST_HASH_SIZE_MD5 ) != 0 )
+		     LIBHMAC_MD5_HASH_SIZE ) != 0 )
 		{
 			fprintf(
 			 stderr,
@@ -797,6 +787,32 @@ int smraw_test_compare_case2(
 			break;
 		}
 		read_offset += read_size;
+	}
+	if( libhmac_md5_free(
+	     &md5_context_single,
+	     &error ) != 1 )
+	{
+		liberror_error_set(
+		 &error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+		 "%s: unable to free MD5 context.",
+		 function );
+
+		goto on_error;
+	}
+	if( libhmac_md5_free(
+	     &md5_context_multi,
+	     &error ) != 1 )
+	{
+		liberror_error_set(
+		 &error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+		 "%s: unable to free MD5 context.",
+		 function );
+
+		goto on_error;
 	}
 	if( result != 0 )
 	{
@@ -815,6 +831,29 @@ int smraw_test_compare_case2(
 	 "\n" );
 
 	return( result );
+
+on_error:
+	if( md5_context_multi != NULL )
+	{
+		libhmac_md5_free(
+		 &md5_context_multi,
+		 NULL );
+	}
+	if( md5_context_single != NULL )
+	{
+		libhmac_md5_free(
+		 &md5_context_single,
+		 NULL );
+	}
+	if( error != NULL )
+	{
+		libsmraw_error_backtrace_fprint(
+		 error,
+		 stderr );
+		libsmraw_error_free(
+		 &error );
+	}
+	return( -1 );
 }
 
 /* Case 3: Test SEEK_END and read
@@ -825,18 +864,16 @@ int smraw_test_compare_case3(
      libsmraw_handle_t *handle_multi,
       size64_t media_size )
 {
-	md5_context_t md5_context_multi;
-	md5_context_t md5_context_single;
+	uint8_t md5_hash_multi[ LIBHMAC_MD5_HASH_SIZE ];
+	uint8_t md5_hash_single[ LIBHMAC_MD5_HASH_SIZE ];
 
-	digest_hash_t md5_hash_multi[ DIGEST_HASH_SIZE_MD5 ];
-	digest_hash_t md5_hash_single[ DIGEST_HASH_SIZE_MD5 ];
-
-	libsmraw_error_t *error     = NULL;
-	size_t md5_hash_size_multi  = DIGEST_HASH_SIZE_MD5;
-	size_t md5_hash_size_single = DIGEST_HASH_SIZE_MD5;
-	off64_t read_offset         = 0;
-	size64_t read_size          = 0;
-	int result                  = 0;
+	libhmac_md5_context_t *md5_context_multi  = NULL;
+	libhmac_md5_context_t *md5_context_single = NULL;
+	libsmraw_error_t *error                   = NULL;
+	static char *function                     = "smraw_test_compare_case3";
+	off64_t read_offset                       = 0;
+	size64_t read_size                        = 0;
+	int result                                = 0;
 
 	fprintf(
 	 stdout,
@@ -854,7 +891,7 @@ int smraw_test_compare_case3(
 		 stderr,
 		 "Unable to test seek offset of single segment file RAW image.\n" );
 
-		return( -1 );
+		goto on_error;
 	}
 	else if( result == 0 )
 	{
@@ -872,7 +909,7 @@ int smraw_test_compare_case3(
 		 stderr,
 		 "Unable to test seek offset of multiple segment file RAW image.\n" );
 
-		return( -1 );
+		goto on_error;
 	}
 	else if( result == 0 )
 	{
@@ -882,7 +919,7 @@ int smraw_test_compare_case3(
 
 	while( read_offset < (off64_t) media_size )
 	{
-		if( md5_initialize(
+		if( libhmac_md5_initialize(
 		     &md5_context_single,
 		     &error ) != 1 )
 		{
@@ -890,16 +927,9 @@ int smraw_test_compare_case3(
 			 stderr,
 			 "Unable to initialize MD5 context.\n" );
 
-			libsmraw_error_backtrace_fprint(
-			 error,
-			 stderr );
-
-			libsmraw_error_free(
-			 &error );
-
-			return( -1 );
+			goto on_error;
 		}
-		if( md5_initialize(
+		if( libhmac_md5_initialize(
 		     &md5_context_multi,
 		     &error ) != 1 )
 		{
@@ -907,14 +937,7 @@ int smraw_test_compare_case3(
 			 stderr,
 			 "Unable to initialize MD5 context.\n" );
 
-			libsmraw_error_backtrace_fprint(
-			 error,
-			 stderr );
-
-			libsmraw_error_free(
-			 &error );
-
-			return( -1 );
+			goto on_error;
 		}
 		read_size = 16 * 1024;
 
@@ -924,7 +947,7 @@ int smraw_test_compare_case3(
 		}
 		result = smraw_test_read_hash(
 			  handle_single,
-			  &md5_context_single,
+			  md5_context_single,
 		          -1 * read_offset,
 		          SEEK_END,
 		          read_size,
@@ -937,7 +960,7 @@ int smraw_test_compare_case3(
 			 stderr,
 			 "Unable to read buffer from single segment file RAW image.\n" );
 
-			return( -1 );
+			goto on_error;
 		}
 		else if( result == 0 )
 		{
@@ -945,7 +968,7 @@ int smraw_test_compare_case3(
 		}
 		result = smraw_test_read_hash(
 			  handle_multi,
-			  &md5_context_multi,
+			  md5_context_multi,
 		          -1 * read_offset,
 		          SEEK_END,
 		          read_size,
@@ -958,54 +981,40 @@ int smraw_test_compare_case3(
 			 stderr,
 			 "Unable to read buffer for multiple segment file RAW image.\n" );
 
-			return( -1 );
+			goto on_error;
 		}
 		else if( result == 0 )
 		{
 			return( 0 );
 		}
-		if( md5_finalize(
-		     &md5_context_single,
+		if( libhmac_md5_finalize(
+		     md5_context_single,
 		     md5_hash_single,
-		     &md5_hash_size_single,
+		     LIBHMAC_MD5_HASH_SIZE,
 		     &error ) != 1 )
 		{
 			fprintf(
 			 stderr,
 			 "Unable to finalize MD5 context.\n" );
 
-			libsmraw_error_backtrace_fprint(
-			 error,
-			 stderr );
-
-			libsmraw_error_free(
-			 &error );
-
-			return( -1 );
+			goto on_error;
 		}
-		if( md5_finalize(
-		     &md5_context_multi,
+		if( libhmac_md5_finalize(
+		     md5_context_multi,
 		     md5_hash_multi,
-		     &md5_hash_size_multi,
+		     LIBHMAC_MD5_HASH_SIZE,
 		     &error ) != 1 )
 		{
 			fprintf(
 			 stderr,
 			 "Unable to finalize MD5 context.\n" );
 
-			libsmraw_error_backtrace_fprint(
-			 error,
-			 stderr );
-
-			libsmraw_error_free(
-			 &error );
-
-			return( -1 );
+			goto on_error;
 		}
 		if( memory_compare(
 		     md5_hash_single,
 		     md5_hash_multi,
-		     DIGEST_HASH_SIZE_MD5 ) != 0 )
+		     LIBHMAC_MD5_HASH_SIZE ) != 0 )
 		{
 			fprintf(
 			 stderr,
@@ -1017,6 +1026,32 @@ int smraw_test_compare_case3(
 		}
 		read_offset += 17 * 1024;
 	}
+	if( libhmac_md5_free(
+	     &md5_context_single,
+	     &error ) != 1 )
+	{
+		liberror_error_set(
+		 &error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+		 "%s: unable to free MD5 context.",
+		 function );
+
+		goto on_error;
+	}
+	if( libhmac_md5_free(
+	     &md5_context_multi,
+	     &error ) != 1 )
+	{
+		liberror_error_set(
+		 &error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+		 "%s: unable to free MD5 context.",
+		 function );
+
+		goto on_error;
+	}
 	if( result != 0 )
 	{
 		fprintf(
@@ -1034,6 +1069,29 @@ int smraw_test_compare_case3(
 	 "\n" );
 
 	return( result );
+
+on_error:
+	if( md5_context_multi != NULL )
+	{
+		libhmac_md5_free(
+		 &md5_context_multi,
+		 NULL );
+	}
+	if( md5_context_single != NULL )
+	{
+		libhmac_md5_free(
+		 &md5_context_single,
+		 NULL );
+	}
+	if( error != NULL )
+	{
+		libsmraw_error_backtrace_fprint(
+		 error,
+		 stderr );
+		libsmraw_error_free(
+		 &error );
+	}
+	return( -1 );
 }
 
 /* Case 4a: Test SEEK_SET, SEEK_CUR and read
@@ -1044,24 +1102,22 @@ int smraw_test_compare_case4a(
      libsmraw_handle_t *handle_multi,
       size64_t media_size )
 {
-	md5_context_t md5_context_multi;
-	md5_context_t md5_context_single;
+	uint8_t md5_hash_multi[ LIBHMAC_MD5_HASH_SIZE ];
+	uint8_t md5_hash_single[ LIBHMAC_MD5_HASH_SIZE ];
 
-	digest_hash_t md5_hash_multi[ DIGEST_HASH_SIZE_MD5 ];
-	digest_hash_t md5_hash_single[ DIGEST_HASH_SIZE_MD5 ];
-
-	libsmraw_error_t *error     = NULL;
-	size_t md5_hash_size_multi  = DIGEST_HASH_SIZE_MD5;
-	size_t md5_hash_size_single = DIGEST_HASH_SIZE_MD5;
-	off64_t read_offset         = 0;
-	size64_t read_size          = 0;
-	int result                  = 0;
+	libhmac_md5_context_t *md5_context_multi  = NULL;
+	libhmac_md5_context_t *md5_context_single = NULL;
+	libsmraw_error_t *error                   = NULL;
+	static char *function                     = "smraw_test_compare_case4a";
+	off64_t read_offset                       = 0;
+	size64_t read_size                        = 0;
+	int result                                = 0;
 
 	fprintf(
 	 stdout,
 	 "Testing compare of single and multiple segment file RAW image using SEEK_SET, SEEK_CUR and read\t" );
 
-	if( md5_initialize(
+	if( libhmac_md5_initialize(
 	     &md5_context_single,
 	     &error ) != 1 )
 	{
@@ -1069,16 +1125,9 @@ int smraw_test_compare_case4a(
 		 stderr,
 		 "Unable to initialize MD5 context.\n" );
 
-		libsmraw_error_backtrace_fprint(
-		 error,
-		 stderr );
-
-		libsmraw_error_free(
-		 &error );
-
-		return( -1 );
+		goto on_error;
 	}
-	if( md5_initialize(
+	if( libhmac_md5_initialize(
 	     &md5_context_multi,
 	     &error ) != 1 )
 	{
@@ -1086,21 +1135,14 @@ int smraw_test_compare_case4a(
 		 stderr,
 		 "Unable to initialize MD5 context.\n" );
 
-		libsmraw_error_backtrace_fprint(
-		 error,
-		 stderr );
-
-		libsmraw_error_free(
-		 &error );
-
-		return( -1 );
+		goto on_error;
 	}
 	read_offset = (off64_t) media_size / 2;
 	read_size   = media_size / 8;
 
 	result = smraw_test_read_hash(
 		  handle_single,
-		  &md5_context_single,
+		  md5_context_single,
 		  read_offset,
 		  SEEK_SET,
 		  read_size,
@@ -1113,7 +1155,7 @@ int smraw_test_compare_case4a(
 		 stderr,
 		 "Unable to read buffer from single segment file RAW image.\n" );
 
-		return( -1 );
+		goto on_error;
 	}
 	else if( result == 0 )
 	{
@@ -1121,7 +1163,7 @@ int smraw_test_compare_case4a(
 	}
 	result = smraw_test_read_hash(
 		  handle_multi,
-		  &md5_context_multi,
+		  md5_context_multi,
 		  read_offset,
 		  SEEK_SET,
 		  read_size,
@@ -1134,7 +1176,7 @@ int smraw_test_compare_case4a(
 		 stderr,
 		 "Unable to read buffer for multiple segment file RAW image.\n" );
 
-		return( -1 );
+		goto on_error;
 	}
 	else if( result == 0 )
 	{
@@ -1145,7 +1187,7 @@ int smraw_test_compare_case4a(
 
 	result = smraw_test_read_hash(
 		  handle_single,
-		  &md5_context_single,
+		  md5_context_single,
 		  (off64_t) media_size / 8,
 		  SEEK_CUR,
 		  read_size,
@@ -1158,7 +1200,7 @@ int smraw_test_compare_case4a(
 		 stderr,
 		 "Unable to read buffer from single segment file RAW image.\n" );
 
-		return( -1 );
+		goto on_error;
 	}
 	else if( result == 0 )
 	{
@@ -1166,7 +1208,7 @@ int smraw_test_compare_case4a(
 	}
 	result = smraw_test_read_hash(
 		  handle_multi,
-		  &md5_context_multi,
+		  md5_context_multi,
 		  (off64_t) media_size / 8,
 		  SEEK_CUR,
 		  read_size,
@@ -1179,60 +1221,72 @@ int smraw_test_compare_case4a(
 		 stderr,
 		 "Unable to read buffer for multiple segment file RAW image.\n" );
 
-		return( -1 );
+		goto on_error;
 	}
 	else if( result == 0 )
 	{
 		return( 0 );
 	}
-	if( md5_finalize(
-	     &md5_context_single,
+	if( libhmac_md5_finalize(
+	     md5_context_single,
 	     md5_hash_single,
-	     &md5_hash_size_single,
+	     LIBHMAC_MD5_HASH_SIZE,
 	     &error ) != 1 )
 	{
 		fprintf(
 		 stderr,
 		 "Unable to finalize MD5 context.\n" );
 
-		libsmraw_error_backtrace_fprint(
-		 error,
-		 stderr );
-
-		libsmraw_error_free(
-		 &error );
-
-		return( -1 );
+		goto on_error;
 	}
-	if( md5_finalize(
-	     &md5_context_multi,
+	if( libhmac_md5_finalize(
+	     md5_context_multi,
 	     md5_hash_multi,
-	     &md5_hash_size_multi,
+	     LIBHMAC_MD5_HASH_SIZE,
 	     &error ) != 1 )
 	{
 		fprintf(
 		 stderr,
 		 "Unable to finalize MD5 context.\n" );
 
-		libsmraw_error_backtrace_fprint(
-		 error,
-		 stderr );
-
-		libsmraw_error_free(
-		 &error );
-
-		return( -1 );
+		goto on_error;
 	}
 	if( memory_compare(
 	     md5_hash_single,
 	     md5_hash_multi,
-	     DIGEST_HASH_SIZE_MD5 ) != 0 )
+	     LIBHMAC_MD5_HASH_SIZE ) != 0 )
 	{
 		fprintf(
 		 stderr,
 		 "Mismatch in MD5 hashes.\n" );
 
 		result = 0;
+	}
+	if( libhmac_md5_free(
+	     &md5_context_single,
+	     &error ) != 1 )
+	{
+		liberror_error_set(
+		 &error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+		 "%s: unable to free MD5 context.",
+		 function );
+
+		goto on_error;
+	}
+	if( libhmac_md5_free(
+	     &md5_context_multi,
+	     &error ) != 1 )
+	{
+		liberror_error_set(
+		 &error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+		 "%s: unable to free MD5 context.",
+		 function );
+
+		goto on_error;
 	}
 	if( result != 0 )
 	{
@@ -1251,6 +1305,29 @@ int smraw_test_compare_case4a(
 	 "\n" );
 
 	return( result );
+
+on_error:
+	if( md5_context_multi != NULL )
+	{
+		libhmac_md5_free(
+		 &md5_context_multi,
+		 NULL );
+	}
+	if( md5_context_single != NULL )
+	{
+		libhmac_md5_free(
+		 &md5_context_single,
+		 NULL );
+	}
+	if( error != NULL )
+	{
+		libsmraw_error_backtrace_fprint(
+		 error,
+		 stderr );
+		libsmraw_error_free(
+		 &error );
+	}
+	return( -1 );
 }
 
 /* Case 4b: Test SEEK_SET, SEEK_CUR and read
@@ -1261,24 +1338,22 @@ int smraw_test_compare_case4b(
      libsmraw_handle_t *handle_multi,
       size64_t media_size )
 {
-	md5_context_t md5_context_multi;
-	md5_context_t md5_context_single;
+	uint8_t md5_hash_multi[ LIBHMAC_MD5_HASH_SIZE ];
+	uint8_t md5_hash_single[ LIBHMAC_MD5_HASH_SIZE ];
 
-	digest_hash_t md5_hash_multi[ DIGEST_HASH_SIZE_MD5 ];
-	digest_hash_t md5_hash_single[ DIGEST_HASH_SIZE_MD5 ];
-
-	libsmraw_error_t *error     = NULL;
-	size_t md5_hash_size_multi  = DIGEST_HASH_SIZE_MD5;
-	size_t md5_hash_size_single = DIGEST_HASH_SIZE_MD5;
-	off64_t read_offset         = 0;
-	size64_t read_size          = 0;
-	int result                  = 0;
+	libhmac_md5_context_t *md5_context_multi  = NULL;
+	libhmac_md5_context_t *md5_context_single = NULL;
+	libsmraw_error_t *error                   = NULL;
+	static char *function                     = "smraw_test_compare_case4b";
+	off64_t read_offset                       = 0;
+	size64_t read_size                        = 0;
+	int result                                = 0;
 
 	fprintf(
 	 stdout,
 	 "Testing compare of single and multiple segment file RAW image using SEEK_SET, SEEK_CUR and read\t" );
 
-	if( md5_initialize(
+	if( libhmac_md5_initialize(
 	     &md5_context_single,
 	     &error ) != 1 )
 	{
@@ -1286,16 +1361,9 @@ int smraw_test_compare_case4b(
 		 stderr,
 		 "Unable to initialize MD5 context.\n" );
 
-		libsmraw_error_backtrace_fprint(
-		 error,
-		 stderr );
-
-		libsmraw_error_free(
-		 &error );
-
-		return( -1 );
+		goto on_error;
 	}
-	if( md5_initialize(
+	if( libhmac_md5_initialize(
 	     &md5_context_multi,
 	     &error ) != 1 )
 	{
@@ -1303,21 +1371,14 @@ int smraw_test_compare_case4b(
 		 stderr,
 		 "Unable to initialize MD5 context.\n" );
 
-		libsmraw_error_backtrace_fprint(
-		 error,
-		 stderr );
-
-		libsmraw_error_free(
-		 &error );
-
-		return( -1 );
+		goto on_error;
 	}
 	read_offset = (off64_t) media_size / 2;
 	read_size   = media_size / 8;
 
 	result = smraw_test_read_hash(
 		  handle_single,
-		  &md5_context_single,
+		  md5_context_single,
 		  read_offset,
 		  SEEK_SET,
 		  read_size,
@@ -1330,7 +1391,7 @@ int smraw_test_compare_case4b(
 		 stderr,
 		 "Unable to read buffer from single segment file RAW image.\n" );
 
-		return( -1 );
+		goto on_error;
 	}
 	else if( result == 0 )
 	{
@@ -1338,7 +1399,7 @@ int smraw_test_compare_case4b(
 	}
 	result = smraw_test_read_hash(
 		  handle_multi,
-		  &md5_context_multi,
+		  md5_context_multi,
 		  read_offset,
 		  SEEK_SET,
 		  read_size,
@@ -1351,7 +1412,7 @@ int smraw_test_compare_case4b(
 		 stderr,
 		 "Unable to read buffer for multiple segment file RAW image.\n" );
 
-		return( -1 );
+		goto on_error;
 	}
 	else if( result == 0 )
 	{
@@ -1362,7 +1423,7 @@ int smraw_test_compare_case4b(
 
 	result = smraw_test_read_hash(
 		  handle_single,
-		  &md5_context_single,
+		  md5_context_single,
 		  -1 * ( (off64_t) media_size / 8 ),
 		  SEEK_CUR,
 		  read_size,
@@ -1375,7 +1436,7 @@ int smraw_test_compare_case4b(
 		 stderr,
 		 "Unable to read buffer from single segment file RAW image.\n" );
 
-		return( -1 );
+		goto on_error;
 	}
 	else if( result == 0 )
 	{
@@ -1383,7 +1444,7 @@ int smraw_test_compare_case4b(
 	}
 	result = smraw_test_read_hash(
 		  handle_multi,
-		  &md5_context_multi,
+		  md5_context_multi,
 		  -1 * ( (off64_t) media_size / 8 ),
 		  SEEK_CUR,
 		  read_size,
@@ -1396,60 +1457,72 @@ int smraw_test_compare_case4b(
 		 stderr,
 		 "Unable to read buffer for multiple segment file RAW image.\n" );
 
-		return( -1 );
+		goto on_error;
 	}
 	else if( result == 0 )
 	{
 		return( 0 );
 	}
-	if( md5_finalize(
-	     &md5_context_single,
+	if( libhmac_md5_finalize(
+	     md5_context_single,
 	     md5_hash_single,
-	     &md5_hash_size_single,
+	     LIBHMAC_MD5_HASH_SIZE,
 	     &error ) != 1 )
 	{
 		fprintf(
 		 stderr,
 		 "Unable to finalize MD5 context.\n" );
 
-		libsmraw_error_backtrace_fprint(
-		 error,
-		 stderr );
-
-		libsmraw_error_free(
-		 &error );
-
-		return( -1 );
+		goto on_error;
 	}
-	if( md5_finalize(
-	     &md5_context_multi,
+	if( libhmac_md5_finalize(
+	     md5_context_multi,
 	     md5_hash_multi,
-	     &md5_hash_size_multi,
+	     LIBHMAC_MD5_HASH_SIZE,
 	     &error ) != 1 )
 	{
 		fprintf(
 		 stderr,
 		 "Unable to finalize MD5 context.\n" );
 
-		libsmraw_error_backtrace_fprint(
-		 error,
-		 stderr );
-
-		libsmraw_error_free(
-		 &error );
-
-		return( -1 );
+		goto on_error;
 	}
 	if( memory_compare(
 	     md5_hash_single,
 	     md5_hash_multi,
-	     DIGEST_HASH_SIZE_MD5 ) != 0 )
+	     LIBHMAC_MD5_HASH_SIZE ) != 0 )
 	{
 		fprintf(
 		 stderr,
 		 "Mismatch in MD5 hashes.\n" );
 
 		result = 0;
+	}
+	if( libhmac_md5_free(
+	     &md5_context_single,
+	     &error ) != 1 )
+	{
+		liberror_error_set(
+		 &error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+		 "%s: unable to free MD5 context.",
+		 function );
+
+		goto on_error;
+	}
+	if( libhmac_md5_free(
+	     &md5_context_multi,
+	     &error ) != 1 )
+	{
+		liberror_error_set(
+		 &error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+		 "%s: unable to free MD5 context.",
+		 function );
+
+		goto on_error;
 	}
 	if( result != 0 )
 	{
@@ -1468,6 +1541,29 @@ int smraw_test_compare_case4b(
 	 "\n" );
 
 	return( result );
+
+on_error:
+	if( md5_context_multi != NULL )
+	{
+		libhmac_md5_free(
+		 &md5_context_multi,
+		 NULL );
+	}
+	if( md5_context_single != NULL )
+	{
+		libhmac_md5_free(
+		 &md5_context_single,
+		 NULL );
+	}
+	if( error != NULL )
+	{
+		libsmraw_error_backtrace_fprint(
+		 error,
+		 stderr );
+		libsmraw_error_free(
+		 &error );
+	}
+	return( -1 );
 }
 
 /* Case 5a: Test SEEK_END, SEEK_CUR and read
@@ -1478,24 +1574,22 @@ int smraw_test_compare_case5a(
      libsmraw_handle_t *handle_multi,
       size64_t media_size )
 {
-	md5_context_t md5_context_multi;
-	md5_context_t md5_context_single;
+	uint8_t md5_hash_multi[ LIBHMAC_MD5_HASH_SIZE ];
+	uint8_t md5_hash_single[ LIBHMAC_MD5_HASH_SIZE ];
 
-	digest_hash_t md5_hash_multi[ DIGEST_HASH_SIZE_MD5 ];
-	digest_hash_t md5_hash_single[ DIGEST_HASH_SIZE_MD5 ];
-
-	libsmraw_error_t *error     = NULL;
-	size_t md5_hash_size_multi  = DIGEST_HASH_SIZE_MD5;
-	size_t md5_hash_size_single = DIGEST_HASH_SIZE_MD5;
-	off64_t read_offset         = 0;
-	size64_t read_size          = 0;
-	int result                  = 0;
+	libhmac_md5_context_t *md5_context_multi  = NULL;
+	libhmac_md5_context_t *md5_context_single = NULL;
+	libsmraw_error_t *error                   = NULL;
+	static char *function                     = "smraw_test_compare_case5a";
+	off64_t read_offset                       = 0;
+	size64_t read_size                        = 0;
+	int result                                = 0;
 
 	fprintf(
 	 stdout,
 	 "Testing compare of single and multiple segment file RAW image using SEEK_END, SEEK_CUR and read\t" );
 
-	if( md5_initialize(
+	if( libhmac_md5_initialize(
 	     &md5_context_single,
 	     &error ) != 1 )
 	{
@@ -1503,16 +1597,9 @@ int smraw_test_compare_case5a(
 		 stderr,
 		 "Unable to initialize MD5 context.\n" );
 
-		libsmraw_error_backtrace_fprint(
-		 error,
-		 stderr );
-
-		libsmraw_error_free(
-		 &error );
-
-		return( -1 );
+		goto on_error;
 	}
-	if( md5_initialize(
+	if( libhmac_md5_initialize(
 	     &md5_context_multi,
 	     &error ) != 1 )
 	{
@@ -1520,21 +1607,14 @@ int smraw_test_compare_case5a(
 		 stderr,
 		 "Unable to initialize MD5 context.\n" );
 
-		libsmraw_error_backtrace_fprint(
-		 error,
-		 stderr );
-
-		libsmraw_error_free(
-		 &error );
-
-		return( -1 );
+		goto on_error;
 	}
 	read_offset = (off64_t) media_size / 2;
 	read_size   = media_size / 8;
 
 	result = smraw_test_read_hash(
 		  handle_single,
-		  &md5_context_single,
+		  md5_context_single,
 		  -1 * read_offset,
 		  SEEK_END,
 		  read_size,
@@ -1547,7 +1627,7 @@ int smraw_test_compare_case5a(
 		 stderr,
 		 "Unable to read buffer from single segment file RAW image.\n" );
 
-		return( -1 );
+		goto on_error;
 	}
 	else if( result == 0 )
 	{
@@ -1555,7 +1635,7 @@ int smraw_test_compare_case5a(
 	}
 	result = smraw_test_read_hash(
 		  handle_multi,
-		  &md5_context_multi,
+		  md5_context_multi,
 		  -1 * read_offset,
 		  SEEK_END,
 		  read_size,
@@ -1568,7 +1648,7 @@ int smraw_test_compare_case5a(
 		 stderr,
 		 "Unable to read buffer for multiple segment file RAW image.\n" );
 
-		return( -1 );
+		goto on_error;
 	}
 	else if( result == 0 )
 	{
@@ -1579,7 +1659,7 @@ int smraw_test_compare_case5a(
 
 	result = smraw_test_read_hash(
 		  handle_single,
-		  &md5_context_single,
+		  md5_context_single,
 		  (off64_t) media_size / 8,
 		  SEEK_CUR,
 		  read_size,
@@ -1592,7 +1672,7 @@ int smraw_test_compare_case5a(
 		 stderr,
 		 "Unable to read buffer from single segment file RAW image.\n" );
 
-		return( -1 );
+		goto on_error;
 	}
 	else if( result == 0 )
 	{
@@ -1600,7 +1680,7 @@ int smraw_test_compare_case5a(
 	}
 	result = smraw_test_read_hash(
 		  handle_multi,
-		  &md5_context_multi,
+		  md5_context_multi,
 		  (off64_t) media_size / 8,
 		  SEEK_CUR,
 		  read_size,
@@ -1613,60 +1693,72 @@ int smraw_test_compare_case5a(
 		 stderr,
 		 "Unable to read buffer for multiple segment file RAW image.\n" );
 
-		return( -1 );
+		goto on_error;
 	}
 	else if( result == 0 )
 	{
 		return( 0 );
 	}
-	if( md5_finalize(
-	     &md5_context_single,
+	if( libhmac_md5_finalize(
+	     md5_context_single,
 	     md5_hash_single,
-	     &md5_hash_size_single,
+	     LIBHMAC_MD5_HASH_SIZE,
 	     &error ) != 1 )
 	{
 		fprintf(
 		 stderr,
 		 "Unable to finalize MD5 context.\n" );
 
-		libsmraw_error_backtrace_fprint(
-		 error,
-		 stderr );
-
-		libsmraw_error_free(
-		 &error );
-
-		return( -1 );
+		goto on_error;
 	}
-	if( md5_finalize(
-	     &md5_context_multi,
+	if( libhmac_md5_finalize(
+	     md5_context_multi,
 	     md5_hash_multi,
-	     &md5_hash_size_multi,
+	     LIBHMAC_MD5_HASH_SIZE,
 	     &error ) != 1 )
 	{
 		fprintf(
 		 stderr,
 		 "Unable to finalize MD5 context.\n" );
 
-		libsmraw_error_backtrace_fprint(
-		 error,
-		 stderr );
-
-		libsmraw_error_free(
-		 &error );
-
-		return( -1 );
+		goto on_error;
 	}
 	if( memory_compare(
 	     md5_hash_single,
 	     md5_hash_multi,
-	     DIGEST_HASH_SIZE_MD5 ) != 0 )
+	     LIBHMAC_MD5_HASH_SIZE ) != 0 )
 	{
 		fprintf(
 		 stderr,
 		 "Mismatch in MD5 hashes.\n" );
 
 		result = 0;
+	}
+	if( libhmac_md5_free(
+	     &md5_context_single,
+	     &error ) != 1 )
+	{
+		liberror_error_set(
+		 &error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+		 "%s: unable to free MD5 context.",
+		 function );
+
+		goto on_error;
+	}
+	if( libhmac_md5_free(
+	     &md5_context_multi,
+	     &error ) != 1 )
+	{
+		liberror_error_set(
+		 &error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+		 "%s: unable to free MD5 context.",
+		 function );
+
+		goto on_error;
 	}
 	if( result != 0 )
 	{
@@ -1685,6 +1777,29 @@ int smraw_test_compare_case5a(
 	 "\n" );
 
 	return( result );
+
+on_error:
+	if( md5_context_multi != NULL )
+	{
+		libhmac_md5_free(
+		 &md5_context_multi,
+		 NULL );
+	}
+	if( md5_context_single != NULL )
+	{
+		libhmac_md5_free(
+		 &md5_context_single,
+		 NULL );
+	}
+	if( error != NULL )
+	{
+		libsmraw_error_backtrace_fprint(
+		 error,
+		 stderr );
+		libsmraw_error_free(
+		 &error );
+	}
+	return( -1 );
 }
 
 /* Case 5b: Test SEEK_END, SEEK_CUR and read
@@ -1695,24 +1810,22 @@ int smraw_test_compare_case5b(
      libsmraw_handle_t *handle_multi,
       size64_t media_size )
 {
-	md5_context_t md5_context_multi;
-	md5_context_t md5_context_single;
+	uint8_t md5_hash_multi[ LIBHMAC_MD5_HASH_SIZE ];
+	uint8_t md5_hash_single[ LIBHMAC_MD5_HASH_SIZE ];
 
-	digest_hash_t md5_hash_multi[ DIGEST_HASH_SIZE_MD5 ];
-	digest_hash_t md5_hash_single[ DIGEST_HASH_SIZE_MD5 ];
-
-	libsmraw_error_t *error     = NULL;
-	size_t md5_hash_size_multi  = DIGEST_HASH_SIZE_MD5;
-	size_t md5_hash_size_single = DIGEST_HASH_SIZE_MD5;
-	off64_t read_offset         = 0;
-	size64_t read_size          = 0;
-	int result                  = 0;
+	libhmac_md5_context_t *md5_context_multi  = NULL;
+	libhmac_md5_context_t *md5_context_single = NULL;
+	libsmraw_error_t *error                   = NULL;
+	static char *function                     = "smraw_test_compare_case5b";
+	off64_t read_offset                       = 0;
+	size64_t read_size                        = 0;
+	int result                                = 0;
 
 	fprintf(
 	 stdout,
 	 "Testing compare of single and multiple segment file RAW image using SEEK_END, SEEK_CUR and read\t" );
 
-	if( md5_initialize(
+	if( libhmac_md5_initialize(
 	     &md5_context_single,
 	     &error ) != 1 )
 	{
@@ -1720,16 +1833,9 @@ int smraw_test_compare_case5b(
 		 stderr,
 		 "Unable to initialize MD5 context.\n" );
 
-		libsmraw_error_backtrace_fprint(
-		 error,
-		 stderr );
-
-		libsmraw_error_free(
-		 &error );
-
-		return( -1 );
+		goto on_error;
 	}
-	if( md5_initialize(
+	if( libhmac_md5_initialize(
 	     &md5_context_multi,
 	     &error ) != 1 )
 	{
@@ -1737,21 +1843,14 @@ int smraw_test_compare_case5b(
 		 stderr,
 		 "Unable to initialize MD5 context.\n" );
 
-		libsmraw_error_backtrace_fprint(
-		 error,
-		 stderr );
-
-		libsmraw_error_free(
-		 &error );
-
-		return( -1 );
+		goto on_error;
 	}
 	read_offset = (off64_t) media_size / 2;
 	read_size   = media_size / 8;
 
 	result = smraw_test_read_hash(
 		  handle_single,
-		  &md5_context_single,
+		  md5_context_single,
 		  -1 * read_offset,
 		  SEEK_END,
 		  read_size,
@@ -1764,7 +1863,7 @@ int smraw_test_compare_case5b(
 		 stderr,
 		 "Unable to read buffer from single segment file RAW image.\n" );
 
-		return( -1 );
+		goto on_error;
 	}
 	else if( result == 0 )
 	{
@@ -1772,7 +1871,7 @@ int smraw_test_compare_case5b(
 	}
 	result = smraw_test_read_hash(
 		  handle_multi,
-		  &md5_context_multi,
+		  md5_context_multi,
 		  -1 * read_offset,
 		  SEEK_END,
 		  read_size,
@@ -1785,7 +1884,7 @@ int smraw_test_compare_case5b(
 		 stderr,
 		 "Unable to read buffer for multiple segment file RAW image.\n" );
 
-		return( -1 );
+		goto on_error;
 	}
 	else if( result == 0 )
 	{
@@ -1796,7 +1895,7 @@ int smraw_test_compare_case5b(
 
 	result = smraw_test_read_hash(
 		  handle_single,
-		  &md5_context_single,
+		  md5_context_single,
 		  -1 * ( (off64_t) media_size / 8 ),
 		  SEEK_CUR,
 		  read_size,
@@ -1809,7 +1908,7 @@ int smraw_test_compare_case5b(
 		 stderr,
 		 "Unable to read buffer from single segment file RAW image.\n" );
 
-		return( -1 );
+		goto on_error;
 	}
 	else if( result == 0 )
 	{
@@ -1817,7 +1916,7 @@ int smraw_test_compare_case5b(
 	}
 	result = smraw_test_read_hash(
 		  handle_multi,
-		  &md5_context_multi,
+		  md5_context_multi,
 		  -1 * ( (off64_t) media_size / 8 ),
 		  SEEK_CUR,
 		  read_size,
@@ -1830,60 +1929,72 @@ int smraw_test_compare_case5b(
 		 stderr,
 		 "Unable to read buffer for multiple segment file RAW image.\n" );
 
-		return( -1 );
+		goto on_error;
 	}
 	else if( result == 0 )
 	{
 		return( 0 );
 	}
-	if( md5_finalize(
-	     &md5_context_single,
+	if( libhmac_md5_finalize(
+	     md5_context_single,
 	     md5_hash_single,
-	     &md5_hash_size_single,
+	     LIBHMAC_MD5_HASH_SIZE,
 	     &error ) != 1 )
 	{
 		fprintf(
 		 stderr,
 		 "Unable to finalize MD5 context.\n" );
 
-		libsmraw_error_backtrace_fprint(
-		 error,
-		 stderr );
-
-		libsmraw_error_free(
-		 &error );
-
-		return( -1 );
+		goto on_error;
 	}
-	if( md5_finalize(
-	     &md5_context_multi,
+	if( libhmac_md5_finalize(
+	     md5_context_multi,
 	     md5_hash_multi,
-	     &md5_hash_size_multi,
+	     LIBHMAC_MD5_HASH_SIZE,
 	     &error ) != 1 )
 	{
 		fprintf(
 		 stderr,
 		 "Unable to finalize MD5 context.\n" );
 
-		libsmraw_error_backtrace_fprint(
-		 error,
-		 stderr );
-
-		libsmraw_error_free(
-		 &error );
-
-		return( -1 );
+		goto on_error;
 	}
 	if( memory_compare(
 	     md5_hash_single,
 	     md5_hash_multi,
-	     DIGEST_HASH_SIZE_MD5 ) != 0 )
+	     LIBHMAC_MD5_HASH_SIZE ) != 0 )
 	{
 		fprintf(
 		 stderr,
 		 "Mismatch in MD5 hashes.\n" );
 
 		result = 0;
+	}
+	if( libhmac_md5_free(
+	     &md5_context_single,
+	     &error ) != 1 )
+	{
+		liberror_error_set(
+		 &error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+		 "%s: unable to free MD5 context.",
+		 function );
+
+		goto on_error;
+	}
+	if( libhmac_md5_free(
+	     &md5_context_multi,
+	     &error ) != 1 )
+	{
+		liberror_error_set(
+		 &error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+		 "%s: unable to free MD5 context.",
+		 function );
+
+		goto on_error;
 	}
 	if( result != 0 )
 	{
@@ -1902,6 +2013,29 @@ int smraw_test_compare_case5b(
 	 "\n" );
 
 	return( result );
+
+on_error:
+	if( md5_context_multi != NULL )
+	{
+		libhmac_md5_free(
+		 &md5_context_multi,
+		 NULL );
+	}
+	if( md5_context_single != NULL )
+	{
+		libhmac_md5_free(
+		 &md5_context_single,
+		 NULL );
+	}
+	if( error != NULL )
+	{
+		libsmraw_error_backtrace_fprint(
+		 error,
+		 stderr );
+		libsmraw_error_free(
+		 &error );
+	}
+	return( -1 );
 }
 
 /* The main program

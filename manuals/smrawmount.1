@@ -1,0 +1,59 @@
+.Dd September 18, 2011
+.Dt smrawmount
+.Os libsmraw
+.Sh NAME
+.Nm smrawmount
+.Nd mount data stored in storage media (split) RAW (image) files
+.Sh SYNOPSIS
+.Nm smrawmount
+.Op Fl hvV
+.Ar smraw_files
+.Sh DESCRIPTION
+.Nm smrawmount
+is a utility to mount data stored in EWF files.
+.Pp
+.Nm smrawmount
+is part of the
+.Nm libsmraw
+package.
+.Nm libsmraw
+is a library to support the storage media (SM) (split) RAW format.
+.Pp
+.Ar smraw_files
+the first or the entire set of storage media RAW (image) segment files
+.Ar mount_point
+the directory to serve as mount point
+.Pp
+The options are as follows:
+.Bl -tag -width Ds
+.It Fl h
+shows this help
+.It Fl v
+verbose output to stderr
+.It Fl V
+print version
+.El
+.Sh ENVIRONMENT
+None
+.Sh FILES
+None
+.Sh EXAMPLES
+.Bd -literal
+# smrawmount floppy.raw.001 floppy/
+smrawmount 20110918
+
+
+.Ed
+.Sh DIAGNOSTICS
+Errors, verbose and debug output are printed to stderr when verbose output \-v is enabled. Verbose and debug output are only printed when enabled at compilation.
+.Sh BUGS
+Please report bugs of any kind to <jbmetz@users.sourceforge.net> or on the project website: http://libsmio.sourceforge.net/
+.Sh AUTHOR
+.Pp
+These man pages were written by Joachim Metz.
+.Sh COPYRIGHT
+.Pp
+Copyright 2010-2011 Joachim Metz <jbmetz@users.sourceforge.net>.
+.Pp
+This is free software; see the source for copying conditions. There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+.Sh SEE ALSO

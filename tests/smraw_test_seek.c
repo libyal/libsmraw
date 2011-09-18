@@ -29,14 +29,7 @@
 
 #include <stdio.h>
 
-/* If libtool DLL support is enabled set LIBSMRAW_DLL_IMPORT
- * before including libsmraw.h
- */
-#if defined( _WIN32 ) && defined( DLL_EXPORT )
-#define LIBSMRAW_DLL_IMPORT
-#endif
-
-#include <libsmraw.h>
+#include "smraw_test_libsmraw.h"
 
 /* Tests libsmraw_handle_seek_offset
  * Returns 1 if successful, 0 if not or -1 on error
