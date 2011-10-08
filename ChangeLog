@@ -27,6 +27,13 @@ Test
 Beta release
 * remove deprecated functions in libsmraw_legacy.[ch]
 
+20111008
+* updated configure.as and m4 files
+* updated README files
+* updated pc and spec file
+* updated common
+* updated libuna, libbfio, libhmac, libsystem
+
 20110918
 * updated spec file
 * added smrawmount.1 man page

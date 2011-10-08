@@ -2,7 +2,7 @@ AC_PREREQ( 2.59 )
 
 AC_INIT(
  [libsmraw],
- [20110918],
+ [20111008],
  [jbmetz@users.sourceforge.net])
 
 AC_CONFIG_SRCDIR(
@@ -17,78 +17,6 @@ AC_CANONICAL_HOST
 
 dnl Check for large file support
 AC_SYS_LARGEFILE
-
-dnl Check for configure arguments
-COMMON_ARG_ENABLE(
- [wide-character-type],
- [wide_character_type],
- [enable wide character type support],
- [no])
-COMMON_ARG_ENABLE(
- [winapi],
- [winapi],
- [enable WINAPI support for cross-compilation],
- [auto-detect])
-COMMON_ARG_ENABLE(
- [static-executables],
- [static_executables],
- [build the smrawtools as static executables],
- [no])
-COMMON_ARG_ENABLE(
- [verbose-output],
- [verbose_output],
- [enable verbose output],
- [no])
-COMMON_ARG_ENABLE(
- [debug-output],
- [debug_output],
- [enable debug output],
- [no])
-
-COMMON_ARG_WITH(
- [libuna],
- [libuna],
- [search for libuna in includedir and libdir or in the specified DIR, or no if to use local version],
- [auto-detect],
- [DIR])
-COMMON_ARG_WITH(
- [libbfio],
- [libbfio],
- [search for libbfio in includedir and libdir or in the specified DIR, or no if to use local version],
- [auto-detect],
- [DIR])
-COMMON_ARG_WITH(
- [libfvalue],
- [libfvalue],
- [search for libfvalue in includedir and libdir or in the specified DIR, or no if to use local version],
- [auto-detect],
- [DIR])
-COMMON_ARG_WITH(
- [libmfdata],
- [libmfdata],
- [search for libmfdata in includedir and libdir or in the specified DIR, or no if to use local version],
- [auto-detect],
- [DIR])
-
-COMMON_ARG_WITH(
- [libhmac],
- [libhmac],
- [search for libhmac in includedir and libdir or in the specified DIR, or no if to use local version],
- [auto-detect],
- [DIR])
-COMMON_ARG_WITH(
- [openssl],
- [openssl],
- [search for openssl in includedir and libdir or in the specified DIR, or no if not to use openssl],
- [auto-detect],
- [DIR])
-
-COMMON_ARG_WITH(
- [libfuse],
- [libfuse],
- [search for libfuse in includedir and libdir or in the specified DIR, or no if not to use libfuse],
- [auto-detect],
- [DIR])
 
 dnl Check for libtool DLL support
 AC_LIBTOOL_WIN32_DLL
@@ -108,291 +36,48 @@ dnl Check for compiler language support
 AC_C_CONST
 AC_C_VOLATILE
 
-dnl Automatically enable winapi support for mingw
-AC_CHECK_WINAPI
+dnl Check if WINAPI support should be enabled
+AX_COMMON_CHECK_ENABLE_WINAPI
 
 dnl Check for type definitions
-AC_CHECK_LOCAL_TYPES
+AX_TYPES_CHECK_LOCAL
 
-dnl Check for headers
-
-dnl Check for functions
-
-dnl Check for printf conversion specifier support
-AC_CHECK_FUNC_PRINTF_JD
-AC_CHECK_FUNC_PRINTF_ZD
+dnl Check if wide character type should be enabled
+AX_COMMON_CHECK_ENABLE_WIDE_CHARACTER_TYPE
 
 dnl Checks for libraries and library functions
-dnl ac_cv_libsmraw_dummy is used to prevent AC_CHECK_LIB adding unnecessary -l<library> arguments
-AC_CHECK_LOCAL_COMMON
-AC_CHECK_LOCAL_LIBCSTRING
-AC_CHECK_LOCAL_LIBERROR
-AC_CHECK_LOCAL_LIBNOTIFY
-AC_CHECK_LOCAL_LIBSYSTEM
+AX_COMMON_CHECK_LOCAL
+AX_LIBCSTRING_CHECK_LOCAL
+AX_LIBERROR_CHECK_LOCAL
+AX_LIBNOTIFY_CHECK_LOCAL
+AX_LIBSYSTEM_CHECK_LOCAL
 
 dnl Check for enabling libuna for Unicode string support
-AC_CHECK_LIBUNA
-
-AS_IF(
- [test "x$ac_cv_libuna" = xyes],
- [AC_SUBST(
-  [libsmraw_pc_libs_private_libuna],
-  [-luna])
- ])
-
-AS_IF(
- [test "x$ac_cv_libuna" = xyes],
- [AC_SUBST(
-  [libsmraw_spec_requires_libuna],
-  [libuna])
- AC_SUBST(
-  [libsmraw_spec_build_requires_libuna],
-  [libuna-devel])
- ])
-
-AS_IF(
- [test "x$ac_cv_libuna" != xyes],
- [AC_DEFINE(
-  [HAVE_LOCAL_LIBUNA],
-  [1],
-  [Define to 1 if the local version of libuna is used.])
- AC_SUBST(
-  [HAVE_LOCAL_LIBUNA],
-  [1])
- AC_SUBST(
-  [LIBUNA_CPPFLAGS],
-  [-I../libuna])
- AC_SUBST(
-  [LIBUNA_LIBADD],
-  [../libuna/libuna.la])
- ac_cv_libuna=local
- ])
-
-AM_CONDITIONAL(
- [HAVE_LOCAL_LIBUNA],
- [test "x$ac_cv_libuna" = xlocal])
+AX_LIBUNA_CHECK_ENABLE
 
 dnl Check for enabling libbfio for basic file IO support
-AC_CHECK_LIBBFIO
-
-AS_IF(
- [test "x$ac_cv_libbfio" = xyes],
- [AC_SUBST(
-  [libsmraw_pc_libs_private_libbfio],
-  [-lbfio])
- ])
-
-AS_IF(
- [test "x$ac_cv_libbfio" = xyes],
- [AC_SUBST(
-  [libsmraw_spec_requires_libbfio],
-  [libbfio])
- AC_SUBST(
-  [libsmraw_spec_build_requires_libbfio],
-  [libbfio-devel])
- ])
-
-AS_IF(
- [test "x$ac_cv_libbfio" != xyes],
- [AC_DEFINE(
-  [HAVE_LOCAL_LIBBFIO],
-  [1],
-  [Define to 1 if the local version of libbfio is used.])
- AC_SUBST(
-  [HAVE_LOCAL_LIBBFIO],
-  [1])
- AC_SUBST(
-  [LIBBFIO_CPPFLAGS],
-  [-I../libbfio])
- AC_SUBST(
-  [LIBBFIO_LIBADD],
-  [../libbfio/libbfio.la])
- ac_cv_libbfio=local
- ])
-
-AS_IF(
- [test "x$ac_cv_libbfio" = xlocal],
- [AC_CHECK_LOCAL_LIBBFIO])
-
-AM_CONDITIONAL(
- [HAVE_LOCAL_LIBBFIO],
- [test "x$ac_cv_libbfio" = xlocal])
+AX_LIBBFIO_CHECK_ENABLE
 
 dnl Check for enabling libmfdata for multi-file data support
-AC_CHECK_LIBMFDATA
-
-AS_IF(
- [test "x$ac_cv_libmfdata" = xyes],
- [AC_SUBST(
-  [libsmraw_pc_libs_private_libmfdata],
-  [-lmfdata])
- ])
-
-AS_IF(
- [test "x$ac_cv_libmfdata" = xyes],
- [AC_SUBST(
-  [libsmraw_spec_requires_libmfdata],
-  [libmfdata])
- AC_SUBST(
-  [libsmraw_spec_build_requires_libmfdata],
-  [libmfdata-devel])
- ])
-
-AS_IF(
- [test "x$ac_cv_libmfdata" != xyes],
- [AC_DEFINE(
-  [HAVE_LOCAL_LIBMFDATA],
-  [1],
-  [Define to 1 if the local version of libmfdata is used.])
- AC_SUBST(
-  [HAVE_LOCAL_LIBMFDATA],
-  [1])
- AC_SUBST(
-  [LIBMFDATA_CPPFLAGS],
-  [-I../libmfdata])
- AC_SUBST(
-  [LIBMFDATA_LIBADD],
-  [../libmfdata/libmfdata.la])
- ac_cv_libmfdata=local
- ])
-
-AM_CONDITIONAL(
- [HAVE_LOCAL_LIBMFDATA],
- [test "x$ac_cv_libmfdata" = xlocal])
+AX_LIBMFDATA_CHECK_ENABLE
 
 dnl Check for enabling libfvalue for file value support
-AC_CHECK_LIBFVALUE
-
-AS_IF(
- [test "x$ac_cv_libfvalue" = xyes],
- [AC_SUBST(
-  [libsmraw_pc_libs_private_libfvalue],
-  [-lfvalue])
- ])
-
-AS_IF(
- [test "x$ac_cv_libfvalue" = xyes],
- [AC_SUBST(
-  [libsmraw_spec_requires_libfvalue],
-  [libfvalue])
- AC_SUBST(
-  [libsmraw_spec_build_requires_libfvalue],
-  [libfvalue-devel])
- ])
-
-AS_IF(
- [test "x$ac_cv_libfvalue" != xyes],
- [AC_DEFINE(
-  [HAVE_LOCAL_LIBFVALUE],
-  [1],
-  [Define to 1 if the local version of libfvalue is used.])
- AC_SUBST(
-  [HAVE_LOCAL_LIBFVALUE],
-  [1])
- AC_SUBST(
-  [LIBFVALUE_CPPFLAGS],
-  [-I../libfvalue])
- AC_SUBST(
-  [LIBFVALUE_LIBADD],
-  [../libfvalue/libfvalue.la])
- ac_cv_libfvalue=local
- ])
-
-AM_CONDITIONAL(
- [HAVE_LOCAL_LIBFVALUE],
- [test "x$ac_cv_libfvalue" = xlocal])
+AX_LIBFVALUE_CHECK_ENABLE
 
 dnl Check for enabling libhmac for message digest hash function support
-AC_CHECK_LIBHMAC
-
-AS_IF(
- [test "x$ac_cv_libhmac" = xyes],
- [AC_SUBST(
-  [libsmraw_spec_requires_libhmac],
-  [libhmac])
- AC_SUBST(
-  [libsmraw_spec_build_requires_libhmac],
-  [libhmac-devel])
- ])
-
-AS_IF(
- [test "x$ac_cv_libhmac" != xyes],
- [AC_DEFINE(
-  [HAVE_LOCAL_LIBHMAC],
-  [1],
-  [Define to 1 if the local version of libhmac is used.])
- AC_SUBST(
-  [HAVE_LOCAL_LIBHMAC],
-  [1])
- AC_SUBST(
-  [LIBHMAC_CPPFLAGS],
-  [-I../libhmac])
- AC_SUBST(
-  [LIBHMAC_LIBADD],
-  [../libhmac/libhmac.la])
- ac_cv_libhmac=local
- ])
-
-AM_CONDITIONAL(
- [HAVE_LOCAL_LIBHMAC],
- [test "x$ac_cv_libhmac" = xlocal])
-
-AS_IF(
- [test "x$ac_cv_libhmac" = xlocal],
- [AC_CHECK_LOCAL_LIBHMAC])
-
-AS_IF(
- [test "x$ac_cv_libcrypto" != xno],
- [AC_SUBST(
-  [libsmraw_spec_requires_libcrypto],
-  [openssl])
- AC_SUBST(
-  [libsmraw_spec_build_requires_libcrypto],
-  [openssl-devel])
- ])
+AX_LIBHMAC_CHECK_ENABLE
 
 dnl Check for libfuse Filesystem in Userspace (FUSE) support
-AC_CHECK_LIBFUSE
-
-AS_IF(
- [test "x$ac_cv_libfuse" = xyes],
- [AC_SUBST(
-  [libsmraw_spec_requires_libfuse],
-  [libfuse])
- AC_SUBST(
-  [libsmraw_spec_build_requires_libfuse],
-  [libfuse-devel])
- ])
+AX_LIBFUSE_CHECK_ENABLE
 
 dnl Check if smrawtools should be build as static executables
-AS_IF(
- [test "x$ac_cv_enable_static_executables" != xno],
- [STATIC_LDFLAGS="-all-static";
- AC_SUBST(
-  [STATIC_LDFLAGS])
- AC_DEFINE(
-  [HAVE_STATIC_EXECUTABLES],
-  [1],
-  [Define if executables should be static compiled.])
- ac_cv_enable_static_executables=yes])
+AX_COMMON_CHECK_ENABLE_STATIC_EXECUTABLES
 
 dnl Check if libsmraw should be build with verbose output
-AS_IF(
- [test "x$ac_cv_enable_verbose_output" != xno],
- [AC_DEFINE(
-  [HAVE_VERBOSE_OUTPUT],
-  [1],
-  [Define to 1 if verbose output should be used] )
- ac_cv_enable_verbose_output=yes])
+AX_COMMON_CHECK_ENABLE_VERBOSE_OUTPUT
 
 dnl Check if libsmraw should be build with debug output
-AS_IF(
- [test "x$ac_cv_enable_debug_output" != xno],
- [AC_DEFINE(
-  [HAVE_DEBUG_OUTPUT],
-  [1],
-  [Define to 1 if debug output should be used] )
- ac_cv_enable_debug_output=yes])
+AX_COMMON_CHECK_ENABLE_DEBUG_OUTPUT
 
 dnl Check if requires and build requires should be set in spec file
 AS_IF(
@@ -413,10 +98,10 @@ AS_IF(
  ])
 
 dnl Set memwatch support
-ac_libsmraw_have_memwatch=no
+ac_cv_enable_memwatch=no
 
 AS_IF(
- [test "x$ac_libsmraw_have_memwatch" != xno ],
+ [test "x$ac_cv_enable_memwatch" != xno ],
  [AC_SUBST(
   [MEMWATCH_CPPFLAGS],
   ["-DMEMWATCH -DMEMWATCH_STDIO"])
@@ -426,7 +111,7 @@ AS_IF(
 
 AM_CONDITIONAL(
  [HAVE_MEMWATCH],
- [test "x$ac_libsmraw_have_memwatch" != xno])
+ [test "x$ac_cv_enable_memwatch" != xno])
 
 dnl Set additional compiler flags
 CFLAGS="$CFLAGS -Wall";
