@@ -2,7 +2,7 @@ AC_PREREQ( 2.59 )
 
 AC_INIT(
  [libsmraw],
- [20111008],
+ [20111009],
  [jbmetz@users.sourceforge.net])
 
 AC_CONFIG_SRCDIR(
@@ -39,11 +39,11 @@ AC_C_VOLATILE
 dnl Check if WINAPI support should be enabled
 AX_COMMON_CHECK_ENABLE_WINAPI
 
-dnl Check for type definitions
-AX_TYPES_CHECK_LOCAL
-
 dnl Check if wide character type should be enabled
 AX_COMMON_CHECK_ENABLE_WIDE_CHARACTER_TYPE
+
+dnl Check for type definitions
+AX_TYPES_CHECK_LOCAL
 
 dnl Checks for libraries and library functions
 AX_COMMON_CHECK_LOCAL
@@ -69,6 +69,12 @@ AX_LIBHMAC_CHECK_ENABLE
 
 dnl Check for libfuse Filesystem in Userspace (FUSE) support
 AX_LIBFUSE_CHECK_ENABLE
+
+dnl Check for functions
+AS_IF(
+ [test "x$ac_cv_enable_winapi" = xno],
+ [AC_CHECK_FUNCS([getegid geteuid])
+ ])
 
 dnl Check if smrawtools should be build as static executables
 AX_COMMON_CHECK_ENABLE_STATIC_EXECUTABLES

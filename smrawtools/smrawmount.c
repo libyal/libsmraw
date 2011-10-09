@@ -54,7 +54,7 @@
 mount_handle_t *smrawmount_mount_handle = NULL;
 int smrawmount_abort                    = 0;
 
-/* Prints the executable usage mountrmation
+/* Prints the executable usage information
  */
 void usage_fprint(
       FILE *stream )
@@ -560,11 +560,25 @@ int smrawmount_fuse_getattr(
 	}
 	if( result == 0 )
 	{
-		stat_info->st_atime = 0;
-		stat_info->st_mtime = 0;
-		stat_info->st_ctime = 0;
-		stat_info->st_uid   = geteuid();
-		stat_info->st_gid   = getegid();
+		stat_info->st_atime = libsystem_date_time_time(
+		                       NULL );
+
+		stat_info->st_mtime = libsystem_date_time_time(
+		                       NULL );
+
+		stat_info->st_ctime = libsystem_date_time_time(
+		                       NULL );
+
+#if defined( HAVE_GETEUID )
+		stat_info->st_uid = geteuid();
+#else
+		stat_info->st_uid = 0;
+#endif
+#if defined( HAVE_GETEGID )
+		stat_info->st_gid = getegid();
+#else
+		stat_info->st_gid = 0;
+#endif
 	}
 	return( result );
 
