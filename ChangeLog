@@ -27,6 +27,12 @@ Test
 Beta release
 * remove deprecated functions in libsmraw_legacy.[ch]
 
+20111013
+* fixes for libfuse detection
+* added support for OSXFuse
+* fix for static executables on Cygwin
+* updated libfvalue
+
 20111009
 * small changes to smrawmount
 
