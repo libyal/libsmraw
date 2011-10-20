@@ -1,4 +1,5 @@
 TODO
+* update smraw.net bindings
 * why is empty information value section written in info file
 
 * complete libfvalue and test information file read/write
@@ -26,6 +27,10 @@ Test
 
 Beta release
 * remove deprecated functions in libsmraw_legacy.[ch]
+
+20111020
+* updated README.static
+* updated libfvalues
 
 20111013
 * fixes for libfuse detection

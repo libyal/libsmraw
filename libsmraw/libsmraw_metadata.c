@@ -285,7 +285,6 @@ int libsmraw_handle_set_bytes_per_sector(
 		if( libfvalue_value_initialize(
 		     &value,
 		     LIBFVALUE_VALUE_TYPE_UNSIGNED_INTEGER_64BIT,
-		     LIBFVALUE_VALUE_FLAG_IDENTIFIER_MANAGED | LIBFVALUE_VALUE_FLAG_DATA_MANAGED,
 		     error ) != 1 )
 		{
 			liberror_error_set(
@@ -301,6 +300,7 @@ int libsmraw_handle_set_bytes_per_sector(
 		     value,
 		     (uint8_t *) identifier,
 		     identifier_size,
+		     LIBFVALUE_VALUE_FLAG_IDENTIFIER_MANAGED,
 		     error ) != 1 )
 		{
 			liberror_error_set(
@@ -606,7 +606,6 @@ int libsmraw_handle_set_media_type(
 		if( libfvalue_value_initialize(
 		     &value,
 		     LIBFVALUE_VALUE_TYPE_STRING_UTF8,
-		     LIBFVALUE_VALUE_FLAG_IDENTIFIER_MANAGED | LIBFVALUE_VALUE_FLAG_DATA_MANAGED,
 		     error ) != 1 )
 		{
 			liberror_error_set(
@@ -622,6 +621,7 @@ int libsmraw_handle_set_media_type(
 		     value,
 		     (uint8_t *) identifier,
 		     identifier_size,
+		     LIBFVALUE_VALUE_FLAG_IDENTIFIER_MANAGED,
 		     error ) != 1 )
 		{
 			liberror_error_set(
@@ -891,7 +891,6 @@ int libsmraw_handle_set_media_flags(
 		if( libfvalue_value_initialize(
 		     &value,
 		     LIBFVALUE_VALUE_TYPE_STRING_UTF8,
-		     LIBFVALUE_VALUE_FLAG_IDENTIFIER_MANAGED | LIBFVALUE_VALUE_FLAG_DATA_MANAGED,
 		     error ) != 1 )
 		{
 			liberror_error_set(
@@ -907,6 +906,7 @@ int libsmraw_handle_set_media_flags(
 		     value,
 		     (uint8_t *) identifier,
 		     identifier_size,
+		     LIBFVALUE_VALUE_FLAG_IDENTIFIER_MANAGED,
 		     error ) != 1 )
 		{
 			liberror_error_set(
@@ -1476,7 +1476,6 @@ int libsmraw_handle_set_utf8_information_value(
 		if( libfvalue_value_initialize(
 		     &value,
 		     LIBFVALUE_VALUE_TYPE_STRING_UTF8,
-		     LIBFVALUE_VALUE_FLAG_IDENTIFIER_MANAGED | LIBFVALUE_VALUE_FLAG_DATA_MANAGED,
 		     error ) != 1 )
 		{
 			liberror_error_set(
@@ -1492,6 +1491,7 @@ int libsmraw_handle_set_utf8_information_value(
 		     value,
 		     identifier,
 		     identifier_length + 1,
+		     LIBFVALUE_VALUE_FLAG_IDENTIFIER_MANAGED,
 		     error ) != 1 )
 		{
 			liberror_error_set(
@@ -1811,7 +1811,6 @@ int libsmraw_handle_set_utf16_information_value(
 		if( libfvalue_value_initialize(
 		     &value,
 		     LIBFVALUE_VALUE_TYPE_STRING_UTF8,
-		     LIBFVALUE_VALUE_FLAG_IDENTIFIER_MANAGED | LIBFVALUE_VALUE_FLAG_DATA_MANAGED,
 		     error ) != 1 )
 		{
 			liberror_error_set(
@@ -1827,6 +1826,7 @@ int libsmraw_handle_set_utf16_information_value(
 		     value,
 		     identifier,
 		     identifier_length + 1,
+		     LIBFVALUE_VALUE_FLAG_IDENTIFIER_MANAGED,
 		     error ) != 1 )
 		{
 			liberror_error_set(
@@ -2397,7 +2397,6 @@ int libsmraw_handle_set_utf8_integrity_hash_value(
 		if( libfvalue_value_initialize(
 		     &value,
 		     LIBFVALUE_VALUE_TYPE_STRING_UTF8,
-		     LIBFVALUE_VALUE_FLAG_IDENTIFIER_MANAGED | LIBFVALUE_VALUE_FLAG_DATA_MANAGED,
 		     error ) != 1 )
 		{
 			liberror_error_set(
@@ -2413,6 +2412,7 @@ int libsmraw_handle_set_utf8_integrity_hash_value(
 		     value,
 		     identifier,
 		     identifier_length + 1,
+		     LIBFVALUE_VALUE_FLAG_IDENTIFIER_MANAGED,
 		     error ) != 1 )
 		{
 			liberror_error_set(
@@ -2732,7 +2732,6 @@ int libsmraw_handle_set_utf16_integrity_hash_value(
 		if( libfvalue_value_initialize(
 		     &value,
 		     LIBFVALUE_VALUE_TYPE_STRING_UTF8,
-		     LIBFVALUE_VALUE_FLAG_IDENTIFIER_MANAGED | LIBFVALUE_VALUE_FLAG_DATA_MANAGED,
 		     error ) != 1 )
 		{
 			liberror_error_set(
@@ -2748,6 +2747,7 @@ int libsmraw_handle_set_utf16_integrity_hash_value(
 		     value,
 		     identifier,
 		     identifier_length + 1,
+		     LIBFVALUE_VALUE_FLAG_IDENTIFIER_MANAGED,
 		     error ) != 1 )
 		{
 			liberror_error_set(

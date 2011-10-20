@@ -577,7 +577,6 @@ int libsmraw_information_file_read_section(
 				if( libfvalue_value_initialize(
 				     &value,
 				     LIBFVALUE_VALUE_TYPE_STRING_UTF8,
-				     LIBFVALUE_VALUE_FLAG_IDENTIFIER_MANAGED | LIBFVALUE_VALUE_FLAG_DATA_MANAGED,
 				     error ) != 1 )
 				{
 					liberror_error_set(
@@ -594,6 +593,7 @@ int libsmraw_information_file_read_section(
 				     value,
 				     (uint8_t *) value_identifier,
 				     value_identifier_length,
+				     LIBFVALUE_VALUE_FLAG_IDENTIFIER_MANAGED,
 				     error ) != 1 )
 				{
 					liberror_error_set(
@@ -611,7 +611,7 @@ int libsmraw_information_file_read_section(
 				     (uint8_t *) value_data,
 				     value_data_length + 1,
 				     LIBFVALUE_ENDIAN_NATIVE,
-				     LIBFVALUE_VALUE_FORMAT_UNDEFINED,
+				     LIBFVALUE_VALUE_FLAG_DATA_MANAGED,
 				     error ) != 1 )
 				{
 					liberror_error_set(
