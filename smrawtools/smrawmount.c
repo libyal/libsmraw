@@ -496,9 +496,9 @@ int smrawmount_fuse_getattr(
 	{
 		liberror_error_set(
 		 &error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid stat info.",
+		 LIBERROR_ERROR_DOMAIN_MEMORY,
+		 LIBERROR_MEMORY_ERROR_SET_FAILED,
+		 "%s: unable to clear stat info.",
 		 function );
 
 		result = errno;
@@ -537,7 +537,7 @@ int smrawmount_fuse_getattr(
 				 &error,
 				 LIBERROR_ERROR_DOMAIN_RUNTIME,
 				 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-				 "%s: unsupported to retrieve media size.",
+				 "%s: unable to retrieve media size.",
 				 function );
 
 				result = -EBADFD;
@@ -551,7 +551,7 @@ int smrawmount_fuse_getattr(
 				 &error,
 				 LIBERROR_ERROR_DOMAIN_RUNTIME,
 				 LIBERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
-				 "%s: unsupported to media size value out of bounds.",
+				 "%s: invalid media size value out of bounds.",
 				 function );
 
 				result = -ERANGE;
