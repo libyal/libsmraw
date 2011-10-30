@@ -2,7 +2,7 @@ AC_PREREQ( 2.59 )
 
 AC_INIT(
  [libsmraw],
- [20111020],
+ [20111030],
  [jbmetz@users.sourceforge.net])
 
 AC_CONFIG_SRCDIR(
@@ -124,7 +124,7 @@ CFLAGS="$CFLAGS -Wall";
 
 dnl Check if DLL support is needed in smrawtools
 AS_IF(
- [test x"$enable_shared" = xyes && test "x$ac_cv_enable_static_executables" = xno],
+ [test "x$enable_shared" = xyes && test "x$ac_cv_enable_static_executables" = xno],
  [AS_CASE(
   [$host],
   [*cygwin* | *mingw*],

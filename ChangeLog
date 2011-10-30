@@ -28,6 +28,12 @@ Test
 Beta release
 * remove deprecated functions in libsmraw_legacy.[ch]
 
+20111030
+* updated configure.as and m4 files
+* updated libhmac
+* added glob support for .img and .dmg
+* code clean up in glob function
+
 20111020
 * updated README.static
 * updated libfvalues

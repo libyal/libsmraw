@@ -146,6 +146,26 @@ then
 	exit ${EXIT_FAILURE};
 fi
 
+if ! test_glob "PREFIX" ".dmg" "PREFIX.dmg";
+then
+	exit ${EXIT_FAILURE};
+fi
+
+if ! test_glob "PREFIX.dmg" ".dmg" "PREFIX.dmg";
+then
+	exit ${EXIT_FAILURE};
+fi
+
+if ! test_glob "PREFIX" ".img" "PREFIX.img";
+then
+	exit ${EXIT_FAILURE};
+fi
+
+if ! test_glob "PREFIX.img" ".img" "PREFIX.img";
+then
+	exit ${EXIT_FAILURE};
+fi
+
 if ! test_glob "PREFIX" ".raw" "PREFIX.raw";
 then
 	exit ${EXIT_FAILURE};
