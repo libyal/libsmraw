@@ -51,54 +51,57 @@ int mount_handle_initialize(
 
 		return( -1 );
 	}
+	if( *mount_handle != NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
+		 "%s: invalid mount handle value already set.",
+		 function );
+
+		return( -1 );
+	}
+	*mount_handle = memory_allocate_structure(
+	                 mount_handle_t );
+
 	if( *mount_handle == NULL )
 	{
-		*mount_handle = memory_allocate_structure(
-		                 mount_handle_t );
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_MEMORY,
+		 LIBERROR_MEMORY_ERROR_INSUFFICIENT,
+		 "%s: unable to create mount handle.",
+		 function );
 
-		if( *mount_handle == NULL )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_MEMORY,
-			 LIBERROR_MEMORY_ERROR_INSUFFICIENT,
-			 "%s: unable to create mount handle.",
-			 function );
+		goto on_error;
+	}
+	if( memory_set(
+	     *mount_handle,
+	     0,
+	     sizeof( mount_handle_t ) ) == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_MEMORY,
+		 LIBERROR_MEMORY_ERROR_SET_FAILED,
+		 "%s: unable to clear mount handle.",
+		 function );
 
-			goto on_error;
-		}
-		if( memory_set(
-		     *mount_handle,
-		     0,
-		     sizeof( mount_handle_t ) ) == NULL )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_MEMORY,
-			 LIBERROR_MEMORY_ERROR_SET_FAILED,
-			 "%s: unable to clear mount handle.",
-			 function );
+		goto on_error;
+	}
+	if( libsmraw_handle_initialize(
+	     &( ( *mount_handle )->input_handle ),
+	     error ) != 1 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 "%s: unable to initialize input handle.",
+		 function );
 
-			memory_free(
-			 *mount_handle );
-
-			*mount_handle = NULL;
-
-			return( -1 );
-		}
-		if( libsmraw_handle_initialize(
-		     &( ( *mount_handle )->input_handle ),
-		     error ) != 1 )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-			 "%s: unable to initialize input handle.",
-			 function );
-
-			goto on_error;
-		}
+		goto on_error;
 	}
 	return( 1 );
 
@@ -208,6 +211,7 @@ int mount_handle_open_input(
 	libcstring_system_character_t **libsmraw_filenames = NULL;
 	static char *function                              = "mount_handle_open_input";
 	size_t first_filename_length                       = 0;
+	int result                                         = 0;
 
 	if( mount_handle == NULL )
 	{
@@ -248,31 +252,31 @@ int mount_handle_open_input(
 		                         filenames[ 0 ] );
 
 #if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
-		if( libsmraw_glob_wide(
-		     filenames[ 0 ],
-		     first_filename_length,
-		     &libsmraw_filenames,
-		     &number_of_filenames,
-		     error ) != 1 )
+		result = libsmraw_glob_wide(
+		          filenames[ 0 ],
+		          first_filename_length,
+		          &libsmraw_filenames,
+		          &number_of_filenames,
+		          error );
 #else
-		if( libsmraw_glob(
-		     filenames[ 0 ],
-		     first_filename_length,
-		     &libsmraw_filenames,
-		     &number_of_filenames,
-		     error ) != 1 )
+		result = libsmraw_glob(
+		          filenames[ 0 ],
+		          first_filename_length,
+		          &libsmraw_filenames,
+		          &number_of_filenames,
+		          error );
 #endif
+		if( result != 1 )
 		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_GET_FAILED,
-			 "%s: unable to resolve filename(s).",
-			 function );
+			liberror_error_free(
+			 error );
 
-			return( -1 );
+			number_of_filenames = 1;
 		}
-		filenames = (libcstring_system_character_t * const *) libsmraw_filenames;
+		else
+		{
+			filenames = (libcstring_system_character_t * const *) libsmraw_filenames;
+		}
 	}
 #if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
 	if( libsmraw_handle_open_wide(

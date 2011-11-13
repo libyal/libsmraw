@@ -637,6 +637,7 @@ int main( int argc, char * const argv[] )
 
         if( libsystem_initialize(
              "smrawtools",
+             _IONBF,
              &error ) != 1 )
 	{
 		fprintf(

@@ -1,6 +1,6 @@
 dnl Functions for libsystem
 dnl
-dnl Version: 20111004
+dnl Version: 20111106
 
 dnl Function to detect if ctime_r or ctime is available
 dnl Also checks how to use ctime_r
@@ -310,6 +310,19 @@ AC_DEFUN([AX_LIBSYSTEM_CHECK_LOCAL],
  dnl Commandline argument/option parsing functions in libsystem/libsystem_getopt.h
  AC_CHECK_FUNCS([getopt])
  
+ dnl Path functions used in libsystem/libsystem_path.h
+ AC_CHECK_FUNCS([getcwd])
+ 
+ AS_IF(
+  [test "x$ac_cv_func_getcwd" != xyes],
+  [AC_MSG_FAILURE(
+   [Missing functions: getcwd],
+   [1])
+  ])
+ 
+ dnl Check for IO buffering functions in libsystem/libsystem_support.c
+ AC_CHECK_FUNCS([setvbuf])
+
  dnl Check for internationalization functions in libsystem/libsystem_support.c
  AC_CHECK_FUNCS([bindtextdomain textdomain])
 

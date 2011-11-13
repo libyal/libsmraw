@@ -534,6 +534,32 @@ int smraw_test_compare_case1(
 
 			goto on_error;
 		}
+		if( libhmac_md5_free(
+		     &md5_context_single,
+		     &error ) != 1 )
+		{
+			liberror_error_set(
+			 &error,
+			 LIBERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+			 "%s: unable to free MD5 context.",
+			 function );
+
+			goto on_error;
+		}
+		if( libhmac_md5_free(
+		     &md5_context_multi,
+		     &error ) != 1 )
+		{
+			liberror_error_set(
+			 &error,
+			 LIBERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+			 "%s: unable to free MD5 context.",
+			 function );
+
+			goto on_error;
+		}
 		if( memory_compare(
 		     md5_hash_single,
 		     md5_hash_multi,
@@ -548,32 +574,6 @@ int smraw_test_compare_case1(
 			break;
 		}
 		read_offset += 17 * 1024;
-	}
-	if( libhmac_md5_free(
-	     &md5_context_single,
-	     &error ) != 1 )
-	{
-		liberror_error_set(
-		 &error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-		 "%s: unable to free MD5 context.",
-		 function );
-
-		goto on_error;
-	}
-	if( libhmac_md5_free(
-	     &md5_context_multi,
-	     &error ) != 1 )
-	{
-		liberror_error_set(
-		 &error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-		 "%s: unable to free MD5 context.",
-		 function );
-
-		goto on_error;
 	}
 	if( result != 0 )
 	{
@@ -773,6 +773,32 @@ int smraw_test_compare_case2(
 
 			goto on_error;
 		}
+		if( libhmac_md5_free(
+		     &md5_context_single,
+		     &error ) != 1 )
+		{
+			liberror_error_set(
+			 &error,
+			 LIBERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+			 "%s: unable to free MD5 context.",
+			 function );
+
+			goto on_error;
+		}
+		if( libhmac_md5_free(
+		     &md5_context_multi,
+		     &error ) != 1 )
+		{
+			liberror_error_set(
+			 &error,
+			 LIBERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+			 "%s: unable to free MD5 context.",
+			 function );
+
+			goto on_error;
+		}
 		if( memory_compare(
 		     md5_hash_single,
 		     md5_hash_multi,
@@ -787,32 +813,6 @@ int smraw_test_compare_case2(
 			break;
 		}
 		read_offset += read_size;
-	}
-	if( libhmac_md5_free(
-	     &md5_context_single,
-	     &error ) != 1 )
-	{
-		liberror_error_set(
-		 &error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-		 "%s: unable to free MD5 context.",
-		 function );
-
-		goto on_error;
-	}
-	if( libhmac_md5_free(
-	     &md5_context_multi,
-	     &error ) != 1 )
-	{
-		liberror_error_set(
-		 &error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-		 "%s: unable to free MD5 context.",
-		 function );
-
-		goto on_error;
 	}
 	if( result != 0 )
 	{
@@ -1011,6 +1011,32 @@ int smraw_test_compare_case3(
 
 			goto on_error;
 		}
+		if( libhmac_md5_free(
+		     &md5_context_single,
+		     &error ) != 1 )
+		{
+			liberror_error_set(
+			 &error,
+			 LIBERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+			 "%s: unable to free MD5 context.",
+			 function );
+
+			goto on_error;
+		}
+		if( libhmac_md5_free(
+		     &md5_context_multi,
+		     &error ) != 1 )
+		{
+			liberror_error_set(
+			 &error,
+			 LIBERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+			 "%s: unable to free MD5 context.",
+			 function );
+
+			goto on_error;
+		}
 		if( memory_compare(
 		     md5_hash_single,
 		     md5_hash_multi,
@@ -1025,32 +1051,6 @@ int smraw_test_compare_case3(
 			break;
 		}
 		read_offset += 17 * 1024;
-	}
-	if( libhmac_md5_free(
-	     &md5_context_single,
-	     &error ) != 1 )
-	{
-		liberror_error_set(
-		 &error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-		 "%s: unable to free MD5 context.",
-		 function );
-
-		goto on_error;
-	}
-	if( libhmac_md5_free(
-	     &md5_context_multi,
-	     &error ) != 1 )
-	{
-		liberror_error_set(
-		 &error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-		 "%s: unable to free MD5 context.",
-		 function );
-
-		goto on_error;
 	}
 	if( result != 0 )
 	{

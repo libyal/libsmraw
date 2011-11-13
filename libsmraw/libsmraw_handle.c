@@ -59,120 +59,129 @@ int libsmraw_handle_initialize(
 
 		return( -1 );
 	}
-	if( *handle == NULL )
+	if( *handle != NULL )
 	{
-		internal_handle = memory_allocate_structure(
-		                   libsmraw_internal_handle_t );
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
+		 "%s: invalid handle value already set.",
+		 function );
 
-		if( internal_handle == NULL )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-			 "%s: unable to create internal handle.",
-			 function );
-
-			goto on_error;
-		}
-		if( memory_set(
-		     internal_handle,
-		     0,
-		     sizeof( libsmraw_internal_handle_t ) ) == NULL )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_MEMORY,
-			 LIBERROR_MEMORY_ERROR_SET_FAILED,
-			 "%s: unable to clear handle.",
-			 function );
-
-			memory_free(
-			 internal_handle );
-
-			return( -1 );
-		}
-		if( libmfdata_segment_table_initialize(
-		     &( internal_handle->segment_table ),
-		     (intptr_t *) internal_handle,
-		     NULL,
-		     NULL,
-		     &libsmraw_handle_set_segment_name,
-		     &libmfdata_segment_table_read_segment_data,
-		     &libmfdata_segment_table_write_segment_data,
-		     &libmfdata_segment_table_seek_segment_offset,
-		     0,
-		     error ) != 1 )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-			 "%s: unable to create segment table.",
-			 function );
-
-			goto on_error;
-		}
-		if( libmfdata_segment_table_set_maximum_segment_size(
-		     internal_handle->segment_table,
-		     LIBSMRAW_DEFAULT_MAXIMUM_SEGMENT_SIZE,
-		     error ) != 1 )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_SET_FAILED,
-			 "%s: unable to set maximum segment size in segment table.",
-			 function );
-
-			goto on_error;
-		}
-		if( libfvalue_table_initialize(
-		     &( internal_handle->media_values ),
-		     0,
-		     error ) != 1 )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-			 "%s: unable to create media values table.",
-			 function );
-
-			goto on_error;
-		}
-		if( libfvalue_table_initialize(
-		     &( internal_handle->information_values ),
-		     0,
-		     error ) != 1 )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-			 "%s: unable to create information values table.",
-			 function );
-
-			goto on_error;
-		}
-		if( libfvalue_table_initialize(
-		     &( internal_handle->integrity_hash_values ),
-		     0,
-		     error ) != 1 )
-		{
-			liberror_error_set(
-			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-			 "%s: unable to create integrity hash values table.",
-			 function );
-
-			goto on_error;
-		}
-		internal_handle->maximum_number_of_open_handles = LIBBFIO_POOL_UNLIMITED_NUMBER_OF_OPEN_HANDLES;
-
-		*handle = (libsmraw_handle_t *) internal_handle;
+		return( -1 );
 	}
+	internal_handle = memory_allocate_structure(
+	                   libsmraw_internal_handle_t );
+
+	if( internal_handle == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 "%s: unable to create internal handle.",
+		 function );
+
+		goto on_error;
+	}
+	if( memory_set(
+	     internal_handle,
+	     0,
+	     sizeof( libsmraw_internal_handle_t ) ) == NULL )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_MEMORY,
+		 LIBERROR_MEMORY_ERROR_SET_FAILED,
+		 "%s: unable to clear handle.",
+		 function );
+
+		memory_free(
+		 internal_handle );
+
+		return( -1 );
+	}
+	if( libmfdata_segment_table_initialize(
+	     &( internal_handle->segment_table ),
+	     (intptr_t *) internal_handle,
+	     NULL,
+	     NULL,
+	     &libsmraw_handle_set_segment_name,
+	     &libmfdata_segment_table_read_segment_data,
+	     &libmfdata_segment_table_write_segment_data,
+	     &libmfdata_segment_table_seek_segment_offset,
+	     0,
+	     error ) != 1 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 "%s: unable to create segment table.",
+		 function );
+
+		goto on_error;
+	}
+	if( libmfdata_segment_table_set_maximum_segment_size(
+	     internal_handle->segment_table,
+	     LIBSMRAW_DEFAULT_MAXIMUM_SEGMENT_SIZE,
+	     error ) != 1 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to set maximum segment size in segment table.",
+		 function );
+
+		goto on_error;
+	}
+	if( libfvalue_table_initialize(
+	     &( internal_handle->media_values ),
+	     0,
+	     error ) != 1 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 "%s: unable to create media values table.",
+		 function );
+
+		goto on_error;
+	}
+	if( libfvalue_table_initialize(
+	     &( internal_handle->information_values ),
+	     0,
+	     error ) != 1 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 "%s: unable to create information values table.",
+		 function );
+
+		goto on_error;
+	}
+	if( libfvalue_table_initialize(
+	     &( internal_handle->integrity_hash_values ),
+	     0,
+	     error ) != 1 )
+	{
+		liberror_error_set(
+		 error,
+		 LIBERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 "%s: unable to create integrity hash values table.",
+		 function );
+
+		goto on_error;
+	}
+	internal_handle->maximum_number_of_open_handles = LIBBFIO_POOL_UNLIMITED_NUMBER_OF_OPEN_HANDLES;
+
+	*handle = (libsmraw_handle_t *) internal_handle;
+
 	return( 1 );
 
 on_error:

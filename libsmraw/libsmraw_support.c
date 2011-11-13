@@ -120,6 +120,8 @@ int libsmraw_set_codepage(
 	 && ( codepage != LIBSMRAW_CODEPAGE_KOI8_R )
 	 && ( codepage != LIBSMRAW_CODEPAGE_KOI8_U )
 	 && ( codepage != LIBSMRAW_CODEPAGE_WINDOWS_874 )
+	 && ( codepage != LIBSMRAW_CODEPAGE_WINDOWS_932 )
+	 && ( codepage != LIBSMRAW_CODEPAGE_WINDOWS_936 )
 	 && ( codepage != LIBSMRAW_CODEPAGE_WINDOWS_1250 )
 	 && ( codepage != LIBSMRAW_CODEPAGE_WINDOWS_1251 )
 	 && ( codepage != LIBSMRAW_CODEPAGE_WINDOWS_1252 )

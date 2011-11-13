@@ -28,6 +28,10 @@ Test
 Beta release
 * remove deprecated functions in libsmraw_legacy.[ch]
 
+20111113
+* updated libcstring, libsystem, libuna, libbfio, libbfio, libfvalue, libhmac
+* made smrawmount a bit more flexible for filenames not supported by glob function
+
 20111030
 * updated configure.as and m4 files
 * updated libhmac
