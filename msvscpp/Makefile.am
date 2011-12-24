@@ -4,6 +4,7 @@ EXTRA_DIST = \
 	liberror/liberror.vcproj \
 	libfvalue/libfvalue.vcproj \
 	libhmac/libhmac.vcproj \
+	libmfcache/libmfcache.vcproj \
 	libmfdata/libmfdata.vcproj \
 	libnotify/libnotify.vcproj \
 	libsmraw_dll/libsmraw_dll.vcproj \

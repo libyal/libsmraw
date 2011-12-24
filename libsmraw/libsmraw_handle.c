@@ -525,11 +525,11 @@ int libsmraw_handle_open(
 	{
 		if( ( access_flags & LIBSMRAW_ACCESS_FLAG_READ ) != 0 )
 		{
-			bfio_access_flags |= LIBBFIO_FLAG_READ;
+			bfio_access_flags |= LIBBFIO_ACCESS_FLAG_READ;
 		}
 		if( ( access_flags & LIBSMRAW_ACCESS_FLAG_WRITE ) != 0 )
 		{
-			bfio_access_flags |= LIBBFIO_FLAG_WRITE;
+			bfio_access_flags |= LIBBFIO_ACCESS_FLAG_WRITE;
 		}
 		/* Set the basename
 		 */
@@ -960,11 +960,11 @@ int libsmraw_handle_open_wide(
 	{
 		if( ( access_flags & LIBSMRAW_ACCESS_FLAG_READ ) != 0 )
 		{
-			bfio_access_flags |= LIBBFIO_FLAG_READ;
+			bfio_access_flags |= LIBBFIO_ACCESS_FLAG_READ;
 		}
 		if( ( access_flags & LIBSMRAW_ACCESS_FLAG_WRITE ) != 0 )
 		{
-			bfio_access_flags |= LIBBFIO_FLAG_WRITE;
+			bfio_access_flags |= LIBBFIO_ACCESS_FLAG_WRITE;
 		}
 		/* Set the basename
 		 */
