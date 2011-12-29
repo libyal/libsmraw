@@ -28,6 +28,9 @@ Test
 Beta release
 * remove deprecated functions in libsmraw_legacy.[ch]
 
+20111229
+* updated libcstring, libuna, libbfio
+
 20111224
 * update libcstring, libsystem, libuna, libfvalue, libhmac
 * updated pc file

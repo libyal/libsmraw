@@ -616,7 +616,6 @@ int main( int argc, char * const argv[] )
 	char *program                                         = "smrawmount";
 	libcstring_system_integer_t option                    = 0;
 	int number_of_filenames                               = 0;
-	int result                                            = 0;
 	int verbose                                           = 0;
 
 #if !defined( LIBSYSTEM_HAVE_GLOB )
@@ -627,6 +626,7 @@ int main( int argc, char * const argv[] )
 	struct fuse_operations smrawmount_fuse_operations;
 	struct fuse_chan *smrawmount_fuse_channel             = NULL;
 	struct fuse *smrawmount_fuse_handle                   = NULL;
+	int result                                            = 0;
 #endif
 
 	libsystem_notify_set_stream(
