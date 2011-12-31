@@ -18,14 +18,17 @@
 			<Projects Include="libbfio\libbfio.cbproj">
 				<Dependencies>liberror\liberror.cbproj;libuna\libuna.cbproj;libcstring\libcstring.cbproj</Dependencies>
 			</Projects>
+			<Projects Include="libmfcache\libmfcache.cbproj">
+				<Dependencies>libcstring\libcstring.cbproj;liberror\liberror.cbproj;libnotify\libnotify.cbproj</Dependencies>
+			</Projects>
 			<Projects Include="libmfdata\libmfdata.cbproj">
-				<Dependencies>libcstring\libcstring.cbproj;liberror\liberror.cbproj;libnotify\libnotify.cbproj;libbfio\libbfio.cbproj</Dependencies>
+				<Dependencies>libcstring\libcstring.cbproj;liberror\liberror.cbproj;libnotify\libnotify.cbproj;libbfio\libbfio.cbproj;libmfcache\libmfcache.cbproj</Dependencies>
 			</Projects>
 			<Projects Include="libfvalue\libfvalue.cbproj">
 				<Dependencies>libcstring\libcstring.cbproj;liberror\liberror.cbproj;libnotify\libnotify.cbproj;libuna\libuna.cbproj</Dependencies>
 			</Projects>
 			<Projects Include="libsmraw\libsmraw.cbproj">
-				<Dependencies>libcstring\libcstring.cbproj;liberror\liberror.cbproj;libnotify\libnotify.cbproj;libuna\libuna.cbproj;libbfio\libbfio.cbproj;libfvalue\libfvalue.cbproj;libmfdata\libmfdata.cbproj</Dependencies>
+				<Dependencies>libcstring\libcstring.cbproj;liberror\liberror.cbproj;libnotify\libnotify.cbproj;libuna\libuna.cbproj;libbfio\libbfio.cbproj;libmfcache\libmfcache.cbproj;libmfdata\libmfdata.cbproj;libfvalue\libfvalue.cbproj</Dependencies>
 			</Projects>
 		</ItemGroup>
 		<ProjectExtensions>
@@ -80,13 +83,22 @@
 		<Target DependsOnTargets="liberror:Make;libuna:Make;libcstring:Make" Name="libbfio:Make">
 			<MSBuild Targets="Make" Projects="libbfio\libbfio.cbproj"/>
 		</Target>
-		<Target DependsOnTargets="libcstring;liberror;libnotify;libbfio" Name="libmfdata">
+		<Target DependsOnTargets="libcstring;liberror;libnotify" Name="libmfcache">
+			<MSBuild Projects="libmfcache\libmfcache.cbproj"/>
+		</Target>
+		<Target DependsOnTargets="libcstring:Clean;liberror:Clean;libnotify:Clean" Name="libmfcache:Clean">
+			<MSBuild Targets="Clean" Projects="libmfcache\libmfcache.cbproj"/>
+		</Target>
+		<Target DependsOnTargets="libcstring:Make;liberror:Make;libnotify:Make" Name="libmfcache:Make">
+			<MSBuild Targets="Make" Projects="libmfcache\libmfcache.cbproj"/>
+		</Target>
+		<Target DependsOnTargets="libcstring;liberror;libnotify;libbfio;libmfcache" Name="libmfdata">
 			<MSBuild Projects="libmfdata\libmfdata.cbproj"/>
 		</Target>
-		<Target DependsOnTargets="libcstring:Clean;liberror:Clean;libnotify:Clean;libbfio:Clean" Name="libmfdata:Clean">
+		<Target DependsOnTargets="libcstring:Clean;liberror:Clean;libnotify:Clean;libbfio:Clean;libmfcache:Clean" Name="libmfdata:Clean">
 			<MSBuild Targets="Clean" Projects="libmfdata\libmfdata.cbproj"/>
 		</Target>
-		<Target DependsOnTargets="libcstring:Make;liberror:Make;libnotify:Make;libbfio:Make" Name="libmfdata:Make">
+		<Target DependsOnTargets="libcstring:Make;liberror:Make;libnotify:Make;libbfio:Make;libmfcache:Make" Name="libmfdata:Make">
 			<MSBuild Targets="Make" Projects="libmfdata\libmfdata.cbproj"/>
 		</Target>
 		<Target DependsOnTargets="libcstring;liberror;libnotify;libuna" Name="libfvalue">
@@ -98,23 +110,23 @@
 		<Target DependsOnTargets="libcstring:Make;liberror:Make;libnotify:Make;libuna:Make" Name="libfvalue:Make">
 			<MSBuild Targets="Make" Projects="libfvalue\libfvalue.cbproj"/>
 		</Target>
-		<Target DependsOnTargets="libcstring;liberror;libnotify;libuna;libbfio;libfvalue;libmfdata" Name="libsmraw">
+		<Target DependsOnTargets="libcstring;liberror;libnotify;libuna;libbfio;libmfcache;libmfdata;libfvalue" Name="libsmraw">
 			<MSBuild Projects="libsmraw\libsmraw.cbproj"/>
 		</Target>
-		<Target DependsOnTargets="libcstring:Clean;liberror:Clean;libnotify:Clean;libuna:Clean;libbfio:Clean;libfvalue:Clean;libmfdata:Clean" Name="libsmraw:Clean">
+		<Target DependsOnTargets="libcstring:Clean;liberror:Clean;libnotify:Clean;libuna:Clean;libbfio:Clean;libmfcache:Clean;libmfdata:Clean;libfvalue:Clean" Name="libsmraw:Clean">
 			<MSBuild Targets="Clean" Projects="libsmraw\libsmraw.cbproj"/>
 		</Target>
-		<Target DependsOnTargets="libcstring:Make;liberror:Make;libnotify:Make;libuna:Make;libbfio:Make;libfvalue:Make;libmfdata:Make" Name="libsmraw:Make">
+		<Target DependsOnTargets="libcstring:Make;liberror:Make;libnotify:Make;libuna:Make;libbfio:Make;libmfcache:Make;libmfdata:Make;libfvalue:Make" Name="libsmraw:Make">
 			<MSBuild Targets="Make" Projects="libsmraw\libsmraw.cbproj"/>
 		</Target>
 		<Target Name="Build">
-			<CallTarget Targets="libcstring;liberror;libnotify;libuna;libbfio;libmfdata;libfvalue;libsmraw"/>
+			<CallTarget Targets="libcstring;liberror;libnotify;libuna;libbfio;libmfcache;libmfdata;libfvalue;libsmraw"/>
 		</Target>
 		<Target Name="Clean">
-			<CallTarget Targets="libcstring:Clean;liberror:Clean;libnotify:Clean;libuna:Clean;libbfio:Clean;libmfdata:Clean;libfvalue:Clean;libsmraw:Clean"/>
+			<CallTarget Targets="libcstring:Clean;liberror:Clean;libnotify:Clean;libuna:Clean;libbfio:Clean;libmfcache:Clean;libmfdata:Clean;libfvalue:Clean;libsmraw:Clean"/>
 		</Target>
 		<Target Name="Make">
-			<CallTarget Targets="libcstring:Make;liberror:Make;libnotify:Make;libuna:Make;libbfio:Make;libmfdata:Make;libfvalue:Make;libsmraw:Make"/>
+			<CallTarget Targets="libcstring:Make;liberror:Make;libnotify:Make;libuna:Make;libbfio:Make;libmfcache:Make;libmfdata:Make;libfvalue:Make;libsmraw:Make"/>
 		</Target>
 		<Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 	</Project>

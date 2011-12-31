@@ -28,6 +28,10 @@ Test
 Beta release
 * remove deprecated functions in libsmraw_legacy.[ch]
 
+20111231
+* updated libhmac
+* updated msvscpp and codegear files
+
 20111229
 * updated libcstring, libuna, libbfio
 

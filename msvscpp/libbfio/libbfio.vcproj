@@ -167,11 +167,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\libbfio\libbfio_handle.c"
+				RelativePath="..\..\libbfio\libbfio_file_range.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\libbfio\libbfio_legacy.c"
+				RelativePath="..\..\libbfio\libbfio_handle.c"
 				>
 			</File>
 			<File
@@ -183,7 +183,19 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\libbfio\libbfio_narrow_split_string.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\libbfio\libbfio_narrow_string.c"
+				>
+			</File>
+			<File
 				RelativePath="..\..\libbfio\libbfio_offset_list.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\libbfio\libbfio_path.c"
 				>
 			</File>
 			<File
@@ -192,6 +204,14 @@
 			</File>
 			<File
 				RelativePath="..\..\libbfio\libbfio_support.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\libbfio\libbfio_wide_split_string.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\libbfio\libbfio_wide_string.c"
 				>
 			</File>
 		</Filter>
@@ -229,11 +249,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\libbfio\libbfio_handle.h"
+				RelativePath="..\..\libbfio\libbfio_file_range.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\libbfio\libbfio_legacy.h"
+				RelativePath="..\..\libbfio\libbfio_handle.h"
 				>
 			</File>
 			<File
@@ -249,7 +269,19 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\libbfio\libbfio_narrow_split_string.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\libbfio\libbfio_narrow_string.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\libbfio\libbfio_offset_list.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\libbfio\libbfio_path.h"
 				>
 			</File>
 			<File
@@ -266,6 +298,14 @@
 			</File>
 			<File
 				RelativePath="..\..\libbfio\libbfio_unused.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\libbfio\libbfio_wide_split_string.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\libbfio\libbfio_wide_string.h"
 				>
 			</File>
 		</Filter>

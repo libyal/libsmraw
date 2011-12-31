@@ -3,6 +3,7 @@ CODEGEAR_FILES = \
 	codegear/libcstring/libcstring.cbproj \
 	codegear/liberror/liberror.cbproj \
 	codegear/libfvalue/libfvalue.cbproj \
+	codegear/libmfcache/libmfcache.cbproj \
 	codegear/libmfdata/libmfdata.cbproj \
 	codegear/libnotify/libnotify.cbproj \
 	codegear/libsmraw/libsmraw.cbproj \
