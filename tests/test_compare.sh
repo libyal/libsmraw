@@ -2,7 +2,7 @@
 #
 # Storage media (SM) RAW library seek and read compare testing script
 #
-# Copyright (c) 2010-2011, Joachim Metz <jbmetz@users.sourceforge.net>
+# Copyright (c) 2010-2012, Joachim Metz <jbmetz@users.sourceforge.net>
 #
 # Refer to AUTHORS for acknowledgements.
 #

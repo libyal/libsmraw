@@ -1,7 +1,7 @@
 /*
  * Library to support the storage media (SM) (split) RAW format
  *
- * Copyright (c) 2010-2011, Joachim Metz <jbmetz@users.sourceforge.net>
+ * Copyright (c) 2010-2012, Joachim Metz <jbmetz@users.sourceforge.net>
  *
  * Refer to AUTHORS for acknowledgements.
  *
