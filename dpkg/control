@@ -1,0 +1,31 @@
+Source: libsmraw
+Section: unknown
+Priority: extra
+Maintainer: Joachim Metz <jbmetz@users.sourceforge.net>
+Build-Depends: debhelper (>= 7), autotools-dev
+Standards-Version: 3.8.3
+Homepage: http://libsmraw.sourceforge.net
+
+Package: libsmraw
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Library to support the storage media (SM) RAW format
+ libsmraw is a library to support the storage media (SM) RAW format.
+ It supports both RAW and split RAW.
+
+Package: libsmraw-dev
+Section: libdevel
+Architecture: any
+Depends: libsmraw (= ${Source-Version})
+Description: Header files and libraries for developing applications for libsmraw
+ Header files and libraries for developing applications for libsmraw.
+
+Package: libsmraw-tools
+Section: utils
+Architecture: any
+Depends: libsmraw (= ${Source-Version}), ${shlibs:Depends}
+Description: Several tools for reading and writing storage media (SM) (split) RAW files
+ Several tools for reading and writing storage media (SM) (split) RAW files.
+ It contains tools to acquire, export, query and verify storage media (SM) (split) RAW files.
+

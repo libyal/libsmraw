@@ -2,7 +2,7 @@ AC_PREREQ( 2.59 )
 
 AC_INIT(
  [libsmraw],
- [20120102],
+ [20120209],
  [jbmetz@users.sourceforge.net])
 
 AC_CONFIG_SRCDIR(
@@ -137,6 +137,11 @@ AS_IF(
   ])
  ])
 
+dnl Set the date for dpkg files
+AC_SUBST(
+ [DATE],
+ [`date -R 2> /dev/null`])
+
 dnl Have configure make the Makefiles
 AC_CONFIG_FILES([Makefile])
 AC_CONFIG_FILES([include/Makefile])
@@ -169,6 +174,8 @@ AC_CONFIG_FILES([include/libsmraw/types.h])
 AC_CONFIG_FILES([libsmraw/libsmraw_definitions.h])
 dnl Have configure make distribution specific files
 AC_CONFIG_FILES([common/types.h])
+AC_CONFIG_FILES([dpkg/changelog])
+AC_CONFIG_FILES([dpkg/copyright])
 AC_CONFIG_FILES([libsmraw/libsmraw.rc])
 AC_CONFIG_FILES([libsmraw.pc])
 AC_CONFIG_FILES([libsmraw.spec])

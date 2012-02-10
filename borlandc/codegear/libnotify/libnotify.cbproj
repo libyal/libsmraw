@@ -19,7 +19,7 @@
 			<BCC_PCHUsage>None</BCC_PCHUsage>
 			<FinalOutputDir>..\Release</FinalOutputDir>
 			<BCC_waus>false</BCC_waus>
-			<BCC_IncludePath>..\..\..\include;..\..\..\common;..\..\..\liberror;$(BCC_IncludePath)</BCC_IncludePath>
+			<BCC_IncludePath>..\..\..\include;..\..\..\common;..\..\..\libcstring;..\..\..\liberror</BCC_IncludePath>
 			<OutputExt>lib</OutputExt>
 			<Multithreaded>true</Multithreaded>
 			<PackageImports>vcl.bpi;rtl.bpi;bcbie.bpi;vclx.bpi;vclactnband.bpi;xmlrtl.bpi;bcbsmp.bpi;dbrtl.bpi;vcldb.bpi;vcldbx.bpi;bdertl.bpi;dsnap.bpi;dsnapcon.bpi;TeeUI.bpi;TeeDB.bpi;Tee.bpi;adortl.bpi;IndyCore.bpi;IndySystem.bpi;IndyProtocols.bpi;dbexpress.bpi;DbxCommonDriver.bpi;DataSnapIndy10ServerTransport.bpi;DataSnapProviderClient.bpi;DataSnapServer.bpi;DbxClientDriver.bpi;DBXInterBaseDriver.bpi;DBXMySQLDriver.bpi;dbxcds.bpi;DBXSybaseASEDriver.bpi;DBXSybaseASADriver.bpi;DBXOracleDriver.bpi;DBXMSSQLDriver.bpi;DBXInformixDriver.bpi;DBXDb2Driver.bpi</PackageImports>
@@ -39,24 +39,20 @@
 			<TASM_Debugging>None</TASM_Debugging>
 		</PropertyGroup>
 		<ItemGroup>
-			<CppCompile Include="..\..\..\libnotify\libnotify_print.c">
-				<BuildOrder>3</BuildOrder>
-			</CppCompile>
-			<None Include="..\..\..\libnotify\libnotify_print.h">
-				<BuildOrder>4</BuildOrder>
-			</None>
-			<CppCompile Include="..\..\..\libnotify\libnotify_stream.c">
-				<BuildOrder>5</BuildOrder>
-			</CppCompile>
-			<None Include="..\..\..\libnotify\libnotify_stream.h">
-				<BuildOrder>0</BuildOrder>
-			</None>
 			<CppCompile Include="..\..\..\libnotify\libnotify.c">
-				<BuildOrder>1</BuildOrder>
 			</CppCompile>
 			<None Include="..\..\..\libnotify\libnotify.h">
-				<BuildOrder>2</BuildOrder>
 			</None>
+			<None Include="..\..\..\libnotify\libnotify_definitions.h">
+			</None>
+			<None Include="..\..\..\libnotify\libnotify_stream.h">
+			</None>
+			<CppCompile Include="..\..\..\libnotify\libnotify_print.c">
+			</CppCompile>
+			<None Include="..\..\..\libnotify\libnotify_print.h">
+			</None>
+			<CppCompile Include="..\..\..\libnotify\libnotify_stream.c">
+			</CppCompile>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>

@@ -28,6 +28,10 @@ Test
 Beta release
 * remove deprecated functions in libsmraw_legacy.[ch]
 
+20120209
+* added dpkg files
+* updated libnotify, libbfio, libfvalue
+
 20120102
 * 2012 update
 
