@@ -1,4 +1,6 @@
 TODO
+* fix msvscpp files for libcsplit update
+
 * TODO: libfvalue_value_write_to_file_stream
 * update smraw.net bindings
 * why is empty information value section written in info file
@@ -31,6 +33,7 @@ Beta release
 
 20120701
 * applied updates
+* libcsplit update
 
 20120630
 * applied updates
