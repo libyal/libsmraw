@@ -1,7 +1,7 @@
 /*
  * Handle class of libsmraw .net managed wrapper
  *
- * Copyright (c) 2010-2012, Joachim Metz <jbmetz@users.sourceforge.net>
+ * Copyright (c) 2010-2012, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -24,8 +24,6 @@
 
 #include <stdlib.h>
 
-#include <libcstring.h>
-
 #include <libsmraw.h>
 #pragma managed( pop )
 
@@ -33,6 +31,7 @@
 
 #include "smraw.net.h"
 #include "smraw.net_handle.h"
+#include "smraw.net_libcstring.h"
 
 #using <mscorlib.dll>
 

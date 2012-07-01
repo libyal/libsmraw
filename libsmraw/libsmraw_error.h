@@ -1,7 +1,7 @@
 /*
  * Error functions
  *
- * Copyright (c) 2010-2012, Joachim Metz <jbmetz@users.sourceforge.net>
+ * Copyright (c) 2010-2012, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -23,9 +23,8 @@
 #define _LIBSMRAW_INTERNAL_ERROR_H
 
 #include <common.h>
+#include <file_stream.h>
 #include <types.h>
-
-#include <stdio.h>
 
 #if !defined( HAVE_LOCAL_LIBSMRAW )
 #include <libsmraw/error.h>

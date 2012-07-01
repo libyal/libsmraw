@@ -1,4 +1,5 @@
 TODO
+* TODO: libfvalue_value_write_to_file_stream
 * update smraw.net bindings
 * why is empty information value section written in info file
 
@@ -27,6 +28,17 @@ Test
 
 Beta release
 * remove deprecated functions in libsmraw_legacy.[ch]
+
+20120701
+* applied updates
+
+20120630
+* applied updates
+
+20120519
+* applied updates
+* disabled borland codegear files
+* added smrawmount destroy
 
 20120212
 * small changes

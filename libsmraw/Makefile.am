@@ -1,14 +1,17 @@
 AM_CPPFLAGS = \
 	-I$(top_srcdir)/include \
 	-I$(top_srcdir)/common \
-	-I$(top_srcdir)/libcstring \
-	-I$(top_srcdir)/liberror \
-	-I$(top_srcdir)/libnotify \
+	@LIBCSTRING_CPPFLAGS@ \
+	@LIBCERROR_CPPFLAGS@ \
+	@LIBCLOCALE_CPPFLAGS@ \
+	@LIBCNOTIFY_CPPFLAGS@ \
 	@LIBUNA_CPPFLAGS@ \
+	@LIBCFILE_CPPFLAGS@ \
+	@LIBCPATH_CPPFLAGS@ \
 	@LIBBFIO_CPPFLAGS@ \
+	@LIBFVALUE_CPPFLAGS@ \
 	@LIBMFCACHE_CPPFLAGS@ \
 	@LIBMFDATA_CPPFLAGS@ \
-	@LIBFVALUE_CPPFLAGS@ \
 	@MEMWATCH_CPPFLAGS@
 
 lib_LTLIBRARIES = libsmraw.la
@@ -24,6 +27,10 @@ libsmraw_la_SOURCES = \
 	libsmraw_information_file.c libsmraw_information_file.h \
 	libsmraw_legacy.c libsmraw_legacy.h \
 	libsmraw_libbfio.h \
+	libsmraw_libcerror.h \
+	libsmraw_libclocale.h \
+	libsmraw_libcnotify.h \
+	libsmraw_libcstring.h \
 	libsmraw_libfvalue.h \
 	libsmraw_libmfcache.h \
 	libsmraw_libmfdata.h \
@@ -35,14 +42,17 @@ libsmraw_la_SOURCES = \
 	libsmraw_unused.h
 
 libsmraw_la_LIBADD = \
-	../libcstring/libcstring.la \
-	../liberror/liberror.la \
-	../libnotify/libnotify.la \
+	@LIBCSTRING_LIBADD@ \
+	@LIBCERROR_LIBADD@ \
+	@LIBCLOCALE_LIBADD@ \
+	@LIBCNOTIFY_LIBADD@ \
 	@LIBUNA_LIBADD@ \
+	@LIBCFILE_LIBADD@ \
+	@LIBCPATH_LIBADD@ \
 	@LIBBFIO_LIBADD@ \
+	@LIBFVALUE_LIBADD@ \
 	@LIBMFCACHE_LIBADD@ \
-	@LIBMFDATA_LIBADD@ \
-	@LIBFVALUE_LIBADD@
+	@LIBMFDATA_LIBADD@
 
 libsmraw_la_LDFLAGS = -no-undefined -version-info 1:0:0
 

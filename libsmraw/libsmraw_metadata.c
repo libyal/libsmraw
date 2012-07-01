@@ -1,7 +1,7 @@
 /*
  * Meta data functions
  *
- * Copyright (c) 2010-2012, Joachim Metz <jbmetz@users.sourceforge.net>
+ * Copyright (c) 2010-2012, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -23,13 +23,12 @@
 #include <memory.h>
 #include <types.h>
 
-#include <libcstring.h>
-#include <liberror.h>
-#include <libnotify.h>
-
 #include "libsmraw_definitions.h"
 #include "libsmraw_handle.h"
 #include "libsmraw_libbfio.h"
+#include "libsmraw_libcerror.h"
+#include "libsmraw_libcnotify.h"
+#include "libsmraw_libcstring.h"
 #include "libsmraw_libfvalue.h"
 #include "libsmraw_types.h"
 
@@ -39,17 +38,17 @@
 int libsmraw_handle_get_media_size(
      libsmraw_handle_t *handle,
      size64_t *media_size,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
 	static char *function                       = "libsmraw_handle_get_media_size";
 
 	if( handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid handle.",
 		 function );
 
@@ -59,10 +58,10 @@ int libsmraw_handle_get_media_size(
 
 	if( internal_handle->file_io_pool == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
 		 "%s: invalid handle - missing file io pool.",
 		 function );
 
@@ -70,10 +69,10 @@ int libsmraw_handle_get_media_size(
 	}
 	if( media_size == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid media size.",
 		 function );
 
@@ -90,17 +89,17 @@ int libsmraw_handle_get_media_size(
 int libsmraw_handle_set_media_size(
      libsmraw_handle_t *handle,
      size64_t media_size,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
 	static char *function                       = "libsmraw_handle_set_media_size";
 
 	if( handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid handle.",
 		 function );
 
@@ -111,10 +110,10 @@ int libsmraw_handle_set_media_size(
 	if( ( internal_handle->read_values_initialized != 0 )
 	 || ( internal_handle->write_values_initialized != 0 ) )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
 		 "%s: media size cannot be changed.",
 		 function );
 
@@ -131,7 +130,7 @@ int libsmraw_handle_set_media_size(
 int libsmraw_handle_get_bytes_per_sector(
      libsmraw_handle_t *handle,
      uint32_t *bytes_per_sector,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
 	libfvalue_value_t *value                    = NULL;
@@ -143,10 +142,10 @@ int libsmraw_handle_get_bytes_per_sector(
 
 	if( handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid handle.",
 		 function );
 
@@ -156,10 +155,10 @@ int libsmraw_handle_get_bytes_per_sector(
 
 	if( bytes_per_sector == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid bytes per sector.",
 		 function );
 
@@ -177,10 +176,10 @@ int libsmraw_handle_get_bytes_per_sector(
 
 	if( result == -1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 		 "%s: unable to retrieve value: %s from media values table.",
 		 function,
 		 identifier );
@@ -195,10 +194,10 @@ int libsmraw_handle_get_bytes_per_sector(
 		     &value_64bit,
 		     error ) != 1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_COPY_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
 			 "%s: unable to copy value to a 64-bit value.",
 			 function );
 
@@ -206,10 +205,10 @@ int libsmraw_handle_get_bytes_per_sector(
 		}
 		if( value_64bit > (uint64_t) UINT32_MAX )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
 			 "%s: 64-bit bytes per sector value out of bounds.",
 			 function );
 
@@ -226,7 +225,7 @@ int libsmraw_handle_get_bytes_per_sector(
 int libsmraw_handle_set_bytes_per_sector(
      libsmraw_handle_t *handle,
      uint32_t bytes_per_sector,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
 	libfvalue_value_t *value                    = NULL;
@@ -237,10 +236,10 @@ int libsmraw_handle_set_bytes_per_sector(
 
 	if( handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid handle.",
 		 function );
 
@@ -251,10 +250,10 @@ int libsmraw_handle_set_bytes_per_sector(
 	if( ( internal_handle->read_values_initialized != 0 )
 	 || ( internal_handle->write_values_initialized != 0 ) )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
 		 "%s: media values cannot be changed.",
 		 function );
 
@@ -270,10 +269,10 @@ int libsmraw_handle_set_bytes_per_sector(
 
 	if( result == -1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 		 "%s: unable to retrieve value: %s from media values table.",
 		 function,
 		 identifier );
@@ -282,15 +281,15 @@ int libsmraw_handle_set_bytes_per_sector(
 	}
 	else if( result == 0 )
 	{
-		if( libfvalue_value_initialize(
+		if( libfvalue_value_type_initialize(
 		     &value,
 		     LIBFVALUE_VALUE_TYPE_UNSIGNED_INTEGER_64BIT,
 		     error ) != 1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
 			 "%s: unable to create value.",
 			 function );
 
@@ -303,10 +302,10 @@ int libsmraw_handle_set_bytes_per_sector(
 		     LIBFVALUE_VALUE_FLAG_IDENTIFIER_MANAGED,
 		     error ) != 1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
 			 "%s: unable to set identifier in value.",
 			 function );
 
@@ -321,10 +320,10 @@ int libsmraw_handle_set_bytes_per_sector(
 		     value,
 		     error ) != 1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
 			 "%s: unable to set value: %s in media values table.",
 			 function,
 			 identifier );
@@ -342,10 +341,10 @@ int libsmraw_handle_set_bytes_per_sector(
 	     (uint64_t) bytes_per_sector,
 	     error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_COPY_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
 		 "%s: unable to copy value from a 64-bit value.",
 		 function );
 
@@ -360,7 +359,7 @@ int libsmraw_handle_set_bytes_per_sector(
 int libsmraw_handle_get_media_type(
      libsmraw_handle_t *handle,
      uint8_t *media_type,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
 	libfvalue_value_t *value                    = NULL;
@@ -369,15 +368,15 @@ int libsmraw_handle_get_media_type(
 	const char *identifier                      = "media_type";
 	size_t identifier_size                      = 10;
 	size_t value_data_size                      = 0;
-	uint8_t value_byte_order                    = 0;
+	int encoding                                = 0;
 	int result                                  = 0;
 
 	if( handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid handle.",
 		 function );
 
@@ -387,10 +386,10 @@ int libsmraw_handle_get_media_type(
 
 	if( internal_handle->file_io_pool == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
 		 "%s: invalid handle - missing file io pool.",
 		 function );
 
@@ -398,10 +397,10 @@ int libsmraw_handle_get_media_type(
 	}
 	if( media_type == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid media type.",
 		 function );
 
@@ -419,10 +418,10 @@ int libsmraw_handle_get_media_type(
 
 	if( result == -1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 		 "%s: unable to retrieve value: %s from media values table.",
 		 function,
 		 identifier );
@@ -435,13 +434,13 @@ int libsmraw_handle_get_media_type(
 		     value,
 		     &value_data,
 		     &value_data_size,
-		     &value_byte_order,
+		     &encoding,
 		     error ) != 1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 			 "%s: unable to retrieve value data.",
 			 function );
 
@@ -449,10 +448,10 @@ int libsmraw_handle_get_media_type(
 		}
 		if( value_data == NULL )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
 			 "%s: missing value data.",
 			 function );
 
@@ -508,7 +507,7 @@ int libsmraw_handle_get_media_type(
 int libsmraw_handle_set_media_type(
      libsmraw_handle_t *handle,
      uint8_t media_type,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
 	libfvalue_value_t *value                    = NULL;
@@ -521,10 +520,10 @@ int libsmraw_handle_set_media_type(
 
 	if( handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid handle.",
 		 function );
 
@@ -535,10 +534,10 @@ int libsmraw_handle_set_media_type(
 	if( ( internal_handle->read_values_initialized != 0 )
 	 || ( internal_handle->write_values_initialized != 0 ) )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
 		 "%s: media values cannot be changed.",
 		 function );
 
@@ -571,10 +570,10 @@ int libsmraw_handle_set_media_type(
 			break;
 
 		default:
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-			 LIBERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
+			 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+			 LIBCERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
 			 "%s: unsupported media type: 0x%02x.",
 			 function,
 			 media_type );
@@ -591,10 +590,10 @@ int libsmraw_handle_set_media_type(
 
 	if( result == -1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 		 "%s: unable to retrieve value: %s from media values table.",
 		 function,
 		 identifier );
@@ -603,15 +602,15 @@ int libsmraw_handle_set_media_type(
 	}
 	else if( result == 0 )
 	{
-		if( libfvalue_value_initialize(
+		if( libfvalue_value_type_initialize(
 		     &value,
 		     LIBFVALUE_VALUE_TYPE_STRING_UTF8,
 		     error ) != 1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
 			 "%s: unable to create value.",
 			 function );
 
@@ -624,10 +623,10 @@ int libsmraw_handle_set_media_type(
 		     LIBFVALUE_VALUE_FLAG_IDENTIFIER_MANAGED,
 		     error ) != 1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
 			 "%s: unable to set identifier in value.",
 			 function );
 
@@ -642,10 +641,10 @@ int libsmraw_handle_set_media_type(
 		     value,
 		     error ) != 1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
 			 "%s: unable to set value: %s in media values table.",
 			 function,
 			 identifier );
@@ -664,10 +663,10 @@ int libsmraw_handle_set_media_type(
 	     value_string_length,
 	     error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_COPY_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
 		 "%s: unable to copy value from an UTF-8 string.",
 		 function );
 
@@ -682,7 +681,7 @@ int libsmraw_handle_set_media_type(
 int libsmraw_handle_get_media_flags(
      libsmraw_handle_t *handle,
      uint8_t *media_flags,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
 	libfvalue_value_t *value                    = NULL;
@@ -691,15 +690,15 @@ int libsmraw_handle_get_media_flags(
 	const char *identifier                      = "media_flags";
 	size_t identifier_size                      = 11;
 	size_t value_data_size                      = 0;
-	uint8_t value_byte_order                    = 0;
+	int encoding                                = 0;
 	int result                                  = 0;
 
 	if( handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid handle.",
 		 function );
 
@@ -709,10 +708,10 @@ int libsmraw_handle_get_media_flags(
 
 	if( internal_handle->file_io_pool == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
 		 "%s: invalid handle - missing file io pool.",
 		 function );
 
@@ -720,10 +719,10 @@ int libsmraw_handle_get_media_flags(
 	}
 	if( media_flags == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid media flags.",
 		 function );
 
@@ -739,10 +738,10 @@ int libsmraw_handle_get_media_flags(
 
 	if( result == -1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 		 "%s: unable to retrieve value: %s from media values table.",
 		 function,
 		 identifier );
@@ -755,13 +754,13 @@ int libsmraw_handle_get_media_flags(
 		     value,
 		     &value_data,
 		     &value_data_size,
-		     &value_byte_order,
+		     &encoding,
 		     error ) != 1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 			 "%s: unable to retrieve value data.",
 			 function );
 
@@ -769,10 +768,10 @@ int libsmraw_handle_get_media_flags(
 		}
 		if( value_data == NULL )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
 			 "%s: missing value data.",
 			 function );
 
@@ -808,7 +807,7 @@ int libsmraw_handle_get_media_flags(
 int libsmraw_handle_set_media_flags(
      libsmraw_handle_t *handle,
      uint8_t media_flags,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
 	libfvalue_value_t *value                    = NULL;
@@ -821,10 +820,10 @@ int libsmraw_handle_set_media_flags(
 
 	if( handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid handle.",
 		 function );
 
@@ -835,10 +834,10 @@ int libsmraw_handle_set_media_flags(
 	if( ( internal_handle->read_values_initialized != 0 )
 	 || ( internal_handle->write_values_initialized != 0 ) )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
 		 "%s: media size cannot be changed.",
 		 function );
 
@@ -846,10 +845,10 @@ int libsmraw_handle_set_media_flags(
 	}
 	if( ( media_flags & ~( LIBSMRAW_MEDIA_FLAG_PHYSICAL ) ) != 0 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
 		 "%s: unsupported media flags: 0x%02x.",
 		 function,
 		 media_flags );
@@ -876,10 +875,10 @@ int libsmraw_handle_set_media_flags(
 
 	if( result == -1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 		 "%s: unable to retrieve value: %s from media values table.",
 		 function,
 		 identifier );
@@ -888,15 +887,15 @@ int libsmraw_handle_set_media_flags(
 	}
 	else if( result == 0 )
 	{
-		if( libfvalue_value_initialize(
+		if( libfvalue_value_type_initialize(
 		     &value,
 		     LIBFVALUE_VALUE_TYPE_STRING_UTF8,
 		     error ) != 1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
 			 "%s: unable to create value.",
 			 function );
 
@@ -909,10 +908,10 @@ int libsmraw_handle_set_media_flags(
 		     LIBFVALUE_VALUE_FLAG_IDENTIFIER_MANAGED,
 		     error ) != 1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
 			 "%s: unable to set identifier in value.",
 			 function );
 
@@ -927,10 +926,10 @@ int libsmraw_handle_set_media_flags(
 		     value,
 		     error ) != 1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
 			 "%s: unable to set value: %s in media values table.",
 			 function,
 			 identifier );
@@ -949,10 +948,10 @@ int libsmraw_handle_set_media_flags(
 	     value_string_length,
 	     error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_COPY_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
 		 "%s: unable to copy value from an UTF-8 string.",
 		 function );
 
@@ -967,17 +966,17 @@ int libsmraw_handle_set_media_flags(
 int libsmraw_handle_get_number_of_information_values(
      libsmraw_handle_t *handle,
      int *number_of_information_values,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
 	static char *function                       = "libsmraw_handle_get_number_of_information_values";
 
 	if( handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid handle.",
 		 function );
 
@@ -987,10 +986,10 @@ int libsmraw_handle_get_number_of_information_values(
 
 	if( internal_handle->file_io_pool == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
 		 "%s: invalid handle - missing file io pool.",
 		 function );
 
@@ -1001,10 +1000,10 @@ int libsmraw_handle_get_number_of_information_values(
 	     number_of_information_values,
 	     error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 		 "%s: unable to retrieve number of information values.",
 		 function );
 
@@ -1021,7 +1020,7 @@ int libsmraw_handle_get_information_value_identifier_size(
      libsmraw_handle_t *handle,
      int information_value_index,
      size_t *identifier_size,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
 	libfvalue_value_t *value                    = NULL;
@@ -1030,10 +1029,10 @@ int libsmraw_handle_get_information_value_identifier_size(
 
 	if( handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid handle.",
 		 function );
 
@@ -1043,10 +1042,10 @@ int libsmraw_handle_get_information_value_identifier_size(
 
 	if( internal_handle->file_io_pool == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
 		 "%s: invalid handle - missing file io pool.",
 		 function );
 
@@ -1058,10 +1057,10 @@ int libsmraw_handle_get_information_value_identifier_size(
 	     &value,
 	     error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 		 "%s: unable to retrieve value: %d from information values table.",
 		 function,
 		 information_value_index );
@@ -1074,10 +1073,10 @@ int libsmraw_handle_get_information_value_identifier_size(
 	     identifier_size,
 	     error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 		 "%s: unable to retrieve value identifier: %d.",
 		 function,
 		 information_value_index );
@@ -1086,10 +1085,10 @@ int libsmraw_handle_get_information_value_identifier_size(
 	}
 	if( value_identifier == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
 		 "%s: missing value identifier: %d.",
 		 function,
 		 information_value_index );
@@ -1108,7 +1107,7 @@ int libsmraw_handle_get_information_value_identifier(
      int information_value_index,
      uint8_t *identifier,
      size_t identifier_size,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
 	libfvalue_value_t *value                    = NULL;
@@ -1118,10 +1117,10 @@ int libsmraw_handle_get_information_value_identifier(
 
 	if( handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid handle.",
 		 function );
 
@@ -1131,10 +1130,10 @@ int libsmraw_handle_get_information_value_identifier(
 
 	if( internal_handle->file_io_pool == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
 		 "%s: invalid handle - missing file io pool.",
 		 function );
 
@@ -1146,10 +1145,10 @@ int libsmraw_handle_get_information_value_identifier(
 	     &value,
 	     error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 		 "%s: unable to retrieve value: %d from information values table.",
 		 function,
 		 information_value_index );
@@ -1162,10 +1161,10 @@ int libsmraw_handle_get_information_value_identifier(
 	     &value_identifier_size,
 	     error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 		 "%s: unable to retrieve value identifier: %d.",
 		 function,
 		 information_value_index );
@@ -1174,10 +1173,10 @@ int libsmraw_handle_get_information_value_identifier(
 	}
 	if( value_identifier == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
 		 "%s: missing value identifier: %d.",
 		 function,
 		 information_value_index );
@@ -1186,10 +1185,10 @@ int libsmraw_handle_get_information_value_identifier(
 	}
 	if( identifier_size < value_identifier_size )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_VALUE_TOO_SMALL,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_TOO_SMALL,
 		 "%s: identifier too small.",
 		 function );
 
@@ -1200,10 +1199,10 @@ int libsmraw_handle_get_information_value_identifier(
 	     value_identifier,
 	     value_identifier_size ) == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_MEMORY,
-		 LIBERROR_MEMORY_ERROR_COPY_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_MEMORY,
+		 LIBCERROR_MEMORY_ERROR_COPY_FAILED,
 		 "%s: unable to copy identifier.",
 		 function );
 
@@ -1221,7 +1220,7 @@ int libsmraw_handle_get_utf8_information_value_size(
      const uint8_t *identifier,
      size_t identifier_length,
      size_t *utf8_string_size,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
 	libfvalue_value_t *value                    = NULL;
@@ -1230,10 +1229,10 @@ int libsmraw_handle_get_utf8_information_value_size(
 
 	if( handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid handle.",
 		 function );
 
@@ -1243,10 +1242,10 @@ int libsmraw_handle_get_utf8_information_value_size(
 
 	if( internal_handle->file_io_pool == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
 		 "%s: invalid handle - missing file io pool.",
 		 function );
 
@@ -1254,10 +1253,10 @@ int libsmraw_handle_get_utf8_information_value_size(
 	}
 	if( identifier == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid identifier.",
 		 function );
 
@@ -1273,10 +1272,10 @@ int libsmraw_handle_get_utf8_information_value_size(
 
 	if( result == -1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 		 "%s: unable to retrieve value: %s from information values table.",
 		 function,
 		 (char *) identifier );
@@ -1291,10 +1290,10 @@ int libsmraw_handle_get_utf8_information_value_size(
 		     utf8_string_size,
 		     error ) != 1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 			 "%s: unable to retrieve value: %s UTF-8 string size.",
 			 function,
 			 (char *) identifier );
@@ -1315,7 +1314,7 @@ int libsmraw_handle_get_utf8_information_value(
      size_t identifier_length,
      uint8_t *utf8_string,
      size_t utf8_string_size,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
 	libfvalue_value_t *value                    = NULL;
@@ -1324,10 +1323,10 @@ int libsmraw_handle_get_utf8_information_value(
 
 	if( handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid handle.",
 		 function );
 
@@ -1337,10 +1336,10 @@ int libsmraw_handle_get_utf8_information_value(
 
 	if( internal_handle->file_io_pool == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
 		 "%s: invalid handle - missing file io pool.",
 		 function );
 
@@ -1348,10 +1347,10 @@ int libsmraw_handle_get_utf8_information_value(
 	}
 	if( identifier == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid identifier.",
 		 function );
 
@@ -1367,10 +1366,10 @@ int libsmraw_handle_get_utf8_information_value(
 
 	if( result == -1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 		 "%s: unable to retrieve value: %s from information values table.",
 		 function,
 		 (char *) identifier );
@@ -1386,10 +1385,10 @@ int libsmraw_handle_get_utf8_information_value(
 		     utf8_string_size,
 		     error ) != 1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_COPY_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
 			 "%s: unable to copy value: %s to an UTF-8 string.",
 			 function,
 			 (char *) identifier );
@@ -1409,7 +1408,7 @@ int libsmraw_handle_set_utf8_information_value(
      size_t identifier_length,
      const uint8_t *utf8_string,
      size_t utf8_string_length,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
 	libfvalue_value_t *value                    = NULL;
@@ -1418,10 +1417,10 @@ int libsmraw_handle_set_utf8_information_value(
 
 	if( handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid handle.",
 		 function );
 
@@ -1431,10 +1430,10 @@ int libsmraw_handle_set_utf8_information_value(
 
 	if( internal_handle->read_values_initialized != 0 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
 		 "%s: information values cannot be changed.",
 		 function );
 
@@ -1442,10 +1441,10 @@ int libsmraw_handle_set_utf8_information_value(
 	}
 	if( identifier == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid identifier.",
 		 function );
 
@@ -1461,10 +1460,10 @@ int libsmraw_handle_set_utf8_information_value(
 
 	if( result == -1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 		 "%s: unable to retrieve value: %s from information values table.",
 		 function,
 		 (char *) identifier );
@@ -1473,15 +1472,15 @@ int libsmraw_handle_set_utf8_information_value(
 	}
 	else if( result == 0 )
 	{
-		if( libfvalue_value_initialize(
+		if( libfvalue_value_type_initialize(
 		     &value,
 		     LIBFVALUE_VALUE_TYPE_STRING_UTF8,
 		     error ) != 1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
 			 "%s: unable to create value.",
 			 function );
 
@@ -1494,10 +1493,10 @@ int libsmraw_handle_set_utf8_information_value(
 		     LIBFVALUE_VALUE_FLAG_IDENTIFIER_MANAGED,
 		     error ) != 1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
 			 "%s: unable to set identifier in value.",
 			 function );
 
@@ -1512,10 +1511,10 @@ int libsmraw_handle_set_utf8_information_value(
 		     value,
 		     error ) != 1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
 			 "%s: unable to set value: %s in information values table.",
 			 function,
 			 (char *) identifier );
@@ -1534,10 +1533,10 @@ int libsmraw_handle_set_utf8_information_value(
 	     utf8_string_length + 1,
 	     error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_COPY_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
 		 "%s: unable to copy value: %s from an UTF-8 string.",
 		 function,
 		 (char *) identifier );
@@ -1556,7 +1555,7 @@ int libsmraw_handle_get_utf16_information_value_size(
      const uint8_t *identifier,
      size_t identifier_length,
      size_t *utf16_string_size,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
 	libfvalue_value_t *value                    = NULL;
@@ -1565,10 +1564,10 @@ int libsmraw_handle_get_utf16_information_value_size(
 
 	if( handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid handle.",
 		 function );
 
@@ -1578,10 +1577,10 @@ int libsmraw_handle_get_utf16_information_value_size(
 
 	if( internal_handle->file_io_pool == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
 		 "%s: invalid handle - missing file io pool.",
 		 function );
 
@@ -1589,10 +1588,10 @@ int libsmraw_handle_get_utf16_information_value_size(
 	}
 	if( identifier == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid identifier.",
 		 function );
 
@@ -1608,10 +1607,10 @@ int libsmraw_handle_get_utf16_information_value_size(
 
 	if( result == -1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 		 "%s: unable to retrieve value: %s from information values table.",
 		 function,
 		 (char *) identifier );
@@ -1626,10 +1625,10 @@ int libsmraw_handle_get_utf16_information_value_size(
 		     utf16_string_size,
 		     error ) != 1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 			 "%s: unable to retrieve value: %s UTF-16 string size.",
 			 function,
 			 (char *) identifier );
@@ -1650,7 +1649,7 @@ int libsmraw_handle_get_utf16_information_value(
      size_t identifier_length,
      uint16_t *utf16_string,
      size_t utf16_string_size,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
 	libfvalue_value_t *value                    = NULL;
@@ -1659,10 +1658,10 @@ int libsmraw_handle_get_utf16_information_value(
 
 	if( handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid handle.",
 		 function );
 
@@ -1672,10 +1671,10 @@ int libsmraw_handle_get_utf16_information_value(
 
 	if( internal_handle->file_io_pool == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
 		 "%s: invalid handle - missing file io pool.",
 		 function );
 
@@ -1683,10 +1682,10 @@ int libsmraw_handle_get_utf16_information_value(
 	}
 	if( identifier == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid identifier.",
 		 function );
 
@@ -1702,10 +1701,10 @@ int libsmraw_handle_get_utf16_information_value(
 
 	if( result == -1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 		 "%s: unable to retrieve value: %s from information values table.",
 		 function,
 		 (char *) identifier );
@@ -1721,10 +1720,10 @@ int libsmraw_handle_get_utf16_information_value(
 		     utf16_string_size,
 		     error ) != 1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_COPY_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
 			 "%s: unable to copy value: %s to an UTF-16 string.",
 			 function,
 			 (char *) identifier );
@@ -1744,7 +1743,7 @@ int libsmraw_handle_set_utf16_information_value(
      size_t identifier_length,
      const uint16_t *utf16_string,
      size_t utf16_string_length,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
 	libfvalue_value_t *value                    = NULL;
@@ -1753,10 +1752,10 @@ int libsmraw_handle_set_utf16_information_value(
 
 	if( handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid handle.",
 		 function );
 
@@ -1766,10 +1765,10 @@ int libsmraw_handle_set_utf16_information_value(
 
 	if( internal_handle->read_values_initialized != 0 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
 		 "%s: information values cannot be changed.",
 		 function );
 
@@ -1777,10 +1776,10 @@ int libsmraw_handle_set_utf16_information_value(
 	}
 	if( identifier == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid identifier.",
 		 function );
 
@@ -1796,10 +1795,10 @@ int libsmraw_handle_set_utf16_information_value(
 
 	if( result == -1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 		 "%s: unable to retrieve value: %s from information values table.",
 		 function,
 		 (char *) identifier );
@@ -1808,15 +1807,15 @@ int libsmraw_handle_set_utf16_information_value(
 	}
 	else if( result == 0 )
 	{
-		if( libfvalue_value_initialize(
+		if( libfvalue_value_type_initialize(
 		     &value,
 		     LIBFVALUE_VALUE_TYPE_STRING_UTF8,
 		     error ) != 1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
 			 "%s: unable to create value.",
 			 function );
 
@@ -1829,10 +1828,10 @@ int libsmraw_handle_set_utf16_information_value(
 		     LIBFVALUE_VALUE_FLAG_IDENTIFIER_MANAGED,
 		     error ) != 1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
 			 "%s: unable to set identifier in value.",
 			 function );
 
@@ -1847,10 +1846,10 @@ int libsmraw_handle_set_utf16_information_value(
 		     value,
 		     error ) != 1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
 			 "%s: unable to set value: %s in information values table.",
 			 function,
 			 (char *) identifier );
@@ -1869,10 +1868,10 @@ int libsmraw_handle_set_utf16_information_value(
 	     utf16_string_length + 1,
 	     error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_COPY_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
 		 "%s: unable to copy value: %s from an UTF-16 string.",
 		 function,
 		 (char *) identifier );
@@ -1888,17 +1887,17 @@ int libsmraw_handle_set_utf16_information_value(
 int libsmraw_handle_get_number_of_integrity_hash_values(
      libsmraw_handle_t *handle,
      int *number_of_integrity_hash_values,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
 	static char *function                       = "libsmraw_handle_get_number_of_integrity_hash_values";
 
 	if( handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid handle.",
 		 function );
 
@@ -1908,10 +1907,10 @@ int libsmraw_handle_get_number_of_integrity_hash_values(
 
 	if( internal_handle->file_io_pool == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
 		 "%s: invalid handle - missing file io pool.",
 		 function );
 
@@ -1922,10 +1921,10 @@ int libsmraw_handle_get_number_of_integrity_hash_values(
 	     number_of_integrity_hash_values,
 	     error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 		 "%s: unable to retrieve number of integrity hash values.",
 		 function );
 
@@ -1942,7 +1941,7 @@ int libsmraw_handle_get_integrity_hash_value_identifier_size(
      libsmraw_handle_t *handle,
      int integrity_hash_value_index,
      size_t *identifier_size,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
 	libfvalue_value_t *value                    = NULL;
@@ -1951,10 +1950,10 @@ int libsmraw_handle_get_integrity_hash_value_identifier_size(
 
 	if( handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid handle.",
 		 function );
 
@@ -1964,10 +1963,10 @@ int libsmraw_handle_get_integrity_hash_value_identifier_size(
 
 	if( internal_handle->file_io_pool == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
 		 "%s: invalid handle - missing file io pool.",
 		 function );
 
@@ -1979,10 +1978,10 @@ int libsmraw_handle_get_integrity_hash_value_identifier_size(
 	     &value,
 	     error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 		 "%s: unable to retrieve value: %d from integrity hash values table.",
 		 function,
 		 integrity_hash_value_index );
@@ -1995,10 +1994,10 @@ int libsmraw_handle_get_integrity_hash_value_identifier_size(
 	     identifier_size,
 	     error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 		 "%s: unable to retrieve value identifier: %d.",
 		 function,
 		 integrity_hash_value_index );
@@ -2007,10 +2006,10 @@ int libsmraw_handle_get_integrity_hash_value_identifier_size(
 	}
 	if( value_identifier == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
 		 "%s: missing value identifier: %d.",
 		 function,
 		 integrity_hash_value_index );
@@ -2029,7 +2028,7 @@ int libsmraw_handle_get_integrity_hash_value_identifier(
      int integrity_hash_value_index,
      uint8_t *identifier,
      size_t identifier_size,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
 	libfvalue_value_t *value                    = NULL;
@@ -2039,10 +2038,10 @@ int libsmraw_handle_get_integrity_hash_value_identifier(
 
 	if( handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid handle.",
 		 function );
 
@@ -2052,10 +2051,10 @@ int libsmraw_handle_get_integrity_hash_value_identifier(
 
 	if( internal_handle->file_io_pool == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
 		 "%s: invalid handle - missing file io pool.",
 		 function );
 
@@ -2067,10 +2066,10 @@ int libsmraw_handle_get_integrity_hash_value_identifier(
 	     &value,
 	     error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 		 "%s: unable to retrieve value: %d from integrity hash values table.",
 		 function,
 		 integrity_hash_value_index );
@@ -2083,10 +2082,10 @@ int libsmraw_handle_get_integrity_hash_value_identifier(
 	     &value_identifier_size,
 	     error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 		 "%s: unable to retrieve value identifier: %d.",
 		 function,
 		 integrity_hash_value_index );
@@ -2095,10 +2094,10 @@ int libsmraw_handle_get_integrity_hash_value_identifier(
 	}
 	if( value_identifier == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
 		 "%s: missing value identifier: %d.",
 		 function,
 		 integrity_hash_value_index );
@@ -2107,10 +2106,10 @@ int libsmraw_handle_get_integrity_hash_value_identifier(
 	}
 	if( identifier_size < value_identifier_size )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_VALUE_TOO_SMALL,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_TOO_SMALL,
 		 "%s: identifier too small.",
 		 function );
 
@@ -2121,10 +2120,10 @@ int libsmraw_handle_get_integrity_hash_value_identifier(
 	     value_identifier,
 	     value_identifier_size ) == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_MEMORY,
-		 LIBERROR_MEMORY_ERROR_COPY_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_MEMORY,
+		 LIBCERROR_MEMORY_ERROR_COPY_FAILED,
 		 "%s: unable to copy identifier.",
 		 function );
 
@@ -2142,7 +2141,7 @@ int libsmraw_handle_get_utf8_integrity_hash_value_size(
      const uint8_t *identifier,
      size_t identifier_length,
      size_t *utf8_string_size,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
 	libfvalue_value_t *value                    = NULL;
@@ -2151,10 +2150,10 @@ int libsmraw_handle_get_utf8_integrity_hash_value_size(
 
 	if( handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid handle.",
 		 function );
 
@@ -2164,10 +2163,10 @@ int libsmraw_handle_get_utf8_integrity_hash_value_size(
 
 	if( internal_handle->file_io_pool == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
 		 "%s: invalid handle - missing file io pool.",
 		 function );
 
@@ -2175,10 +2174,10 @@ int libsmraw_handle_get_utf8_integrity_hash_value_size(
 	}
 	if( identifier == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid identifier.",
 		 function );
 
@@ -2194,10 +2193,10 @@ int libsmraw_handle_get_utf8_integrity_hash_value_size(
 
 	if( result == -1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 		 "%s: unable to retrieve value: %s from integrity hash values table.",
 		 function,
 		 (char *) identifier );
@@ -2212,10 +2211,10 @@ int libsmraw_handle_get_utf8_integrity_hash_value_size(
 		     utf8_string_size,
 		     error ) != 1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 			 "%s: unable to retrieve value: %s UTF-8 string size.",
 			 function,
 			 (char *) identifier );
@@ -2236,7 +2235,7 @@ int libsmraw_handle_get_utf8_integrity_hash_value(
      size_t identifier_length,
      uint8_t *utf8_string,
      size_t utf8_string_size,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
 	libfvalue_value_t *value                    = NULL;
@@ -2245,10 +2244,10 @@ int libsmraw_handle_get_utf8_integrity_hash_value(
 
 	if( handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid handle.",
 		 function );
 
@@ -2258,10 +2257,10 @@ int libsmraw_handle_get_utf8_integrity_hash_value(
 
 	if( internal_handle->file_io_pool == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
 		 "%s: invalid handle - missing file io pool.",
 		 function );
 
@@ -2269,10 +2268,10 @@ int libsmraw_handle_get_utf8_integrity_hash_value(
 	}
 	if( identifier == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid identifier.",
 		 function );
 
@@ -2288,10 +2287,10 @@ int libsmraw_handle_get_utf8_integrity_hash_value(
 
 	if( result == -1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 		 "%s: unable to retrieve value: %s from integrity hash values table.",
 		 function,
 		 (char *) identifier );
@@ -2307,10 +2306,10 @@ int libsmraw_handle_get_utf8_integrity_hash_value(
 		     utf8_string_size,
 		     error ) != 1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_COPY_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
 			 "%s: unable to copy value: %s to an UTF-8 string.",
 			 function,
 			 (char *) identifier );
@@ -2330,7 +2329,7 @@ int libsmraw_handle_set_utf8_integrity_hash_value(
      size_t identifier_length,
      const uint8_t *utf8_string,
      size_t utf8_string_length,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
 	libfvalue_value_t *value                    = NULL;
@@ -2339,10 +2338,10 @@ int libsmraw_handle_set_utf8_integrity_hash_value(
 
 	if( handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid handle.",
 		 function );
 
@@ -2352,10 +2351,10 @@ int libsmraw_handle_set_utf8_integrity_hash_value(
 
 	if( internal_handle->read_values_initialized != 0 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
 		 "%s: integrity hash values cannot be changed.",
 		 function );
 
@@ -2363,10 +2362,10 @@ int libsmraw_handle_set_utf8_integrity_hash_value(
 	}
 	if( identifier == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid identifier.",
 		 function );
 
@@ -2382,10 +2381,10 @@ int libsmraw_handle_set_utf8_integrity_hash_value(
 
 	if( result == -1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 		 "%s: unable to retrieve value: %s from integrity hash values table.",
 		 function,
 		 (char *) identifier );
@@ -2394,15 +2393,15 @@ int libsmraw_handle_set_utf8_integrity_hash_value(
 	}
 	else if( result == 0 )
 	{
-		if( libfvalue_value_initialize(
+		if( libfvalue_value_type_initialize(
 		     &value,
 		     LIBFVALUE_VALUE_TYPE_STRING_UTF8,
 		     error ) != 1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
 			 "%s: unable to create value.",
 			 function );
 
@@ -2415,10 +2414,10 @@ int libsmraw_handle_set_utf8_integrity_hash_value(
 		     LIBFVALUE_VALUE_FLAG_IDENTIFIER_MANAGED,
 		     error ) != 1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
 			 "%s: unable to set identifier in value.",
 			 function );
 
@@ -2433,10 +2432,10 @@ int libsmraw_handle_set_utf8_integrity_hash_value(
 		     value,
 		     error ) != 1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
 			 "%s: unable to set value: %s in integrity hash values table.",
 			 function,
 			 (char *) identifier );
@@ -2455,10 +2454,10 @@ int libsmraw_handle_set_utf8_integrity_hash_value(
 	     utf8_string_length + 1,
 	     error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_COPY_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
 		 "%s: unable to copy value: %s from an UTF-8 string.",
 		 function,
 		 (char *) identifier );
@@ -2477,7 +2476,7 @@ int libsmraw_handle_get_utf16_integrity_hash_value_size(
      const uint8_t *identifier,
      size_t identifier_length,
      size_t *utf16_string_size,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
 	libfvalue_value_t *value                    = NULL;
@@ -2486,10 +2485,10 @@ int libsmraw_handle_get_utf16_integrity_hash_value_size(
 
 	if( handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid handle.",
 		 function );
 
@@ -2499,10 +2498,10 @@ int libsmraw_handle_get_utf16_integrity_hash_value_size(
 
 	if( internal_handle->file_io_pool == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
 		 "%s: invalid handle - missing file io pool.",
 		 function );
 
@@ -2510,10 +2509,10 @@ int libsmraw_handle_get_utf16_integrity_hash_value_size(
 	}
 	if( identifier == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid identifier.",
 		 function );
 
@@ -2529,10 +2528,10 @@ int libsmraw_handle_get_utf16_integrity_hash_value_size(
 
 	if( result == -1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 		 "%s: unable to retrieve value: %s from integrity hash values table.",
 		 function,
 		 (char *) identifier );
@@ -2547,10 +2546,10 @@ int libsmraw_handle_get_utf16_integrity_hash_value_size(
 		     utf16_string_size,
 		     error ) != 1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 			 "%s: unable to retrieve value: %s UTF-16 string size.",
 			 function,
 			 (char *) identifier );
@@ -2571,7 +2570,7 @@ int libsmraw_handle_get_utf16_integrity_hash_value(
      size_t identifier_length,
      uint16_t *utf16_string,
      size_t utf16_string_size,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
 	libfvalue_value_t *value                    = NULL;
@@ -2580,10 +2579,10 @@ int libsmraw_handle_get_utf16_integrity_hash_value(
 
 	if( handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid handle.",
 		 function );
 
@@ -2593,10 +2592,10 @@ int libsmraw_handle_get_utf16_integrity_hash_value(
 
 	if( internal_handle->file_io_pool == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
 		 "%s: invalid handle - missing file io pool.",
 		 function );
 
@@ -2604,10 +2603,10 @@ int libsmraw_handle_get_utf16_integrity_hash_value(
 	}
 	if( identifier == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid identifier.",
 		 function );
 
@@ -2623,10 +2622,10 @@ int libsmraw_handle_get_utf16_integrity_hash_value(
 
 	if( result == -1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 		 "%s: unable to retrieve value: %s from integrity hash values table.",
 		 function,
 		 (char *) identifier );
@@ -2642,10 +2641,10 @@ int libsmraw_handle_get_utf16_integrity_hash_value(
 		     utf16_string_size,
 		     error ) != 1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_COPY_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
 			 "%s: unable to copy value: %s to an UTF-16 string.",
 			 function,
 			 (char *) identifier );
@@ -2665,7 +2664,7 @@ int libsmraw_handle_set_utf16_integrity_hash_value(
      size_t identifier_length,
      const uint16_t *utf16_string,
      size_t utf16_string_length,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
 	libfvalue_value_t *value                    = NULL;
@@ -2674,10 +2673,10 @@ int libsmraw_handle_set_utf16_integrity_hash_value(
 
 	if( handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid handle.",
 		 function );
 
@@ -2687,10 +2686,10 @@ int libsmraw_handle_set_utf16_integrity_hash_value(
 
 	if( internal_handle->read_values_initialized != 0 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
 		 "%s: integrity hash values cannot be changed.",
 		 function );
 
@@ -2698,10 +2697,10 @@ int libsmraw_handle_set_utf16_integrity_hash_value(
 	}
 	if( identifier == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid identifier.",
 		 function );
 
@@ -2717,10 +2716,10 @@ int libsmraw_handle_set_utf16_integrity_hash_value(
 
 	if( result == -1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 		 "%s: unable to retrieve value: %s from integrity hash values table.",
 		 function,
 		 (char *) identifier );
@@ -2729,15 +2728,15 @@ int libsmraw_handle_set_utf16_integrity_hash_value(
 	}
 	else if( result == 0 )
 	{
-		if( libfvalue_value_initialize(
+		if( libfvalue_value_type_initialize(
 		     &value,
 		     LIBFVALUE_VALUE_TYPE_STRING_UTF8,
 		     error ) != 1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
 			 "%s: unable to create value.",
 			 function );
 
@@ -2750,10 +2749,10 @@ int libsmraw_handle_set_utf16_integrity_hash_value(
 		     LIBFVALUE_VALUE_FLAG_IDENTIFIER_MANAGED,
 		     error ) != 1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
 			 "%s: unable to set identifier in value.",
 			 function );
 
@@ -2768,10 +2767,10 @@ int libsmraw_handle_set_utf16_integrity_hash_value(
 		     value,
 		     error ) != 1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
 			 "%s: unable to set value: %s in integrity hash values table.",
 			 function,
 			 (char *) identifier );
@@ -2790,10 +2789,10 @@ int libsmraw_handle_set_utf16_integrity_hash_value(
 	     utf16_string_length + 1,
 	     error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_COPY_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
 		 "%s: unable to copy value: %s from an UTF-16 string.",
 		 function,
 		 (char *) identifier );

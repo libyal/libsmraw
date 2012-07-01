@@ -1,6 +1,7 @@
 EXTRA_DIST = \
+	smraw.net.cpp smraw.net.h \
 	smraw.net_handle.cpp smraw.net_handle.h \
-	smraw.net.cpp smraw.net.h
+	smraw.net_libcstring.h
 
 MAINTAINERCLEANFILES = \
 	Makefile.in

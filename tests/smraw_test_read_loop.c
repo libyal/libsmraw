@@ -1,7 +1,7 @@
 /*
  * Storage media (SM) RAW library read testing program
  *
- * Copyright (c) 2010-2012, Joachim Metz <jbmetz@users.sourceforge.net>
+ * Copyright (c) 2010-2012, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -20,17 +20,15 @@
  */
 
 #include <common.h>
-
-#include <libcstring.h>
+#include <file_stream.h>
 
 #if defined( HAVE_STDLIB_H ) || defined( WINAPI )
 #include <stdlib.h>
 #endif
 
-#include <stdio.h>
-
 #include <signal.h>
 
+#include "smraw_test_libcstring.h"
 #include "smraw_test_libsmraw.h"
 
 #define SMRAW_TEST_READ_BUFFER_SIZE	4096

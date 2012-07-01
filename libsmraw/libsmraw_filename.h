@@ -1,7 +1,7 @@
 /*
  * Filename functions
  *
- * Copyright (c) 2010-2012, Joachim Metz <jbmetz@users.sourceforge.net>
+ * Copyright (c) 2010-2012, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -25,8 +25,8 @@
 #include <common.h>
 #include <types.h>
 
-#include <libcstring.h>
-#include <liberror.h>
+#include "libsmraw_libcerror.h"
+#include "libsmraw_libcstring.h"
 
 #if defined( __cplusplus )
 extern "C" {
@@ -39,7 +39,7 @@ int libsmraw_filename_create(
      size_t basename_size,
      int total_number_of_segments,
      int current_file_io_pool_entry,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 #if defined( __cplusplus )
 }

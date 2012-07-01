@@ -1,7 +1,7 @@
 /*
  * Information file functions
  *
- * Copyright (c) 2010-2012, Joachim Metz <jbmetz@users.sourceforge.net>
+ * Copyright (c) 2010-2012, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -26,9 +26,8 @@
 #include <file_stream.h>
 #include <types.h>
 
-#include <libcstring.h>
-#include <liberror.h>
-
+#include "libsmraw_libcerror.h"
+#include "libsmraw_libcstring.h"
 #include "libsmraw_libfvalue.h"
 
 #if defined( __cplusplus )
@@ -54,40 +53,40 @@ struct libsmraw_information_file
 
 int libsmraw_information_file_initialize(
      libsmraw_information_file_t **information_file,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 int libsmraw_information_file_free(
      libsmraw_information_file_t **information_file,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 int libsmraw_information_file_set_name(
      libsmraw_information_file_t *information_file,
      const libcstring_system_character_t *name,
      size_t name_length,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 int libsmraw_information_file_open(
      libsmraw_information_file_t *information_file,
      const libcstring_system_character_t *mode,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 int libsmraw_information_file_close(
      libsmraw_information_file_t *information_file,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 int libsmraw_information_file_read_section(
      libsmraw_information_file_t *information_file,
      const uint8_t *section_identifier,
      size_t section_identifier_length,
      libfvalue_table_t *values_table,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 int libsmraw_information_file_write_section(
      libsmraw_information_file_t *information_file,
      const uint8_t *section_identifier,
      size_t section_identifier_length,
      libfvalue_table_t *values_table,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 #if defined( __cplusplus )
 }

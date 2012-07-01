@@ -1,7 +1,7 @@
 /*
  * Information file functions
  *
- * Copyright (c) 2010-2012, Joachim Metz <jbmetz@users.sourceforge.net>
+ * Copyright (c) 2010-2012, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -24,16 +24,9 @@
 #include <memory.h>
 #include <types.h>
 
-#include <libcstring.h>
-#include <liberror.h>
-
-#if defined( HAVE_ERRNO_H ) || defined( WINAPI )
-#include <errno.h>
-#endif
-
-#include <stdio.h>
-
 #include "libsmraw_information_file.h"
+#include "libsmraw_libcerror.h"
+#include "libsmraw_libcstring.h"
 #include "libsmraw_libfvalue.h"
 
 /* Creates the information file
@@ -41,16 +34,16 @@
  */
 int libsmraw_information_file_initialize(
      libsmraw_information_file_t **information_file,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	static char *function = "libsmraw_information_file_initialize";
 
 	if( information_file == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid information file.",
 		 function );
 
@@ -58,10 +51,10 @@ int libsmraw_information_file_initialize(
 	}
 	if( *information_file != NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
 		 "%s: invalid information file value already set.",
 		 function );
 
@@ -72,10 +65,10 @@ int libsmraw_information_file_initialize(
 
 	if( *information_file == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_MEMORY,
-		 LIBERROR_MEMORY_ERROR_INSUFFICIENT,
+		 LIBCERROR_ERROR_DOMAIN_MEMORY,
+		 LIBCERROR_MEMORY_ERROR_INSUFFICIENT,
 		 "%s: unable to create information file.",
 		 function );
 
@@ -86,10 +79,10 @@ int libsmraw_information_file_initialize(
 	     0,
 	     sizeof( libsmraw_information_file_t ) ) == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_MEMORY,
-		 LIBERROR_MEMORY_ERROR_SET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_MEMORY,
+		 LIBCERROR_MEMORY_ERROR_SET_FAILED,
 		 "%s: unable to clear information file.",
 		 function );
 
@@ -113,17 +106,17 @@ on_error:
  */
 int libsmraw_information_file_free(
      libsmraw_information_file_t **information_file,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	static char *function = "libsmraw_information_file_free";
 	int result            = 1;
 
 	if( information_file == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid information file.",
 		 function );
 
@@ -151,16 +144,16 @@ int libsmraw_information_file_set_name(
      libsmraw_information_file_t *information_file,
      const libcstring_system_character_t *name,
      size_t name_length,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	static char *function = "libsmraw_information_file_set_name";
 
 	if( information_file == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid information file.",
 		 function );
 
@@ -168,10 +161,10 @@ int libsmraw_information_file_set_name(
 	}
 	if( name == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid name.",
 		 function );
 
@@ -179,10 +172,10 @@ int libsmraw_information_file_set_name(
 	}
 	if( name_length > (size_t) SSIZE_MAX )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
 		 "%s: invalid name length value exceeds maximum.",
 		 function );
 
@@ -193,10 +186,10 @@ int libsmraw_information_file_set_name(
 
 	if( information_file->name == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_MEMORY,
-		 LIBERROR_MEMORY_ERROR_INSUFFICIENT,
+		 LIBCERROR_ERROR_DOMAIN_MEMORY,
+		 LIBCERROR_MEMORY_ERROR_INSUFFICIENT,
 		 "%s: unable to allocate name.",
 		 function );
 
@@ -207,10 +200,10 @@ int libsmraw_information_file_set_name(
 	     name,
 	     name_length ) == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_MEMORY,
-		 LIBERROR_MEMORY_ERROR_COPY_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_MEMORY,
+		 LIBCERROR_MEMORY_ERROR_COPY_FAILED,
 		 "%s: unable to set name.",
 		 function );
 
@@ -229,16 +222,16 @@ int libsmraw_information_file_set_name(
 int libsmraw_information_file_open(
      libsmraw_information_file_t *information_file,
      const libcstring_system_character_t *mode,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	static char *function = "libsmraw_information_file_open";
 
 	if( information_file == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid information file.",
 		 function );
 
@@ -246,10 +239,10 @@ int libsmraw_information_file_open(
 	}
 	if( information_file->name == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
 		 "%s: invalid information file - missing name.",
 		 function );
 
@@ -257,10 +250,10 @@ int libsmraw_information_file_open(
 	}
 	if( information_file->file_stream != NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
 		 "%s: invalid information file - file stream already set.",
 		 function );
 
@@ -268,10 +261,10 @@ int libsmraw_information_file_open(
 	}
 	if( mode == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid mode.",
 		 function );
 
@@ -289,10 +282,10 @@ int libsmraw_information_file_open(
 
 	if( information_file->file_stream == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_IO,
-		 LIBERROR_IO_ERROR_OPEN_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_IO,
+		 LIBCERROR_IO_ERROR_OPEN_FAILED,
 		 "%s: unable to open: %" PRIs_LIBCSTRING_SYSTEM ".",
 		 function,
 		 information_file->name );
@@ -307,16 +300,16 @@ int libsmraw_information_file_open(
  */
 int libsmraw_information_file_close(
      libsmraw_information_file_t *information_file,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	static char *function = "libsmraw_information_file_close";
 
 	if( information_file == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid information file.",
 		 function );
 
@@ -334,10 +327,10 @@ int libsmraw_information_file_close(
 		if( file_stream_close(
 		     information_file->file_stream ) != 0 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_IO,
-			 LIBERROR_IO_ERROR_CLOSE_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_IO,
+			 LIBCERROR_IO_ERROR_CLOSE_FAILED,
 			 "%s: unable to close file stream.",
 			 function );
 
@@ -356,7 +349,7 @@ int libsmraw_information_file_read_section(
      const uint8_t *section_identifier,
      size_t section_identifier_length,
      libfvalue_table_t *values_table,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	char input_string[ 128 ];
 
@@ -373,10 +366,10 @@ int libsmraw_information_file_read_section(
 
 	if( information_file == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid information file.",
 		 function );
 
@@ -384,10 +377,10 @@ int libsmraw_information_file_read_section(
 	}
 	if( information_file->file_stream == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
 		 "%s: invalid information file - missing file stream.",
 		 function );
 
@@ -395,10 +388,10 @@ int libsmraw_information_file_read_section(
 	}
 	if( section_identifier == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid section identifier.",
 		 function );
 
@@ -406,10 +399,10 @@ int libsmraw_information_file_read_section(
 	}
 	if( section_identifier_length > (size_t) SSIZE_MAX )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
 		 "%s: invalid section identifier length value exceeds maximum.",
 		 function );
 
@@ -422,10 +415,10 @@ int libsmraw_information_file_read_section(
 	     0,
 	     SEEK_SET ) != 0 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_IO,
-		 LIBERROR_IO_ERROR_SEEK_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_IO,
+		 LIBCERROR_IO_ERROR_SEEK_FAILED,
 		 "%s: unable to seek stream offset: 0.",
 		 function );
 
@@ -446,10 +439,10 @@ int libsmraw_information_file_read_section(
 			{
 				break;
 			}
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_IO,
-			 LIBERROR_IO_ERROR_READ_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_IO,
+			 LIBCERROR_IO_ERROR_READ_FAILED,
 			 "%s: error reading string from file stream.",
 			 function );
 
@@ -582,15 +575,15 @@ int libsmraw_information_file_read_section(
 				{
 					continue;
 				}
-				if( libfvalue_value_initialize(
+				if( libfvalue_value_type_initialize(
 				     &value,
 				     LIBFVALUE_VALUE_TYPE_STRING_UTF8,
 				     error ) != 1 )
 				{
-					liberror_error_set(
+					libcerror_error_set(
 					 error,
-					 LIBERROR_ERROR_DOMAIN_RUNTIME,
-					 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+					 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
 					 "%s: unable to create value: %s.",
 					 function,
 					 value_identifier );
@@ -604,10 +597,10 @@ int libsmraw_information_file_read_section(
 				     LIBFVALUE_VALUE_FLAG_IDENTIFIER_MANAGED,
 				     error ) != 1 )
 				{
-					liberror_error_set(
+					libcerror_error_set(
 					 error,
-					 LIBERROR_ERROR_DOMAIN_RUNTIME,
-					 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+					 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
 					 "%s: unable to set identifier in value: %d.",
 					 function,
 					 value_identifier );
@@ -622,10 +615,10 @@ int libsmraw_information_file_read_section(
 				     LIBFVALUE_VALUE_FLAG_DATA_MANAGED,
 				     error ) != 1 )
 				{
-					liberror_error_set(
+					libcerror_error_set(
 					 error,
-					 LIBERROR_ERROR_DOMAIN_RUNTIME,
-					 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+					 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
 					 "%s: unable to set value: %s data.",
 					 function,
 					 value_identifier );
@@ -637,10 +630,10 @@ int libsmraw_information_file_read_section(
 				     value,
 				     error ) != 1 )
 				{
-					liberror_error_set(
+					libcerror_error_set(
 					 error,
-					 LIBERROR_ERROR_DOMAIN_RUNTIME,
-					 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+					 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
 					 "%s: unable to set value: %s in values table.",
 					 function,
 					 value_identifier );
@@ -686,7 +679,7 @@ int libsmraw_information_file_write_section(
      const uint8_t *section_identifier,
      size_t section_identifier_length,
      libfvalue_table_t *values_table,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	libfvalue_value_t *value = NULL;
 	static char *function    = "libsmraw_information_file_write_section";
@@ -698,10 +691,10 @@ int libsmraw_information_file_write_section(
 
 	if( information_file == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid information file.",
 		 function );
 
@@ -709,10 +702,10 @@ int libsmraw_information_file_write_section(
 	}
 	if( information_file->file_stream == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
 		 "%s: invalid information file - missing file stream.",
 		 function );
 
@@ -720,10 +713,10 @@ int libsmraw_information_file_write_section(
 	}
 	if( section_identifier == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid section identifier.",
 		 function );
 
@@ -731,10 +724,10 @@ int libsmraw_information_file_write_section(
 	}
 	if( section_identifier_length > (size_t) SSIZE_MAX )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
 		 "%s: invalid section identifier length value exceeds maximum.",
 		 function );
 
@@ -742,10 +735,10 @@ int libsmraw_information_file_write_section(
 	}
 	if( values_table == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid values table.",
 		 function );
 
@@ -761,10 +754,10 @@ int libsmraw_information_file_write_section(
 	if( ( print_count < 0 )
 	 || ( (size_t) print_count > ( section_identifier_length + 3 ) ) )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_IO,
-		 LIBERROR_IO_ERROR_WRITE_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_IO,
+		 LIBCERROR_IO_ERROR_WRITE_FAILED,
 		 "%s: unable to write section start to file stream.",
 		 function );
 
@@ -777,10 +770,10 @@ int libsmraw_information_file_write_section(
 	     &number_of_values,
 	     error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 		 "%s: unable to retrieve number of values.",
 		 function );
 
@@ -797,10 +790,10 @@ int libsmraw_information_file_write_section(
 		if( ( print_count < 0 )
 		 || ( (size_t) print_count > 1 ) )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_IO,
-			 LIBERROR_IO_ERROR_WRITE_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_IO,
+			 LIBCERROR_IO_ERROR_WRITE_FAILED,
 			 "%s: unable to write to file stream.",
 			 function );
 
@@ -812,10 +805,10 @@ int libsmraw_information_file_write_section(
 		     &value,
 		     error ) != 1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 			 "%s: unable to retrieve value: %d from values table.",
 			 function,
 			 value_iterator );
@@ -831,10 +824,10 @@ int libsmraw_information_file_write_section(
 
 		if( write_count <= 0 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_IO,
-			 LIBERROR_IO_ERROR_WRITE_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_IO,
+			 LIBCERROR_IO_ERROR_WRITE_FAILED,
 			 "%s: unable to write value: %d to file stream.",
 			 function,
 			 value_iterator );
@@ -848,10 +841,10 @@ int libsmraw_information_file_write_section(
 		if( ( print_count < 0 )
 		 || ( (size_t) print_count > 1 ) )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_IO,
-			 LIBERROR_IO_ERROR_WRITE_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_IO,
+			 LIBCERROR_IO_ERROR_WRITE_FAILED,
 			 "%s: unable to write to file stream.",
 			 function );
 
@@ -868,10 +861,10 @@ int libsmraw_information_file_write_section(
 	if( ( print_count < 0 )
 	 || ( (size_t) print_count > ( section_identifier_length + 5 ) ) )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_IO,
-		 LIBERROR_IO_ERROR_WRITE_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_IO,
+		 LIBCERROR_IO_ERROR_WRITE_FAILED,
 		 "%s: unable to write section end to file stream.",
 		 function );
 

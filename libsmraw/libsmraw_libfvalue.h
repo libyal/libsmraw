@@ -1,7 +1,7 @@
 /*
  * The libfvalue header wrapper
  *
- * Copyright (c) 2010-2012, Joachim Metz <jbmetz@users.sourceforge.net>
+ * Copyright (c) 2010-2012, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -30,9 +30,14 @@
 
 #include <libfvalue_codepage.h>
 #include <libfvalue_definitions.h>
+#include <libfvalue_floating_point.h>
+#include <libfvalue_integer.h>
+#include <libfvalue_split_string.h>
+#include <libfvalue_string.h>
 #include <libfvalue_table.h>
 #include <libfvalue_types.h>
 #include <libfvalue_value.h>
+#include <libfvalue_value_type.h>
 
 #elif defined( HAVE_LIBFVALUE_H )
 

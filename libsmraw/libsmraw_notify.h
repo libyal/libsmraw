@@ -1,7 +1,7 @@
 /*
  * Notification function
  *
- * Copyright (c) 2010-2012, Joachim Metz <jbmetz@users.sourceforge.net>
+ * Copyright (c) 2010-2012, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -23,13 +23,11 @@
 #define _LIBSMRAW_NOTIFY_H
 
 #include <common.h>
+#include <file_stream.h>
 #include <types.h>
 
-#include <liberror.h>
-
-#include <stdio.h>
-
 #include "libsmraw_extern.h"
+#include "libsmraw_libcerror.h"
 
 #if defined( __cplusplus )
 extern "C" {
@@ -44,16 +42,16 @@ void libsmraw_notify_set_verbose(
 LIBSMRAW_EXTERN \
 int libsmraw_notify_set_stream(
      FILE *stream,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 LIBSMRAW_EXTERN \
 int libsmraw_notify_stream_open(
      const char *filename,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 LIBSMRAW_EXTERN \
 int libsmraw_notify_stream_close(
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 #endif /* !defined( HAVE_LOCAL_LIBSMRAW ) */
 

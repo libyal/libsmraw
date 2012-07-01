@@ -1,3 +1,9 @@
+Dependencies
+smrawmount requires:
+* libfuse
+  (optional but recommended)
+
+
 Building .deb files
 To build .deb files make sure you've have installed debhelper, dpkg-buildpackage and fakeroot
 * copy the dpkg directory to debian

@@ -1,14 +1,19 @@
 AM_CPPFLAGS = \
 	-I$(top_srcdir)/include \
 	-I$(top_srcdir)/common \
-	-I$(top_srcdir)/libcstring \
-	-I$(top_srcdir)/liberror \
-	-I$(top_srcdir)/libsystem \
+	@LIBCSTRING_CPPFLAGS@ \
+	@LIBCERROR_CPPFLAGS@ \
+	@LIBCLOCALE_CPPFLAGS@ \
+	@LIBCNOTIFY_CPPFLAGS@ \
 	@LIBUNA_CPPFLAGS@ \
+	@LIBCFILE_CPPFLAGS@ \
+	@LIBCPATH_CPPFLAGS@ \
 	@LIBBFIO_CPPFLAGS@ \
+	@LIBFVALUE_CPPFLAGS@ \
 	@LIBMFCACHE_CPPFLAGS@ \
 	@LIBMFDATA_CPPFLAGS@ \
-	@LIBFVALUE_CPPFLAGS@ \
+	@LIBCSYSTEM_CPPFLAGS@ \
+	@LIBFUSE_CPPFLAGS@ \
 	@MEMWATCH_CPPFLAGS@ \
 	@LIBSMRAW_DLL_IMPORT@
 
@@ -20,17 +25,24 @@ bin_PROGRAMS = \
 smrawmount_SOURCES = \
 	smrawmount.c \
 	smrawoutput.c smrawoutput.h \
+	smrawtools_libcerror.h \
+	smrawtools_libclocale.h \
+	smrawtools_libcnotify.h \
+	smrawtools_libcstring.h \
+	smrawtools_libcsystem.h \
 	smrawtools_libsmraw.h \
 	smrawtools_libuna.h \
 	mount_handle.c mount_handle.h
 
 smrawmount_LDADD = \
-	../libcstring/libcstring.la \
-	../liberror/liberror.la \
-	../libsmraw/libsmraw.la \
-	../libsystem/libsystem.la \
-	@LIBINTL@ \
 	@LIBFUSE_LIBADD@ \
+	@LIBCSYSTEM_LIBADD@ \
+	../libsmraw/libsmraw.la \
+	@LIBCNOTIFY_LIBADD@ \
+	@LIBCLOCALE_LIBADD@ \
+	@LIBCERROR_LIBADD@ \
+	@LIBCSTRING_LIBADD@ \
+	@LIBINTL@ \
 	@MEMWATCH_LIBADD@
 
 MAINTAINERCLEANFILES = \

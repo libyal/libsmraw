@@ -1,7 +1,7 @@
 /*
  * Filename functions
  *
- * Copyright (c) 2010-2012, Joachim Metz <jbmetz@users.sourceforge.net>
+ * Copyright (c) 2010-2012, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -24,14 +24,13 @@
 #include <memory.h>
 #include <types.h>
 
-#include <libcstring.h>
-#include <liberror.h>
-#include <libnotify.h>
-
 #include "libsmraw_definitions.h"
 #include "libsmraw_handle.h"
 #include "libsmraw_information_file.h"
 #include "libsmraw_libbfio.h"
+#include "libsmraw_libcerror.h"
+#include "libsmraw_libcnotify.h"
+#include "libsmraw_libcstring.h"
 #include "libsmraw_handle.h"
 #include "libsmraw_types.h"
 
@@ -45,7 +44,7 @@ int libsmraw_filename_create(
      size_t basename_size,
      int total_number_of_segments,
      int current_file_io_pool_entry,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	static char *function    = "libsmraw_filename_create";
 	size_t additional_length = 0;
@@ -53,10 +52,10 @@ int libsmraw_filename_create(
 
 	if( filename == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid segment filename.",
 		 function );
 
@@ -64,10 +63,10 @@ int libsmraw_filename_create(
 	}
 	if( *filename != NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
 		 "%s: invalid segment filename already set.",
 		 function );
 
@@ -75,10 +74,10 @@ int libsmraw_filename_create(
 	}
 	if( filename_size == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid segment filename size.",
 		 function );
 
@@ -86,10 +85,10 @@ int libsmraw_filename_create(
 	}
 	if( basename == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
 		 "%s: invalid basename.",
 		 function );
 
@@ -97,10 +96,10 @@ int libsmraw_filename_create(
 	}
 	if( basename_size > (size_t) SSIZE_MAX )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
 		 "%s: invalid basename size value exceeds maximum.",
 		 function );
 
@@ -109,10 +108,10 @@ int libsmraw_filename_create(
 	if( ( total_number_of_segments < 0 )
 	 || ( total_number_of_segments >= 1000 ) )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
 		 "%s: invalid maximum pool entry value out of bounds.",
 		 function );
 
@@ -123,10 +122,10 @@ int libsmraw_filename_create(
 		if( ( current_file_io_pool_entry < 0 )
 		 || ( current_file_io_pool_entry > total_number_of_segments ) )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-			 LIBERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
+			 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+			 LIBCERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
 			 "%s: invalid current pool entry value out of bounds.",
 			 function );
 
@@ -148,10 +147,10 @@ int libsmraw_filename_create(
 
 	if( *filename == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_MEMORY,
-		 LIBERROR_MEMORY_ERROR_INSUFFICIENT,
+		 LIBCERROR_ERROR_DOMAIN_MEMORY,
+		 LIBCERROR_MEMORY_ERROR_INSUFFICIENT,
 		 "%s: unable to create segment filename.",
 		 function );
 
@@ -162,10 +161,10 @@ int libsmraw_filename_create(
 	     basename,
 	     basename_size - 1 ) == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_COPY_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
 		 "%s: unable to copy basename to segment filename.",
 		 function );
 
@@ -178,10 +177,10 @@ int libsmraw_filename_create(
 	     _LIBCSTRING_SYSTEM_STRING( ".raw" ),
 	     4 ) == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_COPY_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
 		 "%s: unable to copy extension to segment filename.",
 		 function );
 

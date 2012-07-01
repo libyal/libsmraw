@@ -1,7 +1,7 @@
 /*
  * Storage media (SM) RAW library read testing program
  *
- * Copyright (c) 2010-2012, Joachim Metz <jbmetz@users.sourceforge.net>
+ * Copyright (c) 2010-2012, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -20,16 +20,14 @@
  */
 
 #include <common.h>
-
-#include <libcstring.h>
-#include <liberror.h>
+#include <file_stream.h>
 
 #if defined( HAVE_STDLIB_H ) || defined( WINAPI )
 #include <stdlib.h>
 #endif
 
-#include <stdio.h>
-
+#include "smraw_test_libcerror.h"
+#include "smraw_test_libcstring.h"
 #include "smraw_test_libsmraw.h"
 
 #define SMRAW_TEST_READ_BUFFER_SIZE	4096
@@ -40,7 +38,7 @@
 int smraw_test_get_offset(
      libsmraw_handle_t *handle,
      off64_t expected_offset,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	static char *function = "smraw_test_get_offset";
 	off64_t result_offset = 0;
@@ -52,10 +50,10 @@ int smraw_test_get_offset(
 		     &result_offset,
 		     error ) != 1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 			 "%s: unable to retrieve offset.",
 			 function );
 
@@ -211,7 +209,7 @@ int smraw_test_read(
      off64_t expected_offset,
      size64_t expected_size )
 {
-	liberror_error_t *error   = NULL;
+	libcerror_error_t *error   = NULL;
 	const char *whence_string = NULL;
 	int result                = 0;
 
@@ -286,11 +284,11 @@ int smraw_test_read(
 
 	if( result == -1 )
 	{
-		liberror_error_backtrace_fprint(
+		libcerror_error_backtrace_fprint(
 		 error,
 		 stdout );
 
-		liberror_error_free(
+		libcerror_error_free(
 		 &error );
 	}
 	return( result );

@@ -1,7 +1,7 @@
 /*
  * Mounts a storage media (split) RAW image file
  *
- * Copyright (C) 2010-2012, Joachim Metz <jbmetz@users.sourceforge.net>
+ * Copyright (C) 2010-2012, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -24,9 +24,6 @@
 #include <memory.h>
 #include <types.h>
 
-#include <libcstring.h>
-#include <liberror.h>
-
 #if defined( HAVE_ERRNO_H )
 #include <errno.h>
 #endif
@@ -39,22 +36,25 @@
 #include <stdlib.h>
 #endif
 
-#include <libsystem.h>
+#if defined( HAVE_LIBFUSE ) || defined( HAVE_LIBOSXFUSE )
+#define FUSE_USE_VERSION	26
 
-#if defined( HAVE_FUSE_H ) || defined( HAVE_OSXFUSE_FUSE_H )
-#define FUSE_USE_VERSION        26
-
-#if defined( HAVE_FUSE_H )
+#if defined( HAVE_LIBFUSE )
 #include <fuse.h>
 
-#elif defined( HAVE_OSXFUSE_FUSE_H )
+#elif defined( HAVE_LIBOSXFUSE )
 #include <osxfuse/fuse.h>
 #endif
 
-#endif /* defined( HAVE_FUSE_H ) || defined( HAVE_OSXFUSE_FUSE_H ) */
+#endif /* defined( HAVE_LIBFUSE ) || defined( HAVE_LIBOSXFUSE ) */
 
 #include "mount_handle.h"
 #include "smrawoutput.h"
+#include "smrawtools_libcerror.h"
+#include "smrawtools_libclocale.h"
+#include "smrawtools_libcnotify.h"
+#include "smrawtools_libcstring.h"
+#include "smrawtools_libcsystem.h"
 #include "smrawtools_libsmraw.h"
 
 mount_handle_t *smrawmount_mount_handle = NULL;
@@ -85,12 +85,12 @@ void usage_fprint(
 /* Signal handler for smrawmount
  */
 void smrawmount_signal_handler(
-      libsystem_signal_t signal LIBSYSTEM_ATTRIBUTE_UNUSED )
+      libcsystem_signal_t signal LIBCSYSTEM_ATTRIBUTE_UNUSED )
 {
-	liberror_error_t *error = NULL;
+	libcerror_error_t *error = NULL;
 	static char *function   = "smrawmount_signal_handler";
 
-	LIBSYSTEM_UNREFERENCED_PARAMETER( signal )
+	LIBCSYSTEM_UNREFERENCED_PARAMETER( signal )
 
 	smrawmount_abort = 1;
 
@@ -100,28 +100,28 @@ void smrawmount_signal_handler(
 		     smrawmount_mount_handle,
 		     &error ) != 1 )
 		{
-			libsystem_notify_printf(
+			libcnotify_printf(
 			 "%s: unable to signal mount handle to abort.\n",
 			 function );
 
-			libsystem_notify_print_error_backtrace(
+			libcnotify_print_error_backtrace(
 			 error );
-			liberror_error_free(
+			libcerror_error_free(
 			 &error );
 		}
 	}
 	/* Force stdin to close otherwise any function reading it will remain blocked
 	 */
-	if( libsystem_file_io_close(
+	if( libcsystem_file_io_close(
 	     0 ) != 0 )
 	{
-		libsystem_notify_printf(
+		libcnotify_printf(
 		 "%s: unable to close stdin.\n",
 		 function );
 	}
 }
 
-#if defined( HAVE_LIBFUSE )
+#if defined( HAVE_LIBFUSE ) || defined( HAVE_LIBOSXFUSE )
 
 #if ( SIZEOF_OFF_T != 8 ) && ( SIZEOF_OFF_T != 4 )
 #error Size of off_t not supported
@@ -137,17 +137,17 @@ int smrawmount_fuse_open(
      const char *path,
      struct fuse_file_info *file_info )
 {
-	liberror_error_t *error = NULL;
+	libcerror_error_t *error = NULL;
 	static char *function   = "smrawmount_fuse_open";
 	size_t path_length      = 0;
 	int result              = 0;
 
 	if( path == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 &error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid path.",
 		 function );
 
@@ -157,10 +157,10 @@ int smrawmount_fuse_open(
 	}
 	if( file_info == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 &error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid file info.",
 		 function );
 
@@ -177,10 +177,10 @@ int smrawmount_fuse_open(
 	       smrawmount_fuse_path,
 	       smrawmount_fuse_path_length ) != 0 ) )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 &error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
 		 "%s: unsupported path.",
 		 function );
 
@@ -190,10 +190,10 @@ int smrawmount_fuse_open(
 	}
 	if( ( file_info->flags & 0x03 ) != O_RDONLY )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 &error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_UNSUPPORTED_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_UNSUPPORTED_VALUE,
 		 "%s: write access currently not supported.",
 		 function );
 
@@ -206,9 +206,9 @@ int smrawmount_fuse_open(
 on_error:
 	if( error != NULL )
 	{
-		libsystem_notify_print_error_backtrace(
+		libcnotify_print_error_backtrace(
 		 error );
-		liberror_error_free(
+		libcerror_error_free(
 		 &error );
 	}
 	return( result );
@@ -224,7 +224,7 @@ int smrawmount_fuse_read(
      off_t offset,
      struct fuse_file_info *file_info )
 {
-	liberror_error_t *error = NULL;
+	libcerror_error_t *error = NULL;
 	static char *function   = "smrawmount_fuse_read";
 	size_t path_length      = 0;
 	ssize_t read_count      = 0;
@@ -232,10 +232,10 @@ int smrawmount_fuse_read(
 
 	if( path == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 &error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid path.",
 		 function );
 
@@ -245,10 +245,10 @@ int smrawmount_fuse_read(
 	}
 	if( size > (size_t) INT_MAX )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 &error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
 		 "%s: invalid size value exceeds maximum.",
 		 function );
 
@@ -258,10 +258,10 @@ int smrawmount_fuse_read(
 	}
 	if( file_info == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 &error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid file info.",
 		 function );
 
@@ -278,10 +278,10 @@ int smrawmount_fuse_read(
 	       smrawmount_fuse_path,
 	       smrawmount_fuse_path_length ) != 0 ) )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 &error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
 		 "%s: unsupported path.",
 		 function );
 
@@ -295,10 +295,10 @@ int smrawmount_fuse_read(
 	     SEEK_SET,
 	     &error ) == -1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 &error,
-		 LIBERROR_ERROR_DOMAIN_IO,
-		 LIBERROR_IO_ERROR_SEEK_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_IO,
+		 LIBCERROR_IO_ERROR_SEEK_FAILED,
 		 "%s: unable to seek offset in mount handle.",
 		 function );
 
@@ -314,10 +314,10 @@ int smrawmount_fuse_read(
 
 	if( read_count == -1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 &error,
-		 LIBERROR_ERROR_DOMAIN_IO,
-		 LIBERROR_IO_ERROR_READ_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_IO,
+		 LIBCERROR_IO_ERROR_READ_FAILED,
 		 "%s: unable to read from mount handle.",
 		 function );
 
@@ -330,9 +330,9 @@ int smrawmount_fuse_read(
 on_error:
 	if( error != NULL )
 	{
-		libsystem_notify_print_error_backtrace(
+		libcnotify_print_error_backtrace(
 		 error );
-		liberror_error_free(
+		libcerror_error_free(
 		 &error );
 	}
 	return( result );
@@ -345,23 +345,23 @@ int smrawmount_fuse_readdir(
      const char *path,
      void *buffer,
      fuse_fill_dir_t filler,
-     off_t offset LIBSYSTEM_ATTRIBUTE_UNUSED,
-     struct fuse_file_info *file_info LIBSYSTEM_ATTRIBUTE_UNUSED )
+     off_t offset LIBCSYSTEM_ATTRIBUTE_UNUSED,
+     struct fuse_file_info *file_info LIBCSYSTEM_ATTRIBUTE_UNUSED )
 {
-	liberror_error_t *error = NULL;
+	libcerror_error_t *error = NULL;
 	static char *function   = "smrawmount_fuse_readdir";
 	size_t path_length      = 0;
 	int result              = 0;
 
-	LIBSYSTEM_UNREFERENCED_PARAMETER( offset )
-	LIBSYSTEM_UNREFERENCED_PARAMETER( file_info )
+	LIBCSYSTEM_UNREFERENCED_PARAMETER( offset )
+	LIBCSYSTEM_UNREFERENCED_PARAMETER( file_info )
 
 	if( path == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 &error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid path.",
 		 function );
 
@@ -375,10 +375,10 @@ int smrawmount_fuse_readdir(
 	if( ( path_length != 1 )
 	 || ( path[ 0 ] != '/' ) )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 &error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
 		 "%s: unsupported path.",
 		 function );
 
@@ -392,10 +392,10 @@ int smrawmount_fuse_readdir(
 	     NULL,
 	     0 ) == 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 &error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
 		 "%s: unable to set directory entry.",
 		 function );
 
@@ -409,10 +409,10 @@ int smrawmount_fuse_readdir(
 	     NULL,
 	     0 ) == 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 &error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
 		 "%s: unable to set directory entry.",
 		 function );
 
@@ -426,10 +426,10 @@ int smrawmount_fuse_readdir(
 	     NULL,
 	     0 ) == 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 &error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
 		 "%s: unable to set directory entry.",
 		 function );
 
@@ -442,9 +442,9 @@ int smrawmount_fuse_readdir(
 on_error:
 	if( error != NULL )
 	{
-		libsystem_notify_print_error_backtrace(
+		libcnotify_print_error_backtrace(
 		 error );
-		liberror_error_free(
+		libcerror_error_free(
 		 &error );
 	}
 	return( result );
@@ -457,7 +457,7 @@ int smrawmount_fuse_getattr(
      const char *path,
      struct stat *stat_info )
 {
-	liberror_error_t *error = NULL;
+	libcerror_error_t *error = NULL;
 	static char *function   = "smrawmount_fuse_getattr";
 	size64_t media_size     = 0;
 	size_t path_length      = 0;
@@ -465,10 +465,10 @@ int smrawmount_fuse_getattr(
 
 	if( path == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 &error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid path.",
 		 function );
 
@@ -478,10 +478,10 @@ int smrawmount_fuse_getattr(
 	}
 	if( stat_info == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 &error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid stat info.",
 		 function );
 
@@ -494,10 +494,10 @@ int smrawmount_fuse_getattr(
 	     0,
 	     sizeof( struct stat ) ) == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 &error,
-		 LIBERROR_ERROR_DOMAIN_MEMORY,
-		 LIBERROR_MEMORY_ERROR_SET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_MEMORY,
+		 LIBCERROR_MEMORY_ERROR_SET_FAILED,
 		 "%s: unable to clear stat info.",
 		 function );
 
@@ -533,10 +533,10 @@ int smrawmount_fuse_getattr(
 			     &media_size,
 			     &error ) != 1 )
 			{
-				liberror_error_set(
+				libcerror_error_set(
 				 &error,
-				 LIBERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 				 "%s: unable to retrieve media size.",
 				 function );
 
@@ -547,10 +547,10 @@ int smrawmount_fuse_getattr(
 #if SIZEOF_OFF_T == 4
 			if( media_size > (size64_t) UINT32_MAX )
 			{
-				liberror_error_set(
+				libcerror_error_set(
 				 &error,
-				 LIBERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
 				 "%s: invalid media size value out of bounds.",
 				 function );
 
@@ -566,13 +566,13 @@ int smrawmount_fuse_getattr(
 	}
 	if( result == 0 )
 	{
-		stat_info->st_atime = libsystem_date_time_time(
+		stat_info->st_atime = libcsystem_date_time_time(
 		                       NULL );
 
-		stat_info->st_mtime = libsystem_date_time_time(
+		stat_info->st_mtime = libcsystem_date_time_time(
 		                       NULL );
 
-		stat_info->st_ctime = libsystem_date_time_time(
+		stat_info->st_ctime = libcsystem_date_time_time(
 		                       NULL );
 
 #if defined( HAVE_GETEUID )
@@ -591,15 +591,54 @@ int smrawmount_fuse_getattr(
 on_error:
 	if( error != NULL )
 	{
-		libsystem_notify_print_error_backtrace(
+		libcnotify_print_error_backtrace(
 		 error );
-		liberror_error_free(
+		libcerror_error_free(
 		 &error );
 	}
 	return( result );
 }
 
-#endif /* defined( HAVE_LIBFUSE ) */
+/* Cleans up when fuse is done
+ */
+void smrawmount_fuse_destroy(
+      void *private_data LIBCSYSTEM_ATTRIBUTE_UNUSED )
+{
+	libcerror_error_t *error = NULL;
+	static char *function    = "smrawmount_fuse_destroy";
+
+	LIBCSYSTEM_UNREFERENCED_PARAMETER( private_data )
+
+	if( smrawmount_mount_handle != NULL )
+	{
+		if( mount_handle_free(
+		     &smrawmount_mount_handle,
+		     &error ) != 1 )
+		{
+			libcerror_error_set(
+			 &error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+			 "%s: unable to free mount handle.",
+			 function );
+
+			goto on_error;
+		}
+	}
+	return;
+
+on_error:
+	if( error != NULL )
+	{
+		libcnotify_print_error_backtrace(
+		 error );
+		libcerror_error_free(
+		 &error );
+	}
+	return;
+}
+
+#endif /* defined( HAVE_LIBFUSE ) || defined( HAVE_LIBOSXFUSE ) */
 
 /* The main program
  */
@@ -618,25 +657,34 @@ int main( int argc, char * const argv[] )
 	int number_of_filenames                               = 0;
 	int verbose                                           = 0;
 
-#if !defined( LIBSYSTEM_HAVE_GLOB )
-	libsystem_glob_t *glob                                = NULL;
+#if !defined( LIBCSYSTEM_HAVE_GLOB )
+	libcsystem_glob_t *glob                               = NULL;
 #endif
 
-#if defined( HAVE_LIBFUSE )
+#if defined( HAVE_LIBFUSE ) || defined( HAVE_LIBOSXFUSE )
 	struct fuse_operations smrawmount_fuse_operations;
 	struct fuse_chan *smrawmount_fuse_channel             = NULL;
 	struct fuse *smrawmount_fuse_handle                   = NULL;
 	int result                                            = 0;
 #endif
 
-	libsystem_notify_set_stream(
+	libcnotify_stream_set(
 	 stderr,
 	 NULL );
-	libsystem_notify_set_verbose(
+	libcnotify_verbose_set(
 	 1 );
 
-        if( libsystem_initialize(
+	if( libclocale_initialize(
              "smrawtools",
+	     &error ) != 1 )
+	{
+		fprintf(
+		 stderr,
+		 "Unable to initialize locale values.\n" );
+
+		goto on_error;
+	}
+        if( libcsystem_initialize(
              _IONBF,
              &error ) != 1 )
 	{
@@ -644,18 +692,13 @@ int main( int argc, char * const argv[] )
 		 stderr,
 		 "Unable to initialize system values.\n" );
 
-		libsystem_notify_print_error_backtrace(
-		 error );
-		liberror_error_free(
-		 &error );
-
-		return( EXIT_FAILURE );
+		goto on_error;
 	}
 	smrawoutput_version_fprint(
 	 stdout,
 	 program );
 
-	while( ( option = libsystem_getopt(
+	while( ( option = libcsystem_getopt(
 	                   argc,
 	                   argv,
 	                   _LIBCSTRING_SYSTEM_STRING( "hvV" ) ) ) != (libcstring_system_integer_t) -1 )
@@ -717,7 +760,7 @@ int main( int argc, char * const argv[] )
 	}
 	mount_point = argv[ argc - 1 ];
 
-	libsystem_notify_set_verbose(
+	libcnotify_verbose_set(
 	 verbose );
 	libsmraw_notify_set_stream(
 	 stderr,
@@ -725,8 +768,8 @@ int main( int argc, char * const argv[] )
 	libsmraw_notify_set_verbose(
 	 verbose );
 
-#if !defined( LIBSYSTEM_HAVE_GLOB )
-	if( libsystem_glob_initialize(
+#if !defined( LIBCSYSTEM_HAVE_GLOB )
+	if( libcsystem_glob_initialize(
 	     &glob,
 	     &error ) != 1 )
 	{
@@ -736,7 +779,7 @@ int main( int argc, char * const argv[] )
 
 		goto on_error;
 	}
-	if( libsystem_glob_resolve(
+	if( libcsystem_glob_resolve(
 	     glob,
 	     &( argv[ optind ] ),
 	     argc - optind - 1,
@@ -777,7 +820,7 @@ int main( int argc, char * const argv[] )
 
 		goto on_error;
 	}
-#if defined( HAVE_LIBFUSE )
+#if defined( HAVE_LIBFUSE ) || defined( HAVE_LIBOSXFUSE )
 	if( memory_set(
 	     &smrawmount_fuse_operations,
 	     0,
@@ -793,6 +836,7 @@ int main( int argc, char * const argv[] )
 	smrawmount_fuse_operations.read    = &smrawmount_fuse_read;
 	smrawmount_fuse_operations.readdir = &smrawmount_fuse_readdir;
 	smrawmount_fuse_operations.getattr = &smrawmount_fuse_getattr;
+	smrawmount_fuse_operations.destroy = &smrawmount_fuse_destroy;
 
 	smrawmount_fuse_channel = fuse_mount(
 	                           mount_point,
@@ -859,12 +903,12 @@ int main( int argc, char * const argv[] )
 on_error:
 	if( error != NULL )
 	{
-		libsystem_notify_print_error_backtrace(
+		libcnotify_print_error_backtrace(
 		 error );
-		liberror_error_free(
+		libcerror_error_free(
 		 &error );
 	}
-#if defined( HAVE_LIBFUSE )
+#if defined( HAVE_LIBFUSE ) || defined( HAVE_LIBOSXFUSE )
 	if( smrawmount_fuse_handle != NULL )
 	{
 		fuse_destroy(

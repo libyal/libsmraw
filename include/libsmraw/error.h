@@ -1,7 +1,7 @@
 /*
  * The error code definitions for libsmraw
  *
- * Copyright (c) 2010-2012, Joachim Metz <jbmetz@users.sourceforge.net>
+ * Copyright (c) 2010-2012, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -87,9 +87,6 @@ enum LIBSMRAW_ARGUMENT_ERROR
 	LIBSMRAW_ARGUMENT_ERROR_CONFLICTING_VALUE	= 9
 };
 
-/* TODO deprecated remove after a while */
-#define LIBSMRAW_ARGUMENT_ERROR_VALUE_OUT_OF_RANGE	LIBSMRAW_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS
-
 /* The conversion error codes
  * to signify errors regarding conversions
  */
@@ -121,9 +118,6 @@ enum LIBSMRAW_COMPRESSION_ERROR
 	 */
 	LIBSMRAW_COMPRESSION_ERROR_DECOMPRESS_FAILED	= 2
 };
-
-/* TODO deprecated remove after a while */
-#define LIBERROR_COMPRESSION_ERROR_UNCOMPRESS_FAILED	LIBERROR_COMPRESSION_ERROR_DECOMPRESS_FAILED
 
 /* The input/output error codes
  * to signify errors regarding input/output
@@ -193,9 +187,6 @@ enum LIBSMRAW_INPUT_ERROR
 	 */
 	LIBSMRAW_INPUT_ERROR_VALUE_MISMATCH		= 4
 };
-
-/* TODO deprecated remove after a while */
-#define LIBSMRAW_INPUT_ERROR_CRC_MISMATCH		LIBSMRAW_INPUT_ERROR_CHECKSUM_MISMATCH
 
 /* The memory error codes
  * to signify errors regarding memory
@@ -284,9 +275,6 @@ enum LIBSMRAW_RUNTIME_ERROR
 	 */
 	LIBSMRAW_RUNTIME_ERROR_ABORT_REQUESTED		= 15
 };
-
-/* TODO deprecated remove after a while */
-#define LIBSMRAW_RUNTIME_ERROR_VALUE_OUT_OF_RANGE	LIBSMRAW_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS
 
 /* The output error codes
  */

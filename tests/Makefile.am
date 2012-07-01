@@ -1,8 +1,8 @@
 AM_CPPFLAGS = \
 	-I$(top_srcdir)/include \
 	-I$(top_srcdir)/common \
-	-I$(top_srcdir)/libcstring \
-	-I$(top_srcdir)/liberror \
+	@LIBCSTRING_CPPFLAGS@ \
+	@LIBCERROR_CPPFLAGS@ \
 	-I$(top_srcdir)/libsmraw \
 	@LIBHMAC_CPPFLAGS@ \
 	@MEMWATCH_CPPFLAGS@ \
@@ -35,13 +35,15 @@ check_PROGRAMS = \
 
 smraw_test_compare_SOURCES = \
 	digest_hash.c digest_hash.h \
+	smraw_test_libcerror.h \
+	smraw_test_libcstring.h \
 	smraw_test_libhmac.h \
 	smraw_test_libsmraw.h \
 	smraw_test_compare.c
 
 smraw_test_compare_LDADD = \
-	../libcstring/libcstring.la \
-	../liberror/liberror.la \
+	@LIBCSTRING_LIBADD@ \
+	@LIBCERROR_LIBADD@ \
 	../libsmraw/libsmraw.la \
 	@LIBHMAC_LIBADD@ \
 	@LIBCRYPTO_LIBADD@ \
@@ -49,49 +51,55 @@ smraw_test_compare_LDADD = \
         @MEMWATCH_LIBADD@
 
 smraw_test_glob_SOURCES = \
+	smraw_test_libcstring.h \
 	smraw_test_libsmraw.h \
 	smraw_test_glob.c
 
 smraw_test_glob_LDADD = \
-	../libcstring/libcstring.la \
+	@LIBCSTRING_LIBADD@ \
 	../libsmraw/libsmraw.la \
         @MEMWATCH_LIBADD@
 
 smraw_test_read_SOURCES = \
+	smraw_test_libcerror.h \
+	smraw_test_libcstring.h \
 	smraw_test_libsmraw.h \
 	smraw_test_read.c
 
 smraw_test_read_LDADD = \
-	../libcstring/libcstring.la \
-	../liberror/liberror.la \
+	@LIBCSTRING_LIBADD@ \
+	@LIBCERROR_LIBADD@ \
 	../libsmraw/libsmraw.la \
         @MEMWATCH_LIBADD@
 
 smraw_test_read_loop_SOURCES = \
+	smraw_test_libcstring.h \
 	smraw_test_libsmraw.h \
 	smraw_test_read_loop.c
 
 smraw_test_read_loop_LDADD = \
-	../libcstring/libcstring.la \
+	@LIBCSTRING_LIBADD@ \
 	../libsmraw/libsmraw.la \
         @MEMWATCH_LIBADD@
 
 smraw_test_seek_SOURCES = \
+	smraw_test_libcstring.h \
 	smraw_test_libsmraw.h \
 	smraw_test_seek.c
 
 smraw_test_seek_LDADD = \
-	../libcstring/libcstring.la \
+	@LIBCSTRING_LIBADD@ \
 	../libsmraw/libsmraw.la \
         @MEMWATCH_LIBADD@
 
 smraw_test_write_SOURCES = \
+	smraw_test_libcstring.h \
 	smraw_test_libhmac.h \
 	smraw_test_libsmraw.h \
 	smraw_test_write.c
 
 smraw_test_write_LDADD = \
-	../libcstring/libcstring.la \
+	@LIBCSTRING_LIBADD@ \
 	../libsmraw/libsmraw.la \
 	@LIBHMAC_LIBADD@ \
 	@LIBCRYPTO_LIBADD@ \

@@ -1,7 +1,7 @@
 /*
  * Support functions
  *
- * Copyright (c) 2010-2012, Joachim Metz <jbmetz@users.sourceforge.net>
+ * Copyright (c) 2010-2012, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -25,9 +25,8 @@
 #include <common.h>
 #include <types.h>
 
-#include <liberror.h>
-
 #include "libsmraw_extern.h"
+#include "libsmraw_libcerror.h"
 
 #if defined( __cplusplus )
 extern "C" {
@@ -82,12 +81,12 @@ int libsmraw_get_access_flags_write(
 LIBSMRAW_EXTERN \
 int libsmraw_get_codepage(
      int *codepage,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 LIBSMRAW_EXTERN \
 int libsmraw_set_codepage(
      int codepage,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 #endif /* !defined( HAVE_LOCAL_LIBSMRAW ) */
 
@@ -95,7 +94,7 @@ int libsmraw_glob_append_segment_file(
      char **filenames[],
      int *number_of_filenames,
      const char *segment_filename,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 int libsmraw_glob_exists_segment_file(
      libbfio_handle_t *file_io_handle,
@@ -105,13 +104,13 @@ int libsmraw_glob_exists_segment_file(
      size_t suffix_length,
      char **segment_filename,
      size_t *segment_filename_size,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 int libsmraw_glob_determine_naming_schema(
      const char *suffix,
      size_t suffix_length,
      uint8_t *naming_schema,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 LIBSMRAW_EXTERN \
 int libsmraw_glob(
@@ -119,20 +118,20 @@ int libsmraw_glob(
      size_t filename_length,
      char **filenames[],
      int *number_of_filenames,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 LIBSMRAW_EXTERN \
 int libsmraw_glob_free(
      char *filenames[],
      int number_of_filenames,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 #if defined( HAVE_WIDE_CHARACTER_TYPE )
 int libsmraw_glob_wide_append_segment_file(
      wchar_t **filenames[],
      int *number_of_filenames,
      const wchar_t *segment_filename,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 int libsmraw_glob_wide_exists_segment_file(
      libbfio_handle_t *file_io_handle,
@@ -142,13 +141,13 @@ int libsmraw_glob_wide_exists_segment_file(
      size_t suffix_length,
      wchar_t **segment_filename,
      size_t *segment_filename_size,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 int libsmraw_glob_wide_determine_naming_schema(
      const wchar_t *suffix,
      size_t suffix_length,
      uint8_t *naming_schema,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 LIBSMRAW_EXTERN \
 int libsmraw_glob_wide(
@@ -156,13 +155,13 @@ int libsmraw_glob_wide(
      size_t filename_length,
      wchar_t **filenames[],
      int *number_of_filenames,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 LIBSMRAW_EXTERN \
 int libsmraw_glob_wide_free(
      wchar_t *filenames[],
      int number_of_filenames,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 #endif
 

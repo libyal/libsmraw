@@ -1,7 +1,7 @@
 /*
  * Handle functions
  *
- * Copyright (c) 2010-2012, Joachim Metz <jbmetz@users.sourceforge.net>
+ * Copyright (c) 2010-2012, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -25,12 +25,11 @@
 #include <common.h>
 #include <types.h>
 
-#include <libcstring.h>
-#include <liberror.h>
-
 #include "libsmraw_extern.h"
 #include "libsmraw_information_file.h"
 #include "libsmraw_libbfio.h"
+#include "libsmraw_libcerror.h"
+#include "libsmraw_libcstring.h"
 #include "libsmraw_libfvalue.h"
 #include "libsmraw_libmfdata.h"
 #include "libsmraw_types.h"
@@ -121,21 +120,21 @@ struct libsmraw_internal_handle
 LIBSMRAW_EXTERN \
 int libsmraw_handle_initialize(
      libsmraw_handle_t **handle,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 LIBSMRAW_EXTERN \
 int libsmraw_handle_free(
      libsmraw_handle_t **handle,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 LIBSMRAW_EXTERN \
 int libsmraw_handle_signal_abort(
      libsmraw_handle_t *handle,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 int libsmraw_internal_handle_initialize_write_values(
      libsmraw_internal_handle_t *raw_io_handle,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 LIBSMRAW_EXTERN \
 int libsmraw_handle_open(
@@ -143,7 +142,7 @@ int libsmraw_handle_open(
      char * const filenames[],
      int number_of_filenames,
      int access_flags,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 #if defined( HAVE_WIDE_CHARACTER_TYPE )
 LIBSMRAW_EXTERN \
@@ -152,7 +151,7 @@ int libsmraw_handle_open_wide(
      wchar_t * const filenames[],
      int number_of_filenames,
      int access_flags,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 #endif
 
 LIBSMRAW_EXTERN \
@@ -160,23 +159,23 @@ int libsmraw_handle_open_file_io_pool(
      libsmraw_handle_t *handle,
      libbfio_pool_t *file_io_pool,
      int access_flags,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 int libsmraw_handle_read_information_file(
      libsmraw_internal_handle_t *internal_handle,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 LIBSMRAW_EXTERN \
 int libsmraw_handle_close(
      libsmraw_handle_t *handle,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 LIBSMRAW_EXTERN \
 ssize_t libsmraw_handle_read_buffer(
          libsmraw_handle_t *handle,
          void *buffer,
          size_t buffer_size,
-         liberror_error_t **error );
+         libcerror_error_t **error );
 
 LIBSMRAW_EXTERN \
 ssize_t libsmraw_handle_read_random(
@@ -184,14 +183,14 @@ ssize_t libsmraw_handle_read_random(
          void *buffer,
          size_t buffer_size,
          off64_t offset,
-         liberror_error_t **error );
+         libcerror_error_t **error );
 
 LIBSMRAW_EXTERN \
 ssize_t libsmraw_handle_write_buffer(
          libsmraw_handle_t *handle,
          const void *buffer,
          size_t buffer_size,
-         liberror_error_t **error );
+         libcerror_error_t **error );
 
 LIBSMRAW_EXTERN \
 ssize_t libsmraw_handle_write_random(
@@ -199,120 +198,120 @@ ssize_t libsmraw_handle_write_random(
          const void *buffer,
          size_t buffer_size,
          off64_t offset,
-         liberror_error_t **error );
+         libcerror_error_t **error );
 
 LIBSMRAW_EXTERN \
 off64_t libsmraw_handle_seek_offset(
          libsmraw_handle_t *handle,
          off64_t offset,
          int whence,
-         liberror_error_t **error );
+         libcerror_error_t **error );
 
 LIBSMRAW_EXTERN \
 int libsmraw_handle_get_offset(
      libsmraw_handle_t *handle,
      off64_t *offset,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 LIBSMRAW_EXTERN \
 int libsmraw_handle_set_maximum_number_of_open_handles(
      libsmraw_handle_t *handle,
      int maximum_number_of_open_handles,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 int libsmraw_handle_set_segment_name(
      intptr_t *io_handle,
      libbfio_handle_t *file_io_handle,
      int segment_index,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 LIBSMRAW_EXTERN \
 int libsmraw_handle_get_segment_filename_size(
      libsmraw_handle_t *handle,
      size_t *filename_size,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 LIBSMRAW_EXTERN \
 int libsmraw_handle_get_segment_filename(
      libsmraw_handle_t *handle,
      char *filename,
      size_t filename_size,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 LIBSMRAW_EXTERN \
 int libsmraw_handle_set_segment_filename(
      libsmraw_handle_t *handle,
      const char *filename,
      size_t filename_length,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 #if defined( HAVE_WIDE_CHARACTER_TYPE )
 LIBSMRAW_EXTERN \
 int libsmraw_handle_get_segment_filename_size_wide(
      libsmraw_handle_t *handle,
      size_t *filename_size,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 LIBSMRAW_EXTERN \
 int libsmraw_handle_get_segment_filename_wide(
      libsmraw_handle_t *handle,
      wchar_t *filename,
      size_t filename_size,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 LIBSMRAW_EXTERN \
 int libsmraw_handle_set_segment_filename_wide(
      libsmraw_handle_t *handle,
      const wchar_t *filename,
      size_t filename_length,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 #endif
 
 LIBSMRAW_EXTERN \
 int libsmraw_handle_get_maximum_segment_size(
      libsmraw_handle_t *handle,
      size64_t *maximum_segment_size,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 LIBSMRAW_EXTERN \
 int libsmraw_handle_set_maximum_segment_size(
      libsmraw_handle_t *handle,
      size64_t maximum_segment_size,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 LIBSMRAW_EXTERN \
 int libsmraw_handle_get_filename_size(
      libsmraw_handle_t *handle,
      size_t *filename_size,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 LIBSMRAW_EXTERN \
 int libsmraw_handle_get_filename(
      libsmraw_handle_t *handle,
      char *filename,
      size_t filename_size,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 #if defined( HAVE_WIDE_CHARACTER_TYPE )
 LIBSMRAW_EXTERN \
 int libsmraw_handle_get_filename_size_wide(
      libsmraw_handle_t *handle,
      size_t *filename_size,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 LIBSMRAW_EXTERN \
 int libsmraw_handle_get_filename_wide(
      libsmraw_handle_t *handle,
      wchar_t *filename,
      size_t filename_size,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 #endif
 
 LIBSMRAW_EXTERN \
 int libsmraw_handle_get_file_io_handle(
      libsmraw_handle_t *handle,
      libbfio_handle_t **file_io_handle,
-     liberror_error_t **error );
+     libcerror_error_t **error );
 
 #if defined( __cplusplus )
 }

@@ -1,7 +1,7 @@
 /* 
  * Mount handle
  *
- * Copyright (c) 2010-2012, Joachim Metz <jbmetz@users.sourceforge.net>
+ * Copyright (c) 2010-2012, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -20,32 +20,30 @@
  */
 
 #include <common.h>
+#include <file_stream.h>
 #include <memory.h>
 #include <types.h>
 
-#include <libcstring.h>
-#include <liberror.h>
-
-#include <libsystem.h>
-
-#include "smrawtools_libsmraw.h"
 #include "mount_handle.h"
+#include "smrawtools_libcerror.h"
+#include "smrawtools_libcstring.h"
+#include "smrawtools_libsmraw.h"
 
 /* Initializes the mount handle
  * Returns 1 if successful or -1 on error
  */
 int mount_handle_initialize(
      mount_handle_t **mount_handle,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	static char *function = "mount_handle_initialize";
 
 	if( mount_handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid mount handle.",
 		 function );
 
@@ -53,10 +51,10 @@ int mount_handle_initialize(
 	}
 	if( *mount_handle != NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
 		 "%s: invalid mount handle value already set.",
 		 function );
 
@@ -67,10 +65,10 @@ int mount_handle_initialize(
 
 	if( *mount_handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_MEMORY,
-		 LIBERROR_MEMORY_ERROR_INSUFFICIENT,
+		 LIBCERROR_ERROR_DOMAIN_MEMORY,
+		 LIBCERROR_MEMORY_ERROR_INSUFFICIENT,
 		 "%s: unable to create mount handle.",
 		 function );
 
@@ -81,10 +79,10 @@ int mount_handle_initialize(
 	     0,
 	     sizeof( mount_handle_t ) ) == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_MEMORY,
-		 LIBERROR_MEMORY_ERROR_SET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_MEMORY,
+		 LIBCERROR_MEMORY_ERROR_SET_FAILED,
 		 "%s: unable to clear mount handle.",
 		 function );
 
@@ -94,10 +92,10 @@ int mount_handle_initialize(
 	     &( ( *mount_handle )->input_handle ),
 	     error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
 		 "%s: unable to initialize input handle.",
 		 function );
 
@@ -121,17 +119,17 @@ on_error:
  */
 int mount_handle_free(
      mount_handle_t **mount_handle,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	static char *function = "mount_handle_free";
 	int result            = 1;
 
 	if( mount_handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid mount handle.",
 		 function );
 
@@ -143,10 +141,10 @@ int mount_handle_free(
 		     &( ( *mount_handle )->input_handle ),
 		     error ) != 1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
 			 "%s: unable to free input handle.",
 			 function );
 
@@ -165,16 +163,16 @@ int mount_handle_free(
  */
 int mount_handle_signal_abort(
      mount_handle_t *mount_handle,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	static char *function = "mount_handle_signal_abort";
 
 	if( mount_handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid mount handle.",
 		 function );
 
@@ -186,10 +184,10 @@ int mount_handle_signal_abort(
 		     mount_handle->input_handle,
 		     error ) != 1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
 			 "%s: unable to signal input handle to abort.",
 			 function );
 
@@ -206,7 +204,7 @@ int mount_handle_open_input(
      mount_handle_t *mount_handle,
      libcstring_system_character_t * const * filenames,
      int number_of_filenames,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	libcstring_system_character_t **libsmraw_filenames = NULL;
 	static char *function                              = "mount_handle_open_input";
@@ -215,10 +213,10 @@ int mount_handle_open_input(
 
 	if( mount_handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid mount handle.",
 		 function );
 
@@ -226,10 +224,10 @@ int mount_handle_open_input(
 	}
 	if( filenames == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid filenames.",
 		 function );
 
@@ -237,10 +235,10 @@ int mount_handle_open_input(
 	}
 	if( number_of_filenames <= 0 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_VALUE_ZERO_OR_LESS,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_ZERO_OR_LESS,
 		 "%s: invalid number of filenames.",
 		 function );
 
@@ -268,7 +266,7 @@ int mount_handle_open_input(
 #endif
 		if( result != 1 )
 		{
-			liberror_error_free(
+			libcerror_error_free(
 			 error );
 
 			number_of_filenames = 1;
@@ -294,10 +292,10 @@ int mount_handle_open_input(
 	     error ) != 1 )
 #endif
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_IO,
-		 LIBERROR_IO_ERROR_OPEN_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_IO,
+		 LIBCERROR_IO_ERROR_OPEN_FAILED,
 		 "%s: unable to open file(s).",
 		 function );
 
@@ -331,10 +329,10 @@ int mount_handle_open_input(
 		     error ) != 1 )
 #endif
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
 			 "%s: unable to free globbed filenames.",
 			 function );
 
@@ -349,16 +347,16 @@ int mount_handle_open_input(
  */
 int mount_handle_close(
      mount_handle_t *mount_handle,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	static char *function = "mount_handle_close";
 
 	if( mount_handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid mount handle.",
 		 function );
 
@@ -368,10 +366,10 @@ int mount_handle_close(
 	     mount_handle->input_handle,
 	     error ) != 0 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_IO,
-		 LIBERROR_IO_ERROR_CLOSE_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_IO,
+		 LIBCERROR_IO_ERROR_CLOSE_FAILED,
 		 "%s: unable to close input handle.",
 		 function );
 
@@ -387,17 +385,17 @@ ssize_t mount_handle_read_buffer(
          mount_handle_t *mount_handle,
          uint8_t *buffer,
          size_t size,
-         liberror_error_t **error )
+         libcerror_error_t **error )
 {
 	static char *function = "mount_handle_read_buffer";
 	ssize_t read_count    = 0;
 
 	if( mount_handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid mount handle.",
 		 function );
 
@@ -411,10 +409,10 @@ ssize_t mount_handle_read_buffer(
 
 	if( read_count == -1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_IO,
-		 LIBERROR_IO_ERROR_READ_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_IO,
+		 LIBCERROR_IO_ERROR_READ_FAILED,
 		 "%s: unable to read buffer from input handle.",
 		 function );
 
@@ -430,16 +428,16 @@ off64_t mount_handle_seek_offset(
          mount_handle_t *mount_handle,
          off64_t offset,
          int whence,
-         liberror_error_t **error )
+         libcerror_error_t **error )
 {
 	static char *function = "mount_handle_seek_offset";
 
 	if( mount_handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid mount handle.",
 		 function );
 
@@ -453,10 +451,10 @@ off64_t mount_handle_seek_offset(
 
 	if( offset == -1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_IO,
-		 LIBERROR_IO_ERROR_SEEK_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_IO,
+		 LIBCERROR_IO_ERROR_SEEK_FAILED,
 		 "%s: unable to seek offset in input handle.",
 		 function );
 
@@ -471,16 +469,16 @@ off64_t mount_handle_seek_offset(
 int mount_handle_get_media_size(
      mount_handle_t *mount_handle,
      size64_t *size,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	static char *function = "mount_handle_get_media_size";
 
 	if( mount_handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid mount handle.",
 		 function );
 
@@ -491,10 +489,10 @@ int mount_handle_get_media_size(
 	     size,
 	     error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 		 "%s: unable to retrieve media size from input handle.",
 		 function );
 

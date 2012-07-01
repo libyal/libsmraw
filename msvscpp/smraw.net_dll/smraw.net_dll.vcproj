@@ -44,8 +44,8 @@
 				Optimization="2"
 				EnableIntrinsicFunctions="false"
 				WholeProgramOptimization="false"
-				AdditionalIncludeDirectories="..\..\include;..\..\common;..\..\libcstring;..\..\liberror;..\..\smraw.net"
-				PreprocessorDefinitions="LIBSMRAW_DLL_IMPORT"
+				AdditionalIncludeDirectories="..\..\include;..\..\common;..\..\libcstring"
+				PreprocessorDefinitions="HAVE_LOCAL_LIBCSTRING;LIBSMRAW_DLL_IMPORT"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="false"
 				WarningLevel="4"
@@ -125,8 +125,8 @@
 				Optimization="0"
 				EnableIntrinsicFunctions="false"
 				WholeProgramOptimization="false"
-				AdditionalIncludeDirectories="..\..\include;..\..\common;..\..\libcstring;..\..\liberror;..\..\smraw.net"
-				PreprocessorDefinitions="LIBSMRAW_DLL_IMPORT"
+				AdditionalIncludeDirectories="..\..\include;..\..\common;..\..\libcstring"
+				PreprocessorDefinitions="HAVE_LOCAL_LIBCSTRING;LIBSMRAW_DLL_IMPORT"
 				BasicRuntimeChecks="0"
 				SmallerTypeCheck="false"
 				RuntimeLibrary="3"
@@ -208,6 +208,10 @@
 			</File>
 			<File
 				RelativePath="..\..\smraw.net\smraw.net_handle.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\smraw.net\smraw.net_libcstring.h"
 				>
 			</File>
 		</Filter>

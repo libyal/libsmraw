@@ -1,7 +1,7 @@
 /*
  * Error functions
  *
- * Copyright (c) 2010-2012, Joachim Metz <jbmetz@users.sourceforge.net>
+ * Copyright (c) 2010-2012, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -20,13 +20,11 @@
  */
 
 #include <common.h>
+#include <file_stream.h>
 #include <types.h>
 
-#include <liberror.h>
-
-#include <stdio.h>
-
 #include "libsmraw_error.h"
+#include "libsmraw_libcerror.h"
 
 #if !defined( HAVE_LOCAL_LIBSMRAW )
 
@@ -35,8 +33,8 @@
 void libsmraw_error_free(
       libsmraw_error_t **error )
 {
-	liberror_error_free(
-	 (liberror_error_t **) error );
+	libcerror_error_free(
+	 (libcerror_error_t **) error );
 }
 
 /* Prints a descriptive string of the error to the stream
@@ -46,8 +44,8 @@ int libsmraw_error_fprint(
      libsmraw_error_t *error,
      FILE *stream )
 {
-	return( liberror_error_fprint(
-	         (liberror_error_t *) error,
+	return( libcerror_error_fprint(
+	         (libcerror_error_t *) error,
 	         stream ) );
 }
 
@@ -60,8 +58,8 @@ int libsmraw_error_sprint(
      char *string,
      size_t size )
 {
-	return( liberror_error_sprint(
-	         (liberror_error_t *) error,
+	return( libcerror_error_sprint(
+	         (libcerror_error_t *) error,
 	         string,
 	         size ) );
 }
@@ -73,8 +71,8 @@ int libsmraw_error_backtrace_fprint(
      libsmraw_error_t *error,
       FILE *stream )
 {
-	return( liberror_error_backtrace_fprint(
-	         (liberror_error_t *) error,
+	return( libcerror_error_backtrace_fprint(
+	         (libcerror_error_t *) error,
 	         stream ) );
 }
 
@@ -87,8 +85,8 @@ int libsmraw_error_backtrace_sprint(
      char *string,
      size_t size )
 {
-	return( liberror_error_backtrace_sprint(
-	         (liberror_error_t *) error,
+	return( libcerror_error_backtrace_sprint(
+	         (libcerror_error_t *) error,
 	         string,
 	         size ) );
 }

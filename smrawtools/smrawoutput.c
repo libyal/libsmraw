@@ -1,7 +1,7 @@
 /*
  * Output functions
  *
- * Copyright (c) 2010-2012, Joachim Metz <jbmetz@users.sourceforge.net>
+ * Copyright (c) 2010-2012, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -23,8 +23,6 @@
 #include <memory.h>
 #include <types.h>
 
-#include <libcstring.h>
-
 #if defined( HAVE_STDLIB_H ) || defined( WINAPI )
 #include <stdlib.h>
 #endif
@@ -32,8 +30,6 @@
 #if defined( HAVE_STRING_H ) || defined( WINAPI )
 #include <string.h>
 #endif
-
-#include <libsmraw/features.h>
 
 #if defined( HAVE_LOCAL_LIBBFIO )
 #include <libbfio_definitions.h>
@@ -47,9 +43,12 @@
 #include <libfvalue.h>
 #endif
 
-#include <libsystem.h>
-
 #include "smrawoutput.h"
+#include "smrawtools_libcerror.h"
+#include "smrawtools_libclocale.h"
+#include "smrawtools_libcnotify.h"
+#include "smrawtools_libcstring.h"
+#include "smrawtools_libcsystem.h"
 #include "smrawtools_libsmraw.h"
 #include "smrawtools_libuna.h"
 
@@ -58,14 +57,8 @@
 void smrawoutput_copyright_fprint(
       FILE *stream )
 {
-	static char *function = "smrawoutput_copyright_fprint";
-
 	if( stream == NULL )
 	{
-		libsystem_notify_printf(
-		 "%s: invalid stream.\n",
-		 function );
-
 		return;
 	}
 	fprintf(
@@ -82,22 +75,12 @@ void smrawoutput_version_fprint(
       FILE *stream,
       const libcstring_system_character_t *program )
 {
-	static char *function = "smrawoutput_version_fprint";
-
 	if( stream == NULL )
 	{
-		libsystem_notify_printf(
-		 "%s: invalid stream.\n",
-		 function );
-
 		return;
 	}
 	if( program == NULL )
 	{
-		libsystem_notify_printf(
-		 "%s: invalid program name.\n",
-		 function );
-
 		return;
 	}
 	fprintf(
@@ -113,22 +96,12 @@ void smrawoutput_version_detailed_fprint(
       FILE *stream,
       const libcstring_system_character_t *program )
 {
-	static char *function = "smrawoutput_version_detailed_fprint";
-
 	if( stream == NULL )
 	{
-		libsystem_notify_printf(
-		 "%s: invalid stream.\n",
-		 function );
-
 		return;
 	}
 	if( program == NULL )
 	{
-		libsystem_notify_printf(
-		 "%s: invalid program name.\n",
-		 function );
-
 		return;
 	}
 	fprintf(

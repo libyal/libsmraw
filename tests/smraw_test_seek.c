@@ -1,7 +1,7 @@
 /*
  * Storage media (SM) RAW library seek offset testing program
  *
- * Copyright (c) 2010-2012, Joachim Metz <jbmetz@users.sourceforge.net>
+ * Copyright (c) 2010-2012, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -20,15 +20,13 @@
  */
 
 #include <common.h>
-
-#include <libcstring.h>
+#include <file_stream.h>
 
 #if defined( HAVE_STDLIB_H ) || defined( WINAPI )
 #include <stdlib.h>
 #endif
 
-#include <stdio.h>
-
+#include "smraw_test_libcstring.h"
 #include "smraw_test_libsmraw.h"
 
 /* Tests libsmraw_handle_seek_offset

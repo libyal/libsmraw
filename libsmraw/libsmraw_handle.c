@@ -1,7 +1,7 @@
 /*
  * Handle functions
  *
- * Copyright (c) 2010-2012, Joachim Metz <jbmetz@users.sourceforge.net>
+ * Copyright (c) 2010-2012, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -24,15 +24,15 @@
 #include <memory.h>
 #include <types.h>
 
-#include <libcstring.h>
-#include <liberror.h>
-#include <libnotify.h>
-
 #include "libsmraw_definitions.h"
 #include "libsmraw_information_file.h"
 #include "libsmraw_filename.h"
 #include "libsmraw_handle.h"
 #include "libsmraw_libbfio.h"
+#include "libsmraw_libcerror.h"
+#include "libsmraw_libclocale.h"
+#include "libsmraw_libcnotify.h"
+#include "libsmraw_libcstring.h"
 #include "libsmraw_libfvalue.h"
 #include "libsmraw_libmfdata.h"
 #include "libsmraw_libuna.h"
@@ -43,17 +43,17 @@
  */
 int libsmraw_handle_initialize(
      libsmraw_handle_t **handle,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
 	static char *function                       = "libsmraw_handle_initialize";
 
 	if( handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid handle.",
 		 function );
 
@@ -61,10 +61,10 @@ int libsmraw_handle_initialize(
 	}
 	if( *handle != NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
 		 "%s: invalid handle value already set.",
 		 function );
 
@@ -75,10 +75,10 @@ int libsmraw_handle_initialize(
 
 	if( internal_handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
 		 "%s: unable to create internal handle.",
 		 function );
 
@@ -89,10 +89,10 @@ int libsmraw_handle_initialize(
 	     0,
 	     sizeof( libsmraw_internal_handle_t ) ) == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_MEMORY,
-		 LIBERROR_MEMORY_ERROR_SET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_MEMORY,
+		 LIBCERROR_MEMORY_ERROR_SET_FAILED,
 		 "%s: unable to clear handle.",
 		 function );
 
@@ -113,10 +113,10 @@ int libsmraw_handle_initialize(
 	     0,
 	     error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
 		 "%s: unable to create segment table.",
 		 function );
 
@@ -127,10 +127,10 @@ int libsmraw_handle_initialize(
 	     LIBSMRAW_DEFAULT_MAXIMUM_SEGMENT_SIZE,
 	     error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
 		 "%s: unable to set maximum segment size in segment table.",
 		 function );
 
@@ -141,10 +141,10 @@ int libsmraw_handle_initialize(
 	     0,
 	     error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
 		 "%s: unable to create media values table.",
 		 function );
 
@@ -155,10 +155,10 @@ int libsmraw_handle_initialize(
 	     0,
 	     error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
 		 "%s: unable to create information values table.",
 		 function );
 
@@ -169,10 +169,10 @@ int libsmraw_handle_initialize(
 	     0,
 	     error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
 		 "%s: unable to create integrity hash values table.",
 		 function );
 
@@ -217,7 +217,7 @@ on_error:
  */
 int libsmraw_handle_free(
      libsmraw_handle_t **handle,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
 	static char *function                       = "libsmraw_internal_handle_free";
@@ -225,10 +225,10 @@ int libsmraw_handle_free(
 
 	if( handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid handle.",
 		 function );
 
@@ -244,10 +244,10 @@ int libsmraw_handle_free(
 			     *handle,
 			     error ) != 0 )
 			{
-				liberror_error_set(
+				libcerror_error_set(
 				 error,
-				 LIBERROR_ERROR_DOMAIN_IO,
-				 LIBERROR_IO_ERROR_CLOSE_FAILED,
+				 LIBCERROR_ERROR_DOMAIN_IO,
+				 LIBCERROR_IO_ERROR_CLOSE_FAILED,
 				 "%s: unable to close handle.",
 				 function );
 
@@ -260,10 +260,10 @@ int libsmraw_handle_free(
 		     &( internal_handle->segment_table ),
 		     error ) != 1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
 			 "%s: unable to free segment table.",
 			 function );
 
@@ -275,10 +275,10 @@ int libsmraw_handle_free(
 			     &( internal_handle->information_file ),
 			     error ) != 1 )
 			{
-				liberror_error_set(
+				libcerror_error_set(
 				 error,
-				 LIBERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
 				 "%s: unable to free information file.",
 				 function );
 
@@ -291,10 +291,10 @@ int libsmraw_handle_free(
 			     &( internal_handle->media_values ),
 			     error ) != 1 )
 			{
-				liberror_error_set(
+				libcerror_error_set(
 				 error,
-				 LIBERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
 				 "%s: unable to free media values table.",
 				 function );
 
@@ -307,10 +307,10 @@ int libsmraw_handle_free(
 			     &( internal_handle->information_values ),
 			     error ) != 1 )
 			{
-				liberror_error_set(
+				libcerror_error_set(
 				 error,
-				 LIBERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
 				 "%s: unable to free information values table.",
 				 function );
 
@@ -323,10 +323,10 @@ int libsmraw_handle_free(
 			     &( internal_handle->integrity_hash_values ),
 			     error ) != 1 )
 			{
-				liberror_error_set(
+				libcerror_error_set(
 				 error,
-				 LIBERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
 				 "%s: unable to free integrity hash values table.",
 				 function );
 
@@ -349,16 +349,16 @@ int libsmraw_handle_free(
  */
 int libsmraw_handle_signal_abort(
      libsmraw_handle_t *handle,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	static char *function = "libsmraw_handle_signal_abort";
 
 	if( handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid handle.",
 		 function );
 
@@ -374,17 +374,17 @@ int libsmraw_handle_signal_abort(
  */
 int libsmraw_internal_handle_initialize_write_values(
      libsmraw_internal_handle_t *internal_handle,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	static char *function         = "libsmraw_internal_handle_initialize_write_values";
 	size64_t maximum_segment_size = 0;
 
 	if( internal_handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid handle.",
 		 function );
 
@@ -392,10 +392,10 @@ int libsmraw_internal_handle_initialize_write_values(
 	}
 	if( internal_handle->write_values_initialized != 0 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
 		 "%s: write values were initialized and cannot be initialized anymore.",
 		 function );
 
@@ -406,10 +406,10 @@ int libsmraw_internal_handle_initialize_write_values(
 	     &maximum_segment_size,
 	     error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 		 "%s: unable to retrieve maximum segment size from segment table.",
 		 function );
 
@@ -448,7 +448,7 @@ int libsmraw_handle_open(
      char * const filenames[],
      int number_of_filenames,
      int access_flags,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	libbfio_handle_t *file_io_handle                    = NULL;
 	libbfio_pool_t *file_io_pool                        = NULL;
@@ -463,10 +463,10 @@ int libsmraw_handle_open(
 
 	if( handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid handle.",
 		 function );
 
@@ -476,10 +476,10 @@ int libsmraw_handle_open(
 
 	if( internal_handle->basename != NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
 		 "%s: invalid handle - basename already exists.",
 		 function );
 
@@ -487,10 +487,10 @@ int libsmraw_handle_open(
 	}
 	if( filenames == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid filenames.",
 		 function );
 
@@ -498,10 +498,10 @@ int libsmraw_handle_open(
 	}
 	if( number_of_filenames <= 0 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
 		 "%s: invalid number of filenames value out of bounds.",
 		 function );
 
@@ -510,10 +510,10 @@ int libsmraw_handle_open(
 	if( ( ( access_flags & LIBSMRAW_ACCESS_FLAG_READ ) == 0 )
 	 && ( ( access_flags & LIBSMRAW_ACCESS_FLAG_WRITE ) == 0 ) )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
 		 "%s: unsupported access flags.",
 		 function );
 
@@ -538,10 +538,10 @@ int libsmraw_handle_open(
 
 		if( filename_length <= 4 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-			 LIBERROR_ARGUMENT_ERROR_VALUE_TOO_SMALL,
+			 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+			 LIBCERROR_ARGUMENT_ERROR_VALUE_TOO_SMALL,
 			 "%s: missing basename.",
 			 function );
 
@@ -553,10 +553,10 @@ int libsmraw_handle_open(
 		     filename_length - 4,
 		     error ) != 1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
 			 "%s: unable to set basename.",
 			function );
 
@@ -568,10 +568,10 @@ int libsmraw_handle_open(
 		     internal_handle->maximum_number_of_open_handles,
 		     error ) != 1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
 			 "%s: unable to create file IO pool.",
 			 function );
 
@@ -586,10 +586,10 @@ int libsmraw_handle_open(
 
 			if( filename_length == 0 )
 			{
-				liberror_error_set(
+				libcerror_error_set(
 				 error,
-				 LIBERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
 				 "%s: missing filename: %d.",
 				 function,
 				 filename_iterator );
@@ -600,10 +600,10 @@ int libsmraw_handle_open(
 			     &file_io_handle,
 			     error ) != 1 )
 			{
-				liberror_error_set(
+				libcerror_error_set(
 				 error,
-				 LIBERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
 				 "%s: unable to create file IO handle: %d.",
 				 function,
 				 filename_iterator );
@@ -616,10 +616,10 @@ int libsmraw_handle_open(
 			     1,
 			     error ) != 1 )
 			{
-		                liberror_error_set(
+		                libcerror_error_set(
 		                 error,
-		                 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		                 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+		                 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		                 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
 		                 "%s: unable to set track offsets read in file IO handle: %d.",
 		                 function,
 				 filename_iterator );
@@ -633,10 +633,10 @@ int libsmraw_handle_open(
 			     filename_length + 1,
 			     error ) != 1 )
 			{
-				liberror_error_set(
+				libcerror_error_set(
 				 error,
-				 LIBERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
 				 "%s: unable to set name in file IO handle: %d.",
 				 function,
 				 filename_iterator );
@@ -650,10 +650,10 @@ int libsmraw_handle_open(
 			     bfio_access_flags,
 			     error ) != 1 )
 			{
-				liberror_error_set(
+				libcerror_error_set(
 				 error,
-				 LIBERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
 				 "%s: unable to set file IO handle: %d in pool.",
 				 function,
 				 filename_iterator );
@@ -674,10 +674,10 @@ int libsmraw_handle_open(
 
 		if( filename_length == 0 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-			 LIBERROR_ARGUMENT_ERROR_VALUE_TOO_SMALL,
+			 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+			 LIBCERROR_ARGUMENT_ERROR_VALUE_TOO_SMALL,
 			 "%s: missing basename.",
 			 function );
 
@@ -689,10 +689,10 @@ int libsmraw_handle_open(
 		     filename_length,
 		     error ) != 1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
 			 "%s: unable to set basename.",
 			function );
 
@@ -706,10 +706,10 @@ int libsmraw_handle_open(
 		     internal_handle->maximum_number_of_open_handles,
 		     error ) != 1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
 			 "%s: unable to create file IO pool.",
 			 function );
 
@@ -722,10 +722,10 @@ int libsmraw_handle_open(
 	     access_flags,
 	     error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_IO,
-		 LIBERROR_IO_ERROR_OPEN_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_IO,
+		 LIBCERROR_IO_ERROR_OPEN_FAILED,
 		 "%s: unable to open handle using file IO pool.",
 		 function );
 
@@ -744,10 +744,10 @@ int libsmraw_handle_open(
 
 		if( information_filename == NULL )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_MEMORY,
-			 LIBERROR_MEMORY_ERROR_INSUFFICIENT,
+			 LIBCERROR_ERROR_DOMAIN_MEMORY,
+			 LIBCERROR_MEMORY_ERROR_INSUFFICIENT,
 			 "%s: unable to create information filename.",
 			 function );
 
@@ -758,10 +758,10 @@ int libsmraw_handle_open(
 		     internal_handle->basename,
 		     internal_handle->basename_size - 1 ) == NULL )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_COPY_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
 			 "%s: unable to copy basename to information filename.",
 			 function );
 
@@ -777,10 +777,10 @@ int libsmraw_handle_open(
 		     _LIBCSTRING_SYSTEM_STRING( ".raw.info" ),
 		     9 ) == NULL )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_COPY_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
 			 "%s: unable to copy extension to information filename.",
 			 function );
 
@@ -797,10 +797,10 @@ int libsmraw_handle_open(
 		     &( internal_handle->information_file ),
 		     error ) != 1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
 			 "%s: unable to create information file.",
 			 function );
 
@@ -816,10 +816,10 @@ int libsmraw_handle_open(
 		      information_filename ),
 		     error ) != 1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_IO,
-			 LIBERROR_IO_ERROR_OPEN_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_IO,
+			 LIBCERROR_IO_ERROR_OPEN_FAILED,
 			 "%s: unable to set information filename.",
 			 function );
 
@@ -834,10 +834,10 @@ int libsmraw_handle_open(
 			     internal_handle,
 			     error ) != 1 )
 			{
-				liberror_error_set(
+				libcerror_error_set(
 				 error,
-				 LIBERROR_ERROR_DOMAIN_IO,
-				 LIBERROR_IO_ERROR_READ_FAILED,
+				 LIBCERROR_ERROR_DOMAIN_IO,
+				 LIBCERROR_IO_ERROR_READ_FAILED,
 				 "%s: unable to read information file.",
 				 function );
 
@@ -883,7 +883,7 @@ int libsmraw_handle_open_wide(
      wchar_t * const filenames[],
      int number_of_filenames,
      int access_flags,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	libbfio_handle_t *file_io_handle                    = NULL;
 	libbfio_pool_t *file_io_pool                        = NULL;
@@ -898,10 +898,10 @@ int libsmraw_handle_open_wide(
 
 	if( handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid handle.",
 		 function );
 
@@ -911,10 +911,10 @@ int libsmraw_handle_open_wide(
 
 	if( internal_handle->basename != NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
 		 "%s: invalid handle - basename already exists.",
 		 function );
 
@@ -922,10 +922,10 @@ int libsmraw_handle_open_wide(
 	}
 	if( filenames == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid filenames.",
 		 function );
 
@@ -933,10 +933,10 @@ int libsmraw_handle_open_wide(
 	}
 	if( number_of_filenames <= 0 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
 		 "%s: invalid number of filenames value out of bounds.",
 		 function );
 
@@ -945,10 +945,10 @@ int libsmraw_handle_open_wide(
 	if( ( ( access_flags & LIBSMRAW_ACCESS_FLAG_READ ) == 0 )
 	 && ( ( access_flags & LIBSMRAW_ACCESS_FLAG_WRITE ) == 0 ) )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
 		 "%s: unsupported access flags.",
 		 function );
 
@@ -973,10 +973,10 @@ int libsmraw_handle_open_wide(
 
 		if( filename_length <= 4 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-			 LIBERROR_ARGUMENT_ERROR_VALUE_TOO_SMALL,
+			 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+			 LIBCERROR_ARGUMENT_ERROR_VALUE_TOO_SMALL,
 			 "%s: missing basename.",
 			 function );
 
@@ -988,10 +988,10 @@ int libsmraw_handle_open_wide(
 		     filename_length - 4,
 		     error ) != 1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
 			 "%s: unable to set basename.",
 			function );
 
@@ -1003,10 +1003,10 @@ int libsmraw_handle_open_wide(
 		     internal_handle->maximum_number_of_open_handles,
 		     error ) != 1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
 			 "%s: unable to create file IO pool.",
 			 function );
 
@@ -1021,10 +1021,10 @@ int libsmraw_handle_open_wide(
 
 			if( filename_length == 0 )
 			{
-				liberror_error_set(
+				libcerror_error_set(
 				 error,
-				 LIBERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
 				 "%s: missing filename: %d.",
 				 function,
 				 filename_iterator );
@@ -1035,10 +1035,10 @@ int libsmraw_handle_open_wide(
 			     &file_io_handle,
 			     error ) != 1 )
 			{
-				liberror_error_set(
+				libcerror_error_set(
 				 error,
-				 LIBERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
 				 "%s: unable to create file IO handle: %d.",
 				 function,
 				 filename_iterator );
@@ -1051,10 +1051,10 @@ int libsmraw_handle_open_wide(
 			     1,
 			     error ) != 1 )
 			{
-		                liberror_error_set(
+		                libcerror_error_set(
 		                 error,
-		                 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		                 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+		                 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		                 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
 		                 "%s: unable to set track offsets read in file IO handle: %d.",
 		                 function,
 				 filename_iterator );
@@ -1068,10 +1068,10 @@ int libsmraw_handle_open_wide(
 			     filename_length + 1,
 			     error ) != 1 )
 			{
-				liberror_error_set(
+				libcerror_error_set(
 				 error,
-				 LIBERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
 				 "%s: unable to set name in file IO handle: %d.",
 				 function,
 				 filename_iterator );
@@ -1085,10 +1085,10 @@ int libsmraw_handle_open_wide(
 			     bfio_access_flags,
 			     error ) != 1 )
 			{
-				liberror_error_set(
+				libcerror_error_set(
 				 error,
-				 LIBERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
 				 "%s: unable to set file IO handle: %d in pool.",
 				 function,
 				 filename_iterator );
@@ -1109,10 +1109,10 @@ int libsmraw_handle_open_wide(
 
 		if( filename_length == 0 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-			 LIBERROR_ARGUMENT_ERROR_VALUE_TOO_SMALL,
+			 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+			 LIBCERROR_ARGUMENT_ERROR_VALUE_TOO_SMALL,
 			 "%s: missing basename.",
 			 function );
 
@@ -1124,10 +1124,10 @@ int libsmraw_handle_open_wide(
 		     filename_length,
 		     error ) != 1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
 			 "%s: unable to set basename.",
 			function );
 
@@ -1141,10 +1141,10 @@ int libsmraw_handle_open_wide(
 		     internal_handle->maximum_number_of_open_handles,
 		     error ) != 1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
 			 "%s: unable to create file IO pool.",
 			 function );
 
@@ -1157,10 +1157,10 @@ int libsmraw_handle_open_wide(
 	     access_flags,
 	     error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_IO,
-		 LIBERROR_IO_ERROR_OPEN_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_IO,
+		 LIBCERROR_IO_ERROR_OPEN_FAILED,
 		 "%s: unable to open handle using file IO pool.",
 		 function );
 
@@ -1179,10 +1179,10 @@ int libsmraw_handle_open_wide(
 
 		if( information_filename == NULL )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_MEMORY,
-			 LIBERROR_MEMORY_ERROR_INSUFFICIENT,
+			 LIBCERROR_ERROR_DOMAIN_MEMORY,
+			 LIBCERROR_MEMORY_ERROR_INSUFFICIENT,
 			 "%s: unable to create information filename.",
 			 function );
 
@@ -1193,10 +1193,10 @@ int libsmraw_handle_open_wide(
 		     internal_handle->basename,
 		     internal_handle->basename_size - 1 ) == NULL )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_COPY_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
 			 "%s: unable to copy basename to information filename.",
 			 function );
 
@@ -1212,10 +1212,10 @@ int libsmraw_handle_open_wide(
 		     _LIBCSTRING_SYSTEM_STRING( ".raw.info" ),
 		     9 ) == NULL )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_COPY_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
 			 "%s: unable to copy extension to information filename.",
 			 function );
 
@@ -1232,10 +1232,10 @@ int libsmraw_handle_open_wide(
 		     &( internal_handle->information_file ),
 		     error ) != 1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
 			 "%s: unable to create information file.",
 			 function );
 
@@ -1251,10 +1251,10 @@ int libsmraw_handle_open_wide(
 		      information_filename ),
 		     error ) != 1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_IO,
-			 LIBERROR_IO_ERROR_OPEN_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_IO,
+			 LIBCERROR_IO_ERROR_OPEN_FAILED,
 			 "%s: unable to set information filename.",
 			 function );
 
@@ -1269,10 +1269,10 @@ int libsmraw_handle_open_wide(
 			     internal_handle,
 			     error ) != 1 )
 			{
-				liberror_error_set(
+				libcerror_error_set(
 				 error,
-				 LIBERROR_ERROR_DOMAIN_IO,
-				 LIBERROR_IO_ERROR_READ_FAILED,
+				 LIBCERROR_ERROR_DOMAIN_IO,
+				 LIBCERROR_IO_ERROR_READ_FAILED,
 				 "%s: unable to read information file.",
 				 function );
 
@@ -1317,7 +1317,7 @@ int libsmraw_handle_open_file_io_pool(
      libsmraw_handle_t *handle,
      libbfio_pool_t *file_io_pool,
      int access_flags,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	libbfio_handle_t *file_io_handle            = NULL;
 	libsmraw_internal_handle_t *internal_handle = NULL;
@@ -1330,10 +1330,10 @@ int libsmraw_handle_open_file_io_pool(
 
 	if( handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid handle.",
 		 function );
 
@@ -1343,10 +1343,10 @@ int libsmraw_handle_open_file_io_pool(
 
 	if( internal_handle->file_io_pool != NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
 		 "%s: invalid handle - file IO pool already exists.",
 		 function );
 
@@ -1354,10 +1354,10 @@ int libsmraw_handle_open_file_io_pool(
 	}
 	if( file_io_pool == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid file IO pool.",
 		 function );
 
@@ -1366,10 +1366,10 @@ int libsmraw_handle_open_file_io_pool(
 	if( ( ( access_flags & LIBSMRAW_ACCESS_FLAG_READ ) == 0 )
 	 && ( ( access_flags & LIBSMRAW_ACCESS_FLAG_WRITE ) == 0 ) )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
 		 "%s: unsupported access flags.",
 		 function );
 
@@ -1380,10 +1380,10 @@ int libsmraw_handle_open_file_io_pool(
 	     &number_of_file_io_handles,
 	     error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 		 "%s: unable to retrieve the number of handles in the file IO pool.",
 		 function );
 
@@ -1393,10 +1393,10 @@ int libsmraw_handle_open_file_io_pool(
 	{
 		if( number_of_file_io_handles <= 0 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
 			 "%s: missing file IO handles.",
 			 function );
 
@@ -1407,10 +1407,10 @@ int libsmraw_handle_open_file_io_pool(
 		     number_of_file_io_handles,
 		     error ) != 1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 			 "%s: unable to resize segment table.",
 			 function );
 
@@ -1434,10 +1434,10 @@ int libsmraw_handle_open_file_io_pool(
 			     &file_io_handle,
 			     error ) != 1 )
 			{
-				liberror_error_set(
+				libcerror_error_set(
 				 error,
-				 LIBERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBERROR_RUNTIME_ERROR_APPEND_FAILED,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_APPEND_FAILED,
 				 "%s: unable to retrieve file IO handle from pool entry: %d.",
 				 function,
 				 file_io_handle_iterator );
@@ -1445,9 +1445,9 @@ int libsmraw_handle_open_file_io_pool(
 				goto on_error;
 			}
 #if defined( HAVE_DEBUG_OUTPUT )
-			if( libnotify_verbose != 0 )
+			if( libcnotify_verbose != 0 )
 			{
-				libnotify_printf(
+				libcnotify_printf(
 				 "%s: processing pool entry: %d.\n",
 				 function,
 				 file_io_handle_iterator );
@@ -1459,10 +1459,10 @@ int libsmraw_handle_open_file_io_pool(
 			     bfio_access_flags,
 			     error ) != 1 )
 			{
-				liberror_error_set(
+				libcerror_error_set(
 				 error,
-				 LIBERROR_ERROR_DOMAIN_IO,
-				 LIBERROR_IO_ERROR_OPEN_FAILED,
+				 LIBCERROR_ERROR_DOMAIN_IO,
+				 LIBCERROR_IO_ERROR_OPEN_FAILED,
 				 "%s: unable to open pool entry: %d.",
 				 function,
 				 file_io_handle_iterator );
@@ -1475,10 +1475,10 @@ int libsmraw_handle_open_file_io_pool(
 			     &file_io_handle_size,
 			     error ) != 1 )
 			{
-				liberror_error_set(
+				libcerror_error_set(
 				 error,
-				 LIBERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 				 "%s: unable to retrieve file size for pool entry: %d.",
 				 function,
 				 file_io_handle_iterator );
@@ -1492,10 +1492,10 @@ int libsmraw_handle_open_file_io_pool(
 			     file_io_handle_size,
 			     error ) != 1 )
 			{
-				liberror_error_set(
+				libcerror_error_set(
 				 error,
-				 LIBERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
 				 "%s: unable to set name in file IO handle.",
 				 function );
 
@@ -1511,10 +1511,10 @@ int libsmraw_handle_open_file_io_pool(
 		     maximum_segment_size,
 		     error ) != 1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 			 "%s: unable to set maximum segment size in segment table.",
 			 function );
 
@@ -1527,10 +1527,10 @@ int libsmraw_handle_open_file_io_pool(
 	     &( internal_handle->media_size ),
 	     error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 		 "%s: unable to retrieve value size from segment table.",
 		 function );
 
@@ -1555,7 +1555,7 @@ on_error:
  */
 int libsmraw_handle_read_information_file(
      libsmraw_internal_handle_t *internal_handle,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	libbfio_handle_t *file_io_handle = NULL;
 	static char *function            = "libsmraw_handle_read_information_file";
@@ -1563,10 +1563,10 @@ int libsmraw_handle_read_information_file(
 
 	if( internal_handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid internal handle.",
 		 function );
 
@@ -1574,10 +1574,10 @@ int libsmraw_handle_read_information_file(
 	}
 	if( internal_handle->information_file == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
 		 "%s: invalid handle - missing information file.",
 		 function );
 
@@ -1587,10 +1587,10 @@ int libsmraw_handle_read_information_file(
 	     &file_io_handle,
 	     error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
 		 "%s: unable to create file IO handle.",
 		 function );
 
@@ -1610,10 +1610,10 @@ int libsmraw_handle_read_information_file(
 	     error ) != 1 )
 #endif
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
 		 "%s: unable to set name in file IO handle.",
 		 function );
 
@@ -1625,10 +1625,10 @@ int libsmraw_handle_read_information_file(
 
 	if( result == -1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_IO,
-		 LIBERROR_IO_ERROR_GENERIC,
+		 LIBCERROR_ERROR_DOMAIN_IO,
+		 LIBCERROR_IO_ERROR_GENERIC,
 		 "%s: unable to determine if information filename exists.",
 		 function );
 
@@ -1638,10 +1638,10 @@ int libsmraw_handle_read_information_file(
 	     &file_io_handle,
 	     error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
 		 "%s: unable to free file IO handle.",
 		 function );
 
@@ -1656,10 +1656,10 @@ int libsmraw_handle_read_information_file(
 		     _LIBCSTRING_SYSTEM_STRING( FILE_STREAM_OPEN_READ ),
 		     error ) != 1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_IO,
-			 LIBERROR_IO_ERROR_OPEN_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_IO,
+			 LIBCERROR_IO_ERROR_OPEN_FAILED,
 			 "%s: unable to open information file.",
 			 function );
 
@@ -1672,10 +1672,10 @@ int libsmraw_handle_read_information_file(
 		     internal_handle->media_values,
 		     error ) == -1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_IO,
-			 LIBERROR_IO_ERROR_READ_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_IO,
+			 LIBCERROR_IO_ERROR_READ_FAILED,
 			 "%s: unable to read media values from information file.",
 			 function );
 
@@ -1692,10 +1692,10 @@ int libsmraw_handle_read_information_file(
 		     internal_handle->information_values,
 		     error ) == -1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_IO,
-			 LIBERROR_IO_ERROR_READ_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_IO,
+			 LIBCERROR_IO_ERROR_READ_FAILED,
 			 "%s: unable to read information values from information file.",
 			 function );
 
@@ -1712,10 +1712,10 @@ int libsmraw_handle_read_information_file(
 		     internal_handle->integrity_hash_values,
 		     error ) == -1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_IO,
-			 LIBERROR_IO_ERROR_READ_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_IO,
+			 LIBCERROR_IO_ERROR_READ_FAILED,
 			 "%s: unable to read integrity hash values from information file.",
 			 function );
 
@@ -1729,10 +1729,10 @@ int libsmraw_handle_read_information_file(
 		     internal_handle->information_file,
 		     error ) != 0 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_IO,
-			 LIBERROR_IO_ERROR_OPEN_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_IO,
+			 LIBCERROR_IO_ERROR_OPEN_FAILED,
 			 "%s: unable to close information file.",
 			 function );
 
@@ -1756,7 +1756,7 @@ on_error:
  */
 int libsmraw_handle_close(
      libsmraw_handle_t *handle,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
 	static char *function                       = "libsmraw_handle_close";
@@ -1764,10 +1764,10 @@ int libsmraw_handle_close(
 
 	if( handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid handle.",
 		 function );
 
@@ -1782,10 +1782,10 @@ int libsmraw_handle_close(
 		     _LIBCSTRING_SYSTEM_STRING( FILE_STREAM_OPEN_WRITE ),
 		     error ) != 1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_IO,
-			 LIBERROR_IO_ERROR_OPEN_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_IO,
+			 LIBCERROR_IO_ERROR_OPEN_FAILED,
 			 "%s: unable to open information file.",
 			 function );
 
@@ -1798,10 +1798,10 @@ int libsmraw_handle_close(
 		     internal_handle->information_values,
 		     error ) != 1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_IO,
-			 LIBERROR_IO_ERROR_WRITE_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_IO,
+			 LIBCERROR_IO_ERROR_WRITE_FAILED,
 			 "%s: unable to write information values to information file.",
 			 function );
 
@@ -1814,10 +1814,10 @@ int libsmraw_handle_close(
 		     internal_handle->integrity_hash_values,
 		     error ) != 1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_IO,
-			 LIBERROR_IO_ERROR_WRITE_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_IO,
+			 LIBCERROR_IO_ERROR_WRITE_FAILED,
 			 "%s: unable to write integrity hash values to information file.",
 			 function );
 
@@ -1827,10 +1827,10 @@ int libsmraw_handle_close(
 		     internal_handle->information_file,
 		     error ) != 0 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_IO,
-			 LIBERROR_IO_ERROR_CLOSE_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_IO,
+			 LIBCERROR_IO_ERROR_CLOSE_FAILED,
 			 "%s: unable to close information file.",
 			 function );
 
@@ -1841,10 +1841,10 @@ int libsmraw_handle_close(
 	     internal_handle->segment_table,
 	     error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
 		 "%s: unable to empty segment table.",
 		 function );
 
@@ -1858,10 +1858,10 @@ int libsmraw_handle_close(
 			     internal_handle->file_io_pool,
 			     error ) != 0 )
 			{
-				liberror_error_set(
+				libcerror_error_set(
 				 error,
-				 LIBERROR_ERROR_DOMAIN_IO,
-				 LIBERROR_IO_ERROR_GENERIC,
+				 LIBCERROR_ERROR_DOMAIN_IO,
+				 LIBCERROR_IO_ERROR_GENERIC,
 				 "%s: unable close file IO pool.",
 				 function );
 
@@ -1871,10 +1871,10 @@ int libsmraw_handle_close(
 			     &( internal_handle->file_io_pool ),
 			     error ) != 1 )
 			{
-				liberror_error_set(
+				libcerror_error_set(
 				 error,
-				 LIBERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
 				 "%s: unable to free file IO pool.",
 				 function );
 
@@ -1890,10 +1890,10 @@ int libsmraw_handle_close(
 	     LIBSMRAW_DEFAULT_MAXIMUM_SEGMENT_SIZE,
 	     error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
 		 "%s: unable to set maximum segment size in segment table.",
 		 function );
 
@@ -1912,7 +1912,7 @@ ssize_t libsmraw_handle_read_buffer(
          libsmraw_handle_t *handle,
          void *buffer,
          size_t buffer_size,
-         liberror_error_t **error )
+         libcerror_error_t **error )
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
 	static char *function                       = "libsmraw_handle_read_buffer";
@@ -1920,10 +1920,10 @@ ssize_t libsmraw_handle_read_buffer(
 
 	if( handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid handle.",
 		 function );
 
@@ -1933,10 +1933,10 @@ ssize_t libsmraw_handle_read_buffer(
 
 	if( internal_handle->file_io_pool == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
 		 "%s: invalid handle - missing file IO pool.",
 		 function );
 
@@ -1951,10 +1951,10 @@ ssize_t libsmraw_handle_read_buffer(
 
 	if( read_count == -1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_IO,
-		 LIBERROR_IO_ERROR_READ_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_IO,
+		 LIBCERROR_IO_ERROR_READ_FAILED,
 		 "%s: unable to read buffer from segment table.",
 		 function );
 
@@ -1971,7 +1971,7 @@ ssize_t libsmraw_handle_read_random(
          void *buffer,
          size_t buffer_size,
          off64_t offset,
-         liberror_error_t **error )
+         libcerror_error_t **error )
 {
 	static char *function = "libsmraw_handle_read_random";
 	ssize_t read_count    = 0;
@@ -1982,10 +1982,10 @@ ssize_t libsmraw_handle_read_random(
 	     SEEK_SET,
 	     error ) == -1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_IO,
-		 LIBERROR_IO_ERROR_SEEK_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_IO,
+		 LIBCERROR_IO_ERROR_SEEK_FAILED,
 		 "%s: unable to seek offset.",
 		 function );
 
@@ -1999,10 +1999,10 @@ ssize_t libsmraw_handle_read_random(
 
 	if( read_count <= -1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_IO,
-		 LIBERROR_IO_ERROR_READ_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_IO,
+		 LIBCERROR_IO_ERROR_READ_FAILED,
 		 "%s: unable to read buffer.",
 		 function );
 
@@ -2018,7 +2018,7 @@ ssize_t libsmraw_handle_write_buffer(
          libsmraw_handle_t *handle,
          const void *buffer,
          size_t buffer_size,
-         liberror_error_t **error )
+         libcerror_error_t **error )
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
 	static char *function                       = "libsmraw_handle_write_buffer";
@@ -2028,10 +2028,10 @@ ssize_t libsmraw_handle_write_buffer(
 
 	if( handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid handle.",
 		 function );
 
@@ -2041,10 +2041,10 @@ ssize_t libsmraw_handle_write_buffer(
 
 	if( internal_handle->file_io_pool == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
 		 "%s: invalid handle - missing file IO pool.",
 		 function );
 
@@ -2056,10 +2056,10 @@ ssize_t libsmraw_handle_write_buffer(
 		     internal_handle,
 		     error ) != 1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
 			 "%s: unable to initialize write values.",
 			 function );
 
@@ -2071,10 +2071,10 @@ ssize_t libsmraw_handle_write_buffer(
 	     &value_offset,
 	     error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 		 "%s: unable to retrieve value offset from segment table.",
 		 function );
 
@@ -2082,10 +2082,10 @@ ssize_t libsmraw_handle_write_buffer(
 	}
 	if( value_offset < 0 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
 		 "%s: invalid value offset value out of bounds.",
 		 function );
 
@@ -2103,10 +2103,10 @@ ssize_t libsmraw_handle_write_buffer(
 	     &number_of_segments,
 	     error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 		 "%s: unable to retrieve number of segments from segment table.",
 		 function );
 
@@ -2117,10 +2117,10 @@ ssize_t libsmraw_handle_write_buffer(
 		if( ( number_of_segments < 0 )
 		 || ( number_of_segments > internal_handle->total_number_of_segments ) )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-			 LIBERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
+			 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+			 LIBCERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
 			 "%s: invalid number of segments value out of bounds.",
 			 function );
 
@@ -2141,10 +2141,10 @@ ssize_t libsmraw_handle_write_buffer(
 
 	if( write_count == -1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_IO,
-		 LIBERROR_IO_ERROR_READ_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_IO,
+		 LIBCERROR_IO_ERROR_READ_FAILED,
 		 "%s: unable to write buffer to segment table.",
 		 function );
 
@@ -2161,7 +2161,7 @@ ssize_t libsmraw_handle_write_random(
          const void *buffer,
          size_t buffer_size,
          off64_t offset,
-         liberror_error_t **error )
+         libcerror_error_t **error )
 {
 	static char *function = "libsmraw_handle_write_random";
 	ssize_t write_count   = 0;
@@ -2172,10 +2172,10 @@ ssize_t libsmraw_handle_write_random(
 	     SEEK_SET,
 	     error ) == -1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_IO,
-		 LIBERROR_IO_ERROR_SEEK_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_IO,
+		 LIBCERROR_IO_ERROR_SEEK_FAILED,
 		 "%s: unable to seek offset.",
 		 function );
 
@@ -2189,10 +2189,10 @@ ssize_t libsmraw_handle_write_random(
 
 	if( write_count <= -1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_IO,
-		 LIBERROR_IO_ERROR_WRITE_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_IO,
+		 LIBCERROR_IO_ERROR_WRITE_FAILED,
 		 "%s: unable to write buffer.",
 		 function );
 
@@ -2208,17 +2208,17 @@ off64_t libsmraw_handle_seek_offset(
          libsmraw_handle_t *handle,
          off64_t offset,
          int whence,
-         liberror_error_t **error )
+         libcerror_error_t **error )
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
 	static char *function                       = "libsmraw_handle_seek_offset";
 
 	if( handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid handle.",
 		 function );
 
@@ -2228,10 +2228,10 @@ off64_t libsmraw_handle_seek_offset(
 
 	if( internal_handle->file_io_pool == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
 		 "%s: invalid handle - missing file IO pool.",
 		 function );
 
@@ -2246,10 +2246,10 @@ off64_t libsmraw_handle_seek_offset(
 
 	if( offset == -1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_IO,
-		 LIBERROR_IO_ERROR_READ_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_IO,
+		 LIBCERROR_IO_ERROR_READ_FAILED,
 		 "%s: unable to seek offset in segment table.",
 		 function );
 
@@ -2264,17 +2264,17 @@ off64_t libsmraw_handle_seek_offset(
 int libsmraw_handle_get_offset(
      libsmraw_handle_t *handle,
      off64_t *offset,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
 	static char *function                       = "libsmraw_handle_get_offset";
 
 	if( handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid handle.",
 		 function );
 
@@ -2287,10 +2287,10 @@ int libsmraw_handle_get_offset(
 	     offset,
 	     error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 		 "%s: unable to retrieve value offset from segment table.",
 		 function );
 
@@ -2305,17 +2305,17 @@ int libsmraw_handle_get_offset(
 int libsmraw_handle_set_maximum_number_of_open_handles(
      libsmraw_handle_t *handle,
      int maximum_number_of_open_handles,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
 	static char *function                       = "libsmraw_handle_set_maximum_number_of_open_handles";
 
 	if( handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid handle.",
 		 function );
 
@@ -2330,10 +2330,10 @@ int libsmraw_handle_set_maximum_number_of_open_handles(
 		     maximum_number_of_open_handles,
 		     error ) != 1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
 			 "%s: unable to set maximum number of open handles in file IO handle.",
 			 function );
 
@@ -2352,7 +2352,7 @@ int libsmraw_handle_set_segment_name(
      intptr_t *io_handle,
      libbfio_handle_t *file_io_handle,
      int segment_index,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	libcstring_system_character_t *segment_filename = NULL;
 	libsmraw_internal_handle_t *internal_handle     = NULL;
@@ -2361,10 +2361,10 @@ int libsmraw_handle_set_segment_name(
 
 	if( io_handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid handle.",
 		 function );
 
@@ -2381,10 +2381,10 @@ int libsmraw_handle_set_segment_name(
 	     segment_index,
 	     error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
 		 "%s: unable to create segment filename: %d.",
 		 function,
 		 segment_index );
@@ -2405,10 +2405,10 @@ int libsmraw_handle_set_segment_name(
 	     error ) != 1 )
 #endif
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
 		 "%s: unable to set name in file IO handle.",
 		 function );
 
@@ -2430,7 +2430,7 @@ int libsmraw_handle_set_segment_name(
 int libsmraw_handle_get_segment_filename_size(
      libsmraw_handle_t *handle,
      size_t *filename_size,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
 	static char *function                       = "libsmraw_handle_get_segment_filename_size";
@@ -2441,10 +2441,10 @@ int libsmraw_handle_get_segment_filename_size(
 
 	if( handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid handle.",
 		 function );
 
@@ -2454,10 +2454,10 @@ int libsmraw_handle_get_segment_filename_size(
 
 	if( internal_handle->basename == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
 		 "%s: invalid handle - missing basename.",
 		 function );
 
@@ -2465,17 +2465,17 @@ int libsmraw_handle_get_segment_filename_size(
 	}
 	if( filename_size == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid filename size.",
 		 function );
 
 		return( -1 );
 	}
 #if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
-	if( libcstring_narrow_system_string_codepage == 0 )
+	if( libclocale_codepage == 0 )
 	{
 #if SIZEOF_WCHAR_T == 4
 		result = libuna_utf8_string_size_from_utf32(
@@ -2499,14 +2499,14 @@ int libsmraw_handle_get_segment_filename_size(
 		result = libuna_byte_stream_size_from_utf32(
 		          (libuna_utf32_character_t *) internal_handle->basename,
 		          internal_handle->basename_size,
-		          libcstring_narrow_system_string_codepage,
+		          libclocale_codepage,
 		          filename_size,
 		          error );
 #elif SIZEOF_WCHAR_T == 2
 		result = libuna_byte_stream_size_from_utf16(
 		          (libuna_utf16_character_t *) internal_handle->basename,
 		          internal_handle->basename_size,
-		          libcstring_narrow_system_string_codepage,
+		          libclocale_codepage,
 		          filename_size,
 		          error );
 #else
@@ -2515,10 +2515,10 @@ int libsmraw_handle_get_segment_filename_size(
 	}
 	if( result != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_CONVERSION,
-		 LIBERROR_CONVERSION_ERROR_GENERIC,
+		 LIBCERROR_ERROR_DOMAIN_CONVERSION,
+		 LIBCERROR_CONVERSION_ERROR_GENERIC,
 		 "%s: unable to determine filename size.",
 		 function );
 
@@ -2538,7 +2538,7 @@ int libsmraw_handle_get_segment_filename(
      libsmraw_handle_t *handle,
      char *filename,
      size_t filename_size,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
 	static char *function                       = "libsmraw_handle_get_segment_filename";
@@ -2550,10 +2550,10 @@ int libsmraw_handle_get_segment_filename(
 
 	if( handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid handle.",
 		 function );
 
@@ -2563,10 +2563,10 @@ int libsmraw_handle_get_segment_filename(
 
 	if( internal_handle->basename == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
 		 "%s: invalid handle - missing basename.",
 		 function );
 
@@ -2574,17 +2574,17 @@ int libsmraw_handle_get_segment_filename(
 	}
 	if( filename == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid filename.",
 		 function );
 
 		return( -1 );
 	}
 #if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
-	if( libcstring_narrow_system_string_codepage == 0 )
+	if( libclocale_codepage == 0 )
 	{
 #if SIZEOF_WCHAR_T == 4
 		result = libuna_utf8_string_size_from_utf32(
@@ -2608,14 +2608,14 @@ int libsmraw_handle_get_segment_filename(
 		result = libuna_byte_stream_size_from_utf32(
 		          (libuna_utf32_character_t *) internal_handle->basename,
 		          internal_handle->basename_size,
-		          libcstring_narrow_system_string_codepage,
+		          libclocale_codepage,
 		          &narrow_filename_size,
 		          error );
 #elif SIZEOF_WCHAR_T == 2
 		result = libuna_byte_stream_size_from_utf16(
 		          (libuna_utf16_character_t *) internal_handle->basename,
 		          internal_handle->basename_size,
-		          libcstring_narrow_system_string_codepage,
+		          libclocale_codepage,
 		          &narrow_filename_size,
 		          error );
 #else
@@ -2624,10 +2624,10 @@ int libsmraw_handle_get_segment_filename(
 	}
 	if( result != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_CONVERSION,
-		 LIBERROR_CONVERSION_ERROR_GENERIC,
+		 LIBCERROR_ERROR_DOMAIN_CONVERSION,
+		 LIBCERROR_CONVERSION_ERROR_GENERIC,
 		 "%s: unable to determine filename size.",
 		 function );
 
@@ -2638,17 +2638,17 @@ int libsmraw_handle_get_segment_filename(
 #endif
 	if( filename_size < narrow_filename_size )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_VALUE_TOO_SMALL,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_TOO_SMALL,
 		 "%s: filename too small.",
 		 function );
 
 		return( -1 );
 	}
 #if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
-	if( libcstring_narrow_system_string_codepage == 0 )
+	if( libclocale_codepage == 0 )
 	{
 #if SIZEOF_WCHAR_T == 4
 		result = libuna_utf8_string_copy_from_utf32(
@@ -2674,7 +2674,7 @@ int libsmraw_handle_get_segment_filename(
 		result = libuna_byte_stream_copy_from_utf32(
 		          (uint8_t *) filename,
 		          filename_size,
-		          libcstring_narrow_system_string_codepage,
+		          libclocale_codepage,
 		          (libuna_utf32_character_t *) internal_handle->basename,
 		          internal_handle->basename_size,
 		          error );
@@ -2682,7 +2682,7 @@ int libsmraw_handle_get_segment_filename(
 		result = libuna_byte_stream_copy_from_utf16(
 		          (uint8_t *) filename,
 		          filename_size,
-		          libcstring_narrow_system_string_codepage,
+		          libclocale_codepage,
 		          (libuna_utf16_character_t *) internal_handle->basename,
 		          internal_handle->basename_size,
 		          error );
@@ -2692,10 +2692,10 @@ int libsmraw_handle_get_segment_filename(
 	}
 	if( result != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_CONVERSION,
-		 LIBERROR_CONVERSION_ERROR_GENERIC,
+		 LIBCERROR_ERROR_DOMAIN_CONVERSION,
+		 LIBCERROR_CONVERSION_ERROR_GENERIC,
 		 "%s: unable to set filename.",
 		 function );
 
@@ -2707,10 +2707,10 @@ int libsmraw_handle_get_segment_filename(
 	     internal_handle->basename,
 	     internal_handle->basename_size ) == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_MEMORY,
-		 LIBERROR_MEMORY_ERROR_COPY_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_MEMORY,
+		 LIBCERROR_MEMORY_ERROR_COPY_FAILED,
 		 "%s: unable to set filename.",
 		 function );
 
@@ -2728,7 +2728,7 @@ int libsmraw_handle_set_segment_filename(
      libsmraw_handle_t *handle,
      const char *filename,
      size_t filename_length,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
 	static char *function                       = "libsmraw_handle_set_segment_filename";
@@ -2739,10 +2739,10 @@ int libsmraw_handle_set_segment_filename(
 
 	if( handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid handle.",
 		 function );
 
@@ -2752,10 +2752,10 @@ int libsmraw_handle_set_segment_filename(
 
 	if( internal_handle->basename != NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
 		 "%s: invalid handle - basename already set.",
 		 function );
 
@@ -2763,10 +2763,10 @@ int libsmraw_handle_set_segment_filename(
 	}
 	if( filename == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid filename.",
 		 function );
 
@@ -2774,10 +2774,10 @@ int libsmraw_handle_set_segment_filename(
 	}
 	if( filename_length == 0 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_VALUE_ZERO_OR_LESS,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_ZERO_OR_LESS,
 		 "%s: invalid filename length is zero.",
 		 function );
 
@@ -2785,10 +2785,10 @@ int libsmraw_handle_set_segment_filename(
 	}
 	if( filename_length > (size_t) SSIZE_MAX )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
 		 "%s: invalid filename length value exceeds maximum.",
 		 function );
 
@@ -2798,10 +2798,10 @@ int libsmraw_handle_set_segment_filename(
 	{
 		if( internal_handle->file_io_pool != NULL )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
 			 "%s: basename already set: %" PRIs_LIBCSTRING_SYSTEM ".",
 			 function,
 			 internal_handle->basename );
@@ -2815,7 +2815,7 @@ int libsmraw_handle_set_segment_filename(
 		 internal_handle->basename_size = 0;
 	}
 #if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
-	if( libcstring_narrow_system_string_codepage == 0 )
+	if( libclocale_codepage == 0 )
 	{
 #if SIZEOF_WCHAR_T == 4
 		result = libuna_utf32_string_size_from_utf8(
@@ -2839,14 +2839,14 @@ int libsmraw_handle_set_segment_filename(
 		result = libuna_utf32_string_size_from_byte_stream(
 		          (uint8_t *) filename,
 		          filename_length + 1,
-		          libcstring_narrow_system_string_codepage,
+		          libclocale_codepage,
 		          &( internal_handle->basename_size ),
 		          error );
 #elif SIZEOF_WCHAR_T == 2
 		result = libuna_utf16_string_size_from_byte_stream(
 		          (uint8_t *) filename,
 		          filename_length + 1,
-		          libcstring_narrow_system_string_codepage,
+		          libclocale_codepage,
 		          &( internal_handle->basename_size ),
 		          error );
 #else
@@ -2855,10 +2855,10 @@ int libsmraw_handle_set_segment_filename(
 	}
 	if( result != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_CONVERSION,
-		 LIBERROR_CONVERSION_ERROR_GENERIC,
+		 LIBCERROR_ERROR_DOMAIN_CONVERSION,
+		 LIBCERROR_CONVERSION_ERROR_GENERIC,
 		 "%s: unable to determine name size.",
 		 function );
 
@@ -2872,17 +2872,17 @@ int libsmraw_handle_set_segment_filename(
 
 	if( internal_handle->basename == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_MEMORY,
-		 LIBERROR_MEMORY_ERROR_INSUFFICIENT,
+		 LIBCERROR_ERROR_DOMAIN_MEMORY,
+		 LIBCERROR_MEMORY_ERROR_INSUFFICIENT,
 		 "%s: unable to create basename.",
 		 function );
 
 		return( -1 );
 	}
 #if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
-	if( libcstring_narrow_system_string_codepage == 0 )
+	if( libclocale_codepage == 0 )
 	{
 #if SIZEOF_WCHAR_T == 4
 		result = libuna_utf32_string_copy_from_utf8(
@@ -2910,7 +2910,7 @@ int libsmraw_handle_set_segment_filename(
 		          internal_handle->basename_size,
 		          (uint8_t *) filename,
 		          filename_length + 1,
-		          libcstring_narrow_system_string_codepage,
+		          libclocale_codepage,
 		          error );
 #elif SIZEOF_WCHAR_T == 2
 		result = libuna_utf16_string_copy_from_byte_stream(
@@ -2918,7 +2918,7 @@ int libsmraw_handle_set_segment_filename(
 		          internal_handle->basename_size,
 		          (uint8_t *) filename,
 		          filename_length + 1,
-		          libcstring_narrow_system_string_codepage,
+		          libclocale_codepage,
 		          error );
 #else
 #error Unsupported size of wchar_t
@@ -2926,10 +2926,10 @@ int libsmraw_handle_set_segment_filename(
 	}
 	if( result != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_CONVERSION,
-		 LIBERROR_CONVERSION_ERROR_GENERIC,
+		 LIBCERROR_ERROR_DOMAIN_CONVERSION,
+		 LIBCERROR_CONVERSION_ERROR_GENERIC,
 		 "%s: unable to set basename.",
 		 function );
 
@@ -2947,10 +2947,10 @@ int libsmraw_handle_set_segment_filename(
 	     filename,
 	     filename_length + 1 ) == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_MEMORY,
-		 LIBERROR_MEMORY_ERROR_COPY_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_MEMORY,
+		 LIBCERROR_MEMORY_ERROR_COPY_FAILED,
 		 "%s: unable to set basename.",
 		 function );
 
@@ -2976,7 +2976,7 @@ int libsmraw_handle_set_segment_filename(
 int libsmraw_handle_get_segment_filename_size_wide(
      libsmraw_handle_t *handle,
      size_t *filename_size,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
 	static char *function                       = "libsmraw_handle_get_segment_filename_size_wide";
@@ -2987,10 +2987,10 @@ int libsmraw_handle_get_segment_filename_size_wide(
 
 	if( handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid handle.",
 		 function );
 
@@ -3000,10 +3000,10 @@ int libsmraw_handle_get_segment_filename_size_wide(
 
 	if( internal_handle->basename == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
 		 "%s: invalid handle - missing basename.",
 		 function );
 
@@ -3011,10 +3011,10 @@ int libsmraw_handle_get_segment_filename_size_wide(
 	}
 	if( filename_size == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid filename size.",
 		 function );
 
@@ -3023,7 +3023,7 @@ int libsmraw_handle_get_segment_filename_size_wide(
 #if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
 	*filename_size = internal_handle->basename_size;
 #else
-	if( libcstring_narrow_system_string_codepage == 0 )
+	if( libclocale_codepage == 0 )
 	{
 #if SIZEOF_WCHAR_T == 4
 		result = libuna_utf32_string_size_from_utf8(
@@ -3047,14 +3047,14 @@ int libsmraw_handle_get_segment_filename_size_wide(
 		result = libuna_utf32_string_size_from_byte_stream(
 		          (uint8_t *) internal_handle->basename,
 		          internal_handle->basename_size,
-		          libcstring_narrow_system_string_codepage,
+		          libclocale_codepage,
 		          filename_size,
 		          error );
 #elif SIZEOF_WCHAR_T == 2
 		result = libuna_utf16_string_size_from_byte_stream(
 		          (uint8_t *) internal_handle->basename,
 		          internal_handle->basename_size,
-		          libcstring_narrow_system_string_codepage,
+		          libclocale_codepage,
 		          filename_size,
 		          error );
 #else
@@ -3063,10 +3063,10 @@ int libsmraw_handle_get_segment_filename_size_wide(
 	}
 	if( result != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_CONVERSION,
-		 LIBERROR_CONVERSION_ERROR_GENERIC,
+		 LIBCERROR_ERROR_DOMAIN_CONVERSION,
+		 LIBCERROR_CONVERSION_ERROR_GENERIC,
 		 "%s: unable to determine filename size.",
 		 function );
 
@@ -3084,7 +3084,7 @@ int libsmraw_handle_get_segment_filename_wide(
      libsmraw_handle_t *handle,
      wchar_t *filename,
      size_t filename_size,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
 	static char *function                      = "libsmraw_handle_get_segment_filename_wide";
@@ -3096,10 +3096,10 @@ int libsmraw_handle_get_segment_filename_wide(
 
 	if( handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid handle.",
 		 function );
 
@@ -3109,10 +3109,10 @@ int libsmraw_handle_get_segment_filename_wide(
 
 	if( internal_handle->basename == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
 		 "%s: invalid handle - missing basename.",
 		 function );
 
@@ -3120,10 +3120,10 @@ int libsmraw_handle_get_segment_filename_wide(
 	}
 	if( filename == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid filename.",
 		 function );
 
@@ -3132,7 +3132,7 @@ int libsmraw_handle_get_segment_filename_wide(
 #if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
 	wide_filename_size = internal_handle->basename_size;
 #else
-	if( libcstring_narrow_system_string_codepage == 0 )
+	if( libclocale_codepage == 0 )
 	{
 #if SIZEOF_WCHAR_T == 4
 		result = libuna_utf32_string_size_from_utf8(
@@ -3156,14 +3156,14 @@ int libsmraw_handle_get_segment_filename_wide(
 		result = libuna_utf32_string_size_from_byte_stream(
 		          (uint8_t *) internal_handle->basename,
 		          internal_handle->basename_size,
-		          libcstring_narrow_system_string_codepage,
+		          libclocale_codepage,
 		          &wide_filename_size,
 		          error );
 #elif SIZEOF_WCHAR_T == 2
 		result = libuna_utf16_string_size_from_byte_stream(
 		          (uint8_t *) internal_handle->basename,
 		          internal_handle->basename_size,
-		          libcstring_narrow_system_string_codepage,
+		          libclocale_codepage,
 		          &wide_filename_size,
 		          error );
 #else
@@ -3172,10 +3172,10 @@ int libsmraw_handle_get_segment_filename_wide(
 	}
 	if( result != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_CONVERSION,
-		 LIBERROR_CONVERSION_ERROR_GENERIC,
+		 LIBCERROR_ERROR_DOMAIN_CONVERSION,
+		 LIBCERROR_CONVERSION_ERROR_GENERIC,
 		 "%s: unable to determine filename size.",
 		 function );
 
@@ -3184,10 +3184,10 @@ int libsmraw_handle_get_segment_filename_wide(
 #endif
 	if( filename_size < wide_filename_size )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_VALUE_TOO_SMALL,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_TOO_SMALL,
 		 "%s: filename too small.",
 		 function );
 
@@ -3199,10 +3199,10 @@ int libsmraw_handle_get_segment_filename_wide(
 	     internal_handle->basename,
 	     internal_handle->basename_size ) == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_MEMORY,
-		 LIBERROR_MEMORY_ERROR_COPY_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_MEMORY,
+		 LIBCERROR_MEMORY_ERROR_COPY_FAILED,
 		 "%s: unable to set filename.",
 		 function );
 
@@ -3210,7 +3210,7 @@ int libsmraw_handle_get_segment_filename_wide(
 	}
 	filename[ internal_handle->basename_size - 1 ] = 0;
 #else
-	if( libcstring_narrow_system_string_codepage == 0 )
+	if( libclocale_codepage == 0 )
 	{
 #if SIZEOF_WCHAR_T == 4
 		result = libuna_utf32_string_copy_from_utf8(
@@ -3238,7 +3238,7 @@ int libsmraw_handle_get_segment_filename_wide(
 		          filename_size,
 		          (uint8_t *) internal_handle->basename,
 		          internal_handle->basename_size,
-		          libcstring_narrow_system_string_codepage,
+		          libclocale_codepage,
 		          error );
 #elif SIZEOF_WCHAR_T == 2
 		result = libuna_utf16_string_copy_from_byte_stream(
@@ -3246,7 +3246,7 @@ int libsmraw_handle_get_segment_filename_wide(
 		          filename_size,
 		          (uint8_t *) internal_handle->basename,
 		          internal_handle->basename_size,
-		          libcstring_narrow_system_string_codepage,
+		          libclocale_codepage,
 		          error );
 #else
 #error Unsupported size of wchar_t
@@ -3254,10 +3254,10 @@ int libsmraw_handle_get_segment_filename_wide(
 	}
 	if( result != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_CONVERSION,
-		 LIBERROR_CONVERSION_ERROR_GENERIC,
+		 LIBCERROR_ERROR_DOMAIN_CONVERSION,
+		 LIBCERROR_CONVERSION_ERROR_GENERIC,
 		 "%s: unable to set filename.",
 		 function );
 
@@ -3274,7 +3274,7 @@ int libsmraw_handle_set_segment_filename_wide(
      libsmraw_handle_t *handle,
      const wchar_t *filename,
      size_t filename_length,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
 	static char *function                       = "libsmraw_handle_set_segment_filename_wide";
@@ -3285,10 +3285,10 @@ int libsmraw_handle_set_segment_filename_wide(
 
 	if( handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid handle.",
 		 function );
 
@@ -3298,10 +3298,10 @@ int libsmraw_handle_set_segment_filename_wide(
 
 	if( filename == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid filename.",
 		 function );
 
@@ -3309,10 +3309,10 @@ int libsmraw_handle_set_segment_filename_wide(
 	}
 	if( filename_length == 0 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_VALUE_ZERO_OR_LESS,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_ZERO_OR_LESS,
 		 "%s: invalid filename length is zero.",
 		 function );
 
@@ -3320,10 +3320,10 @@ int libsmraw_handle_set_segment_filename_wide(
 	}
 	if( filename_length > (size_t) SSIZE_MAX )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
 		 "%s: invalid filename length value exceeds maximum.",
 		 function );
 
@@ -3333,10 +3333,10 @@ int libsmraw_handle_set_segment_filename_wide(
 	{
 		if( internal_handle->file_io_pool != NULL )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
 			 "%s: basename already set: %" PRIs_LIBCSTRING_SYSTEM ".",
 			 function,
 			 internal_handle->basename );
@@ -3352,7 +3352,7 @@ int libsmraw_handle_set_segment_filename_wide(
 #if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
 	internal_handle->basename_size = filename_length + 1;
 #else
-	if( libcstring_narrow_system_string_codepage == 0 )
+	if( libclocale_codepage == 0 )
 	{
 #if SIZEOF_WCHAR_T == 4
 		result = libuna_utf8_string_size_from_utf32(
@@ -3376,14 +3376,14 @@ int libsmraw_handle_set_segment_filename_wide(
 		result = libuna_byte_stream_size_from_utf32(
 		          (libuna_utf32_character_t *) filename,
 		          filename_length + 1,
-		          libcstring_narrow_system_string_codepage,
+		          libclocale_codepage,
 		          &( internal_handle->basename_size ),
 		          error );
 #elif SIZEOF_WCHAR_T == 2
 		result = libuna_byte_stream_size_from_utf16(
 		          (libuna_utf16_character_t *) filename,
 		          filename_length + 1,
-		          libcstring_narrow_system_string_codepage,
+		          libclocale_codepage,
 		          &( internal_handle->basename_size ),
 		          error );
 #else
@@ -3392,10 +3392,10 @@ int libsmraw_handle_set_segment_filename_wide(
 	}
 	if( result != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_CONVERSION,
-		 LIBERROR_CONVERSION_ERROR_GENERIC,
+		 LIBCERROR_ERROR_DOMAIN_CONVERSION,
+		 LIBCERROR_CONVERSION_ERROR_GENERIC,
 		 "%s: unable to determine name size.",
 		 function );
 
@@ -3408,10 +3408,10 @@ int libsmraw_handle_set_segment_filename_wide(
 
 	if( internal_handle->basename == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_MEMORY,
-		 LIBERROR_MEMORY_ERROR_INSUFFICIENT,
+		 LIBCERROR_ERROR_DOMAIN_MEMORY,
+		 LIBCERROR_MEMORY_ERROR_INSUFFICIENT,
 		 "%s: unable to create basename.",
 		 function );
 
@@ -3423,10 +3423,10 @@ int libsmraw_handle_set_segment_filename_wide(
 	     filename,
 	     filename_length + 1 ) == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_MEMORY,
-		 LIBERROR_MEMORY_ERROR_COPY_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_MEMORY,
+		 LIBCERROR_MEMORY_ERROR_COPY_FAILED,
 		 "%s: unable to set filename.",
 		 function );
 
@@ -3440,7 +3440,7 @@ int libsmraw_handle_set_segment_filename_wide(
 	}
 	internal_handle->basename[ filename_length ] = 0;
 #else
-	if( libcstring_narrow_system_string_codepage == 0 )
+	if( libclocale_codepage == 0 )
 	{
 #if SIZEOF_WCHAR_T == 4
 		result = libuna_utf8_string_copy_from_utf32(
@@ -3466,7 +3466,7 @@ int libsmraw_handle_set_segment_filename_wide(
 		result = libuna_byte_stream_copy_from_utf32(
 		          (uint8_t *) internal_handle->basename,
 		          internal_handle->basename_size,
-		          libcstring_narrow_system_string_codepage,
+		          libclocale_codepage,
 		          (libuna_utf32_character_t *) filename,
 		          filename_length + 1,
 		          error );
@@ -3474,7 +3474,7 @@ int libsmraw_handle_set_segment_filename_wide(
 		result = libuna_byte_stream_copy_from_utf16(
 		          (uint8_t *) internal_handle->basename,
 		          internal_handle->basename_size,
-		          libcstring_narrow_system_string_codepage,
+		          libclocale_codepage,
 		          (libuna_utf16_character_t *) filename,
 		          filename_length + 1,
 		          error );
@@ -3484,10 +3484,10 @@ int libsmraw_handle_set_segment_filename_wide(
 	}
 	if( result != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_CONVERSION,
-		 LIBERROR_CONVERSION_ERROR_GENERIC,
+		 LIBCERROR_ERROR_DOMAIN_CONVERSION,
+		 LIBCERROR_CONVERSION_ERROR_GENERIC,
 		 "%s: unable to set filename.",
 		 function );
 
@@ -3513,17 +3513,17 @@ int libsmraw_handle_set_segment_filename_wide(
 int libsmraw_handle_get_maximum_segment_size(
      libsmraw_handle_t *handle,
      size64_t *maximum_segment_size,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
 	static char *function                       = "libsmraw_handle_get_maximum_segment_size";
 
 	if( handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid handle.",
 		 function );
 
@@ -3536,10 +3536,10 @@ int libsmraw_handle_get_maximum_segment_size(
 	     maximum_segment_size,
 	     error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 		 "%s: unable to retrieve maximum segment size from segment table.",
 		 function );
 
@@ -3555,17 +3555,17 @@ int libsmraw_handle_get_maximum_segment_size(
 int libsmraw_handle_set_maximum_segment_size(
      libsmraw_handle_t *handle,
      size64_t maximum_segment_size,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
 	static char *function                       = "libsmraw_handle_set_maximum_segment_size";
 
 	if( handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid handle.",
 		 function );
 
@@ -3575,10 +3575,10 @@ int libsmraw_handle_set_maximum_segment_size(
 
 	if( internal_handle->write_values_initialized != 0 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_SET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
 		 "%s: segment file size cannot be changed.",
 		 function );
 
@@ -3589,10 +3589,10 @@ int libsmraw_handle_set_maximum_segment_size(
 	     maximum_segment_size,
 	     error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 		 "%s: unable to set maximum segment size in segment table.",
 		 function );
 
@@ -3608,17 +3608,17 @@ int libsmraw_handle_set_maximum_segment_size(
 int libsmraw_handle_get_filename_size(
      libsmraw_handle_t *handle,
      size_t *filename_size,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	libbfio_handle_t *file_io_handle = NULL;
 	static char *function            = "libsmraw_handle_get_filename_size";
 
 	if( handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid handle.",
 		 function );
 
@@ -3629,10 +3629,10 @@ int libsmraw_handle_get_filename_size(
 	     &file_io_handle,
 	     error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 		 "%s: unable to retrieve file IO handle for current offset.",
 		 function );
 
@@ -3643,10 +3643,10 @@ int libsmraw_handle_get_filename_size(
 	     filename_size,
 	     error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 		 "%s: unable to retrieve filename size.",
 		 function );
 
@@ -3663,17 +3663,17 @@ int libsmraw_handle_get_filename(
      libsmraw_handle_t *handle,
      char *filename,
      size_t filename_size,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	libbfio_handle_t *file_io_handle = NULL;
 	static char *function            = "libsmraw_handle_get_filename";
 
 	if( handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid handle.",
 		 function );
 
@@ -3684,10 +3684,10 @@ int libsmraw_handle_get_filename(
 	     &file_io_handle,
 	     error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 		 "%s: unable to retrieve file IO handle for current offset.",
 		 function );
 
@@ -3699,10 +3699,10 @@ int libsmraw_handle_get_filename(
 	     filename_size,
 	     error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 		 "%s: unable to retrieve filename.",
 		 function );
 
@@ -3720,17 +3720,17 @@ int libsmraw_handle_get_filename(
 int libsmraw_handle_get_filename_size_wide(
      libsmraw_handle_t *handle,
      size_t *filename_size,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	libbfio_handle_t *file_io_handle = NULL;
 	static char *function            = "libsmraw_handle_get_filename_size_wide";
 
 	if( handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid handle.",
 		 function );
 
@@ -3741,10 +3741,10 @@ int libsmraw_handle_get_filename_size_wide(
 	     &file_io_handle,
 	     error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 		 "%s: unable to retrieve file IO handle for current offset.",
 		 function );
 
@@ -3755,10 +3755,10 @@ int libsmraw_handle_get_filename_size_wide(
 	     filename_size,
 	     error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 		 "%s: unable to retrieve filename size.",
 		 function );
 
@@ -3775,17 +3775,17 @@ int libsmraw_handle_get_filename_wide(
      libsmraw_handle_t *handle,
      wchar_t *filename,
      size_t filename_size,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	libbfio_handle_t *file_io_handle = NULL;
 	static char *function            = "libsmraw_handle_get_filename_wide";
 
 	if( handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid handle.",
 		 function );
 
@@ -3796,10 +3796,10 @@ int libsmraw_handle_get_filename_wide(
 	     &file_io_handle,
 	     error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 		 "%s: unable to retrieve file IO handle for current offset.",
 		 function );
 
@@ -3811,10 +3811,10 @@ int libsmraw_handle_get_filename_wide(
 	     filename_size,
 	     error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 		 "%s: unable to retrieve filename.",
 		 function );
 
@@ -3831,17 +3831,17 @@ int libsmraw_handle_get_filename_wide(
 int libsmraw_handle_get_file_io_handle(
      libsmraw_handle_t *handle,
      libbfio_handle_t **file_io_handle,
-     liberror_error_t **error )
+     libcerror_error_t **error )
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
 	static char *function                       = "libsmraw_handle_get_file_io_handle";
 
 	if( handle == NULL )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid handle.",
 		 function );
 
@@ -3855,10 +3855,10 @@ int libsmraw_handle_get_file_io_handle(
 	     file_io_handle,
 	     error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_GET_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 		 "%s: unable to retrieve file IO handle from segment table.", 
 		 function );
 

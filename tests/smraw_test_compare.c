@@ -1,7 +1,7 @@
 /*
  * Storage media (SM) RAW library read compare testing program
  *
- * Copyright (c) 2010-2012, Joachim Metz <jbmetz@users.sourceforge.net>
+ * Copyright (c) 2010-2012, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -20,17 +20,15 @@
  */
 
 #include <common.h>
+#include <file_stream.h>
 #include <memory.h>
-
-#include <libcstring.h>
 
 #if defined( HAVE_STDLIB_H ) || defined( WINAPI )
 #include <stdlib.h>
 #endif
 
-#include <stdio.h>
-
 #include "digest_hash.h"
+#include "smraw_test_libcstring.h"
 #include "smraw_test_libhmac.h"
 #include "smraw_test_libsmraw.h"
 
@@ -348,10 +346,10 @@ int smraw_test_compare_case0(
 	     &md5_context_single,
 	     &error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 &error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
 		 "%s: unable to free MD5 context.",
 		 function );
 
@@ -361,10 +359,10 @@ int smraw_test_compare_case0(
 	     &md5_context_multi,
 	     &error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 &error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
 		 "%s: unable to free MD5 context.",
 		 function );
 
@@ -538,10 +536,10 @@ int smraw_test_compare_case1(
 		     &md5_context_single,
 		     &error ) != 1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 &error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
 			 "%s: unable to free MD5 context.",
 			 function );
 
@@ -551,10 +549,10 @@ int smraw_test_compare_case1(
 		     &md5_context_multi,
 		     &error ) != 1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 &error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
 			 "%s: unable to free MD5 context.",
 			 function );
 
@@ -777,10 +775,10 @@ int smraw_test_compare_case2(
 		     &md5_context_single,
 		     &error ) != 1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 &error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
 			 "%s: unable to free MD5 context.",
 			 function );
 
@@ -790,10 +788,10 @@ int smraw_test_compare_case2(
 		     &md5_context_multi,
 		     &error ) != 1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 &error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
 			 "%s: unable to free MD5 context.",
 			 function );
 
@@ -1015,10 +1013,10 @@ int smraw_test_compare_case3(
 		     &md5_context_single,
 		     &error ) != 1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 &error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
 			 "%s: unable to free MD5 context.",
 			 function );
 
@@ -1028,10 +1026,10 @@ int smraw_test_compare_case3(
 		     &md5_context_multi,
 		     &error ) != 1 )
 		{
-			liberror_error_set(
+			libcerror_error_set(
 			 &error,
-			 LIBERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
 			 "%s: unable to free MD5 context.",
 			 function );
 
@@ -1266,10 +1264,10 @@ int smraw_test_compare_case4a(
 	     &md5_context_single,
 	     &error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 &error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
 		 "%s: unable to free MD5 context.",
 		 function );
 
@@ -1279,10 +1277,10 @@ int smraw_test_compare_case4a(
 	     &md5_context_multi,
 	     &error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 &error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
 		 "%s: unable to free MD5 context.",
 		 function );
 
@@ -1502,10 +1500,10 @@ int smraw_test_compare_case4b(
 	     &md5_context_single,
 	     &error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 &error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
 		 "%s: unable to free MD5 context.",
 		 function );
 
@@ -1515,10 +1513,10 @@ int smraw_test_compare_case4b(
 	     &md5_context_multi,
 	     &error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 &error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
 		 "%s: unable to free MD5 context.",
 		 function );
 
@@ -1738,10 +1736,10 @@ int smraw_test_compare_case5a(
 	     &md5_context_single,
 	     &error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 &error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
 		 "%s: unable to free MD5 context.",
 		 function );
 
@@ -1751,10 +1749,10 @@ int smraw_test_compare_case5a(
 	     &md5_context_multi,
 	     &error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 &error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
 		 "%s: unable to free MD5 context.",
 		 function );
 
@@ -1974,10 +1972,10 @@ int smraw_test_compare_case5b(
 	     &md5_context_single,
 	     &error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 &error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
 		 "%s: unable to free MD5 context.",
 		 function );
 
@@ -1987,10 +1985,10 @@ int smraw_test_compare_case5b(
 	     &md5_context_multi,
 	     &error ) != 1 )
 	{
-		liberror_error_set(
+		libcerror_error_set(
 		 &error,
-		 LIBERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
 		 "%s: unable to free MD5 context.",
 		 function );
 

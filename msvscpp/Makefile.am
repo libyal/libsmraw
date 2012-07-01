@@ -1,12 +1,15 @@
 EXTRA_DIST = \
 	libbfio/libbfio.vcproj \
+	libcerror/libcerror.vcproj \
+	libcfile/libcfile.vcproj \
+	libclocale/libclocale.vcproj \
+	libcnotify/libcnotify.vcproj \
+	libcpath/libcpath.vcproj \
 	libcstring/libcstring.vcproj \
-	liberror/liberror.vcproj \
 	libfvalue/libfvalue.vcproj \
 	libhmac/libhmac.vcproj \
 	libmfcache/libmfcache.vcproj \
 	libmfdata/libmfdata.vcproj \
-	libnotify/libnotify.vcproj \
 	libsmraw_dll/libsmraw_dll.vcproj \
 	libuna/libuna.vcproj \
 	libsmraw.sln \
