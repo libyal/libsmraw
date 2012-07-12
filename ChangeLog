@@ -31,6 +31,9 @@ Test
 Beta release
 * remove deprecated functions in libsmraw_legacy.[ch]
 
+20120712
+* applied updates
+
 20120701
 * applied updates
 * libcsplit update
