@@ -3,9 +3,7 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/common \
 	@LIBCSTRING_CPPFLAGS@ \
 	@LIBCERROR_CPPFLAGS@ \
-	-I$(top_srcdir)/libsmraw \
 	@LIBHMAC_CPPFLAGS@ \
-	@MEMWATCH_CPPFLAGS@ \
 	@LIBSMRAW_DLL_IMPORT@
 
 TESTS = \
@@ -42,13 +40,12 @@ smraw_test_compare_SOURCES = \
 	smraw_test_compare.c
 
 smraw_test_compare_LDADD = \
-	@LIBCSTRING_LIBADD@ \
-	@LIBCERROR_LIBADD@ \
-	../libsmraw/libsmraw.la \
 	@LIBHMAC_LIBADD@ \
 	@LIBCRYPTO_LIBADD@ \
-	@LIBDL_LIBADD@ \
-        @MEMWATCH_LIBADD@
+	../libsmraw/libsmraw.la \
+	@LIBCERROR_LIBADD@ \
+	@LIBCSTRING_LIBADD@ \
+	@LIBDL_LIBADD@
 
 smraw_test_glob_SOURCES = \
 	smraw_test_libcstring.h \
@@ -56,9 +53,8 @@ smraw_test_glob_SOURCES = \
 	smraw_test_glob.c
 
 smraw_test_glob_LDADD = \
-	@LIBCSTRING_LIBADD@ \
 	../libsmraw/libsmraw.la \
-        @MEMWATCH_LIBADD@
+	@LIBCSTRING_LIBADD@
 
 smraw_test_read_SOURCES = \
 	smraw_test_libcerror.h \
@@ -67,10 +63,9 @@ smraw_test_read_SOURCES = \
 	smraw_test_read.c
 
 smraw_test_read_LDADD = \
-	@LIBCSTRING_LIBADD@ \
-	@LIBCERROR_LIBADD@ \
 	../libsmraw/libsmraw.la \
-        @MEMWATCH_LIBADD@
+	@LIBCERROR_LIBADD@ \
+	@LIBCSTRING_LIBADD@
 
 smraw_test_read_loop_SOURCES = \
 	smraw_test_libcstring.h \
@@ -78,9 +73,8 @@ smraw_test_read_loop_SOURCES = \
 	smraw_test_read_loop.c
 
 smraw_test_read_loop_LDADD = \
-	@LIBCSTRING_LIBADD@ \
 	../libsmraw/libsmraw.la \
-        @MEMWATCH_LIBADD@
+	@LIBCSTRING_LIBADD@
 
 smraw_test_seek_SOURCES = \
 	smraw_test_libcstring.h \
@@ -88,9 +82,8 @@ smraw_test_seek_SOURCES = \
 	smraw_test_seek.c
 
 smraw_test_seek_LDADD = \
-	@LIBCSTRING_LIBADD@ \
 	../libsmraw/libsmraw.la \
-        @MEMWATCH_LIBADD@
+	@LIBCSTRING_LIBADD@
 
 smraw_test_write_SOURCES = \
 	smraw_test_libcstring.h \
@@ -99,12 +92,11 @@ smraw_test_write_SOURCES = \
 	smraw_test_write.c
 
 smraw_test_write_LDADD = \
-	@LIBCSTRING_LIBADD@ \
-	../libsmraw/libsmraw.la \
-	@LIBHMAC_LIBADD@ \
 	@LIBCRYPTO_LIBADD@ \
-	@LIBDL_LIBADD@ \
-        @MEMWATCH_LIBADD@
+	@LIBHMAC_LIBADD@ \
+	../libsmraw/libsmraw.la \
+	@LIBCSTRING_LIBADD@ \
+	@LIBDL_LIBADD@
 
 MAINTAINERCLEANFILES = \
 	Makefile.in

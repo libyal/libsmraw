@@ -1,11 +1,13 @@
 EXTRA_DIST = \
 	libbfio/libbfio.vcproj \
+	libcdata/libcdata.vcproj \
 	libcerror/libcerror.vcproj \
 	libcfile/libcfile.vcproj \
 	libclocale/libclocale.vcproj \
 	libcnotify/libcnotify.vcproj \
 	libcpath/libcpath.vcproj \
 	libcstring/libcstring.vcproj \
+	libcsplit/libcsplit.vcproj \
 	libfvalue/libfvalue.vcproj \
 	libhmac/libhmac.vcproj \
 	libmfcache/libmfcache.vcproj \
