@@ -1,5 +1,5 @@
 /*
- * The internal libmfcache header
+ * The internal libfcache header
  *
  * Copyright (c) 2010-2012, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -19,33 +19,34 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _LIBSMRAW_LIBMFCACHE_H )
-#define _LIBSMRAW_LIBMFCACHE_H
+#if !defined( _LIBSMRAW_LIBFCACHE_H )
+#define _LIBSMRAW_LIBFCACHE_H
 
 #include <common.h>
 
-/* Define HAVE_LOCAL_LIBMFCACHE for local use of libmfcache
+/* Define HAVE_LOCAL_LIBFCACHE for local use of libfcache
  */
-#if defined( HAVE_LOCAL_LIBMFCACHE )
+#if defined( HAVE_LOCAL_LIBFCACHE )
 
-#include <libmfcache_cache.h>
-#include <libmfcache_date_time.h>
-#include <libmfcache_definitions.h>
-#include <libmfcache_types.h>
+#include <libfcache_cache.h>
+#include <libfcache_cache_value.h>
+#include <libfcache_date_time.h>
+#include <libfcache_definitions.h>
+#include <libfcache_types.h>
 
-#elif defined( HAVE_LIBMFCACHE_H )
+#elif defined( HAVE_LIBFCACHE_H )
 
-/* If libtool DLL support is enabled set LIBMFCACHE_DLL_IMPORT
- * before including libmfcache.h
+/* If libtool DLL support is enabled set LIBFCACHE_DLL_IMPORT
+ * before including libfcache.h
  */
 #if defined( _WIN32 ) && defined( DLL_IMPORT )
-#define LIBMFCACHE_DLL_IMPORT
+#define LIBFCACHE_DLL_IMPORT
 #endif
 
-#include <libmfcache.h>
+#include <libfcache.h>
 
 #else
-#error Missing libmfcache.h
+#error Missing libfcache.h
 #endif
 
 #endif

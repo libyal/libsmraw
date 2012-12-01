@@ -8,9 +8,9 @@ EXTRA_DIST = \
 	libcpath/libcpath.vcproj \
 	libcstring/libcstring.vcproj \
 	libcsplit/libcsplit.vcproj \
+	libfcache/libfcache.vcproj \
 	libfvalue/libfvalue.vcproj \
 	libhmac/libhmac.vcproj \
-	libmfcache/libmfcache.vcproj \
 	libmfdata/libmfdata.vcproj \
 	libsmraw_dll/libsmraw_dll.vcproj \
 	libuna/libuna.vcproj \

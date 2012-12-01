@@ -30,22 +30,27 @@ Test
 Beta release
 * remove deprecated functions in libsmraw_legacy.[ch]
 
+20121201
+* updated dependencies
+* changes due to libmfcache and libfcache merge
+* changes due to libmfdata and libfdata merge
+
 20120923
-* applied updates
+* updated dependencies
 * updates msvscpp files
 
 20120712
-* applied updates
+* updated dependencies
 
 20120701
-* applied updates
+* updated dependencies
 * libcsplit update
 
 20120630
-* applied updates
+* updated dependencies
 
 20120519
-* applied updates
+* updated dependencies
 * disabled borland codegear files
 * added smrawmount destroy
 

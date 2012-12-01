@@ -11,8 +11,8 @@ AM_CPPFLAGS = \
 	@LIBCFILE_CPPFLAGS@ \
 	@LIBCPATH_CPPFLAGS@ \
 	@LIBBFIO_CPPFLAGS@ \
+	@LIBFCACHE_CPPFLAGS@ \
 	@LIBFVALUE_CPPFLAGS@ \
-	@LIBMFCACHE_CPPFLAGS@ \
 	@LIBMFDATA_CPPFLAGS@
 
 lib_LTLIBRARIES = libsmraw.la
@@ -32,8 +32,8 @@ libsmraw_la_SOURCES = \
 	libsmraw_libclocale.h \
 	libsmraw_libcnotify.h \
 	libsmraw_libcstring.h \
+	libsmraw_libfcache.h \
 	libsmraw_libfvalue.h \
-	libsmraw_libmfcache.h \
 	libsmraw_libmfdata.h \
 	libsmraw_libuna.h \
 	libsmraw_metadata.c libsmraw_metadata.h \
@@ -54,7 +54,7 @@ libsmraw_la_LIBADD = \
 	@LIBCPATH_LIBADD@ \
 	@LIBBFIO_LIBADD@ \
 	@LIBFVALUE_LIBADD@ \
-	@LIBMFCACHE_LIBADD@ \
+	@LIBFCACHE_LIBADD@ \
 	@LIBMFDATA_LIBADD@
 
 libsmraw_la_LDFLAGS = -no-undefined -version-info 1:0:0
