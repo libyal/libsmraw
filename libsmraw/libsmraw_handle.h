@@ -1,7 +1,7 @@
 /*
  * Handle functions
  *
- * Copyright (c) 2010-2012, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (c) 2010-2013, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -27,11 +27,13 @@
 
 #include "libsmraw_extern.h"
 #include "libsmraw_information_file.h"
+#include "libsmraw_io_handle.h"
 #include "libsmraw_libbfio.h"
 #include "libsmraw_libcerror.h"
 #include "libsmraw_libcstring.h"
+#include "libsmraw_libfcache.h"
+#include "libsmraw_libfdata.h"
 #include "libsmraw_libfvalue.h"
-#include "libsmraw_libmfdata.h"
 #include "libsmraw_types.h"
 
 #if defined( _MSC_VER ) || defined( __BORLANDC__ ) || defined( __MINGW32_VERSION ) || defined( __MINGW64_VERSION_MAJOR )
@@ -51,6 +53,10 @@ typedef struct libsmraw_internal_handle libsmraw_internal_handle_t;
 
 struct libsmraw_internal_handle
 {
+	/* The IO handle
+	 */
+	libsmraw_io_handle_t *io_handle;
+
         /* The basename
 	 */
         libcstring_system_character_t *basename;
@@ -63,9 +69,13 @@ struct libsmraw_internal_handle
 	 */
 	int total_number_of_segments;
 
-	/* The segment (file) table
+	/* The segments (file data) stream
 	 */
-	libmfdata_segment_table_t *segment_table;
+	libfdata_stream_t *segments_stream;
+
+	/* The segments (file data) cache
+	 */
+	libfcache_cache_t *segments_cache;
 
 	/* The pool of file IO handles
 	 */
@@ -100,6 +110,10 @@ struct libsmraw_internal_handle
 	 */
         size64_t media_size;
 
+	/* The maximum segment size
+	 */
+        size64_t maximum_segment_size;
+
 	/* The media values table
 	 */
 	libfvalue_table_t *media_values;
@@ -111,10 +125,6 @@ struct libsmraw_internal_handle
 	/* The integrity hash values table
 	 */
 	libfvalue_table_t *integrity_hash_values;
-
-	/* Value to indicate if abort was signalled
-	 */
-	int abort;
 };
 
 LIBSMRAW_EXTERN \

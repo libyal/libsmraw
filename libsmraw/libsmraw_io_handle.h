@@ -1,0 +1,89 @@
+/*
+ * Input/Output (IO) handle functions
+ *
+ * Copyright (c) 2010-2013, Joachim Metz <joachim.metz@gmail.com>
+ *
+ * Refer to AUTHORS for acknowledgements.
+ *
+ * This software is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#if !defined( _LIBSMRAW_IO_HANDLE_H )
+#define _LIBSMRAW_IO_HANDLE_H
+
+#include <common.h>
+#include <types.h>
+
+#include "libsmraw_libbfio.h"
+#include "libsmraw_libcerror.h"
+#include "libsmraw_libfcache.h"
+#include "libsmraw_libfdata.h"
+
+#if defined( __cplusplus )
+extern "C" {
+#endif
+
+extern const uint8_t *smraw_file_signature;
+
+typedef struct libsmraw_io_handle libsmraw_io_handle_t;
+
+struct libsmraw_io_handle
+{
+	/* The current (storage media) offset
+	 */
+	off64_t current_offset;
+
+	/* Value to indicate if abort was signalled
+	 */
+	int abort;
+};
+
+int libsmraw_io_handle_initialize(
+     libsmraw_io_handle_t **io_handle,
+     libcerror_error_t **error );
+
+int libsmraw_io_handle_free(
+     libsmraw_io_handle_t **io_handle,
+     libcerror_error_t **error );
+
+ssize_t libsmraw_io_handle_read_segment_data(
+         libsmraw_io_handle_t *io_handle,
+         libbfio_pool_t *file_io_pool,
+         int segment_index,
+         uint8_t *segment_data,
+         size_t segment_data_size,
+         libcerror_error_t **error );
+
+ssize_t libsmraw_io_handle_write_segment_data(
+         libsmraw_io_handle_t *io_handle,
+         libbfio_pool_t *file_io_pool,
+         int segment_index,
+         const uint8_t *segment_data,
+         size_t segment_data_size,
+         libcerror_error_t **error );
+
+off64_t libsmraw_io_handle_seek_segment_offset(
+         libsmraw_io_handle_t *io_handle,
+         libbfio_pool_t *file_io_pool,
+         int segment_index,
+         off64_t segment_offset,
+         int whence,
+         libcerror_error_t **error );
+
+#if defined( __cplusplus )
+}
+#endif
+
+#endif
+

@@ -24,7 +24,7 @@ BEGIN
       VALUE "FileDescription",		"Library to support the storage media (SM) (split) RAW format\0"
       VALUE "FileVersion",		"@VERSION@" "\0"
       VALUE "InternalName",		"libsmraw.dll\0"
-      VALUE "LegalCopyright",		"(c) 2010-2012 Joachim Metz <joachim.metz@gmail.com>\0"
+      VALUE "LegalCopyright",		"(c) 2010-2013 Joachim Metz <joachim.metz@gmail.com>\0"
       VALUE "OriginalFilename",		"libsmraw.dll\0"
       VALUE "ProductName",		"libsmraw\0"
       VALUE "ProductVersion",		"@VERSION@" "\0"

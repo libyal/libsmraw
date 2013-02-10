@@ -1,7 +1,7 @@
 /*
  * Mounts a storage media (split) RAW image file
  *
- * Copyright (C) 2010-2012, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (C) 2010-2013, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -78,7 +78,7 @@ void usage_fprint(
 
 	fprintf( stream, "\t-h:          shows this help\n" );
 	fprintf( stream, "\t-v:          verbose output to stderr\n"
-	                 "\t             smrawmount will remain running in the foregroud\n" );
+	                 "\t             smrawmount will remain running in the foreground\n" );
 	fprintf( stream, "\t-V:          print version\n" );
 }
 

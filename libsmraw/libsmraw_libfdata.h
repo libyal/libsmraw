@@ -1,7 +1,7 @@
 /*
- * The libmfdata header wrapper
+ * The libfdata header wrapper
  *
- * Copyright (c) 2010-2012, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (c) 2010-2013, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -19,37 +19,38 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _LIBSMRAW_LIBMFDATA_H )
-#define _LIBSMRAW_LIBMFDATA_H
+#if !defined( _LIBVHDI_LIBFDATA_H )
+#define _LIBVHDI_LIBFDATA_H
 
 #include <common.h>
 
-/* Define HAVE_LOCAL_LIBMFDATA for local use of libmfdata
+/* Define HAVE_LOCAL_LIBFDATA for local use of libfdata
  */
-#if defined( HAVE_LOCAL_LIBMFDATA )
+#if defined( HAVE_LOCAL_LIBFDATA )
 
-#include <libmfdata_definitions.h>
-#include <libmfdata_file.h>
-#include <libmfdata_file_list.h>
-#include <libmfdata_list.h>
-#include <libmfdata_list_element.h>
-#include <libmfdata_segment.h>
-#include <libmfdata_segment_table.h>
-#include <libmfdata_types.h>
+#include <libfdata_buffer.h>
+#include <libfdata_definitions.h>
+#include <libfdata_list.h>
+#include <libfdata_list_element.h>
+#include <libfdata_stream.h>
+#include <libfdata_tree.h>
+#include <libfdata_tree_node.h>
+#include <libfdata_types.h>
+#include <libfdata_vector.h>
 
-#elif defined( HAVE_LIBMFDATA_H )
+#elif defined( HAVE_LIBFDATA_H )
 
-/* If libtool DLL support is enabled set LIBMFDATA_DLL_IMPORT
- * before including libmfdata.h
+/* If libtool DLL support is enabled set LIBFDATA_DLL_IMPORT
+ * before including libfdata.h
  */
 #if defined( _WIN32 ) && defined( DLL_IMPORT )
-#define LIBMFDATA_DLL_IMPORT
+#define LIBFDATA_DLL_IMPORT
 #endif
 
-#include <libmfdata.h>
+#include <libfdata.h>
 
 #else
-#error Missing libmfdata.h
+#error Missing libfdata.h
 #endif
 
 #endif

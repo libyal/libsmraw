@@ -30,6 +30,9 @@ Test
 Beta release
 * remove deprecated functions in libsmraw_legacy.[ch]
 
+20121216
+* changes due to libmfdata and libfdata merge
+
 20121201
 * updated dependencies
 * changes due to libmfcache and libfcache merge

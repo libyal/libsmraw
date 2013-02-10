@@ -2,7 +2,7 @@ AC_PREREQ( 2.59 )
 
 AC_INIT(
  [libsmraw],
- [20121201],
+ [20121216],
  [joachim.metz@gmail.com])
 
 AC_CONFIG_SRCDIR(
@@ -36,6 +36,7 @@ AC_PATH_PROG(PKGCONFIG,[pkg-config])
 
 dnl Support of internationalization (i18n)
 AM_GNU_GETTEXT([external])
+AM_GNU_GETTEXT_VERSION([0.18.1])
 
 dnl Check for compiler language support
 AC_C_CONST
@@ -86,9 +87,13 @@ AX_LIBBFIO_CHECK_ENABLE
 dnl Check for enabling libfcache for file value cache support
 AX_LIBFCACHE_CHECK_ENABLE
 
+dnl Check for enabling libfdata for file data types support
+AX_LIBFDATA_CHECK_ENABLE
+
 dnl Check for enabling libfvalue for file value support
 AX_LIBFVALUE_CHECK_ENABLE
 
+dnl TODO remove
 dnl Check for enabling libmfdata for multi-file data types support
 AX_LIBMFDATA_CHECK_ENABLE
 
@@ -133,7 +138,7 @@ CFLAGS="$CFLAGS -Wall";
 
 dnl Check if requires and build requires should be set in spec file
 AS_IF(
- [test "x$ac_cv_libcstring" = xyes || test "x$ac_cv_libcerror" = xyes || test "x$ac_cv_libcdata" = xyes ||  test "x$ac_cv_libclocale" = xyes || test "x$ac_cv_libcnotify" = xyes || test "x$ac_cv_libcsplit" = xyes ||  test "x$ac_cv_libuna" = xyes || test "x$ac_cv_libcfile" = xyes || test "x$ac_cv_libcpath" = xyes || test "x$ac_cv_libbfio" = xyes || test "x$ac_cv_libfcache" = xyes || test "x$ac_cv_libfvalue" = xyes || test "x$ac_cv_libmfdata" = xyes],
+ [test "x$ac_cv_libcstring" = xyes || test "x$ac_cv_libcerror" = xyes || test "x$ac_cv_libcdata" = xyes ||  test "x$ac_cv_libclocale" = xyes || test "x$ac_cv_libcnotify" = xyes || test "x$ac_cv_libcsplit" = xyes ||  test "x$ac_cv_libuna" = xyes || test "x$ac_cv_libcfile" = xyes || test "x$ac_cv_libcpath" = xyes || test "x$ac_cv_libbfio" = xyes || test "x$ac_cv_libfcache" = xyes || test "x$ac_cv_libfdata" = xyes || test "x$ac_cv_libfvalue" = xyes],
  [AC_SUBST(
   [libsmraw_spec_requires],
   [Requires:])
@@ -149,10 +154,15 @@ AS_IF(
   [BuildRequires:])
  ])
 
-dnl Set the date for dpkg files
+dnl Set the date for the dpkg files
 AC_SUBST(
- [DATE],
+ [DPKG_DATE],
  [`date -R 2> /dev/null`])
+
+dnl Set the date for the spec file
+AC_SUBST(
+ [SPEC_DATE],
+ [`date +"%a %b %e %Y" 2> /dev/null`])
 
 dnl Have configure make the Makefiles
 AC_CONFIG_FILES([Makefile])
@@ -169,6 +179,7 @@ AC_CONFIG_FILES([libcfile/Makefile])
 AC_CONFIG_FILES([libcpath/Makefile])
 AC_CONFIG_FILES([libbfio/Makefile])
 AC_CONFIG_FILES([libfcache/Makefile])
+AC_CONFIG_FILES([libfdata/Makefile])
 AC_CONFIG_FILES([libfvalue/Makefile])
 AC_CONFIG_FILES([libmfdata/Makefile])
 AC_CONFIG_FILES([libsmraw/Makefile])
@@ -214,6 +225,7 @@ Building:
    libcpath support:                           $ac_cv_libcpath
    libbfio support:                            $ac_cv_libbfio
    libfcache support:                          $ac_cv_libfcache
+   libfdata support:                           $ac_cv_libfdata
    libfvalue support:                          $ac_cv_libfvalue
    libmfdata support:                          $ac_cv_libmfdata
    libhmac support:                            $ac_cv_libhmac
