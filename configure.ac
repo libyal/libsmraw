@@ -2,7 +2,7 @@ AC_PREREQ( 2.59 )
 
 AC_INIT(
  [libsmraw],
- [20121216],
+ [20130321],
  [joachim.metz@gmail.com])
 
 AC_CONFIG_SRCDIR(
@@ -93,10 +93,6 @@ AX_LIBFDATA_CHECK_ENABLE
 dnl Check for enabling libfvalue for file value support
 AX_LIBFVALUE_CHECK_ENABLE
 
-dnl TODO remove
-dnl Check for enabling libmfdata for multi-file data types support
-AX_LIBMFDATA_CHECK_ENABLE
-
 dnl Check for enabling libhmac for message digest hash function support
 AX_LIBHMAC_CHECK_ENABLE
 
@@ -164,6 +160,11 @@ AC_SUBST(
  [SPEC_DATE],
  [`date +"%a %b %e %Y" 2> /dev/null`])
 
+dnl Set the current working directory for PackageMaker files
+AC_SUBST(
+ [PWD],
+ [`pwd`])
+
 dnl Have configure make the Makefiles
 AC_CONFIG_FILES([Makefile])
 AC_CONFIG_FILES([include/Makefile])
@@ -181,7 +182,6 @@ AC_CONFIG_FILES([libbfio/Makefile])
 AC_CONFIG_FILES([libfcache/Makefile])
 AC_CONFIG_FILES([libfdata/Makefile])
 AC_CONFIG_FILES([libfvalue/Makefile])
-AC_CONFIG_FILES([libmfdata/Makefile])
 AC_CONFIG_FILES([libsmraw/Makefile])
 AC_CONFIG_FILES([libcsystem/Makefile])
 AC_CONFIG_FILES([libhmac/Makefile])
@@ -227,7 +227,6 @@ Building:
    libfcache support:                          $ac_cv_libfcache
    libfdata support:                           $ac_cv_libfdata
    libfvalue support:                          $ac_cv_libfvalue
-   libmfdata support:                          $ac_cv_libmfdata
    libhmac support:                            $ac_cv_libhmac
    MD5 support:                                $ac_cv_libhmac_md5
    libcsystem support:                         $ac_cv_libcsystem

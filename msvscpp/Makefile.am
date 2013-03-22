@@ -9,9 +9,9 @@ MSVSCPP_FILES = \
 	libcstring/libcstring.vcproj \
 	libcsplit/libcsplit.vcproj \
 	libfcache/libfcache.vcproj \
+	libfdata/libfdata.vcproj \
 	libfvalue/libfvalue.vcproj \
 	libhmac/libhmac.vcproj \
-	libmfdata/libmfdata.vcproj \
 	libsmraw_dll/libsmraw_dll.vcproj \
 	libuna/libuna.vcproj \
 	libsmraw.sln \
