@@ -317,14 +317,7 @@ int smraw_test_read_segment_file(
 		 stderr,
 		 "Unable to retrieve segment file size.\n" );
 
-		libsmraw_error_backtrace_fprint(
-		 error,
-		 stderr );
-
-		libsmraw_error_free(
-		 &error );
-
-		return( -1 );
+		goto on_error;
 	}
 	if( segment_file_size > (size64_t) INT64_MAX )
 	{
@@ -332,14 +325,7 @@ int smraw_test_read_segment_file(
 		 stderr,
 		 "Segment file size exceeds maximum.\n" );
 
-		libsmraw_error_backtrace_fprint(
-		 error,
-		 stderr );
-
-		libsmraw_error_free(
-		 &error );
-
-		return( -1 );
+		goto on_error;
 	}
 	segment_file_size -= 1;
 
@@ -386,6 +372,18 @@ int smraw_test_read_segment_file(
 	 "\n" );
 
 	return( result );
+
+on_error:
+	if( error != NULL )
+	{
+		libsmraw_error_backtrace_fprint(
+		 error,
+		 stderr );
+
+		libsmraw_error_free(
+		 &error );
+	}
+	return( -1 );
 }
 
 /* The main program
@@ -466,7 +464,7 @@ int main( int argc, char * const argv[] )
 	 "Media size: %" PRIu64 " bytes\n",
 	 media_size );
 
-	/* Case 0: test full read
+	/* Case 1: test full read
 	 */
 
 	/* Test: offset: 0 size: <media_size>
@@ -504,7 +502,7 @@ int main( int argc, char * const argv[] )
 		goto on_error;
 	}
 
-	/* Case 1: test random read
+	/* Case 2: test random read
 	 */
 
 	/* Test: offset: <media_size / 7> size: <media_size / 2>
@@ -544,7 +542,6 @@ int main( int argc, char * const argv[] )
 
 	/* Case 3: test read beyond media size
 	 */
-
 	if( media_size < 1024 )
 	{
 		/* Test: offset: <media_size - 1024> size: 4096

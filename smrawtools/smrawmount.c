@@ -9,12 +9,12 @@
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -34,6 +34,17 @@
 
 #if defined( HAVE_STDLIB_H ) || defined( WINAPI )
 #include <stdlib.h>
+#endif
+
+#if !defined( WINAPI ) || defined( USE_CRT_FUNCTIONS )
+#if defined( TIME_WITH_SYS_TIME )
+#include <sys/time.h>
+#include <time.h>
+#elif defined( HAVE_SYS_TIME_H )
+#include <sys/time.h>
+#else
+#include <time.h>
+#endif
 #endif
 
 #if defined( HAVE_LIBFUSE ) || defined( HAVE_LIBOSXFUSE )
@@ -458,10 +469,14 @@ int smrawmount_fuse_getattr(
      struct stat *stat_info )
 {
 	libcerror_error_t *error = NULL;
-	static char *function   = "smrawmount_fuse_getattr";
-	size64_t media_size     = 0;
-	size_t path_length      = 0;
-	int result              = -ENOENT;
+	static char *function    = "smrawmount_fuse_getattr";
+	size64_t media_size      = 0;
+	size_t path_length       = 0;
+	int result               = -ENOENT;
+
+#if defined( HAVE_TIME )
+	time_t timestamp         = 0;
+#endif
 
 	if( path == NULL )
 	{
@@ -566,15 +581,19 @@ int smrawmount_fuse_getattr(
 	}
 	if( result == 0 )
 	{
-		stat_info->st_atime = libcsystem_date_time_time(
-		                       NULL );
-
-		stat_info->st_mtime = libcsystem_date_time_time(
-		                       NULL );
-
-		stat_info->st_ctime = libcsystem_date_time_time(
-		                       NULL );
-
+#if defined( HAVE_TIME )
+		if( time( &timestamp ) == (time_t) -1 )
+		{
+			timestamp = 0;
+		}
+		stat_info->st_atime = timestamp;
+		stat_info->st_mtime = timestamp;
+		stat_info->st_ctime = timestamp;
+#else
+		stat_info->st_atime = 0;
+		stat_info->st_mtime = 0;
+		stat_info->st_ctime = 0;
+#endif
 #if defined( HAVE_GETEUID )
 		stat_info->st_uid = geteuid();
 #else
@@ -856,7 +875,7 @@ int main( int argc, char * const argv[] )
 	                          &smrawmount_fuse_operations,
 	                          sizeof( struct fuse_operations ),
 	                          smrawmount_mount_handle );
-	               
+	
 	if( smrawmount_fuse_handle == NULL )
 	{
 		fprintf(

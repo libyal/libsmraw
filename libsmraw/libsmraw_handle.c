@@ -9,12 +9,12 @@
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -25,15 +25,13 @@
 #include <types.h>
 
 #include "libsmraw_definitions.h"
-#include "libsmraw_information_file.h"
-#include "libsmraw_filename.h"
 #include "libsmraw_handle.h"
+#include "libsmraw_information_file.h"
+#include "libsmraw_io_handle.h"
 #include "libsmraw_libbfio.h"
 #include "libsmraw_libcerror.h"
-#include "libsmraw_libclocale.h"
 #include "libsmraw_libcnotify.h"
 #include "libsmraw_libcstring.h"
-#include "libsmraw_libfcache.h"
 #include "libsmraw_libfdata.h"
 #include "libsmraw_libfvalue.h"
 #include "libsmraw_libuna.h"
@@ -158,7 +156,6 @@ int libsmraw_handle_initialize(
 		goto on_error;
 	}
 	internal_handle->maximum_number_of_open_handles = LIBBFIO_POOL_UNLIMITED_NUMBER_OF_OPEN_HANDLES;
-	internal_handle->maximum_segment_size           = LIBSMRAW_DEFAULT_MAXIMUM_SEGMENT_SIZE;
 
 	*handle = (libsmraw_handle_t *) internal_handle;
 
@@ -313,11 +310,6 @@ int libsmraw_handle_free(
 				result = -1;
 			}
 		}
-		if( internal_handle->basename != NULL )
-		{
-			memory_free(
-			 internal_handle->basename );
-		}
 		memory_free(
 		 internal_handle );
 	}
@@ -370,7 +362,9 @@ int libsmraw_internal_handle_initialize_write_values(
      libsmraw_internal_handle_t *internal_handle,
      libcerror_error_t **error )
 {
-	static char *function = "libsmraw_internal_handle_initialize_write_values";
+	static char *function       = "libsmraw_internal_handle_initialize_write_values";
+	size64_t last_segment_size  = 0; 
+	size64_t number_of_segments = 0; 
 
 	if( internal_handle == NULL )
 	{
@@ -379,6 +373,17 @@ int libsmraw_internal_handle_initialize_write_values(
 		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid handle.",
+		 function );
+
+		return( -1 );
+	}
+	if( internal_handle->io_handle == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid handle - missing IO handle.",
 		 function );
 
 		return( -1 );
@@ -394,25 +399,38 @@ int libsmraw_internal_handle_initialize_write_values(
 
 		return( -1 );
 	}
-	if( internal_handle->maximum_segment_size > 0 )
+	if( internal_handle->io_handle->maximum_segment_size == 0 )
 	{
-		if( internal_handle->media_size > 0 )
-		{
-			internal_handle->total_number_of_segments = (int) ( internal_handle->media_size / internal_handle->maximum_segment_size );
-
-			if( ( internal_handle->media_size % internal_handle->maximum_segment_size ) != 0 )
-			{
-				internal_handle->total_number_of_segments += 1;
-			}
-		}
-		else
-		{
-			internal_handle->total_number_of_segments = 0;
-		}
+		internal_handle->io_handle->number_of_segments = 1;
+	}
+	else if( internal_handle->io_handle->media_size == 0 )
+	{
+		internal_handle->io_handle->number_of_segments = 0;
 	}
 	else
 	{
-		internal_handle->total_number_of_segments = 1;
+		number_of_segments = internal_handle->io_handle->media_size
+		                   / internal_handle->io_handle->maximum_segment_size;
+
+		last_segment_size = internal_handle->io_handle->media_size
+		                  % internal_handle->io_handle->maximum_segment_size;
+
+		if( last_segment_size != 0 )
+		{
+			number_of_segments += 1;
+		}
+		if( number_of_segments > (size64_t) INT_MAX )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+			 LIBCERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
+			 "%s: invalid number of segments value out of bounds.",
+			 function );
+
+			return( -1 );
+		}
+		internal_handle->io_handle->number_of_segments = (int) number_of_segments;
 	}
 	internal_handle->write_values_initialized = 1;
 
@@ -453,13 +471,24 @@ int libsmraw_handle_open(
 	}
 	internal_handle = (libsmraw_internal_handle_t *) handle;
 
-	if( internal_handle->basename != NULL )
+	if( internal_handle->io_handle == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid handle - missing IO handle.",
+		 function );
+
+		return( -1 );
+	}
+	if( internal_handle->file_io_pool != NULL )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
-		 "%s: invalid handle - basename already exists.",
+		 "%s: invalid handle - file IO pool value already set.",
 		 function );
 
 		return( -1 );
@@ -526,8 +555,8 @@ int libsmraw_handle_open(
 
 			goto on_error;
 		}
-		if( libsmraw_handle_set_segment_filename(
-		     handle,
+		if( libsmraw_io_handle_set_basename(
+		     internal_handle->io_handle,
 		     filenames[ 0 ],
 		     filename_length - 4,
 		     error ) != 1 )
@@ -662,8 +691,8 @@ int libsmraw_handle_open(
 
 			goto on_error;
 		}
-		if( libsmraw_handle_set_segment_filename(
-		     handle,
+		if( libsmraw_io_handle_set_basename(
+		     internal_handle->io_handle,
 		     filenames[ 0 ],
 		     filename_length,
 		     error ) != 1 )
@@ -677,7 +706,7 @@ int libsmraw_handle_open(
 
 			goto on_error;
 		}
-		/* Initialize the file IO pool 
+		/* Initialize the file IO pool
 		 */
 		if( libbfio_pool_initialize(
 		     &file_io_pool,
@@ -714,9 +743,9 @@ int libsmraw_handle_open(
 
 	/* Open the information file
 	 */
-	if( internal_handle->basename != NULL )
+	if( internal_handle->io_handle->basename != NULL )
 	{
-		information_filename_length = internal_handle->basename_size + 8;
+		information_filename_length = internal_handle->io_handle->basename_size + 8;
 
 		information_filename = libcstring_system_string_allocate(
 		                        information_filename_length + 1 );
@@ -734,8 +763,8 @@ int libsmraw_handle_open(
 		}
 		if( libcstring_system_string_copy(
 		     information_filename,
-		     internal_handle->basename,
-		     internal_handle->basename_size - 1 ) == NULL )
+		     internal_handle->io_handle->basename,
+		     internal_handle->io_handle->basename_size - 1 ) == NULL )
 		{
 			libcerror_error_set(
 			 error,
@@ -749,7 +778,7 @@ int libsmraw_handle_open(
 
 			return( -1 );
 		}
-		filename_index = internal_handle->basename_size - 1;
+		filename_index = internal_handle->io_handle->basename_size - 1;
 
 		if( libcstring_system_string_copy(
 		     &( information_filename[ filename_index ] ),
@@ -888,13 +917,24 @@ int libsmraw_handle_open_wide(
 	}
 	internal_handle = (libsmraw_internal_handle_t *) handle;
 
-	if( internal_handle->basename != NULL )
+	if( internal_handle->io_handle == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid handle - missing IO handle.",
+		 function );
+
+		return( -1 );
+	}
+	if( internal_handle->file_io_pool != NULL )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
-		 "%s: invalid handle - basename already exists.",
+		 "%s: invalid handle - file IO pool value already set.",
 		 function );
 
 		return( -1 );
@@ -961,8 +1001,8 @@ int libsmraw_handle_open_wide(
 
 			goto on_error;
 		}
-		if( libsmraw_handle_set_segment_filename_wide(
-		     handle,
+		if( libsmraw_io_handle_set_basename_wide(
+		     internal_handle->io_handle,
 		     filenames[ 0 ],
 		     filename_length - 4,
 		     error ) != 1 )
@@ -1097,8 +1137,8 @@ int libsmraw_handle_open_wide(
 
 			goto on_error;
 		}
-		if( libsmraw_handle_set_segment_filename_wide(
-		     handle,
+		if( libsmraw_io_handle_set_basename_wide(
+		     internal_handle->io_handle,
 		     filenames[ 0 ],
 		     filename_length,
 		     error ) != 1 )
@@ -1112,7 +1152,7 @@ int libsmraw_handle_open_wide(
 
 			goto on_error;
 		}
-		/* Initialize the file IO pool 
+		/* Initialize the file IO pool
 		 */
 		if( libbfio_pool_initialize(
 		     &file_io_pool,
@@ -1149,9 +1189,9 @@ int libsmraw_handle_open_wide(
 
 	/* Open the information file
 	 */
-	if( internal_handle->basename != NULL )
+	if( internal_handle->io_handle->basename != NULL )
 	{
-		information_filename_length = internal_handle->basename_size + 8;
+		information_filename_length = internal_handle->io_handle->basename_size + 8;
 
 		information_filename = libcstring_system_string_allocate(
 		                        information_filename_length + 1 );
@@ -1169,8 +1209,8 @@ int libsmraw_handle_open_wide(
 		}
 		if( libcstring_system_string_copy(
 		     information_filename,
-		     internal_handle->basename,
-		     internal_handle->basename_size - 1 ) == NULL )
+		     internal_handle->io_handle->basename,
+		     internal_handle->io_handle->basename_size - 1 ) == NULL )
 		{
 			libcerror_error_set(
 			 error,
@@ -1184,7 +1224,7 @@ int libsmraw_handle_open_wide(
 
 			return( -1 );
 		}
-		filename_index = internal_handle->basename_size - 1;
+		filename_index = internal_handle->io_handle->basename_size - 1;
 
 		if( libcstring_system_string_copy(
 		     &( information_filename[ filename_index ] ),
@@ -1302,7 +1342,6 @@ int libsmraw_handle_open_file_io_pool(
 	libsmraw_internal_handle_t *internal_handle = NULL;
 	static char *function                       = "libsmraw_handle_open_file_io_pool";
 	size64_t file_io_handle_size                = 0;
-	size64_t maximum_segment_size               = 0;
 	int number_of_file_io_handles               = 0;
 	int bfio_access_flags                       = 0;
 	int file_io_handle_index                    = 0;
@@ -1320,13 +1359,24 @@ int libsmraw_handle_open_file_io_pool(
 	}
 	internal_handle = (libsmraw_internal_handle_t *) handle;
 
+	if( internal_handle->io_handle == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid handle - missing IO handle.",
+		 function );
+
+		return( -1 );
+	}
 	if( internal_handle->file_io_pool != NULL )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
-		 "%s: invalid handle - file IO pool already exists.",
+		 "%s: invalid handle - file IO pool value already set.",
 		 function );
 
 		return( -1 );
@@ -1368,18 +1418,16 @@ int libsmraw_handle_open_file_io_pool(
 
 		goto on_error;
 	}
-/* TODO libmfdata refactor:
-	     &libsmraw_handle_set_segment_name,
-*/
 	if( libfdata_stream_initialize(
 	     &( internal_handle->segments_stream ),
 	     (intptr_t *) internal_handle->io_handle,
 	     NULL,
 	     NULL,
-	     (ssize_t (*)(intptr_t *, intptr_t *, int, uint8_t *, size_t, uint8_t, libcerror_error_t **)) &libsmraw_io_handle_read_segment_data,
-	     (ssize_t (*)(intptr_t *, intptr_t *, int, const uint8_t *, size_t, uint8_t, libcerror_error_t **)) &libsmraw_io_handle_write_segment_data,
-	     (off64_t (*)(intptr_t *, intptr_t *, int, off64_t, int, libcerror_error_t **)) &libsmraw_io_handle_seek_segment_offset,
-	     0,
+	     (int (*)(intptr_t *, intptr_t *, int, int *, off64_t *, size64_t *, uint32_t *, libcerror_error_t **)) &libsmraw_io_handle_create_segment,
+	     (ssize_t (*)(intptr_t *, intptr_t *, int, int, uint8_t *, size_t, uint32_t, uint8_t, libcerror_error_t **)) &libsmraw_io_handle_read_segment_data,
+	     (ssize_t (*)(intptr_t *, intptr_t *, int, int, const uint8_t *, size_t, uint32_t, uint8_t, libcerror_error_t **)) &libsmraw_io_handle_write_segment_data,
+	     (off64_t (*)(intptr_t *, intptr_t *, int, int, off64_t, libcerror_error_t **)) &libsmraw_io_handle_seek_segment_offset,
+	     LIBFDATA_FLAG_DATA_HANDLE_NON_MANAGED,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
@@ -1500,62 +1548,42 @@ int libsmraw_handle_open_file_io_pool(
 				 error,
 				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 				 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-				 "%s: unable to set segment: %d.",
+				 "%s: unable to set segment: %d in segments stream.",
 				 function,
 				 file_io_handle_index );
 
 				goto on_error;
 			}
-			if( file_io_handle_size > maximum_segment_size )
+			if( file_io_handle_index == 0 )
 			{
-				maximum_segment_size = file_io_handle_size;
+				internal_handle->io_handle->maximum_segment_size = file_io_handle_size;
+			}
+			else if( file_io_handle_size > internal_handle->io_handle->maximum_segment_size )
+			{
+				internal_handle->io_handle->maximum_segment_size = file_io_handle_size;
 			}
 		}
+		if( libfdata_stream_get_size(
+		     internal_handle->segments_stream,
+		     &( internal_handle->io_handle->media_size ),
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve size from segments stream.",
+			 function );
+
+			goto on_error;
+		}
 		internal_handle->read_values_initialized = 1;
-	}
-	else
-	{
-		maximum_segment_size = internal_handle->maximum_segment_size;
-	}
-	if( libfdata_stream_set_maximum_segment_size(
-	     internal_handle->segments_stream,
-	     maximum_segment_size,
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-		 "%s: unable to set maximum segment size.",
-		 function );
-
-		goto on_error;
-	}
-	if( libfdata_stream_get_data_size(
-	     internal_handle->segments_stream,
-	     &( internal_handle->media_size ),
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve media size.",
-		 function );
-
-		goto on_error;
 	}
 	internal_handle->file_io_pool = file_io_pool;
 
 	return( 1 );
 
 on_error:
-	if( internal_handle->segments_cache != NULL )
-	{
-		libfcache_cache_free(
-		 &( internal_handle->segments_cache ),
-		 NULL );
-	}
 	if( internal_handle->segments_stream != NULL )
 	{
 		libfdata_stream_free(
@@ -1867,19 +1895,6 @@ int libsmraw_handle_close(
 
 		result = -1;
 	}
-	if( libfcache_cache_free(
-	     &( internal_handle->segments_cache ),
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-		 "%s: unable to free segments cache.",
-		 function );
-
-		result = -1;
-	}
 	if( internal_handle->file_io_pool_created_in_library != 0 )
 	{
 		if( internal_handle->file_io_pool != NULL )
@@ -1931,6 +1946,7 @@ ssize_t libsmraw_handle_read_buffer(
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
 	static char *function                       = "libsmraw_handle_read_buffer";
+	off64_t current_offset                      = 0;
 	ssize_t read_count                          = 0;
 
 	if( handle == NULL )
@@ -1946,6 +1962,17 @@ ssize_t libsmraw_handle_read_buffer(
 	}
 	internal_handle = (libsmraw_internal_handle_t *) handle;
 
+	if( internal_handle->io_handle == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid handle - missing IO handle.",
+		 function );
+
+		return( -1 );
+	}
 	if( internal_handle->file_io_pool == NULL )
 	{
 		libcerror_error_set(
@@ -1957,16 +1984,59 @@ ssize_t libsmraw_handle_read_buffer(
 
 		return( -1 );
 	}
+	/* Bail out early for requests to read empty buffers
+	 */
+	if( buffer_size == 0 )
+	{
+		return( 0 );
+	}
+	if( libfdata_stream_get_offset(
+	     internal_handle->segments_stream,
+	     &current_offset,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve current offset from segments stream.",
+		 function );
+
+		return( -1 );
+	}
+	if( current_offset < 0 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
+		 "%s: invalid current offset value out of bounds.",
+		 function );
+
+		return( -1 );
+	}
+	if( internal_handle->io_handle->media_size > 0 )
+	{
+		/* Bail out early for requests to read beyond the media size
+		 */
+		if( (size64_t) current_offset >= internal_handle->io_handle->media_size )
+		{
+			return( 0 );
+		}
+		if( ( (size64_t) current_offset + buffer_size ) >= internal_handle->io_handle->media_size )
+		{
+			buffer_size = (size_t) ( internal_handle->io_handle->media_size - (size64_t) current_offset );
+		}
+	}
 	read_count = libfdata_stream_read_buffer(
 	              internal_handle->segments_stream,
 	              (intptr_t *) internal_handle->file_io_pool,
-	              internal_handle->segments_cache,
 	              (uint8_t *) buffer,
 	              buffer_size,
 	              0,
 	              error );
 
-	if( read_count == -1 )
+	if( read_count != (ssize_t) buffer_size )
 	{
 		libcerror_error_set(
 		 error,
@@ -2014,7 +2084,7 @@ ssize_t libsmraw_handle_read_random(
 	              buffer_size,
 	              error );
 
-	if( read_count <= -1 )
+	if( read_count != (ssize_t) buffer_size )
 	{
 		libcerror_error_set(
 		 error,
@@ -2039,9 +2109,8 @@ ssize_t libsmraw_handle_write_buffer(
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
 	static char *function                       = "libsmraw_handle_write_buffer";
-	off64_t data_offset                         = 0;
+	off64_t current_offset                      = 0;
 	ssize_t write_count                         = 0;
-	int number_of_segments                      = 0;
 
 	if( handle == NULL )
 	{
@@ -2056,6 +2125,17 @@ ssize_t libsmraw_handle_write_buffer(
 	}
 	internal_handle = (libsmraw_internal_handle_t *) handle;
 
+	if( internal_handle->io_handle == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid handle - missing IO handle.",
+		 function );
+
+		return( -1 );
+	}
 	if( internal_handle->file_io_pool == NULL )
 	{
 		libcerror_error_set(
@@ -2083,82 +2163,59 @@ ssize_t libsmraw_handle_write_buffer(
 			return( -1 );
 		}
 	}
-	if( libfdata_stream_get_data_offset(
+	/* Bail out early for requests to write empty buffers
+	 */
+	if( buffer_size == 0 )
+	{
+		return( 0 );
+	}
+	if( libfdata_stream_get_offset(
 	     internal_handle->segments_stream,
-	     &data_offset,
+	     &current_offset,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve data offset from segments stream.",
+		 "%s: unable to retrieve current offset from segments stream.",
 		 function );
 
 		return( -1 );
 	}
-	if( data_offset < 0 )
+	if( current_offset < 0 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBCERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
-		 "%s: invalid data offset value out of bounds.",
+		 "%s: invalid current offset value out of bounds.",
 		 function );
 
 		return( -1 );
 	}
-	/* Do not write beyond the media size
-	 */
-	if( ( internal_handle->media_size > 0 )
-	 && ( (size64_t) data_offset >= internal_handle->media_size ) )
+	if( internal_handle->io_handle->media_size > 0 )
 	{
-		return( 0 );
-	}
-	if( libfdata_stream_get_number_of_segments(
-	     internal_handle->segments_stream,
-	     &number_of_segments,
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve number of segments from segments stream.",
-		 function );
-
-		return( -1 );
-	}
-	if( internal_handle->total_number_of_segments != 0 )
-	{
-		if( ( number_of_segments < 0 )
-		 || ( number_of_segments > internal_handle->total_number_of_segments ) )
+		/* Bail out early for requests to write beyond the media size
+		 */
+		if( (size64_t) current_offset >= internal_handle->io_handle->media_size )
 		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-			 LIBCERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
-			 "%s: invalid number of segments value out of bounds.",
-			 function );
-
-			return( -1 );
+			return( 0 );
 		}
-	}
-	if( ( internal_handle->media_size > 0 )
-	 && ( (size64_t) data_offset + buffer_size ) >= internal_handle->media_size )
-	{
-		buffer_size = (size_t) ( internal_handle->media_size - (size64_t) data_offset );
+		if( ( (size64_t) current_offset + buffer_size ) >= internal_handle->io_handle->media_size )
+		{
+			buffer_size = (size_t) ( internal_handle->io_handle->media_size - (size64_t) current_offset );
+		}
 	}
 	write_count = libfdata_stream_write_buffer(
 	               internal_handle->segments_stream,
 	               (intptr_t *) internal_handle->file_io_pool,
-	               internal_handle->segments_cache,
 	               (uint8_t *) buffer,
 	               buffer_size,
 	               0,
 	               error );
 
-	if( write_count == -1 )
+	if( write_count != (ssize_t) buffer_size )
 	{
 		libcerror_error_set(
 		 error,
@@ -2206,7 +2263,7 @@ ssize_t libsmraw_handle_write_random(
 	               buffer_size,
 	               error );
 
-	if( write_count <= -1 )
+	if( write_count != (ssize_t) buffer_size )
 	{
 		libcerror_error_set(
 		 error,
@@ -2258,7 +2315,6 @@ off64_t libsmraw_handle_seek_offset(
 	}
 	offset = libfdata_stream_seek_offset(
 	          internal_handle->segments_stream,
-	          (intptr_t *) internal_handle->file_io_pool,
 	          offset,
 	          whence,
 	          error );
@@ -2301,7 +2357,7 @@ int libsmraw_handle_get_offset(
 	}
 	internal_handle = (libsmraw_internal_handle_t *) handle;
 
-	if( libfdata_stream_get_data_offset(
+	if( libfdata_stream_get_offset(
 	     internal_handle->segments_stream,
 	     offset,
 	     error ) != 1 )
@@ -2310,7 +2366,7 @@ int libsmraw_handle_get_offset(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve data offset from segments stream.",
+		 "%s: unable to retrieve offset from segments stream.",
 		 function );
 
 		return( -1 );
@@ -2364,86 +2420,8 @@ int libsmraw_handle_set_maximum_number_of_open_handles(
 	return( 1 );
 }
 
-/* Set the name of the segment
- * Returns 1 if successful or -1 on error
- */
-int libsmraw_handle_set_segment_name(
-     intptr_t *io_handle,
-     libbfio_handle_t *file_io_handle,
-     int segment_index,
-     libcerror_error_t **error )
-{
-	libcstring_system_character_t *segment_filename = NULL;
-	libsmraw_internal_handle_t *internal_handle     = NULL;
-	static char *function                           = "libsmraw_handle_set_segment_name";
-	size_t segment_filename_size                    = 0;
-
-	if( io_handle == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid handle.",
-		 function );
-
-		return( -1 );
-	}
-	internal_handle = (libsmraw_internal_handle_t *) io_handle;
-
-	if( libsmraw_filename_create(
-	     &segment_filename,
-	     &segment_filename_size,
-	     internal_handle->basename,
-	     internal_handle->basename_size,
-	     internal_handle->total_number_of_segments,
-	     segment_index,
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-		 "%s: unable to create segment filename: %d.",
-		 function,
-		 segment_index );
-
-		return( -1 );
-	}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
-	if( libbfio_file_set_name_wide(
-	     file_io_handle,
-	     segment_filename,
-	     segment_filename_size,
-	     error ) != 1 )
-#else
-	if( libbfio_file_set_name(
-	     file_io_handle,
-	     segment_filename,
-	     segment_filename_size,
-	     error ) != 1 )
-#endif
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-		 "%s: unable to set name in file IO handle.",
-		 function );
-
-		memory_free(
-		 segment_filename );
-
-		return( -1 );
-	}
-	memory_free(
-	 segment_filename );
-
-	return( 1 );
-}
-
-/* Retrieves the segment filenmae size of the file handle
- * The segment filenmae size includes the end of string character
+/* Retrieves the segment filename size
+ * The segment filename size includes the end of string character
  * Returns 1 if succesful or -1 on error
  */
 int libsmraw_handle_get_segment_filename_size(
@@ -2453,10 +2431,6 @@ int libsmraw_handle_get_segment_filename_size(
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
 	static char *function                       = "libsmraw_handle_get_segment_filename_size";
-
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
-	int result                                  = 0;
-#endif
 
 	if( handle == NULL )
 	{
@@ -2471,85 +2445,24 @@ int libsmraw_handle_get_segment_filename_size(
 	}
 	internal_handle = (libsmraw_internal_handle_t *) handle;
 
-	if( internal_handle->basename == NULL )
+	if( libsmraw_io_handle_get_basename_size(
+	     internal_handle->io_handle,
+	     filename_size,
+	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid handle - missing basename.",
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve basename size from IO handle.",
 		 function );
 
 		return( -1 );
 	}
-	if( filename_size == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid filename size.",
-		 function );
-
-		return( -1 );
-	}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
-	if( libclocale_codepage == 0 )
-	{
-#if SIZEOF_WCHAR_T == 4
-		result = libuna_utf8_string_size_from_utf32(
-		          (libuna_utf32_character_t *) internal_handle->basename,
-		          internal_handle->basename_size,
-		          filename_size,
-		          error );
-#elif SIZEOF_WCHAR_T == 2
-		result = libuna_utf8_string_size_from_utf16(
-		          (libuna_utf16_character_t *) internal_handle->basename,
-		          internal_handle->basename_size,
-		          filename_size,
-		          error );
-#else
-#error Unsupported size of wchar_t
-#endif /* SIZEOF_WCHAR_T */
-	}
-	else
-	{
-#if SIZEOF_WCHAR_T == 4
-		result = libuna_byte_stream_size_from_utf32(
-		          (libuna_utf32_character_t *) internal_handle->basename,
-		          internal_handle->basename_size,
-		          libclocale_codepage,
-		          filename_size,
-		          error );
-#elif SIZEOF_WCHAR_T == 2
-		result = libuna_byte_stream_size_from_utf16(
-		          (libuna_utf16_character_t *) internal_handle->basename,
-		          internal_handle->basename_size,
-		          libclocale_codepage,
-		          filename_size,
-		          error );
-#else
-#error Unsupported size of wchar_t
-#endif /* SIZEOF_WCHAR_T */
-	}
-	if( result != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_CONVERSION,
-		 LIBCERROR_CONVERSION_ERROR_GENERIC,
-		 "%s: unable to determine filename size.",
-		 function );
-
-		return( -1 );
-	}
-#else
-	*filename_size = internal_handle->basename_size;
-#endif
 	return( 1 );
 }
 
-/* Retrieves the segment filename of the file handle
+/* Retrieves the segment filename
  * The segment filename size should include the end of string character
  * Returns 1 if succesful or -1 on error
  */
@@ -2561,11 +2474,6 @@ int libsmraw_handle_get_segment_filename(
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
 	static char *function                       = "libsmraw_handle_get_segment_filename";
-	size_t narrow_filename_size                 = 0;
-
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
-	int result                                  = 0;
-#endif
 
 	if( handle == NULL )
 	{
@@ -2580,167 +2488,25 @@ int libsmraw_handle_get_segment_filename(
 	}
 	internal_handle = (libsmraw_internal_handle_t *) handle;
 
-	if( internal_handle->basename == NULL )
+	if( libsmraw_io_handle_get_basename(
+	     internal_handle->io_handle,
+	     filename,
+	     filename_size,
+	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid handle - missing basename.",
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve basename from IO handle.",
 		 function );
 
 		return( -1 );
 	}
-	if( filename == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid filename.",
-		 function );
-
-		return( -1 );
-	}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
-	if( libclocale_codepage == 0 )
-	{
-#if SIZEOF_WCHAR_T == 4
-		result = libuna_utf8_string_size_from_utf32(
-		          (libuna_utf32_character_t *) internal_handle->basename,
-		          internal_handle->basename_size,
-		          &narrow_filename_size,
-		          error );
-#elif SIZEOF_WCHAR_T == 2
-		result = libuna_utf8_string_size_from_utf16(
-		          (libuna_utf16_character_t *) internal_handle->basename,
-		          internal_handle->basename_size,
-		          &narrow_filename_size,
-		          error );
-#else
-#error Unsupported size of wchar_t
-#endif /* SIZEOF_WCHAR_T */
-	}
-	else
-	{
-#if SIZEOF_WCHAR_T == 4
-		result = libuna_byte_stream_size_from_utf32(
-		          (libuna_utf32_character_t *) internal_handle->basename,
-		          internal_handle->basename_size,
-		          libclocale_codepage,
-		          &narrow_filename_size,
-		          error );
-#elif SIZEOF_WCHAR_T == 2
-		result = libuna_byte_stream_size_from_utf16(
-		          (libuna_utf16_character_t *) internal_handle->basename,
-		          internal_handle->basename_size,
-		          libclocale_codepage,
-		          &narrow_filename_size,
-		          error );
-#else
-#error Unsupported size of wchar_t
-#endif /* SIZEOF_WCHAR_T */
-	}
-	if( result != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_CONVERSION,
-		 LIBCERROR_CONVERSION_ERROR_GENERIC,
-		 "%s: unable to determine filename size.",
-		 function );
-
-		return( -1 );
-	}
-#else
-	narrow_filename_size = internal_handle->basename_size;
-#endif
-	if( filename_size < narrow_filename_size )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_VALUE_TOO_SMALL,
-		 "%s: filename too small.",
-		 function );
-
-		return( -1 );
-	}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
-	if( libclocale_codepage == 0 )
-	{
-#if SIZEOF_WCHAR_T == 4
-		result = libuna_utf8_string_copy_from_utf32(
-		          (libuna_utf8_character_t *) filename,
-		          filename_size,
-		          (libuna_utf32_character_t *) internal_handle->basename,
-		          internal_handle->basename_size,
-		          error );
-#elif SIZEOF_WCHAR_T == 2
-		result = libuna_utf8_string_copy_from_utf16(
-		          (libuna_utf8_character_t *) filename,
-		          filename_size,
-		          (libuna_utf16_character_t *) internal_handle->basename,
-		          internal_handle->basename_size,
-		          error );
-#else
-#error Unsupported size of wchar_t
-#endif /* SIZEOF_WCHAR_T */
-	}
-	else
-	{
-#if SIZEOF_WCHAR_T == 4
-		result = libuna_byte_stream_copy_from_utf32(
-		          (uint8_t *) filename,
-		          filename_size,
-		          libclocale_codepage,
-		          (libuna_utf32_character_t *) internal_handle->basename,
-		          internal_handle->basename_size,
-		          error );
-#elif SIZEOF_WCHAR_T == 2
-		result = libuna_byte_stream_copy_from_utf16(
-		          (uint8_t *) filename,
-		          filename_size,
-		          libclocale_codepage,
-		          (libuna_utf16_character_t *) internal_handle->basename,
-		          internal_handle->basename_size,
-		          error );
-#else
-#error Unsupported size of wchar_t
-#endif /* SIZEOF_WCHAR_T */
-	}
-	if( result != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_CONVERSION,
-		 LIBCERROR_CONVERSION_ERROR_GENERIC,
-		 "%s: unable to set filename.",
-		 function );
-
-		return( -1 );
-	}
-#else
-	if( libcstring_system_string_copy(
-	     filename,
-	     internal_handle->basename,
-	     internal_handle->basename_size ) == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_MEMORY,
-		 LIBCERROR_MEMORY_ERROR_COPY_FAILED,
-		 "%s: unable to set filename.",
-		 function );
-
-		return( -1 );
-	}
-	filename[ internal_handle->basename_size - 1 ] = 0;
-#endif
 	return( 1 );
 }
 
-/* Sets the segment filename for the file handle
+/* Sets the segment filename
  * Returns 1 if succesful or -1 on error
  */
 int libsmraw_handle_set_segment_filename(
@@ -2752,10 +2518,6 @@ int libsmraw_handle_set_segment_filename(
 	libsmraw_internal_handle_t *internal_handle = NULL;
 	static char *function                       = "libsmraw_handle_set_segment_filename";
 
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
-	int result                                  = 0;
-#endif
-
 	if( handle == NULL )
 	{
 		libcerror_error_set(
@@ -2769,51 +2531,18 @@ int libsmraw_handle_set_segment_filename(
 	}
 	internal_handle = (libsmraw_internal_handle_t *) handle;
 
-	if( internal_handle->basename != NULL )
+	if( internal_handle->io_handle == NULL )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
-		 "%s: invalid handle - basename already set.",
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid handle - missing IO handle.",
 		 function );
 
 		return( -1 );
 	}
-	if( filename == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid filename.",
-		 function );
-
-		return( -1 );
-	}
-	if( filename_length == 0 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_VALUE_ZERO_OR_LESS,
-		 "%s: invalid filename length is zero.",
-		 function );
-
-		return( -1 );
-	}
-	if( filename_length > (size_t) SSIZE_MAX )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
-		 "%s: invalid filename length value exceeds maximum.",
-		 function );
-
-		return( -1 );
-	}
-	if( internal_handle->basename != NULL )
+	if( internal_handle->io_handle->basename != NULL )
 	{
 		if( internal_handle->file_io_pool != NULL )
 		{
@@ -2821,174 +2550,34 @@ int libsmraw_handle_set_segment_filename(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
-			 "%s: basename already set: %" PRIs_LIBCSTRING_SYSTEM ".",
+			 "%s: basename value already set: %" PRIs_LIBCSTRING_SYSTEM ".",
 			 function,
-			 internal_handle->basename );
+			 internal_handle->io_handle->basename );
 
 			return( -1 );
 		}
-		memory_free(
-		  internal_handle->basename );
-
-		 internal_handle->basename      = NULL;
-		 internal_handle->basename_size = 0;
 	}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
-	if( libclocale_codepage == 0 )
-	{
-#if SIZEOF_WCHAR_T == 4
-		result = libuna_utf32_string_size_from_utf8(
-		          (libuna_utf8_character_t *) filename,
-		          filename_length + 1,
-		          &( internal_handle->basename_size ),
-		          error );
-#elif SIZEOF_WCHAR_T == 2
-		result = libuna_utf16_string_size_from_utf8(
-		          (libuna_utf8_character_t *) filename,
-		          filename_length + 1,
-		          &( internal_handle->basename_size ),
-		          error );
-#else
-#error Unsupported size of wchar_t
-#endif /* SIZEOF_WCHAR_T */
-	}
-	else
-	{
-#if SIZEOF_WCHAR_T == 4
-		result = libuna_utf32_string_size_from_byte_stream(
-		          (uint8_t *) filename,
-		          filename_length + 1,
-		          libclocale_codepage,
-		          &( internal_handle->basename_size ),
-		          error );
-#elif SIZEOF_WCHAR_T == 2
-		result = libuna_utf16_string_size_from_byte_stream(
-		          (uint8_t *) filename,
-		          filename_length + 1,
-		          libclocale_codepage,
-		          &( internal_handle->basename_size ),
-		          error );
-#else
-#error Unsupported size of wchar_t
-#endif /* SIZEOF_WCHAR_T */
-	}
-	if( result != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_CONVERSION,
-		 LIBCERROR_CONVERSION_ERROR_GENERIC,
-		 "%s: unable to determine name size.",
-		 function );
-
-		return( -1 );
-	}
-#else
-	internal_handle->basename_size = filename_length + 1;
-#endif
-	internal_handle->basename = libcstring_system_string_allocate(
-	                             internal_handle->basename_size );
-
-	if( internal_handle->basename == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_MEMORY,
-		 LIBCERROR_MEMORY_ERROR_INSUFFICIENT,
-		 "%s: unable to create basename.",
-		 function );
-
-		return( -1 );
-	}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
-	if( libclocale_codepage == 0 )
-	{
-#if SIZEOF_WCHAR_T == 4
-		result = libuna_utf32_string_copy_from_utf8(
-		          (libuna_utf32_character_t *) internal_handle->basename,
-		          internal_handle->basename_size,
-		          (libuna_utf8_character_t *) filename,
-		          filename_length + 1,
-		          error );
-#elif SIZEOF_WCHAR_T == 2
-		result = libuna_utf16_string_copy_from_utf8(
-		          (libuna_utf16_character_t *) internal_handle->basename,
-		          internal_handle->basename_size,
-		          (libuna_utf8_character_t *) filename,
-		          filename_length + 1,
-		          error );
-#else
-#error Unsupported size of wchar_t
-#endif /* SIZEOF_WCHAR_T */
-	}
-	else
-	{
-#if SIZEOF_WCHAR_T == 4
-		result = libuna_utf32_string_copy_from_byte_stream(
-		          (libuna_utf32_character_t *) internal_handle->basename,
-		          internal_handle->basename_size,
-		          (uint8_t *) filename,
-		          filename_length + 1,
-		          libclocale_codepage,
-		          error );
-#elif SIZEOF_WCHAR_T == 2
-		result = libuna_utf16_string_copy_from_byte_stream(
-		          (libuna_utf16_character_t *) internal_handle->basename,
-		          internal_handle->basename_size,
-		          (uint8_t *) filename,
-		          filename_length + 1,
-		          libclocale_codepage,
-		          error );
-#else
-#error Unsupported size of wchar_t
-#endif /* SIZEOF_WCHAR_T */
-	}
-	if( result != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_CONVERSION,
-		 LIBCERROR_CONVERSION_ERROR_GENERIC,
-		 "%s: unable to set basename.",
-		 function );
-
-		memory_free(
-		 internal_handle->basename );
-
-		internal_handle->basename      = NULL;
-		internal_handle->basename_size = 0;
-
-		return( -1 );
-	}
-#else
-	if( libcstring_system_string_copy(
-	     internal_handle->basename,
+	if( libsmraw_io_handle_set_basename(
+	     internal_handle->io_handle,
 	     filename,
-	     filename_length + 1 ) == NULL )
+	     filename_length,
+	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
-		 LIBCERROR_ERROR_DOMAIN_MEMORY,
-		 LIBCERROR_MEMORY_ERROR_COPY_FAILED,
-		 "%s: unable to set basename.",
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to set basename in IO handle.",
 		 function );
-
-		memory_free(
-		 internal_handle->basename );
-
-		internal_handle->basename      = NULL;
-		internal_handle->basename_size = 0;
 
 		return( -1 );
 	}
-	internal_handle->basename[ filename_length ] = 0;
-#endif
 	return( 1 );
 }
 
 #if defined( HAVE_WIDE_CHARACTER_TYPE )
 
-/* Retrieves the segment filename size of the file handle
+/* Retrieves the segment filename size
  * The segment filename size includes the end of string character
  * Returns 1 if succesful or -1 on error
  */
@@ -3000,10 +2589,6 @@ int libsmraw_handle_get_segment_filename_size_wide(
 	libsmraw_internal_handle_t *internal_handle = NULL;
 	static char *function                       = "libsmraw_handle_get_segment_filename_size_wide";
 
-#if !defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
-	int result                                  = 0;
-#endif
-
 	if( handle == NULL )
 	{
 		libcerror_error_set(
@@ -3017,85 +2602,24 @@ int libsmraw_handle_get_segment_filename_size_wide(
 	}
 	internal_handle = (libsmraw_internal_handle_t *) handle;
 
-	if( internal_handle->basename == NULL )
+	if( libsmraw_io_handle_get_basename_size_wide(
+	     internal_handle->io_handle,
+	     filename_size,
+	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid handle - missing basename.",
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve basename size from IO handle.",
 		 function );
 
 		return( -1 );
 	}
-	if( filename_size == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid filename size.",
-		 function );
-
-		return( -1 );
-	}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
-	*filename_size = internal_handle->basename_size;
-#else
-	if( libclocale_codepage == 0 )
-	{
-#if SIZEOF_WCHAR_T == 4
-		result = libuna_utf32_string_size_from_utf8(
-		          (libuna_utf8_character_t *) internal_handle->basename,
-		          internal_handle->basename_size,
-		          filename_size,
-		          error );
-#elif SIZEOF_WCHAR_T == 2
-		result = libuna_utf16_string_size_from_utf8(
-		          (libuna_utf8_character_t *) internal_handle->basename,
-		          internal_handle->basename_size,
-		          filename_size,
-		          error );
-#else
-#error Unsupported size of wchar_t
-#endif /* SIZEOF_WCHAR_T */
-	}
-	else
-	{
-#if SIZEOF_WCHAR_T == 4
-		result = libuna_utf32_string_size_from_byte_stream(
-		          (uint8_t *) internal_handle->basename,
-		          internal_handle->basename_size,
-		          libclocale_codepage,
-		          filename_size,
-		          error );
-#elif SIZEOF_WCHAR_T == 2
-		result = libuna_utf16_string_size_from_byte_stream(
-		          (uint8_t *) internal_handle->basename,
-		          internal_handle->basename_size,
-		          libclocale_codepage,
-		          filename_size,
-		          error );
-#else
-#error Unsupported size of wchar_t
-#endif /* SIZEOF_WCHAR_T */
-	}
-	if( result != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_CONVERSION,
-		 LIBCERROR_CONVERSION_ERROR_GENERIC,
-		 "%s: unable to determine filename size.",
-		 function );
-
-		return( -1 );
-	}
-#endif
 	return( 1 );
 }
 
-/* Retrieves the segment filename of the file handle
+/* Retrieves the segment filename
  * The segment filename size should include the end of string character
  * Returns 1 if succesful or -1 on error
  */
@@ -3107,11 +2631,6 @@ int libsmraw_handle_get_segment_filename_wide(
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
 	static char *function                      = "libsmraw_handle_get_segment_filename_wide";
-	size_t wide_filename_size                  = 0;
-
-#if !defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
-	int result                                 = 0;
-#endif
 
 	if( handle == NULL )
 	{
@@ -3126,167 +2645,25 @@ int libsmraw_handle_get_segment_filename_wide(
 	}
 	internal_handle = (libsmraw_internal_handle_t *) handle;
 
-	if( internal_handle->basename == NULL )
+	if( libsmraw_io_handle_get_basename_wide(
+	     internal_handle->io_handle,
+	     filename,
+	     filename_size,
+	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid handle - missing basename.",
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve basename from IO handle.",
 		 function );
 
 		return( -1 );
 	}
-	if( filename == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid filename.",
-		 function );
-
-		return( -1 );
-	}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
-	wide_filename_size = internal_handle->basename_size;
-#else
-	if( libclocale_codepage == 0 )
-	{
-#if SIZEOF_WCHAR_T == 4
-		result = libuna_utf32_string_size_from_utf8(
-		          (libuna_utf8_character_t *) internal_handle->basename,
-		          internal_handle->basename_size,
-		          &wide_filename_size,
-		          error );
-#elif SIZEOF_WCHAR_T == 2
-		result = libuna_utf16_string_size_from_utf8(
-		          (libuna_utf8_character_t *) internal_handle->basename,
-		          internal_handle->basename_size,
-		          &wide_filename_size,
-		          error );
-#else
-#error Unsupported size of wchar_t
-#endif /* SIZEOF_WCHAR_T */
-	}
-	else
-	{
-#if SIZEOF_WCHAR_T == 4
-		result = libuna_utf32_string_size_from_byte_stream(
-		          (uint8_t *) internal_handle->basename,
-		          internal_handle->basename_size,
-		          libclocale_codepage,
-		          &wide_filename_size,
-		          error );
-#elif SIZEOF_WCHAR_T == 2
-		result = libuna_utf16_string_size_from_byte_stream(
-		          (uint8_t *) internal_handle->basename,
-		          internal_handle->basename_size,
-		          libclocale_codepage,
-		          &wide_filename_size,
-		          error );
-#else
-#error Unsupported size of wchar_t
-#endif /* SIZEOF_WCHAR_T */
-	}
-	if( result != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_CONVERSION,
-		 LIBCERROR_CONVERSION_ERROR_GENERIC,
-		 "%s: unable to determine filename size.",
-		 function );
-
-		return( -1 );
-	}
-#endif
-	if( filename_size < wide_filename_size )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_VALUE_TOO_SMALL,
-		 "%s: filename too small.",
-		 function );
-
-		return( -1 );
-	}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
-	if( libcstring_system_string_copy(
-	     filename,
-	     internal_handle->basename,
-	     internal_handle->basename_size ) == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_MEMORY,
-		 LIBCERROR_MEMORY_ERROR_COPY_FAILED,
-		 "%s: unable to set filename.",
-		 function );
-
-		return( -1 );
-	}
-	filename[ internal_handle->basename_size - 1 ] = 0;
-#else
-	if( libclocale_codepage == 0 )
-	{
-#if SIZEOF_WCHAR_T == 4
-		result = libuna_utf32_string_copy_from_utf8(
-		          (libuna_utf32_character_t *) filename,
-		          filename_size,
-		          (libuna_utf8_character_t *) internal_handle->basename,
-		          internal_handle->basename_size,
-		          error );
-#elif SIZEOF_WCHAR_T == 2
-		result = libuna_utf16_string_copy_from_utf8(
-		          (libuna_utf16_character_t *) filename,
-		          filename_size,
-		          (libuna_utf8_character_t *) internal_handle->basename,
-		          internal_handle->basename_size,
-		          error );
-#else
-#error Unsupported size of wchar_t
-#endif /* SIZEOF_WCHAR_T */
-	}
-	else
-	{
-#if SIZEOF_WCHAR_T == 4
-		result = libuna_utf32_string_copy_from_byte_stream(
-		          (libuna_utf32_character_t *) filename,
-		          filename_size,
-		          (uint8_t *) internal_handle->basename,
-		          internal_handle->basename_size,
-		          libclocale_codepage,
-		          error );
-#elif SIZEOF_WCHAR_T == 2
-		result = libuna_utf16_string_copy_from_byte_stream(
-		          (libuna_utf16_character_t *) filename,
-		          filename_size,
-		          (uint8_t *) internal_handle->basename,
-		          internal_handle->basename_size,
-		          libclocale_codepage,
-		          error );
-#else
-#error Unsupported size of wchar_t
-#endif /* SIZEOF_WCHAR_T */
-	}
-	if( result != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_CONVERSION,
-		 LIBCERROR_CONVERSION_ERROR_GENERIC,
-		 "%s: unable to set filename.",
-		 function );
-
-		return( -1 );
-	}
-#endif
 	return( 1 );
 }
 
-/* Sets the segment filename for the file handle
+/* Sets the segment filename
  * Returns 1 if succesful or -1 on error
  */
 int libsmraw_handle_set_segment_filename_wide(
@@ -3298,10 +2675,6 @@ int libsmraw_handle_set_segment_filename_wide(
 	libsmraw_internal_handle_t *internal_handle = NULL;
 	static char *function                       = "libsmraw_handle_set_segment_filename_wide";
 
-#if !defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
-	int result                                  = 0;
-#endif
-
 	if( handle == NULL )
 	{
 		libcerror_error_set(
@@ -3315,40 +2688,18 @@ int libsmraw_handle_set_segment_filename_wide(
 	}
 	internal_handle = (libsmraw_internal_handle_t *) handle;
 
-	if( filename == NULL )
+	if( internal_handle->io_handle == NULL )
 	{
 		libcerror_error_set(
 		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid filename.",
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid handle - missing IO handle.",
 		 function );
 
 		return( -1 );
 	}
-	if( filename_length == 0 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_VALUE_ZERO_OR_LESS,
-		 "%s: invalid filename length is zero.",
-		 function );
-
-		return( -1 );
-	}
-	if( filename_length > (size_t) SSIZE_MAX )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
-		 "%s: invalid filename length value exceeds maximum.",
-		 function );
-
-		return( -1 );
-	}
-	if( internal_handle->basename != NULL )
+	if( internal_handle->io_handle->basename != NULL )
 	{
 		if( internal_handle->file_io_pool != NULL )
 		{
@@ -3356,170 +2707,28 @@ int libsmraw_handle_set_segment_filename_wide(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
-			 "%s: basename already set: %" PRIs_LIBCSTRING_SYSTEM ".",
+			 "%s: basename value already set: %" PRIs_LIBCSTRING_SYSTEM ".",
 			 function,
-			 internal_handle->basename );
+			 internal_handle->io_handle->basename );
 
 			return( -1 );
 		}
-		memory_free(
-		  internal_handle->basename );
-
-		 internal_handle->basename      = NULL;
-		 internal_handle->basename_size = 0;
 	}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
-	internal_handle->basename_size = filename_length + 1;
-#else
-	if( libclocale_codepage == 0 )
-	{
-#if SIZEOF_WCHAR_T == 4
-		result = libuna_utf8_string_size_from_utf32(
-		          (libuna_utf32_character_t *) filename,
-		          filename_length + 1,
-		          &( internal_handle->basename_size ),
-		          error );
-#elif SIZEOF_WCHAR_T == 2
-		result = libuna_utf8_string_size_from_utf16(
-		          (libuna_utf16_character_t *) filename,
-		          filename_length + 1,
-		          &( internal_handle->basename_size ),
-		          error );
-#else
-#error Unsupported size of wchar_t
-#endif /* SIZEOF_WCHAR_T */
-	}
-	else
-	{
-#if SIZEOF_WCHAR_T == 4
-		result = libuna_byte_stream_size_from_utf32(
-		          (libuna_utf32_character_t *) filename,
-		          filename_length + 1,
-		          libclocale_codepage,
-		          &( internal_handle->basename_size ),
-		          error );
-#elif SIZEOF_WCHAR_T == 2
-		result = libuna_byte_stream_size_from_utf16(
-		          (libuna_utf16_character_t *) filename,
-		          filename_length + 1,
-		          libclocale_codepage,
-		          &( internal_handle->basename_size ),
-		          error );
-#else
-#error Unsupported size of wchar_t
-#endif /* SIZEOF_WCHAR_T */
-	}
-	if( result != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_CONVERSION,
-		 LIBCERROR_CONVERSION_ERROR_GENERIC,
-		 "%s: unable to determine name size.",
-		 function );
-
-		return( -1 );
-	}
-#endif /* defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER ) */
-
-	internal_handle->basename = libcstring_system_string_allocate(
-	                             internal_handle->basename_size );
-
-	if( internal_handle->basename == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_MEMORY,
-		 LIBCERROR_MEMORY_ERROR_INSUFFICIENT,
-		 "%s: unable to create basename.",
-		 function );
-
-		return( -1 );
-	}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
-	if( libcstring_system_string_copy(
-	     internal_handle->basename,
+	if( libsmraw_io_handle_set_basename_wide(
+	     internal_handle->io_handle,
 	     filename,
-	     filename_length + 1 ) == NULL )
+	     filename_length,
+	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
-		 LIBCERROR_ERROR_DOMAIN_MEMORY,
-		 LIBCERROR_MEMORY_ERROR_COPY_FAILED,
-		 "%s: unable to set filename.",
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to set basename in IO handle.",
 		 function );
-
-		memory_free(
-		 internal_handle->basename );
-
-		internal_handle->basename      = NULL;
-		internal_handle->basename_size = 0;
 
 		return( -1 );
 	}
-	internal_handle->basename[ filename_length ] = 0;
-#else
-	if( libclocale_codepage == 0 )
-	{
-#if SIZEOF_WCHAR_T == 4
-		result = libuna_utf8_string_copy_from_utf32(
-		          (libuna_utf8_character_t *) internal_handle->basename,
-		          internal_handle->basename_size,
-		          (libuna_utf32_character_t *) filename,
-		          filename_length + 1,
-		          error );
-#elif SIZEOF_WCHAR_T == 2
-		result = libuna_utf8_string_copy_from_utf16(
-		          (libuna_utf8_character_t *) internal_handle->basename,
-		          internal_handle->basename_size,
-		          (libuna_utf16_character_t *) filename,
-		          filename_length + 1,
-		          error );
-#else
-#error Unsupported size of wchar_t
-#endif /* SIZEOF_WCHAR_T */
-	}
-	else
-	{
-#if SIZEOF_WCHAR_T == 4
-		result = libuna_byte_stream_copy_from_utf32(
-		          (uint8_t *) internal_handle->basename,
-		          internal_handle->basename_size,
-		          libclocale_codepage,
-		          (libuna_utf32_character_t *) filename,
-		          filename_length + 1,
-		          error );
-#elif SIZEOF_WCHAR_T == 2
-		result = libuna_byte_stream_copy_from_utf16(
-		          (uint8_t *) internal_handle->basename,
-		          internal_handle->basename_size,
-		          libclocale_codepage,
-		          (libuna_utf16_character_t *) filename,
-		          filename_length + 1,
-		          error );
-#else
-#error Unsupported size of wchar_t
-#endif /* SIZEOF_WCHAR_T */
-	}
-	if( result != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_CONVERSION,
-		 LIBCERROR_CONVERSION_ERROR_GENERIC,
-		 "%s: unable to set filename.",
-		 function );
-
-		memory_free(
-		 internal_handle->basename );
-
-		internal_handle->basename      = NULL;
-		internal_handle->basename_size = 0;
-
-		return( -1 );
-	}
-#endif /* defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER ) */
-
 	return( 1 );
 }
 
@@ -3550,19 +2759,20 @@ int libsmraw_handle_get_maximum_segment_size(
 	}
 	internal_handle = (libsmraw_internal_handle_t *) handle;
 
-	if( maximum_segment_size == NULL )
+	if( libsmraw_io_handle_get_maximum_segment_size(
+	     internal_handle->io_handle,
+	     maximum_segment_size,
+	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid maximum segment size.",
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve maximum segment size from IO handle.",
 		 function );
 
 		return( -1 );
 	}
-	*maximum_segment_size = internal_handle->maximum_segment_size;
-
 	return( 1 );
 }
 
@@ -3602,8 +2812,20 @@ int libsmraw_handle_set_maximum_segment_size(
 
 		return( -1 );
 	}
-	internal_handle->maximum_segment_size = maximum_segment_size;
+	if( libsmraw_io_handle_set_maximum_segment_size(
+	     internal_handle->io_handle,
+	     maximum_segment_size,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to set maximum segment size in IO handle.",
+		 function );
 
+		return( -1 );
+	}
 	return( 1 );
 }
 
@@ -3841,6 +3063,9 @@ int libsmraw_handle_get_file_io_handle(
 {
 	libsmraw_internal_handle_t *internal_handle = NULL;
 	static char *function                       = "libsmraw_handle_get_file_io_handle";
+	off64_t current_offset                      = 0;
+	off64_t segment_data_offset                 = 0;
+	int segment_index                           = 0;
 
 	if( handle == NULL )
 	{
@@ -3855,10 +3080,50 @@ int libsmraw_handle_get_file_io_handle(
 	}
 	internal_handle = (libsmraw_internal_handle_t *) handle;
 
-/* TODO refactor
-	if( libfdata_stream_seek_offset(
+	if( internal_handle->file_io_pool == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid handle - missing file IO pool.",
+		 function );
+
+		return( -1 );
+	}
+	if( libfdata_stream_get_offset(
 	     internal_handle->segments_stream,
-	     (intptr_t *) internal_handle->file_io_pool,
+	     &current_offset,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve current offset from segments stream.",
+		 function );
+
+		return( -1 );
+	}
+	if( libfdata_stream_get_segment_index_at_offset(
+	     internal_handle->segments_stream,
+	     current_offset,
+	     &segment_index,
+	     &segment_data_offset,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve segment index from segments stream.",
+		 function );
+
+		return( -1 );
+	}
+	if( libbfio_pool_get_handle(
+	     internal_handle->file_io_pool,
+	     segment_index,
 	     file_io_handle,
 	     error ) != 1 )
 	{
@@ -3866,12 +3131,13 @@ int libsmraw_handle_get_file_io_handle(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve file IO handle.", 
-		 function );
+		 "%s: unable to retrieve file IO handle for pool entry: %d at offset: %" PRIi64 ".",
+		 function,
+		 segment_index,
+		 current_offset );
 
 		return( -1 );
 	}
-*/
 	return( 1 );
 }
 

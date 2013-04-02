@@ -9,12 +9,12 @@
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -42,8 +42,8 @@ int libsmraw_filename_create(
      size_t *filename_size,
      libcstring_system_character_t *basename,
      size_t basename_size,
-     int total_number_of_segments,
-     int current_file_io_pool_entry,
+     int number_of_segments,
+     int segment_index,
      libcerror_error_t **error )
 {
 	static char *function    = "libsmraw_filename_create";
@@ -105,34 +105,34 @@ int libsmraw_filename_create(
 
 		return( -1 );
 	}
-	if( ( total_number_of_segments < 0 )
-	 || ( total_number_of_segments >= 1000 ) )
+	if( ( number_of_segments < 0 )
+	 || ( number_of_segments >= 1000 ) )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBCERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
-		 "%s: invalid maximum pool entry value out of bounds.",
+		 "%s: invalid number of segments value out of bounds.",
 		 function );
 
 		return( -1 );
 	}
-	if( total_number_of_segments > 0 )
+	if( number_of_segments > 0 )
 	{
-		if( ( current_file_io_pool_entry < 0 )
-		 || ( current_file_io_pool_entry > total_number_of_segments ) )
+		if( ( segment_index < 0 )
+		 || ( segment_index > number_of_segments ) )
 		{
 			libcerror_error_set(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
 			 LIBCERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
-			 "%s: invalid current pool entry value out of bounds.",
+			 "%s: invalid segment index value out of bounds.",
 			 function );
 
 			return( -1 );
 		}
 	}
-	if( total_number_of_segments == 1 )
+	if( number_of_segments == 1 )
 	{
 		additional_length = 4;
 	}
@@ -188,22 +188,22 @@ int libsmraw_filename_create(
 	}
 	filename_index += 4;
 
-	if( total_number_of_segments != 1 )
+	if( number_of_segments != 1 )
 	{
 		( *filename )[ filename_index++ ] = (libcstring_system_character_t) '.';
 
 		( *filename )[ filename_index++ ] = (libcstring_system_character_t) '0'
-		                                  + (libcstring_system_character_t) ( current_file_io_pool_entry / 100 );
+		                                  + (libcstring_system_character_t) ( segment_index / 100 );
 
-		current_file_io_pool_entry %= 100;
-
-		( *filename )[ filename_index++ ] = (libcstring_system_character_t) '0'
-		                                  + (libcstring_system_character_t) ( current_file_io_pool_entry / 10 );
-
-		current_file_io_pool_entry %= 10;
+		segment_index %= 100;
 
 		( *filename )[ filename_index++ ] = (libcstring_system_character_t) '0'
-		                                  + (libcstring_system_character_t) current_file_io_pool_entry;
+		                                  + (libcstring_system_character_t) ( segment_index / 10 );
+
+		segment_index %= 10;
+
+		( *filename )[ filename_index++ ] = (libcstring_system_character_t) '0'
+		                                  + (libcstring_system_character_t) segment_index;
 	}
 	( *filename )[ filename_index ] = 0;
 

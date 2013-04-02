@@ -1,5 +1,4 @@
 TODO
-* glob add support for: name-f###.vmdk
 * TODO: libfvalue_value_write_to_file_stream
 * update smraw.net bindings
 * why is empty information value section written in info file
@@ -27,8 +26,18 @@ Test
 * make sure certain values cannot be changed if writing/reading from raw files
 * add glob test to msvscpp project
 
-Beta release
-* remove deprecated functions in libsmraw_legacy.[ch]
+20130402
+* changes due to libmfdata and libfdata merge
+* removed libsmraw_legacy
+
+20130401
+* updated dependencies
+* changes due to libmfdata and libfdata merge
+
+20130321
+* 2013 update
+* updated dependencies
+* changes due to libmfdata and libfdata merge
 
 20121216
 * changes due to libmfdata and libfdata merge

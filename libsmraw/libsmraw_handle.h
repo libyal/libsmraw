@@ -9,12 +9,12 @@
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -31,7 +31,6 @@
 #include "libsmraw_libbfio.h"
 #include "libsmraw_libcerror.h"
 #include "libsmraw_libcstring.h"
-#include "libsmraw_libfcache.h"
 #include "libsmraw_libfdata.h"
 #include "libsmraw_libfvalue.h"
 #include "libsmraw_types.h"
@@ -41,7 +40,6 @@
 /* This inclusion is needed otherwise some linkers
  * mess up exporting the legacy and metadata functions
  */
-#include "libsmraw_legacy.h"
 #include "libsmraw_metadata.h"
 #endif
 
@@ -57,25 +55,9 @@ struct libsmraw_internal_handle
 	 */
 	libsmraw_io_handle_t *io_handle;
 
-        /* The basename
-	 */
-        libcstring_system_character_t *basename;
-
-        /* The size of the basename
-	 */
-        size_t basename_size;
-
-	/* The total number of segments
-	 */
-	int total_number_of_segments;
-
 	/* The segments (file data) stream
 	 */
 	libfdata_stream_t *segments_stream;
-
-	/* The segments (file data) cache
-	 */
-	libfcache_cache_t *segments_cache;
 
 	/* The pool of file IO handles
 	 */
@@ -88,7 +70,7 @@ struct libsmraw_internal_handle
 	/* The maximum number of open handles in the pool
 	 */
 	int maximum_number_of_open_handles;
- 
+
 	/* A value to indicate if the read values have been initialized
 	 */
 	uint8_t read_values_initialized;
@@ -105,14 +87,6 @@ struct libsmraw_internal_handle
 	/* The information file
 	 */
 	libsmraw_information_file_t *information_file;
-
-	/* The media size
-	 */
-        size64_t media_size;
-
-	/* The maximum segment size
-	 */
-        size64_t maximum_segment_size;
 
 	/* The media values table
 	 */
@@ -227,12 +201,6 @@ LIBSMRAW_EXTERN \
 int libsmraw_handle_set_maximum_number_of_open_handles(
      libsmraw_handle_t *handle,
      int maximum_number_of_open_handles,
-     libcerror_error_t **error );
-
-int libsmraw_handle_set_segment_name(
-     intptr_t *io_handle,
-     libbfio_handle_t *file_io_handle,
-     int segment_index,
      libcerror_error_t **error );
 
 LIBSMRAW_EXTERN \

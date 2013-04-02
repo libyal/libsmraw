@@ -345,6 +345,11 @@ then
 	exit ${EXIT_FAILURE};
 fi
 
+if ! test_glob "PREFIX-f001.vmdk" "001.vmdk" "PREFIX-f001.vmdk PREFIX-f002.vmdk PREFIX-f003.vmdk PREFIX-f004.vmdk PREFIX-f005.vmdk PREFIX-f006.vmdk PREFIX-f007.vmdk PREFIX-f008.vmdk PREFIX-f009.vmdk PREFIX-f010.vmdk";
+then
+	exit ${EXIT_FAILURE};
+fi
+
 # This test should fail
 if test_glob "PREFIX" ".1of5" "PREFIX.1of5 PREFIX.2of5 PREFIX.3of5 PREFIX.4of5 PREFIX.5of5";
 then

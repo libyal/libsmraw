@@ -2,7 +2,7 @@ AC_PREREQ( 2.59 )
 
 AC_INIT(
  [libsmraw],
- [20130321],
+ [20130402],
  [joachim.metz@gmail.com])
 
 AC_CONFIG_SRCDIR(
@@ -105,7 +105,8 @@ AX_LIBFUSE_CHECK_ENABLE
 dnl Check for functions
 AS_IF(
  [test "x$ac_cv_enable_winapi" = xno],
- [AC_CHECK_FUNCS([getegid geteuid])
+ [AC_HEADER_TIME
+ AC_CHECK_FUNCS([getegid geteuid time])
  ])
 
 dnl Check if smrawtools should be build as static executables
@@ -144,9 +145,9 @@ AS_IF(
  ])
 
 AS_IF(
- [test "x$ac_cv_libcsystem" = xyes || test "x$ac_cv_libfuse" = xyes],
+ [test "x$ac_cv_libcsystem" = xyes || test "x$ac_cv_libfuse" != xno],
  [AC_SUBST(
-  [libsmraw_spec_tools_build_requires],
+  [libsmraw_tools_spec_build_requires],
   [BuildRequires:])
  ])
 

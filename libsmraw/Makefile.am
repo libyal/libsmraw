@@ -27,13 +27,11 @@ libsmraw_la_SOURCES = \
 	libsmraw_handle.c libsmraw_handle.h \
 	libsmraw_information_file.c libsmraw_information_file.h \
 	libsmraw_io_handle.c libsmraw_io_handle.h \
-	libsmraw_legacy.c libsmraw_legacy.h \
 	libsmraw_libbfio.h \
 	libsmraw_libcerror.h \
 	libsmraw_libclocale.h \
 	libsmraw_libcnotify.h \
 	libsmraw_libcstring.h \
-	libsmraw_libfcache.h \
 	libsmraw_libfdata.h \
 	libsmraw_libfvalue.h \
 	libsmraw_libuna.h \
@@ -74,6 +72,6 @@ distclean: clean
 	/bin/rm -f Makefile
 
 splint:
-	@echo "Running splint on libsmraw ..." 
-	-splint -preproc -redef $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(libsmraw_la_SOURCES) 
+	@echo "Running splint on libsmraw ..."
+	-splint -preproc -redef $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(libsmraw_la_SOURCES)
 

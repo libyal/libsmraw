@@ -10,9 +10,9 @@ Package: libsmraw
 Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: Library to support the storage media (SM) RAW format
- libsmraw is a library to support the storage media (SM) RAW format.
- It supports both RAW and split RAW.
+Description: Library to access the storage media (SM) RAW format
+ libsmraw is a library to access the storage media (SM) RAW format.
+ The library supports both RAW and split RAW.
 
 Package: libsmraw-dev
 Section: libdevel

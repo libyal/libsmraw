@@ -9,12 +9,12 @@
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -56,13 +56,24 @@ int libsmraw_handle_get_media_size(
 	}
 	internal_handle = (libsmraw_internal_handle_t *) handle;
 
+	if( internal_handle->io_handle == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid handle - missing IO handle.",
+		 function );
+
+		return( -1 );
+	}
 	if( internal_handle->file_io_pool == NULL )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid handle - missing file io pool.",
+		 "%s: invalid handle - missing file IO pool.",
 		 function );
 
 		return( -1 );
@@ -78,7 +89,7 @@ int libsmraw_handle_get_media_size(
 
 		return( -1 );
 	}
-	*media_size = internal_handle->media_size;
+	*media_size = internal_handle->io_handle->media_size;
 
 	return( 1 );
 }
@@ -107,6 +118,17 @@ int libsmraw_handle_set_media_size(
 	}
 	internal_handle = (libsmraw_internal_handle_t *) handle;
 
+	if( internal_handle->io_handle == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid handle - missing IO handle.",
+		 function );
+
+		return( -1 );
+	}
 	if( ( internal_handle->read_values_initialized != 0 )
 	 || ( internal_handle->write_values_initialized != 0 ) )
 	{
@@ -119,7 +141,7 @@ int libsmraw_handle_set_media_size(
 
 		return( -1 );
 	}
-	internal_handle->media_size = media_size;
+	internal_handle->io_handle->media_size = media_size;
 
 	return( 1 );
 }

@@ -9,12 +9,12 @@
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -31,34 +31,6 @@
 #if defined( __cplusplus )
 extern "C" {
 #endif
-
-enum LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMAS
-{
-	LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_UNKNOWN	= 0,
-
-	/* Numeric naming schema e.g.
-	 * .1, .2, ... .10 ...
-	 * .000, .001, ... .010 ...
-	 * PREFIX000, PREFIX001, ...
-	 */
-	LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_NUMERIC	= (uint8_t) 'n',
-
-	/* Single naming schema e.g.
-	 * .dd
-	 * .raw
-	 */
-	LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_SINGLE	= (uint8_t) '1',
-
-	/* Split naming schema e.g.
-	 * PREFIXaa, PREFIXab, ...
-	 */
-	LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_SPLIT	= (uint8_t) 's',
-
-	/* XofN naming schema e.g.
-	 * PREFIX.1of5, PREFIX.2of5, ...
-	 */
-	LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_X_OF_N	= (uint8_t) 'x'
-};
 
 #if !defined( HAVE_LOCAL_LIBSMRAW )
 

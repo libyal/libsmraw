@@ -9,12 +9,12 @@
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -124,7 +124,7 @@ int libsmraw_set_codepage(
 int libsmraw_glob_append_segment_file(
      char **filenames[],
      int *number_of_filenames,
-     const char *segment_filename, 
+     const char *segment_filename,
      libcerror_error_t **error )
 {
 	static char *function = "libsmraw_glob_append_segment_file";
@@ -1253,7 +1253,7 @@ int libsmraw_glob_free(
 int libsmraw_glob_wide_append_segment_file(
      wchar_t **filenames[],
      int *number_of_filenames,
-     const wchar_t *segment_filename, 
+     const wchar_t *segment_filename,
      libcerror_error_t **error )
 {
 	static char *function = "libsmraw_glob_wide_append_segment_file";

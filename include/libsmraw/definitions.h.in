@@ -9,12 +9,12 @@
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -50,11 +50,6 @@ enum LIBSMRAW_ACCESS_FLAGS
 #define LIBSMRAW_OPEN_WRITE				( LIBSMRAW_ACCESS_FLAG_WRITE )
 #define LIBSMRAW_OPEN_WRITE_TRUNCATE			( LIBSMRAW_ACCESS_FLAG_WRITE | LIBSMRAW_ACCESS_FLAG_TRUNCATE )
 #define LIBSMRAW_OPEN_READ_WRITE_TRUNCATE		( LIBSMRAW_ACCESS_FLAG_READ | LIBSMRAW_ACCESS_FLAG_WRITE | LIBSMRAW_ACCESS_FLAG_TRUNCATE )
-
-/* TODO deprecated remove after a while */
-#define LIBSMRAW_FLAG_READ				LIBSMRAW_ACCESS_FLAG_READ
-#define LIBSMRAW_FLAG_WRITE				LIBSMRAW_ACCESS_FLAG_WRITE
-#define LIBSMRAW_FLAG_TRUNCATE				LIBSMRAW_ACCESS_FLAG_TRUNCATE
 
 /* The default maximum segment size
  */

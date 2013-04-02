@@ -19,8 +19,8 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _LIBVHDI_LIBFDATA_H )
-#define _LIBVHDI_LIBFDATA_H
+#if !defined( _LIBSMRAW_LIBFDATA_H )
+#define _LIBSMRAW_LIBFDATA_H
 
 #include <common.h>
 
@@ -35,7 +35,6 @@
 #include <libfdata_list_element.h>
 #include <libfdata_reference.h>
 #include <libfdata_stream.h>
-#include <libfdata_stream_reference.h>
 #include <libfdata_tree.h>
 #include <libfdata_tree_node.h>
 #include <libfdata_types.h>

@@ -1,5 +1,5 @@
 /*
- * Library to support the storage media (SM) (split) RAW format
+ * Library to access the storage media (SM) (split) RAW format
  *
  * Copyright (c) 2010-2013, Joachim Metz <joachim.metz@gmail.com>
  *
