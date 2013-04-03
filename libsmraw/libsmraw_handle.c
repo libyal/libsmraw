@@ -1452,7 +1452,7 @@ int libsmraw_handle_open_file_io_pool(
 
 			goto on_error;
 		}
-		if( libfdata_stream_resize_segments(
+		if( libfdata_stream_resize(
 		     internal_handle->segments_stream,
 		     number_of_file_io_handles,
 		     error ) != 1 )

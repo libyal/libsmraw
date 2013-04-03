@@ -26,6 +26,9 @@ Test
 * make sure certain values cannot be changed if writing/reading from raw files
 * add glob test to msvscpp project
 
+20130403
+* changes due to libmfdata and libfdata merge
+
 20130402
 * changes due to libmfdata and libfdata merge
 * removed libsmraw_legacy
