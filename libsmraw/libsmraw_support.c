@@ -568,6 +568,7 @@ int libsmraw_glob_determine_naming_schema(
 }
 
 /* Globs the files according to common (split) RAW naming schemas
+ * Make sure the value filenames is referencing, is set to NULL
  * Returns 1 if successful or -1 on error
  */
 int libsmraw_glob(
@@ -636,6 +637,17 @@ int libsmraw_glob(
 		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid filenames.",
+		 function );
+
+		return( -1 );
+	}
+	if( *filenames != NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
+		 "%s: invalid filenames value already set.",
 		 function );
 
 		return( -1 );
@@ -1199,7 +1211,7 @@ on_error:
 	return( -1 );
 }
 
-/* Frees the globbed filenames
+/* Frees globbed filenames
  * Returns 1 if successful or -1 on error
  */
 int libsmraw_glob_free(
@@ -1698,6 +1710,7 @@ int libsmraw_glob_wide_determine_naming_schema(
 }
 
 /* Globs the files according to common (split) RAW naming schemas
+ * Make sure the value X is referencing, is set to NULL
  * Returns 1 if successful or -1 on error
  */
 int libsmraw_glob_wide(
@@ -1766,6 +1779,17 @@ int libsmraw_glob_wide(
 		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid filenames.",
+		 function );
+
+		return( -1 );
+	}
+	if( *filenames != NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
+		 "%s: invalid filenames value already set.",
 		 function );
 
 		return( -1 );
@@ -2329,7 +2353,7 @@ on_error:
 	return( -1 );
 }
 
-/* Frees the globbed wide filenames
+/* Frees globbed wide filenames
  * Returns 1 if successful or -1 on error
  */
 int libsmraw_glob_wide_free(

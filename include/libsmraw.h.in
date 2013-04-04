@@ -86,6 +86,7 @@ int libsmraw_set_codepage(
      libsmraw_error_t **error );
 
 /* Globs the files according to common (split) RAW naming schemas
+ * Make sure the value filenames is referencing, is set to NULL
  * Returns 1 if successful or -1 on error
  */
 LIBSMRAW_EXTERN \
@@ -96,7 +97,7 @@ int libsmraw_glob(
      int *number_of_filenames,
      libsmraw_error_t **error );
 
-/* Frees the globbed filenames
+/* Frees globbed filenames
  * Returns 1 if successful or -1 on error
  */
 LIBSMRAW_EXTERN \
@@ -107,6 +108,7 @@ int libsmraw_glob_free(
 
 #if defined( HAVE_WIDE_CHARACTER_TYPE )
 /* Globs the files according to common (split) RAW naming schemas
+ * Make sure the value filenames is referencing, is set to NULL
  * Returns 1 if successful or -1 on error
  */
 LIBSMRAW_EXTERN \
@@ -117,7 +119,7 @@ int libsmraw_glob_wide(
      int *number_of_filenames,
      libsmraw_error_t **error );
 
-/* Frees the globbed wide filenames
+/* Frees globbed wide filenames
  * Returns 1 if successful or -1 on error
  */
 LIBSMRAW_EXTERN \
@@ -165,7 +167,7 @@ int libsmraw_notify_stream_close(
  * Error functions
  * ------------------------------------------------------------------------- */
 
-/* Frees the error including elements
+/* Frees an error
  */
 LIBSMRAW_EXTERN \
 void libsmraw_error_free(
@@ -211,8 +213,8 @@ int libsmraw_error_backtrace_sprint(
  * Handle functions
  * ------------------------------------------------------------------------- */
 
-/* Initializes the handle
- * Make sure the value handle is pointing to is set to NULL
+/* Creates a handle
+ * Make sure the value handle is referencing, is set to NULL
  * Returns 1 if successful or -1 on error
  */
 LIBSMRAW_EXTERN \
@@ -220,7 +222,7 @@ int libsmraw_handle_initialize(
      libsmraw_handle_t **handle,
      libsmraw_error_t **error );
 
-/* Frees the handle
+/* Frees a handle
  * Returns 1 if successful or -1 on error
  */
 LIBSMRAW_EXTERN \

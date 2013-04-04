@@ -29,7 +29,8 @@
 #include "libsmraw_libcstring.h"
 #include "libsmraw_libfvalue.h"
 
-/* Creates the information file
+/* Creates an information file
+ * Make sure the value information_file is referencing, is set to NULL
  * Returns 1 if successful or -1 on error
  */
 int libsmraw_information_file_initialize(
@@ -101,7 +102,7 @@ on_error:
 	return( -1 );
 }
 
-/* Frees the information file
+/* Frees an information file
  * Returns 1 if successful or -1 on error
  */
 int libsmraw_information_file_free(

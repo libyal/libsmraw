@@ -37,7 +37,8 @@
 #include "libsmraw_libuna.h"
 #include "libsmraw_types.h"
 
-/* Initializes the handle
+/* Creates a handle
+ * Make sure the value handle is referencing, is set to NULL
  * Returns 1 if successful or -1 on error
  */
 int libsmraw_handle_initialize(
@@ -189,7 +190,7 @@ on_error:
 
 }
 
-/* Frees the handle
+/* Frees a handle
  * Returns 1 if succesful or -1 on error
  */
 int libsmraw_handle_free(
@@ -363,8 +364,8 @@ int libsmraw_internal_handle_initialize_write_values(
      libcerror_error_t **error )
 {
 	static char *function       = "libsmraw_internal_handle_initialize_write_values";
-	size64_t last_segment_size  = 0; 
-	size64_t number_of_segments = 0; 
+	size64_t last_segment_size  = 0;
+	size64_t number_of_segments = 0;
 
 	if( internal_handle == NULL )
 	{

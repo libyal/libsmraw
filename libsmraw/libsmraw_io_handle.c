@@ -33,8 +33,8 @@
 #include "libsmraw_libuna.h"
 #include "libsmraw_unused.h"
 
-/* Initialize an IO handle
- * Make sure the value io_handle is pointing to is set to NULL
+/* Creates an IO handle
+ * Make sure the value io_handle is referencing, is set to NULL
  * Returns 1 if successful or -1 on error
  */
 int libsmraw_io_handle_initialize(
