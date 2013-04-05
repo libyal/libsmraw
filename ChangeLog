@@ -26,6 +26,9 @@ Test
 * make sure certain values cannot be changed if writing/reading from raw files
 * add glob test to msvscpp project
 
+20130405
+* updated dependencies
+
 20130404
 * textual changes
 * updated dependencies
