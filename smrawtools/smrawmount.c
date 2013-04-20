@@ -82,7 +82,8 @@ void usage_fprint(
 	}
 	fprintf( stream, "Use smrawmount to mount a storage media (split) RAW (image) file\n\n" );
 
-	fprintf( stream, "Usage: smrawmount [ -hvV ] smraw_files mount_point\n\n" );
+	fprintf( stream, "Usage: smrawmount [ -X extended_options ] [ -hvV ] smraw_files\n"
+	                 "                  mount_point\n\n" );
 
 	fprintf( stream, "\tsmraw_files: the first or the entire set of SMRAW segment files\n\n" );
 	fprintf( stream, "\tmount_point: the directory to serve as mount point\n\n" );
@@ -91,6 +92,7 @@ void usage_fprint(
 	fprintf( stream, "\t-v:          verbose output to stderr\n"
 	                 "\t             smrawmount will remain running in the foreground\n" );
 	fprintf( stream, "\t-V:          print version\n" );
+	fprintf( stream, "\t-X:          extended options to pass to sub system\n" );
 }
 
 /* Signal handler for smrawmount
@@ -667,24 +669,27 @@ int wmain( int argc, wchar_t * const argv[] )
 int main( int argc, char * const argv[] )
 #endif
 {
-	libcstring_system_character_t * const *argv_filenames = NULL;
+	libcstring_system_character_t * const *argv_filenames  = NULL;
 
-	libsmraw_error_t *error                               = NULL;
-	libcstring_system_character_t *mount_point            = NULL;
-	char *program                                         = "smrawmount";
-	libcstring_system_integer_t option                    = 0;
-	int number_of_filenames                               = 0;
-	int verbose                                           = 0;
+	libsmraw_error_t *error                                = NULL;
+	libcstring_system_character_t *mount_point             = NULL;
+	libcstring_system_character_t *option_extended_options = NULL;
+	char *program                                          = "smrawmount";
+	libcstring_system_integer_t option                     = 0;
+	int number_of_filenames                                = 0;
+	int verbose                                            = 0;
 
 #if !defined( LIBCSYSTEM_HAVE_GLOB )
-	libcsystem_glob_t *glob                               = NULL;
+	libcsystem_glob_t *glob                                = NULL;
 #endif
 
 #if defined( HAVE_LIBFUSE ) || defined( HAVE_LIBOSXFUSE )
 	struct fuse_operations smrawmount_fuse_operations;
-	struct fuse_chan *smrawmount_fuse_channel             = NULL;
-	struct fuse *smrawmount_fuse_handle                   = NULL;
-	int result                                            = 0;
+
+	struct fuse_args smrawmount_fuse_arguments             = FUSE_ARGS_INIT(0, NULL);
+	struct fuse_chan *smrawmount_fuse_channel              = NULL;
+	struct fuse *smrawmount_fuse_handle                    = NULL;
+	int result                                             = 0;
 #endif
 
 	libcnotify_stream_set(
@@ -720,7 +725,7 @@ int main( int argc, char * const argv[] )
 	while( ( option = libcsystem_getopt(
 	                   argc,
 	                   argv,
-	                   _LIBCSTRING_SYSTEM_STRING( "hvV" ) ) ) != (libcstring_system_integer_t) -1 )
+	                   _LIBCSTRING_SYSTEM_STRING( "hvVX:" ) ) ) != (libcstring_system_integer_t) -1 )
 	{
 		switch( option )
 		{
@@ -752,6 +757,11 @@ int main( int argc, char * const argv[] )
 				 stdout );
 
 				return( EXIT_SUCCESS );
+
+			case (libcstring_system_integer_t) 'X':
+				option_extended_options = optarg;
+
+				break;
 		}
 	}
 	if( optind == argc )
@@ -851,6 +861,41 @@ int main( int argc, char * const argv[] )
 
 		goto on_error;
 	}
+	if( option_extended_options != NULL )
+	{
+		/* This argument is required but ignored
+		 */
+		if( fuse_opt_add_arg(
+		     &smrawmount_fuse_arguments,
+		     "" ) != 0 )
+		{
+			fprintf(
+			 stderr,
+			 "Unable add fuse arguments.\n" );
+
+			goto on_error;
+		}
+		if( fuse_opt_add_arg(
+		     &smrawmount_fuse_arguments,
+		     "-o" ) != 0 )
+		{
+			fprintf(
+			 stderr,
+			 "Unable add fuse arguments.\n" );
+
+			goto on_error;
+		}
+		if( fuse_opt_add_arg(
+		     &smrawmount_fuse_arguments,
+		     option_extended_options ) != 0 )
+		{
+			fprintf(
+			 stderr,
+			 "Unable add fuse arguments.\n" );
+
+			goto on_error;
+		}
+	}
 	smrawmount_fuse_operations.open    = &smrawmount_fuse_open;
 	smrawmount_fuse_operations.read    = &smrawmount_fuse_read;
 	smrawmount_fuse_operations.readdir = &smrawmount_fuse_readdir;
@@ -859,7 +904,7 @@ int main( int argc, char * const argv[] )
 
 	smrawmount_fuse_channel = fuse_mount(
 	                           mount_point,
-	                           NULL );
+	                           &smrawmount_fuse_arguments );
 
 	if( smrawmount_fuse_channel == NULL )
 	{
@@ -871,7 +916,7 @@ int main( int argc, char * const argv[] )
 	}
 	smrawmount_fuse_handle = fuse_new(
 	                          smrawmount_fuse_channel,
-	                          NULL,
+	                          &smrawmount_fuse_arguments,
 	                          &smrawmount_fuse_operations,
 	                          sizeof( struct fuse_operations ),
 	                          smrawmount_mount_handle );
@@ -910,6 +955,9 @@ int main( int argc, char * const argv[] )
 	fuse_destroy(
 	 smrawmount_fuse_handle );
 
+	fuse_opt_free_args(
+	 &smrawmount_fuse_arguments );
+
 	return( EXIT_SUCCESS );
 #else
 	fprintf(
@@ -933,6 +981,8 @@ on_error:
 		fuse_destroy(
 		 smrawmount_fuse_handle );
 	}
+	fuse_opt_free_args(
+	 &smrawmount_fuse_arguments );
 #endif
 	if( smrawmount_mount_handle != NULL )
 	{
