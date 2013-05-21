@@ -1,4 +1,5 @@
 TODO
+* remove io_handle from fdata stream callback functions?
 * TODO: libfvalue_value_write_to_file_stream
 * update smraw.net bindings
 * why is empty information value section written in info file
@@ -25,6 +26,9 @@ Test
 * retrieve data from the information file on open
 * make sure certain values cannot be changed if writing/reading from raw files
 * add glob test to msvscpp project
+
+20130520
+* Bug fix in dependencies
 
 20130420
 * smrawmount added -X option

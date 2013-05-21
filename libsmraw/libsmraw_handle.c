@@ -1461,7 +1461,7 @@ int libsmraw_handle_open_file_io_pool(
 			libcerror_error_set(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 LIBCERROR_RUNTIME_ERROR_RESIZE_FAILED,
 			 "%s: unable to resize segments stream.",
 			 function );
 
