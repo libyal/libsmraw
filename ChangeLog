@@ -27,6 +27,10 @@ Test
 * make sure certain values cannot be changed if writing/reading from raw files
 * add glob test to msvscpp project
 
+20130831
+* updated dependencies
+* added libcthreads build support
+
 20130520
 * Bug fix in dependencies
 
