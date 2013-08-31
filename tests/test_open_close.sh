@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Library seek testing script
+# Library open close testing script
 #
 # Copyright (c) 2010-2013, Joachim Metz <joachim.metz@gmail.com>
 #
@@ -40,14 +40,16 @@ list_contains()
 	return ${EXIT_FAILURE};
 }
 
-test_seek()
+test_open_close()
 { 
-	echo "Testing seek offset of input:" $*;
+	INPUT_FILE=$1;
 
 	rm -rf tmp;
 	mkdir tmp;
 
-	${TEST_RUNNER} ./${SMRAW_TEST_SEEK} $*;
+	echo "Testing open close of input: ${INPUT_FILE}";
+
+	${TEST_RUNNER} ./${SMRAW_TEST_OPEN_CLOSE} ${INPUT_FILE};
 
 	RESULT=$?;
 
@@ -58,16 +60,16 @@ test_seek()
 	return ${RESULT};
 }
 
-SMRAW_TEST_SEEK="smraw_test_seek";
+SMRAW_TEST_OPEN_CLOSE="smraw_test_open_close";
 
-if ! test -x ${SMRAW_TEST_SEEK};
+if ! test -x ${SMRAW_TEST_OPEN_CLOSE};
 then
-	SMRAW_TEST_SEEK="smraw_test_seek.exe";
+	SMRAW_TEST_OPEN_CLOSE="smraw_test_open_close.exe";
 fi
 
-if ! test -x ${SMRAW_TEST_SEEK};
+if ! test -x ${SMRAW_TEST_OPEN_CLOSE};
 then
-	echo "Missing executable: ${SMRAW_TEST_SEEK}";
+	echo "Missing executable: ${SMRAW_TEST_OPEN_CLOSE}";
 
 	exit ${EXIT_FAILURE};
 fi
@@ -127,7 +129,7 @@ else
 				fi
 				for TESTFILE in ${TESTFILES};
 				do
-					if ! test_seek "${TESTFILE}";
+					if ! test_open_close "${TESTFILE}";
 					then
 						exit ${EXIT_FAILURE};
 					fi

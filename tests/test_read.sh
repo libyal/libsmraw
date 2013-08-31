@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Storage media (SM) RAW library read buffer testing script
+# Library read testing script
 #
 # Copyright (c) 2010-2013, Joachim Metz <joachim.metz@gmail.com>
 #
@@ -24,31 +24,47 @@ EXIT_SUCCESS=0;
 EXIT_FAILURE=1;
 EXIT_IGNORE=77;
 
-INPUT="input";
-TMP="tmp";
+list_contains()
+{
+	LIST=$1;
+	SEARCH=$2;
 
-CMP="cmp";
-LS="ls";
-TR="tr";
-SED="sed";
-SORT="sort";
-UNIQ="uniq";
-WC="wc";
+	for LINE in $LIST;
+	do
+		if test $LINE = $SEARCH;
+		then
+			return ${EXIT_SUCCESS};
+		fi
+	done
 
-SMRAW_TEST_READ="smraw_test_read";
+	return ${EXIT_FAILURE};
+}
 
 test_read()
 { 
 	echo "Testing read of input:" $*;
 
-	./${SMRAW_TEST_READ} $*;
+	rm -rf tmp;
+	mkdir tmp;
+
+	${TEST_RUNNER} ./${SMRAW_TEST_READ} $*;
 
 	RESULT=$?;
+
+	rm -rf tmp;
 
 	echo "";
 
 	return ${RESULT};
 }
+
+SMRAW_TEST_READ="smraw_test_read";
+
+if ! test -x ${SMRAW_TEST_SEEK};
+then
+	SMRAW_TEST_READ="smraw_test_read.exe";
+
+fi
 
 if ! test -x ${SMRAW_TEST_READ};
 then
@@ -57,31 +73,74 @@ then
 	exit ${EXIT_FAILURE};
 fi
 
-if ! test -d ${INPUT};
+TEST_RUNNER="tests/test_runner.sh";
+
+if ! test -x ${TEST_RUNNER};
 then
-	echo "No input directory found, to test read create input directory and place test files in directory.";
-	echo "Use unique filename bases per set of RAW image file(s)."
+	TEST_RUNNER="./test_runner.sh";
+fi
+
+if ! test -x ${TEST_RUNNER};
+then
+	echo "Missing test runner: ${TEST_RUNNER}";
+
+	exit ${EXIT_FAILURE};
+fi
+
+if ! test -d "input";
+then
+	echo "No input directory found.";
 
 	exit ${EXIT_IGNORE};
 fi
 
-RESULT=`${LS} ${INPUT} | ${TR} ' ' '\n' | ${SED} 's/[.][^.]*$//' | ${SORT} | ${UNIQ} | ${WC} -l`;
+OLDIFS=${IFS};
+IFS="
+";
+
+RESULT=`ls input/* | tr ' ' '\n' | wc -l`;
 
 if test ${RESULT} -eq 0;
 then
-	echo "No files found in input directory, to test read place test files in directory.";
-	echo "Use unique filename bases per set of RAW image file(s)."
+	echo "No files or directories found in the input directory.";
 
-	exit ${EXIT_IGNORE};
+	EXIT_RESULT=${EXIT_IGNORE};
+else
+	IGNORELIST="";
+
+	if test -f "input/.libsmraw/ignore";
+	then
+		IGNORELIST=`cat input/.libsmraw/ignore | sed '/^#/d'`;
+	fi
+	for TESTDIR in input/*;
+	do
+		if test -d "${TESTDIR}";
+		then
+			DIRNAME=`basename ${TESTDIR}`;
+
+			if ! list_contains "${IGNORELIST}" "${DIRNAME}";
+			then
+				if test -f "input/.libsmraw/${DIRNAME}/files";
+				then
+					TESTFILES=`cat input/.libsmraw/${DIRNAME}/files | sed "s?^?${TESTDIR}/?"`;
+				else
+					TESTFILES=`ls ${TESTDIR}/*`;
+				fi
+				for TESTFILE in ${TESTFILES};
+				do
+					if ! test_read "${TESTFILE}";
+					then
+						exit ${EXIT_FAILURE};
+					fi
+				done
+			fi
+		fi
+	done
+
+	EXIT_RESULT=${EXIT_SUCCESS};
 fi
 
-for BASENAME in `${LS} ${INPUT} | ${TR} ' ' '\n' | ${SED} 's/[.][^.]*$//' | ${SORT} | ${UNIQ}`;
-do
-	if ! test_read `${LS} ${INPUT}/${BASENAME}.*`;
-	then
-		exit ${EXIT_FAILURE};
-	fi
-done
+IFS=${OLDIFS};
 
-exit ${EXIT_SUCCESS};
+exit ${EXIT_RESULT};
 

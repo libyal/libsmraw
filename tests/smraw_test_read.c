@@ -1,5 +1,5 @@
 /*
- * Storage media (SM) RAW library read testing program
+ * Library read testing program
  *
  * Copyright (c) 2010-2013, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -20,58 +20,23 @@
  */
 
 #include <common.h>
-#include <file_stream.h>
 
 #if defined( HAVE_STDLIB_H ) || defined( WINAPI )
 #include <stdlib.h>
 #endif
 
-#include "smraw_test_libcerror.h"
+#include <stdio.h>
+
 #include "smraw_test_libcstring.h"
+#include "smraw_test_libcerror.h"
 #include "smraw_test_libsmraw.h"
+#include "smraw_test_unused.h"
+
+/* Define to make smraw_test_read generate verbose output
+#define SMRAW_TEST_READ_VERBOSE
+ */
 
 #define SMRAW_TEST_READ_BUFFER_SIZE	4096
-
-/* Tests libsmraw_handle_get_offset
- * Returns 1 if successful, 0 if not or -1 on error
- */
-int smraw_test_get_offset(
-     libsmraw_handle_t *handle,
-     off64_t expected_offset,
-     libcerror_error_t **error )
-{
-	static char *function = "smraw_test_get_offset";
-	off64_t result_offset = 0;
-
-	if( expected_offset != -1 )
-	{
-		if( libsmraw_handle_get_offset(
-		     handle,
-		     &result_offset,
-		     error ) != 1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-			 "%s: unable to retrieve offset.",
-			 function );
-
-			return( -1 );
-		}
-		if( result_offset != expected_offset )
-		{
-			fprintf(
-			 stderr,
-			 "%s: unexpected result offset: %" PRIi64 "\n",
-			 function,
-			 result_offset );
-
-			return( 0 );
-		}
-	}
-	return( 1 );
-}
 
 /* Tests libsmraw_handle_seek_offset
  * Returns 1 if successful, 0 if not or -1 on error
@@ -83,8 +48,8 @@ int smraw_test_seek_offset(
      off64_t expected_offset )
 {
 	libsmraw_error_t *error = NULL;
-	off64_t result_offset   = 0;
-	int result              = 0;
+	off64_t result_offset  = 0;
+	int result             = 0;
 
 	if( handle == NULL )
 	{
@@ -96,25 +61,7 @@ int smraw_test_seek_offset(
 	                 input_whence,
 	                 &error );
 
-	if( result_offset == -1 )
-	{
-		libsmraw_error_backtrace_fprint(
-		 error,
-		 stderr );
-
-		libsmraw_error_free(
-		 &error );
-	}
-	if( result_offset == -1 )
-	{
-		libsmraw_error_backtrace_fprint(
-		 error,
-		 stderr );
-
-		libsmraw_error_free(
-		 &error );
-	}
-	if( result_offset != expected_offset )
+	if( expected_offset != result_offset )
 	{
 		fprintf(
 		 stderr,
@@ -124,6 +71,17 @@ int smraw_test_seek_offset(
 	else
 	{
 		result = 1;
+	}
+	if( error != NULL )
+	{
+		if( result != 1 )
+		{
+			libsmraw_error_backtrace_fprint(
+			 error,
+			 stderr );
+		}
+		libsmraw_error_free(
+		 &error );
 	}
 	return( result );
 }
@@ -138,7 +96,7 @@ int smraw_test_read_buffer(
 {
 	uint8_t buffer[ SMRAW_TEST_READ_BUFFER_SIZE ];
 
-	libsmraw_error_t *error = NULL;
+	libsmraw_error_t *error  = NULL;
 	size64_t remaining_size = 0;
 	size64_t result_size    = 0;
 	size_t read_size        = 0;
@@ -167,13 +125,6 @@ int smraw_test_read_buffer(
 
 		if( read_count < 0 )
 		{
-			libsmraw_error_backtrace_fprint(
-			 error,
-			 stderr );
-
-			libsmraw_error_free(
-			 &error );
-
 			break;
 		}
 		remaining_size -= (size64_t) read_count;
@@ -184,16 +135,142 @@ int smraw_test_read_buffer(
 			break;
 		}
 	}
-	if( expected_size == result_size )
-	{
-		result = 1;
-	}
-	else
+	if( expected_size != result_size )
 	{
 		fprintf(
 		 stderr,
 		 "Unexpected read count: %" PRIu64 "\n",
 		 result_size );
+	}
+	else
+	{
+		result = 1;
+	}
+	if( error != NULL )
+	{
+		if( result != 1 )
+		{
+			libsmraw_error_backtrace_fprint(
+			 error,
+			 stderr );
+		}
+		libsmraw_error_free(
+		 &error );
+	}
+	return( result );
+}
+
+/* Tests libsmraw_handle_read_random
+ * Returns 1 if successful, 0 if not or -1 on error
+ */
+int smraw_test_read_random(
+     libsmraw_handle_t *handle,
+     off64_t input_offset,
+     size64_t input_size,
+     off64_t expected_offset,
+     size64_t expected_size )
+{
+	uint8_t buffer[ SMRAW_TEST_READ_BUFFER_SIZE ];
+
+	libsmraw_error_t *error  = NULL;
+	off64_t result_offset   = 0;
+	size64_t remaining_size = 0;
+	size64_t result_size    = 0;
+	size_t read_size        = 0;
+	ssize_t read_count      = 0;
+	int result              = 0;
+
+	if( handle == NULL )
+	{
+		return( -1 );
+	}
+	remaining_size = input_size;
+
+	fprintf(
+	 stdout,
+	 "Testing reading random with offset: %" PRIi64 " and size: %" PRIu64 "\t",
+	 input_offset,
+	 input_size );
+
+	while( remaining_size > 0 )
+	{
+		read_size = SMRAW_TEST_READ_BUFFER_SIZE;
+
+		if( remaining_size < (size64_t) read_size )
+		{
+			read_size = (size_t) remaining_size;
+		}
+		read_count = libsmraw_handle_read_random(
+			      handle,
+			      buffer,
+			      read_size,
+			      input_offset,
+			      &error );
+
+		if( read_count < 0 )
+		{
+			break;
+		}
+		input_offset   += (size64_t) read_count;
+		remaining_size -= (size64_t) read_count;
+		result_size    += (size64_t) read_count;
+
+		if( read_count != (ssize_t) read_size )
+		{
+			break;
+		}
+	}
+	if( libsmraw_handle_get_offset(
+	     handle,
+	     &result_offset,
+	     &error ) != 1 )
+	{
+		result = -1;
+	}
+	if( expected_offset != result_offset )
+	{
+		fprintf(
+		 stderr,
+		 "Unexpected offset: %" PRIi64 "\n",
+		 result_offset );
+	}
+	else if( expected_size != result_size )
+	{
+		fprintf(
+		 stderr,
+		 "Unexpected read count: %" PRIu64 "\n",
+		 result_size );
+	}
+	else
+	{
+		result = 1;
+	}
+	if( result == 1 )
+	{
+		fprintf(
+		 stdout,
+		 "(PASS)" );
+	}
+	else
+	{
+		fprintf(
+		 stdout,
+		 "(FAIL)" );
+	}
+	fprintf(
+	 stdout,
+	 "\n" );
+
+	if( error != NULL )
+	{
+		if( result != 1 )
+		{
+			libsmraw_error_backtrace_fprint(
+			 error,
+			 stderr );
+		}
+		libsmraw_error_free(
+		 &error );
 	}
 	return( result );
 }
@@ -201,7 +278,7 @@ int smraw_test_read_buffer(
 /* Tests reading data at a specific offset
  * Returns 1 if successful, 0 if not or -1 on error
  */
-int smraw_test_read(
+int smraw_test_seek_offset_and_read_buffer(
      libsmraw_handle_t *handle,
      off64_t input_offset,
      int input_whence,
@@ -209,7 +286,6 @@ int smraw_test_read(
      off64_t expected_offset,
      size64_t expected_size )
 {
-	libcerror_error_t *error   = NULL;
 	const char *whence_string = NULL;
 	int result                = 0;
 
@@ -235,7 +311,7 @@ int smraw_test_read(
 	}
 	fprintf(
 	 stdout,
-	 "Testing reading range with offset: %" PRIi64 ", whence: %s and size: %" PRIu64 "\t",
+	 "Testing reading buffer at offset: %" PRIi64 ", whence: %s and size: %" PRIu64 "\t",
 	 input_offset,
 	 whence_string,
 	 input_size );
@@ -258,16 +334,6 @@ int smraw_test_read(
 	}
 	if( result == 1 )
 	{
-		if( input_offset >= 0 )
-		{
-			result = smraw_test_get_offset(
-			          handle,
-			          input_offset + expected_size,
-			          &error );
-		}
-	}
-	if( result != 0 )
-	{
 		fprintf(
 		 stdout,
 		 "(PASS)" );
@@ -282,108 +348,239 @@ int smraw_test_read(
 	 stdout,
 	 "\n" );
 
-	if( result == -1 )
-	{
-		libcerror_error_backtrace_fprint(
-		 error,
-		 stdout );
-
-		libcerror_error_free(
-		 &error );
-	}
 	return( result );
 }
 
-/* Tests reading data on the segment file size boundary
+/* Tests reading data from a handle
  * Returns 1 if successful, 0 if not or -1 on error
  */
-int smraw_test_read_segment_file(
-     libsmraw_handle_t *handle )
+int smraw_test_read_from_handle(
+     libsmraw_handle_t *handle,
+     size64_t media_size )
 {
-	libsmraw_error_t *error    = NULL;
-	size64_t segment_file_size = 0;
-	int result                 = 0;
+	int result = 0;
 
 	if( handle == NULL )
 	{
 		return( -1 );
 	}
-	if( libsmraw_handle_get_maximum_segment_size(
-	     handle,
-	     &segment_file_size,
-	     &error ) != 1 )
+	if( media_size > (size64_t) INT64_MAX )
 	{
 		fprintf(
 		 stderr,
-		 "Unable to retrieve segment file size.\n" );
+		 "Volume size exceeds maximum.\n" );
 
-		goto on_error;
+		return( -1 );
 	}
-	if( segment_file_size > (size64_t) INT64_MAX )
-	{
-		fprintf(
-		 stderr,
-		 "Segment file size exceeds maximum.\n" );
+	/* Case 0: test full read
+	 */
 
-		goto on_error;
-	}
-	segment_file_size -= 1;
-
-	fprintf(
-	 stdout,
-	 "Testing reading range with offset: %" PRIu64 ", whence: SEEK_SET and size: %" PRIu64 "\t",
-	 segment_file_size,
-	 segment_file_size );
-
-	result = smraw_test_seek_offset(
+	/* Test: offset: 0 size: <media_size>
+	 * Expected result: offset: 0 size: <media_size>
+	 */
+	result = smraw_test_seek_offset_and_read_buffer(
 	          handle,
-	          segment_file_size,
+	          0,
 	          SEEK_SET,
-	          segment_file_size );
+	          media_size,
+	          0,
+	          media_size );
 
-	if( result == 1 )
-	{
-		result = smraw_test_read_buffer(
-			  handle,
-			  segment_file_size,
-			  segment_file_size );
-	}
-	if( result == 1 )
-	{
-		result = smraw_test_read_buffer(
-			  handle,
-			  segment_file_size,
-			  segment_file_size );
-	}
-	if( result != 0 )
+	if( result != 1 )
 	{
 		fprintf(
-		 stdout,
-		 "(PASS)" );
+		 stderr,
+		 "Unable to test seek offset and read buffer.\n" );
+
+		return( result );
+	}
+	/* Test: offset: 0 size: <media_size>
+	 * Expected result: offset: 0 size: <media_size>
+	 */
+	result = smraw_test_seek_offset_and_read_buffer(
+	          handle,
+	          0,
+	          SEEK_SET,
+	          media_size,
+	          0,
+	          media_size );
+
+	if( result != 1 )
+	{
+		fprintf(
+		 stderr,
+		 "Unable to test seek offset and read buffer.\n" );
+
+		return( result );
+	}
+
+	/* Case 1: test random read
+	 */
+
+	/* Test: offset: <media_size / 7> size: <media_size / 2>
+	 * Expected result: offset: <media_size / 7> size: <media_size / 2>
+	 */
+	result = smraw_test_seek_offset_and_read_buffer(
+	          handle,
+	          (off64_t) ( media_size / 7 ),
+	          SEEK_SET,
+	          media_size / 2,
+	          (off64_t) ( media_size / 7 ),
+	          media_size / 2 );
+
+	if( result != 1 )
+	{
+		fprintf(
+		 stderr,
+		 "Unable to test seek offset and read buffer.\n" );
+
+		return( result );
+	}
+	/* Test: offset: <media_size / 7> size: <media_size / 2>
+	 * Expected result: offset: <media_size / 7> size: <media_size / 2>
+	 */
+	result = smraw_test_seek_offset_and_read_buffer(
+	          handle,
+	          (off64_t) ( media_size / 7 ),
+	          SEEK_SET,
+	          media_size / 2,
+	          (off64_t) ( media_size / 7 ),
+	          media_size / 2 );
+
+	if( result != 1 )
+	{
+		fprintf(
+		 stderr,
+		 "Unable to test seek offset and read buffer.\n" );
+
+		return( result );
+	}
+
+	/* Case 2: test read beyond media size
+	 */
+
+	if( media_size < 1024 )
+	{
+		/* Test: offset: <media_size - 1024> size: 4096
+		 * Expected result: offset: -1 size: <undetermined>
+		 */
+		result = smraw_test_seek_offset_and_read_buffer(
+		          handle,
+		          (off64_t) ( media_size - 1024 ),
+		          SEEK_SET,
+		          4096,
+		          -1,
+		          (size64_t) -1 );
+
+		if( result != 1 )
+		{
+			fprintf(
+			 stderr,
+			 "Unable to test seek offset and read buffer.\n" );
+
+			return( result );
+		}
+		/* Test: offset: <media_size - 1024> size: 4096
+		 * Expected result: offset: -1 size: <undetermined>
+		 */
+		result = smraw_test_seek_offset_and_read_buffer(
+		          handle,
+		          (off64_t) ( media_size - 1024 ),
+		          SEEK_SET,
+		          4096,
+		          -1,
+		          (size64_t) -1 );
+
+		if( result != 1 )
+		{
+			fprintf(
+			 stderr,
+			 "Unable to test seek offset and read buffer.\n" );
+
+			return( result );
+		}
 	}
 	else
 	{
-		fprintf(
-		 stdout,
-		 "(FAIL)" );
+		/* Test: offset: <media_size - 1024> size: 4096
+		 * Expected result: offset: <media_size - 1024> size: 1024
+		 */
+		result = smraw_test_seek_offset_and_read_buffer(
+		          handle,
+		          (off64_t) ( media_size - 1024 ),
+		          SEEK_SET,
+		          4096,
+		          (off64_t) ( media_size - 1024 ),
+		          1024 );
+
+		if( result != 1 )
+		{
+			fprintf(
+			 stderr,
+			 "Unable to test read.\n" );
+
+			return( result );
+		}
+		/* Test: offset: <media_size - 1024> size: 4096
+		 * Expected result: offset: <media_size - 1024> size: 1024
+		 */
+		result = smraw_test_seek_offset_and_read_buffer(
+		          handle,
+		          (off64_t) ( media_size - 1024 ),
+		          SEEK_SET,
+		          4096,
+		          (off64_t) ( media_size - 1024 ),
+		          1024 );
+
+		if( result != 1 )
+		{
+			fprintf(
+			 stderr,
+			 "Unable to test seek offset and read buffer.\n" );
+
+			return( result );
+		}
 	}
-	fprintf(
-	 stdout,
-	 "\n" );
+	/* Case 3: test random read
+	 */
 
-	return( result );
+	/* Test: offset: <media_size / 7> size: <media_size / 2>
+	 * Expected result: offset: < ( media_size / 7 ) + ( media_size / 2 ) > size: <media_size / 2>
+	 */
+	result = smraw_test_read_random(
+	          handle,
+	          (off64_t) ( media_size / 7 ),
+	          media_size / 2,
+	          (off64_t) ( media_size / 7 ) + ( media_size / 2 ),
+	          media_size / 2 );
 
-on_error:
-	if( error != NULL )
+	if( result != 1 )
 	{
-		libsmraw_error_backtrace_fprint(
-		 error,
-		 stderr );
+		fprintf(
+		 stderr,
+		 "Unable to test read random.\n" );
 
-		libsmraw_error_free(
-		 &error );
+		return( result );
 	}
-	return( -1 );
+	/* Test: offset: <media_size / 7> size: <media_size / 2>
+	 * Expected result: offset: < ( media_size / 7 ) + ( media_size / 2 ) > size: <media_size / 2>
+	 */
+	result = smraw_test_read_random(
+	          handle,
+	          (off64_t) ( media_size / 7 ),
+	          media_size / 2,
+	          (off64_t) ( media_size / 7 ) + ( media_size / 2 ),
+	          media_size / 2 );
+
+	if( result != 1 )
+	{
+		fprintf(
+		 stderr,
+		 "Unable to test read random.\n" );
+
+		return( result );
+	}
+	return( 1 );
 }
 
 /* The main program
@@ -394,9 +591,15 @@ int wmain( int argc, wchar_t * const argv[] )
 int main( int argc, char * const argv[] )
 #endif
 {
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+	wchar_t **filenames       = NULL;
+#else
+	char **filenames          = NULL;
+#endif
 	libsmraw_error_t *error   = NULL;
 	libsmraw_handle_t *handle = NULL;
 	size64_t media_size       = 0;
+	int number_of_filenames   = 0;
 
 	if( argc < 2 )
 	{
@@ -405,6 +608,53 @@ int main( int argc, char * const argv[] )
 		 "Missing filename(s).\n" );
 
 		return( EXIT_FAILURE );
+	}
+#if defined( HAVE_DEBUG_OUTPUT ) && defined( SMRAW_TEST_READ_VERBOSE )
+	libsmraw_notify_set_verbose(
+	 1 );
+	libsmraw_notify_set_stream(
+	 stderr,
+	 NULL );
+#endif
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+	if( libsmraw_glob_wide(
+	     argv[ 1 ],
+	     libcstring_wide_string_length(
+	      argv[ 1 ] ),
+	     &filenames,
+	     &number_of_filenames,
+	     &error ) != 1 )
+#else
+	if( libsmraw_glob(
+	     argv[ 1 ],
+	     libcstring_narrow_string_length(
+	      argv[ 1 ] ),
+	     &filenames,
+	     &number_of_filenames,
+	     &error ) != 1 )
+#endif
+	{
+		fprintf(
+		 stderr,
+		 "Unable to glob filenames.\n" );
+
+		goto on_error;
+	}
+	if( number_of_filenames < 0 )
+	{
+		fprintf(
+		 stderr,
+		 "Invalid number of filenames.\n" );
+
+		goto on_error;
+	}
+	else if( number_of_filenames == 0 )
+	{
+		fprintf(
+		 stderr,
+		 "Missing filenames.\n" );
+
+		goto on_error;
 	}
 	/* Initialization
 	 */
@@ -421,15 +671,15 @@ int main( int argc, char * const argv[] )
 #if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
 	if( libsmraw_handle_open_wide(
 	     handle,
-	     &( argv[ 1 ] ),
-	     argc - 1,
+	     filenames,
+	     number_of_filenames,
 	     LIBSMRAW_OPEN_READ,
 	     &error ) != 1 )
 #else
 	if( libsmraw_handle_open(
 	     handle,
-	     &( argv[ 1 ] ),
-	     argc - 1,
+	     filenames,
+	     number_of_filenames,
 	     LIBSMRAW_OPEN_READ,
 	     &error ) != 1 )
 #endif
@@ -451,184 +701,20 @@ int main( int argc, char * const argv[] )
 
 		goto on_error;
 	}
-	if( media_size > (size64_t) INT64_MAX )
-	{
-		fprintf(
-		 stderr,
-		 "Media size exceeds maximum.\n" );
-
-		goto on_error;
-	}
 	fprintf(
 	 stdout,
 	 "Media size: %" PRIu64 " bytes\n",
 	 media_size );
 
-	/* Case 1: test full read
-	 */
-
-	/* Test: offset: 0 size: <media_size>
-	 * Expected result: offset: 0 size: <media_size>
-	 */
-	if( smraw_test_read(
+	if( smraw_test_read_from_handle(
 	     handle,
-	     0,
-	     SEEK_SET,
-	     media_size,
-	     0,
 	     media_size ) != 1 )
 	{
 		fprintf(
 		 stderr,
-		 "Unable to test read.\n" );
+		 "Unable to read from handle.\n" );
 
 		goto on_error;
-	}
-	/* Test: offset: 0 size: <media_size>
-	 * Expected result: offset: 0 size: <media_size>
-	 */
-	if( smraw_test_read(
-	     handle,
-	     0,
-	     SEEK_SET,
-	     media_size,
-	     0,
-	     media_size ) != 1 )
-	{
-		fprintf(
-		 stderr,
-		 "Unable to test read.\n" );
-
-		goto on_error;
-	}
-
-	/* Case 2: test random read
-	 */
-
-	/* Test: offset: <media_size / 7> size: <media_size / 2>
-	 * Expected result: offset: <media_size / 7> size: <media_size / 2>
-	 */
-	if( smraw_test_read(
-	     handle,
-	     (off64_t) ( media_size / 7 ),
-	     SEEK_SET,
-	     media_size / 2,
-	     (off64_t) ( media_size / 7 ),
-	     media_size / 2 ) != 1 )
-	{
-		fprintf(
-		 stderr,
-		 "Unable to test read.\n" );
-
-		goto on_error;
-	}
-	/* Test: offset: <media_size / 7> size: <media_size / 2>
-	 * Expected result: offset: <media_size / 7> size: <media_size / 2>
-	 */
-	if( smraw_test_read(
-	     handle,
-	     (off64_t) ( media_size / 7 ),
-	     SEEK_SET,
-	     media_size / 2,
-	     (off64_t) ( media_size / 7 ),
-	     media_size / 2 ) != 1 )
-	{
-		fprintf(
-		 stderr,
-		 "Unable to test read.\n" );
-
-		goto on_error;
-	}
-
-	/* Case 3: test read beyond media size
-	 */
-	if( media_size < 1024 )
-	{
-		/* Test: offset: <media_size - 1024> size: 4096
-		 * Expected result: offset: -1 size: <undetermined>
-		 */
-		if( smraw_test_read(
-		     handle,
-		     (off64_t) ( media_size - 1024 ),
-		     SEEK_SET,
-		     4096,
-		     -1,
-		     (size64_t) -1 ) != 1 )
-		{
-			fprintf(
-			 stderr,
-			 "Unable to test read.\n" );
-
-			goto on_error;
-		}
-		/* Test: offset: <media_size - 1024> size: 4096
-		 * Expected result: offset: -1 size: <undetermined>
-		 */
-		if( smraw_test_read(
-		     handle,
-		     (off64_t) ( media_size - 1024 ),
-		     SEEK_SET,
-		     4096,
-		     -1,
-		     (size64_t) -1 ) != 1 )
-		{
-			fprintf(
-			 stderr,
-			 "Unable to test read.\n" );
-
-			goto on_error;
-		}
-	}
-	else
-	{
-		/* Test: offset: <media_size - 1024> size: 4096
-		 * Expected result: offset: <media_size - 1024> size: 1024
-		 */
-		if( smraw_test_read(
-		     handle,
-		     (off64_t) ( media_size - 1024 ),
-		     SEEK_SET,
-		     4096,
-		     (off64_t) ( media_size - 1024 ),
-		     1024 ) != 1 )
-		{
-			fprintf(
-			 stderr,
-			 "Unable to test read.\n" );
-
-			goto on_error;
-		}
-		/* Test: offset: <media_size - 1024> size: 4096
-		 * Expected result: offset: <media_size - 1024> size: 1024
-		 */
-		if( smraw_test_read(
-		     handle,
-		     (off64_t) ( media_size - 1024 ),
-		     SEEK_SET,
-		     4096,
-		     (off64_t) ( media_size - 1024 ),
-		     1024 ) != 1 )
-		{
-			fprintf(
-			 stderr,
-			 "Unable to test read.\n" );
-
-			goto on_error;
-		}
-	}
-	if( argc > 3 )
-	{
-		/* Case 4: test on segment file size boundary
-		 */
-		if( smraw_test_read_segment_file(
-		     handle ) != 1 )
-		{
-			fprintf(
-			 stderr,
-			 "Unable to test read segment file.\n" );
-
-			goto on_error;
-		}
 	}
 	/* Clean up
 	 */
@@ -638,7 +724,7 @@ int main( int argc, char * const argv[] )
 	{
 		fprintf(
 		 stderr,
-		 "Unable to close file(s).\n" );
+		 "Unable to close handle.\n" );
 
 		goto on_error;
 	}
@@ -649,6 +735,24 @@ int main( int argc, char * const argv[] )
 		fprintf(
 		 stderr,
 		 "Unable to free handle.\n" );
+
+		goto on_error;
+	}
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+	if( libsmraw_glob_wide_free(
+	     filenames,
+	     number_of_filenames,
+	     &error ) != 1 )
+#else
+	if( libsmraw_glob_free(
+	     filenames,
+	     number_of_filenames,
+	     &error ) != 1 )
+#endif
+	{
+		fprintf(
+		 stderr,
+		 "Unable to free glob.\n" );
 
 		goto on_error;
 	}
@@ -671,6 +775,20 @@ on_error:
 		libsmraw_handle_free(
 		 &handle,
 		 NULL );
+	}
+	if( filenames != NULL )
+	{
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+		libsmraw_glob_wide_free(
+		 filenames,
+		 number_of_filenames,
+		 NULL );
+#else
+		libsmraw_glob_free(
+		 filenames,
+		 number_of_filenames,
+		 NULL );
+#endif
 	}
 	return( EXIT_FAILURE );
 }

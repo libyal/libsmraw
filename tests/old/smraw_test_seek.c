@@ -1,5 +1,5 @@
 /*
- * Library seek testing program
+ * Storage media (SM) RAW library seek offset testing program
  *
  * Copyright (c) 2010-2013, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -20,19 +20,14 @@
  */
 
 #include <common.h>
+#include <file_stream.h>
 
 #if defined( HAVE_STDLIB_H ) || defined( WINAPI )
 #include <stdlib.h>
 #endif
 
-#include <stdio.h>
-
 #include "smraw_test_libcstring.h"
 #include "smraw_test_libsmraw.h"
-
-/* Define to make smraw_test_seek generate verbose output
-#define SMRAW_TEST_SEEK_VERBOSE
- */
 
 /* Tests libsmraw_handle_seek_offset
  * Returns 1 if successful, 0 if not or -1 on error
@@ -43,8 +38,8 @@ int smraw_test_seek_offset(
      int input_whence,
      off64_t output_offset )
 {
-	libsmraw_error_t *error   = NULL;
 	const char *whence_string = NULL;
+	libsmraw_error_t *error   = NULL;
 	off64_t result_offset     = 0;
 	int result                = 0;
 
@@ -80,6 +75,15 @@ int smraw_test_seek_offset(
 	                 input_whence,
 	                 &error );
 
+	if( result_offset == -1 )
+	{
+		libsmraw_error_backtrace_fprint(
+		 error,
+		 stderr );
+
+		libsmraw_error_free(
+		 &error );
+	}
 	if( result_offset == output_offset )
 	{
 		result = 1;
@@ -100,17 +104,6 @@ int smraw_test_seek_offset(
 	 stdout,
 	 "\n" );
 
-	if( error != NULL)
-	{
-		if( result != 1 )
-		{
-			libsmraw_error_backtrace_fprint(
-			 error,
-			 stderr );
-		}
-		libsmraw_error_free(
-		 &error );
-	}
 	return( result );
 }
 
@@ -122,15 +115,9 @@ int wmain( int argc, wchar_t * const argv[] )
 int main( int argc, char * const argv[] )
 #endif
 {
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
-	wchar_t **filenames       = NULL;
-#else
-	char **filenames          = NULL;
-#endif
 	libsmraw_error_t *error   = NULL;
 	libsmraw_handle_t *handle = NULL;
 	size64_t media_size       = 0;
-	int number_of_filenames   = 0;
 
 	if( argc < 2 )
 	{
@@ -139,53 +126,6 @@ int main( int argc, char * const argv[] )
 		 "Missing filename(s).\n" );
 
 		return( EXIT_FAILURE );
-	}
-#if defined( HAVE_DEBUG_OUTPUT ) && defined( SMRAW_TEST_SEEK_VERBOSE )
-	libsmraw_notify_set_verbose(
-	 1 );
-	libsmraw_notify_set_stream(
-	 stderr,
-	 NULL );
-#endif
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
-	if( libsmraw_glob_wide(
-	     argv[ 1 ],
-	     libcstring_wide_string_length(
-	      argv[ 1 ] ),
-	     &filenames,
-	     &number_of_filenames,
-	     &error ) != 1 )
-#else
-	if( libsmraw_glob(
-	     argv[ 1 ],
-	     libcstring_narrow_string_length(
-	      argv[ 1 ] ),
-	     &filenames,
-	     &number_of_filenames,
-	     &error ) != 1 )
-#endif
-	{
-		fprintf(
-		 stderr,
-		 "Unable to glob filenames.\n" );
-
-		goto on_error;
-	}
-	if( number_of_filenames < 0 )
-	{
-		fprintf(
-		 stderr,
-		 "Invalid number of filenames.\n" );
-
-		goto on_error;
-	}
-	else if( number_of_filenames == 0 )
-	{
-		fprintf(
-		 stderr,
-		 "Missing filenames.\n" );
-
-		goto on_error;
 	}
 	/* Initialization
 	 */
@@ -202,15 +142,15 @@ int main( int argc, char * const argv[] )
 #if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
 	if( libsmraw_handle_open_wide(
 	     handle,
-	     filenames,
-	     number_of_filenames,
+	     &( argv[ 1 ] ),
+	     argc - 1,
 	     LIBSMRAW_OPEN_READ,
 	     &error ) != 1 )
 #else
 	if( libsmraw_handle_open(
 	     handle,
-	     filenames,
-	     number_of_filenames,
+	     &( argv[ 1 ] ),
+	     argc - 1,
 	     LIBSMRAW_OPEN_READ,
 	     &error ) != 1 )
 #endif
@@ -494,7 +434,7 @@ int main( int argc, char * const argv[] )
 	{
 		fprintf(
 		 stderr,
-		 "Unable to close handle.\n" );
+		 "Unable to close file(s).\n" );
 
 		goto on_error;
 	}
@@ -505,24 +445,6 @@ int main( int argc, char * const argv[] )
 		fprintf(
 		 stderr,
 		 "Unable to free handle.\n" );
-
-		goto on_error;
-	}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
-	if( libsmraw_glob_wide_free(
-	     filenames,
-	     number_of_filenames,
-	     &error ) != 1 )
-#else
-	if( libsmraw_glob_free(
-	     filenames,
-	     number_of_filenames,
-	     &error ) != 1 )
-#endif
-	{
-		fprintf(
-		 stderr,
-		 "Unable to free glob.\n" );
 
 		goto on_error;
 	}
@@ -545,20 +467,6 @@ on_error:
 		libsmraw_handle_free(
 		 &handle,
 		 NULL );
-	}
-	if( filenames != NULL )
-	{
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
-		libsmraw_glob_wide_free(
-		 filenames,
-		 number_of_filenames,
-		 NULL );
-#else
-		libsmraw_glob_free(
-		 filenames,
-		 number_of_filenames,
-		 NULL );
-#endif
 	}
 	return( EXIT_FAILURE );
 }

@@ -247,22 +247,6 @@ int libsmraw_handle_free(
 
 			result = -1;
 		}
-		if( internal_handle->information_file != NULL )
-		{
-			if( libsmraw_information_file_free(
-			     &( internal_handle->information_file ),
-			     error ) != 1 )
-			{
-				libcerror_error_set(
-				 error,
-				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-				 "%s: unable to free information file.",
-				 function );
-
-				result = -1;
-			}
-		}
 		if( internal_handle->media_values != NULL )
 		{
 			if( libfvalue_table_free(
@@ -490,6 +474,17 @@ int libsmraw_handle_open(
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
 		 "%s: invalid handle - file IO pool value already set.",
+		 function );
+
+		return( -1 );
+	}
+	if( internal_handle->information_file != NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
+		 "%s: invalid handle - information file value already set.",
 		 function );
 
 		return( -1 );
@@ -936,6 +931,17 @@ int libsmraw_handle_open_wide(
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
 		 "%s: invalid handle - file IO pool value already set.",
+		 function );
+
+		return( -1 );
+	}
+	if( internal_handle->information_file != NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
+		 "%s: invalid handle - information file value already set.",
 		 function );
 
 		return( -1 );
@@ -1933,6 +1939,22 @@ int libsmraw_handle_close(
 	internal_handle->read_values_initialized  = 0;
 	internal_handle->write_values_initialized = 0;
 
+	if( internal_handle->information_file != NULL )
+	{
+		if( libsmraw_information_file_free(
+		     &( internal_handle->information_file ),
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+			 "%s: unable to free information file.",
+			 function );
+
+			result = -1;
+		}
+	}
 	return( result );
 }
 

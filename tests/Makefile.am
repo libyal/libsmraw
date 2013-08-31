@@ -3,20 +3,33 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/common \
 	@LIBCSTRING_CPPFLAGS@ \
 	@LIBCERROR_CPPFLAGS@ \
+	@LIBCDATA_CPPFLAGS@ \
+	@LIBCLOCALE_CPPFLAGS@ \
+	@LIBCNOTIFY_CPPFLAGS@ \
+	@LIBCSPLIT_CPPFLAGS@ \
+	@LIBUNA_CPPFLAGS@ \
+	@LIBCFILE_CPPFLAGS@ \
+	@LIBCPATH_CPPFLAGS@ \
+	@LIBBFIO_CPPFLAGS@ \
 	@LIBHMAC_CPPFLAGS@ \
 	@LIBSMRAW_DLL_IMPORT@
 
 TESTS = \
 	test_glob.sh \
+	test_open_close.sh \
 	test_seek.sh \
-	test_read.sh \
+	test_read.sh
+
+bla_X =
 	test_write.sh \
 	test_compare.sh
 
 check_SCRIPTS = \
 	test_compare.sh \
 	test_glob.sh \
+	test_open_close.sh \
 	test_read.sh \
+	test_runner.sh \
 	test_seek.sh \
 	test_write.sh
 
@@ -26,6 +39,7 @@ EXTRA_DIST = \
 check_PROGRAMS = \
 	smraw_test_compare \
 	smraw_test_glob \
+	smraw_test_open_close \
 	smraw_test_read \
 	smraw_test_read_loop \
 	smraw_test_seek \
@@ -33,11 +47,12 @@ check_PROGRAMS = \
 
 smraw_test_compare_SOURCES = \
 	digest_hash.c digest_hash.h \
+	smraw_test_compare.c \
 	smraw_test_libcerror.h \
 	smraw_test_libcstring.h \
 	smraw_test_libhmac.h \
 	smraw_test_libsmraw.h \
-	smraw_test_compare.c
+	smraw_test_unused.h
 
 smraw_test_compare_LDADD = \
 	@LIBHMAC_LIBADD@ \
@@ -48,19 +63,33 @@ smraw_test_compare_LDADD = \
 	@LIBDL_LIBADD@
 
 smraw_test_glob_SOURCES = \
+	smraw_test_glob.c \
 	smraw_test_libcstring.h \
 	smraw_test_libsmraw.h \
-	smraw_test_glob.c
+	smraw_test_unused.h
 
 smraw_test_glob_LDADD = \
 	../libsmraw/libsmraw.la \
+	@LIBCSTRING_LIBADD@
+
+smraw_test_open_close_SOURCES = \
+	smraw_test_libcerror.h \
+	smraw_test_libcstring.h \
+	smraw_test_libsmraw.h \
+	smraw_test_open_close.c \
+	smraw_test_unused.h
+
+smraw_test_open_close_LDADD = \
+	../libsmraw/libsmraw.la \
+	@LIBCERROR_LIBADD@ \
 	@LIBCSTRING_LIBADD@
 
 smraw_test_read_SOURCES = \
 	smraw_test_libcerror.h \
 	smraw_test_libcstring.h \
 	smraw_test_libsmraw.h \
-	smraw_test_read.c
+	smraw_test_read.c \
+	smraw_test_unused.h
 
 smraw_test_read_LDADD = \
 	../libsmraw/libsmraw.la \
@@ -70,7 +99,8 @@ smraw_test_read_LDADD = \
 smraw_test_read_loop_SOURCES = \
 	smraw_test_libcstring.h \
 	smraw_test_libsmraw.h \
-	smraw_test_read_loop.c
+	smraw_test_read_loop.c \
+	smraw_test_unused.h
 
 smraw_test_read_loop_LDADD = \
 	../libsmraw/libsmraw.la \
@@ -79,7 +109,8 @@ smraw_test_read_loop_LDADD = \
 smraw_test_seek_SOURCES = \
 	smraw_test_libcstring.h \
 	smraw_test_libsmraw.h \
-	smraw_test_seek.c
+	smraw_test_seek.c \
+	smraw_test_unused.h
 
 smraw_test_seek_LDADD = \
 	../libsmraw/libsmraw.la \
@@ -89,6 +120,7 @@ smraw_test_write_SOURCES = \
 	smraw_test_libcstring.h \
 	smraw_test_libhmac.h \
 	smraw_test_libsmraw.h \
+	smraw_test_unused.h \
 	smraw_test_write.c
 
 smraw_test_write_LDADD = \
