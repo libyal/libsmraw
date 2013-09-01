@@ -1,5 +1,5 @@
 /*
- * The libbfio header wrapper
+ * The internal libcsplit header
  *
  * Copyright (c) 2010-2013, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -19,32 +19,32 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _LIBSMRAW_LIBBFIO_H )
-#define _LIBSMRAW_LIBBFIO_H
+#if !defined( _SMRAWTOOLS_LIBCSPLIT_H )
+#define _SMRAWTOOLS_LIBCSPLIT_H
 
 #include <common.h>
 
-/* Define HAVE_LOCAL_LIBBFIO for local use of libbfio
+/* Define HAVE_LOCAL_LIBCSPLIT for local use of libcsplit
  */
-#if defined( HAVE_LOCAL_LIBBFIO )
+#if defined( HAVE_LOCAL_LIBCSPLIT )
 
-#include <libbfio_definitions.h>
-#include <libbfio_file.h>
-#include <libbfio_file_pool.h>
-#include <libbfio_handle.h>
-#include <libbfio_pool.h>
-#include <libbfio_types.h>
+#include <libcsplit_definitions.h>
+#include <libcsplit_narrow_split_string.h>
+#include <libcsplit_narrow_string.h>
+#include <libcsplit_types.h>
+#include <libcsplit_wide_split_string.h>
+#include <libcsplit_wide_string.h>
 
 #else
 
-/* If libtool DLL support is enabled set LIBBFIO_DLL_IMPORT
- * before including libbfio.h
+/* If libtool DLL support is enabled set LIBCSPLIT_DLL_IMPORT
+ * before including libcsplit.h
  */
 #if defined( _WIN32 ) && defined( DLL_IMPORT )
-#define LIBBFIO_DLL_IMPORT
+#define LIBCSPLIT_DLL_IMPORT
 #endif
 
-#include <libbfio.h>
+#include <libcsplit.h>
 
 #endif
 

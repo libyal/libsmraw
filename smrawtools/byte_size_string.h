@@ -1,5 +1,5 @@
 /*
- * The libbfio header wrapper
+ * Byte size string functions
  *
  * Copyright (c) 2010-2013, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -19,33 +19,40 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _LIBSMRAW_LIBBFIO_H )
-#define _LIBSMRAW_LIBBFIO_H
+#if !defined( _BYTE_SIZE_STRING_H )
+#define _BYTE_SIZE_STRING_H
 
 #include <common.h>
+#include <types.h>
 
-/* Define HAVE_LOCAL_LIBBFIO for local use of libbfio
- */
-#if defined( HAVE_LOCAL_LIBBFIO )
+#include "smrawtools_libcerror.h"
+#include "smrawtools_libcstring.h"
 
-#include <libbfio_definitions.h>
-#include <libbfio_file.h>
-#include <libbfio_file_pool.h>
-#include <libbfio_handle.h>
-#include <libbfio_pool.h>
-#include <libbfio_types.h>
-
-#else
-
-/* If libtool DLL support is enabled set LIBBFIO_DLL_IMPORT
- * before including libbfio.h
- */
-#if defined( _WIN32 ) && defined( DLL_IMPORT )
-#define LIBBFIO_DLL_IMPORT
+#if defined( __cplusplus )
+extern "C" {
 #endif
 
-#include <libbfio.h>
+enum BYTE_SIZE_STRING_UNITS
+{
+	BYTE_SIZE_STRING_UNIT_MEGABYTE	= 1000,
+	BYTE_SIZE_STRING_UNIT_MEBIBYTE	= 1024
+};
 
+int byte_size_string_create(
+     libcstring_system_character_t *byte_size_string,
+     size_t byte_size_string_length,
+     uint64_t size,
+     int units,
+     libcerror_error_t **error );
+
+int byte_size_string_convert(
+     const libcstring_system_character_t *byte_size_string,
+     size_t byte_size_string_length,
+     uint64_t *size,
+     libcerror_error_t **error );
+
+#if defined( __cplusplus )
+}
 #endif
 
 #endif

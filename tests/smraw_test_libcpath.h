@@ -1,5 +1,5 @@
 /*
- * The libbfio header wrapper
+ * The internal libcpath header
  *
  * Copyright (c) 2010-2013, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -19,32 +19,28 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _LIBSMRAW_LIBBFIO_H )
-#define _LIBSMRAW_LIBBFIO_H
+#if !defined( _SMRAW_TEST_LIBCPATH_H )
+#define _SMRAW_TEST_LIBCPATH_H
 
 #include <common.h>
 
-/* Define HAVE_LOCAL_LIBBFIO for local use of libbfio
+/* Define HAVE_LOCAL_LIBCPATH for local use of libcpath
  */
-#if defined( HAVE_LOCAL_LIBBFIO )
+#if defined( HAVE_LOCAL_LIBCPATH )
 
-#include <libbfio_definitions.h>
-#include <libbfio_file.h>
-#include <libbfio_file_pool.h>
-#include <libbfio_handle.h>
-#include <libbfio_pool.h>
-#include <libbfio_types.h>
+#include <libcpath_definitions.h>
+#include <libcpath_path.h>
 
 #else
 
-/* If libtool DLL support is enabled set LIBBFIO_DLL_IMPORT
- * before including libbfio.h
+/* If libtool DLL support is enabled set LIBCPATH_DLL_IMPORT
+ * before including libcpath.h
  */
 #if defined( _WIN32 ) && defined( DLL_IMPORT )
-#define LIBBFIO_DLL_IMPORT
+#define LIBCPATH_DLL_IMPORT
 #endif
 
-#include <libbfio.h>
+#include <libcpath.h>
 
 #endif
 

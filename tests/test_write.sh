@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Storage media (SM) RAW library write buffer testing script
+# Library write testing script
 #
 # Copyright (c) 2010-2013, Joachim Metz <joachim.metz@gmail.com>
 #
@@ -24,32 +24,43 @@ EXIT_SUCCESS=0;
 EXIT_FAILURE=1;
 EXIT_IGNORE=77;
 
-TMP="tmp";
-
-SMRAW_TEST_WRITE="smraw_test_write";
-
 test_write()
 { 
-	mkdir ${TMP};
-	cd ${TMP};
+	rm -rf tmp;
+	mkdir tmp;
 
 	echo "Testing write";
 
-	../${SMRAW_TEST_WRITE};
+	${TEST_RUNNER} ./${SMRAW_TEST_WRITE} tmp/;
 
 	RESULT=$?;
 
 	echo "";
 
-	cd ..;
-	rm -rf ${TMP};
+	rm -rf tmp;
 
 	return ${RESULT};
 }
 
+SMRAW_TEST_WRITE="smraw_test_write";
+
 if ! test -x ${SMRAW_TEST_WRITE};
 then
 	echo "Missing executable: ${SMRAW_TEST_WRITE}";
+
+	exit ${EXIT_FAILURE};
+fi
+
+TEST_RUNNER="tests/test_runner.sh";
+
+if ! test -x ${TEST_RUNNER};
+then
+	TEST_RUNNER="./test_runner.sh";
+fi
+
+if ! test -x ${TEST_RUNNER};
+then
+	echo "Missing test runner: ${TEST_RUNNER}";
 
 	exit ${EXIT_FAILURE};
 fi

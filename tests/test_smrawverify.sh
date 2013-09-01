@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Library read testing script
+# smrawverify tool testing script
 #
 # Copyright (c) 2010-2013, Joachim Metz <joachim.metz@gmail.com>
 #
@@ -40,35 +40,53 @@ list_contains()
 	return ${EXIT_FAILURE};
 }
 
-test_read()
+test_verify()
 { 
-	echo "Testing read of input:" $*;
+	DIRNAME=$1;
+	INPUT_FILE=$2;
+	BASENAME=`basename ${INPUT_FILE}`;
 
 	rm -rf tmp;
 	mkdir tmp;
 
-	${TEST_RUNNER} ./${SMRAW_TEST_READ} $*;
+	${TEST_RUNNER} ${SMRAWVERIFY} -q ${INPUT_FILE} | sed '1,2d' > tmp/${BASENAME}.log;
 
 	RESULT=$?;
 
+	if test -f "input/.smrawverify/${DIRNAME}/${BASENAME}.log.gz";
+	then
+		zdiff "input/.smrawverify/${DIRNAME}/${BASENAME}.log.gz" "tmp/${BASENAME}.log";
+
+		RESULT=$?;
+	else
+		mv "tmp/${BASENAME}.log" "input/.smrawverify/${DIRNAME}";
+
+		gzip "input/.smrawverify/${DIRNAME}/${BASENAME}.log";
+	fi
+
 	rm -rf tmp;
 
-	echo "";
+	echo -n "Testing smrawverify of input: ${INPUT_FILE} ";
 
+	if test ${RESULT} -ne ${EXIT_SUCCESS};
+	then
+		echo " (FAIL)";
+	else
+		echo " (PASS)";
+	fi
 	return ${RESULT};
 }
 
-SMRAW_TEST_READ="smraw_test_read";
+SMRAWVERIFY="../smrawtools/smrawverify";
 
-if ! test -x ${SMRAW_TEST_READ};
+if ! test -x ${SMRAWVERIFY};
 then
-	SMRAW_TEST_READ="smraw_test_read.exe";
-
+	SMRAWVERIFY="../smrawtools/smrawverify.exe";
 fi
 
-if ! test -x ${SMRAW_TEST_READ};
+if ! test -x ${SMRAWVERIFY};
 then
-	echo "Missing executable: ${SMRAW_TEST_READ}";
+	echo "Missing executable: ${SMRAWVERIFY}";
 
 	exit ${EXIT_FAILURE};
 fi
@@ -108,9 +126,13 @@ then
 else
 	IGNORELIST="";
 
-	if test -f "input/.libsmraw/ignore";
+	if ! test -d "input/.smrawverify";
 	then
-		IGNORELIST=`cat input/.libsmraw/ignore | sed '/^#/d'`;
+		mkdir "input/.smrawverify";
+	fi
+	if test -f "input/.smrawverify/ignore";
+	then
+		IGNORELIST=`cat input/.smrawverify/ignore | sed '/^#/d'`;
 	fi
 	for TESTDIR in input/*;
 	do
@@ -120,15 +142,19 @@ else
 
 			if ! list_contains "${IGNORELIST}" "${DIRNAME}";
 			then
-				if test -f "input/.libsmraw/${DIRNAME}/files";
+				if ! test -d "input/.smrawverify/${DIRNAME}";
 				then
-					TESTFILES=`cat input/.libsmraw/${DIRNAME}/files | sed "s?^?${TESTDIR}/?"`;
+					mkdir "input/.smrawverify/${DIRNAME}";
+				fi
+				if test -f "input/.smrawverify/${DIRNAME}/files";
+				then
+					TESTFILES=`cat input/.smrawverify/${DIRNAME}/files | sed "s?^?${TESTDIR}/?"`;
 				else
 					TESTFILES=`ls ${TESTDIR}/*`;
 				fi
 				for TESTFILE in ${TESTFILES};
 				do
-					if ! test_read "${TESTFILE}";
+					if ! test_verify "${DIRNAME}" "${TESTFILE}";
 					then
 						exit ${EXIT_FAILURE};
 					fi

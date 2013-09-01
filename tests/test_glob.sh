@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Storage media (SM) RAW library glob testing script
+# Library glob testing script
 #
 # Copyright (c) 2010-2013, Joachim Metz <joachim.metz@gmail.com>
 #
@@ -24,12 +24,6 @@ EXIT_SUCCESS=0;
 EXIT_FAILURE=1;
 EXIT_IGNORE=77;
 
-TMP="tmp";
-
-CMP="cmp";
-
-SMRAW_TEST_GLOB="smraw_test_glob";
-
 seq()
 {
 	VALUE=$1;
@@ -51,27 +45,28 @@ test_glob()
 	SCHEMA=$2;
 	FILENAMES=$3;
 
-	mkdir ${TMP};
-	cd ${TMP};
+	FILENAMES=`echo ${FILENAMES} | sed 's?^?tmp/?' | sed 's? ? tmp/?g'`;
 
-	echo ${FILENAMES} > input;
+	rm -rf tmp;
+	mkdir tmp;
+
+	echo ${FILENAMES} > tmp/input;
 
 	touch ${FILENAMES};
 
-	../${SMRAW_TEST_GLOB} ${BASENAME} > output;
+	${TEST_RUNNER} ./${SMRAW_TEST_GLOB} tmp/${BASENAME} > tmp/output;
 
 	RESULT=$?;
 
 	if test ${RESULT} -eq ${EXIT_SUCCESS};
 	then
-		if ! ${CMP} -s input output;
+		if ! cmp -s tmp/input tmp/output;
 		then
 			RESULT=${EXIT_FAILURE};
 		fi
 	fi
 
-	cd ..;
-	rm -rf ${TMP};
+	rm -rf tmp;
 
 	echo -n "Testing glob: for basename: ${BASENAME} and schema: ${SCHEMA} ";
 
@@ -94,27 +89,28 @@ test_glob_sequence()
 	SEQUENCE=`seq 1 ${LAST}`;
 	FILENAMES=`for NUMBER in ${SEQUENCE}; do echo -n "${FILENAME}.${NUMBER}of${LAST} "; echo $FILE; done`;
 
-	mkdir ${TMP};
-	cd ${TMP};
+	FILENAMES=`echo ${FILENAMES} | sed 's?^?tmp/?' | sed 's? ? tmp/?g'`;
 
-	echo ${FILENAMES} > input;
+	rm -rf tmp;
+	mkdir tmp;
+
+	echo ${FILENAMES} > tmp/input;
 
 	touch ${FILENAMES};
 
-	../${SMRAW_TEST_GLOB} ${BASENAME} > output;
+	${TEST_RUNNER} ./${SMRAW_TEST_GLOB} tmp/${BASENAME} > tmp/output;
 
 	RESULT=$?;
 
 	if test ${RESULT} -eq ${EXIT_SUCCESS};
 	then
-		if ! ${CMP} -s input output;
+		if ! cmp -s tmp/input tmp/output;
 		then
 			RESULT=${EXIT_FAILURE};
 		fi
 	fi
 
-	cd ..;
-	rm -rf ${TMP};
+	rm -rf tmp;
 
 	echo -n "Testing glob: for basename: ${BASENAME} and schema: ${SCHEMA} ";
 
@@ -127,6 +123,8 @@ test_glob_sequence()
 	return ${RESULT};
 }
 
+SMRAW_TEST_GLOB="smraw_test_glob";
+
 if ! test -x ${SMRAW_TEST_GLOB};
 then
 	echo "Missing executable: ${SMRAW_TEST_GLOB}";
@@ -134,7 +132,19 @@ then
 	exit ${EXIT_FAILURE};
 fi
 
-rm -rf ${TMP};
+TEST_RUNNER="tests/test_runner.sh";
+
+if ! test -x ${TEST_RUNNER};
+then
+	TEST_RUNNER="./test_runner.sh";
+fi
+
+if ! test -x ${TEST_RUNNER};
+then
+	echo "Missing test runner: ${TEST_RUNNER}";
+
+	exit ${EXIT_FAILURE};
+fi
 
 if ! test_glob "PREFIX" ".dd" "PREFIX.dd";
 then

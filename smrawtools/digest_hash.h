@@ -1,5 +1,5 @@
 /*
- * The libbfio header wrapper
+ * Crypographic digest hash
  *
  * Copyright (c) 2010-2013, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -19,33 +19,28 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _LIBSMRAW_LIBBFIO_H )
-#define _LIBSMRAW_LIBBFIO_H
+#if !defined( _DIGEST_HASH_H )
+#define _DIGEST_HASH_H
 
 #include <common.h>
+#include <types.h>
 
-/* Define HAVE_LOCAL_LIBBFIO for local use of libbfio
- */
-#if defined( HAVE_LOCAL_LIBBFIO )
+#include "smrawtools_libcerror.h"
+#include "smrawtools_libcstring.h"
 
-#include <libbfio_definitions.h>
-#include <libbfio_file.h>
-#include <libbfio_file_pool.h>
-#include <libbfio_handle.h>
-#include <libbfio_pool.h>
-#include <libbfio_types.h>
-
-#else
-
-/* If libtool DLL support is enabled set LIBBFIO_DLL_IMPORT
- * before including libbfio.h
- */
-#if defined( _WIN32 ) && defined( DLL_IMPORT )
-#define LIBBFIO_DLL_IMPORT
+#if defined( __cplusplus )
+extern "C" {
 #endif
 
-#include <libbfio.h>
+int digest_hash_copy_to_string(
+     const uint8_t *digest_hash,
+     size_t digest_hash_size,
+     libcstring_system_character_t *string,
+     size_t string_size,
+     libcerror_error_t **error );
 
+#if defined( __cplusplus )
+}
 #endif
 
 #endif

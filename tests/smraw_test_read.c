@@ -48,8 +48,8 @@ int smraw_test_seek_offset(
      off64_t expected_offset )
 {
 	libsmraw_error_t *error = NULL;
-	off64_t result_offset  = 0;
-	int result             = 0;
+	off64_t result_offset   = 0;
+	int result              = 0;
 
 	if( handle == NULL )
 	{
@@ -96,7 +96,7 @@ int smraw_test_read_buffer(
 {
 	uint8_t buffer[ SMRAW_TEST_READ_BUFFER_SIZE ];
 
-	libsmraw_error_t *error  = NULL;
+	libsmraw_error_t *error = NULL;
 	size64_t remaining_size = 0;
 	size64_t result_size    = 0;
 	size_t read_size        = 0;
@@ -172,7 +172,7 @@ int smraw_test_read_random(
 {
 	uint8_t buffer[ SMRAW_TEST_READ_BUFFER_SIZE ];
 
-	libsmraw_error_t *error  = NULL;
+	libsmraw_error_t *error = NULL;
 	off64_t result_offset   = 0;
 	size64_t remaining_size = 0;
 	size64_t result_size    = 0;

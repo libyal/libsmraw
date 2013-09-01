@@ -17,6 +17,11 @@ Features
 
 Tooling
 * detect maximum possible segment size on file system (e.g. FAT)
+* smrawinfo
+  - create
+  - print info from info file
+* smrawverify
+  - get hashes from info file
 
 smraw.net
 * implement other functions ?
@@ -26,6 +31,13 @@ Test
 * retrieve data from the information file on open
 * make sure certain values cannot be changed if writing/reading from raw files
 * add glob test to msvscpp project
+
+20130901
+* added smrawverify
+* worked on tests
+  - replaced compare test by smrawverify test
+* updated msvscpp files
+* code clean up
 
 20130831
 * updated dependencies

@@ -1,7 +1,7 @@
 /*
  * Crypographic digest hash
  *
- * Copyright (c) 2006-2013, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (c) 2010-2013, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -23,10 +23,10 @@
 #include <types.h>
 
 #include "digest_hash.h"
-#include "smraw_test_libcerror.h"
-#include "smraw_test_libcstring.h"
+#include "smrawtools_libcerror.h"
+#include "smrawtools_libcstring.h"
 
-/* Converts the EWF digest hash to a printable string
+/* Converts the digest hash to a printable string
  * Returns 1 if successful or -1 on error
  */
 int digest_hash_copy_to_string(

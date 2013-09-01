@@ -27,6 +27,7 @@
 #include <stdlib.h>
 #endif
 
+#include "smraw_test_libcpath.h"
 #include "smraw_test_libcstring.h"
 #include "smraw_test_libhmac.h"
 #include "smraw_test_libsmraw.h"
@@ -34,7 +35,7 @@
 #define SMRAW_TEST_BUFFER_SIZE	4096
 
 int smraw_test_write(
-     const char *filename,
+     const libcstring_system_character_t *filename,
      size_t media_size,
      size_t maximum_segment_size,
      libcerror_error_t **error )
@@ -385,10 +386,47 @@ int wmain( int argc, wchar_t * const argv[] )
 int main( int argc, char * const argv[] )
 #endif
 {
-	libsmraw_error_t *error = NULL;
+	libcstring_system_character_t *filename = NULL;
+	libsmraw_error_t *error                 = NULL;
+	size_t filename_size                    = 0;
 
-	if( smraw_test_write(
+	if( argc < 2 )
+	{
+		fprintf(
+		 stderr,
+		 "Missing test path.\n" );
+
+		return( EXIT_FAILURE );
+	}
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+	if( libcpath_path_join_wide(
+	     &filename,
+	     &filename_size,
+	     libcstring_system_string_length(
+	      argv[ 1 ] ),
 	     _LIBCSTRING_SYSTEM_STRING( "test1" ),
+	     5,
+	     error ) != 1 )
+#else
+	if( libcpath_path_join(
+	     &filename,
+	     &filename_size,
+	     argv[ 1 ],
+	     libcstring_system_string_length(
+	      argv[ 1 ] ),
+	     _LIBCSTRING_SYSTEM_STRING( "test1" ),
+	     5,
+	     error ) != 1 )
+#endif
+	{
+		fprintf(
+		 stderr,
+		 "Unable to create filename.\n" );
+
+		goto on_error;
+	}
+	if( smraw_test_write(
+	     filename,
 	     0,
 	     0,
 	     &error ) != 1 )
@@ -399,8 +437,40 @@ int main( int argc, char * const argv[] )
 
 		goto on_error;
 	}
-	if( smraw_test_write(
+	memory_free(
+	 filename );
+
+	filename = NULL;
+
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+	if( libcpath_path_join_wide(
+	     &filename,
+	     &filename_size,
+	     libcstring_system_string_length(
+	      argv[ 1 ] ),
 	     _LIBCSTRING_SYSTEM_STRING( "test2" ),
+	     5,
+	     error ) != 1 )
+#else
+	if( libcpath_path_join(
+	     &filename,
+	     &filename_size,
+	     argv[ 1 ],
+	     libcstring_system_string_length(
+	      argv[ 1 ] ),
+	     _LIBCSTRING_SYSTEM_STRING( "test2" ),
+	     5,
+	     error ) != 1 )
+#endif
+	{
+		fprintf(
+		 stderr,
+		 "Unable to create filename.\n" );
+
+		goto on_error;
+	}
+	if( smraw_test_write(
+	     filename,
 	     0,
 	     10000,
 	     &error ) != 1 )
@@ -411,8 +481,40 @@ int main( int argc, char * const argv[] )
 
 		goto on_error;
 	}
-	if( smraw_test_write(
+	memory_free(
+	 filename );
+
+	filename = NULL;
+
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+	if( libcpath_path_join_wide(
+	     &filename,
+	     &filename_size,
+	     libcstring_system_string_length(
+	      argv[ 1 ] ),
 	     _LIBCSTRING_SYSTEM_STRING( "test3" ),
+	     5,
+	     error ) != 1 )
+#else
+	if( libcpath_path_join(
+	     &filename,
+	     &filename_size,
+	     argv[ 1 ],
+	     libcstring_system_string_length(
+	      argv[ 1 ] ),
+	     _LIBCSTRING_SYSTEM_STRING( "test3" ),
+	     5,
+	     error ) != 1 )
+#endif
+	{
+		fprintf(
+		 stderr,
+		 "Unable to create filename.\n" );
+
+		goto on_error;
+	}
+	if( smraw_test_write(
+	     filename,
 	     100000,
 	     0,
 	     &error ) != 1 )
@@ -423,8 +525,40 @@ int main( int argc, char * const argv[] )
 
 		goto on_error;
 	}
-	if( smraw_test_write(
+	memory_free(
+	 filename );
+
+	filename = NULL;
+
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+	if( libcpath_path_join_wide(
+	     &filename,
+	     &filename_size,
+	     libcstring_system_string_length(
+	      argv[ 1 ] ),
 	     _LIBCSTRING_SYSTEM_STRING( "test4" ),
+	     5,
+	     error ) != 1 )
+#else
+	if( libcpath_path_join(
+	     &filename,
+	     &filename_size,
+	     argv[ 1 ],
+	     libcstring_system_string_length(
+	      argv[ 1 ] ),
+	     _LIBCSTRING_SYSTEM_STRING( "test4" ),
+	     5,
+	     error ) != 1 )
+#endif
+	{
+		fprintf(
+		 stderr,
+		 "Unable to create filename.\n" );
+
+		goto on_error;
+	}
+	if( smraw_test_write(
+	     filename,
 	     100000,
 	     10000,
 	     &error ) != 1 )
@@ -435,6 +569,11 @@ int main( int argc, char * const argv[] )
 
 		goto on_error;
 	}
+	memory_free(
+	 filename );
+
+	filename = NULL;
+
 	return( EXIT_SUCCESS );
 
 on_error:
@@ -445,6 +584,11 @@ on_error:
 		 stderr );
 		libsmraw_error_free(
 		 &error );
+	}
+	if( filename != NULL )
+	{
+		memory_free(
+		 filename );
 	}
 	return( EXIT_FAILURE );
 }

@@ -1,7 +1,7 @@
 /*
- * Crypographic digest hash
+ * Log handle
  *
- * Copyright (c) 2006-2013, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (c) 2010-2013, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -19,25 +19,50 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _DIGEST_HASH_H )
-#define _DIGEST_HASH_H
+#if !defined( _LOG_HANDLE_H )
+#define _LOG_HANDLE_H
 
 #include <common.h>
+#include <file_stream.h>
 #include <types.h>
 
-#include "smraw_test_libcerror.h"
-#include "smraw_test_libcstring.h"
+#include "smrawtools_libcerror.h"
+#include "smrawtools_libcstring.h"
 
 #if defined( __cplusplus )
 extern "C" {
 #endif
 
-int digest_hash_copy_to_string(
-     const uint8_t *digest_hash,
-     size_t digest_hash_size,
-     libcstring_system_character_t *string,
-     size_t string_size,
+typedef struct log_handle log_handle_t;
+
+struct log_handle
+{
+	/* The log stream
+	 */
+	FILE *log_stream;
+};
+
+int log_handle_initialize(
+     log_handle_t **log_handle,
      libcerror_error_t **error );
+
+int log_handle_free(
+     log_handle_t **log_handle,
+     libcerror_error_t **error );
+
+int log_handle_open(
+     log_handle_t *log_handle,
+     const libcstring_system_character_t *filename,
+     libcerror_error_t **error );
+
+int log_handle_close(
+     log_handle_t *log_handle,
+     libcerror_error_t **error );
+
+void log_handle_printf(
+      log_handle_t *log_handle,
+      char *format,
+      ... );
 
 #if defined( __cplusplus )
 }
