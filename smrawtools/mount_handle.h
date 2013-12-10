@@ -86,6 +86,11 @@ int mount_handle_get_media_size(
      size64_t *size,
      libcerror_error_t **error );
 
+int mount_handle_get_number_of_input_handles(
+     mount_handle_t *mount_handle,
+     int *number_of_input_handles,
+     libcerror_error_t **error );
+
 #if defined( __cplusplus )
 }
 #endif

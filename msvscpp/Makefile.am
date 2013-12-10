@@ -1,4 +1,5 @@
 MSVSCPP_FILES = \
+	dokan_dll/dokan_dll.vcproj \
 	libbfio/libbfio.vcproj \
 	libcdata/libcdata.vcproj \
 	libcerror/libcerror.vcproj \
@@ -21,6 +22,7 @@ MSVSCPP_FILES = \
 	smraw_test_read/smraw_test_read.vcproj \
 	smraw_test_seek/smraw_test_seek.vcproj \
 	smraw_test_write/smraw_test_write.vcproj \
+	smrawmount/smrawmount.vcproj \
 	smrawverify/smrawverify.vcproj
 
 SCRIPT_FILES = \

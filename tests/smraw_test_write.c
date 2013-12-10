@@ -27,6 +27,7 @@
 #include <stdlib.h>
 #endif
 
+#include "smraw_test_libcerror.h"
 #include "smraw_test_libcpath.h"
 #include "smraw_test_libcstring.h"
 #include "smraw_test_libhmac.h"
@@ -402,11 +403,12 @@ int main( int argc, char * const argv[] )
 	if( libcpath_path_join_wide(
 	     &filename,
 	     &filename_size,
+	     argv[ 1 ],
 	     libcstring_system_string_length(
 	      argv[ 1 ] ),
 	     _LIBCSTRING_SYSTEM_STRING( "test1" ),
 	     5,
-	     error ) != 1 )
+	     &error ) != 1 )
 #else
 	if( libcpath_path_join(
 	     &filename,
@@ -416,7 +418,7 @@ int main( int argc, char * const argv[] )
 	      argv[ 1 ] ),
 	     _LIBCSTRING_SYSTEM_STRING( "test1" ),
 	     5,
-	     error ) != 1 )
+	     &error ) != 1 )
 #endif
 	{
 		fprintf(
@@ -446,11 +448,12 @@ int main( int argc, char * const argv[] )
 	if( libcpath_path_join_wide(
 	     &filename,
 	     &filename_size,
+	     argv[ 1 ],
 	     libcstring_system_string_length(
 	      argv[ 1 ] ),
 	     _LIBCSTRING_SYSTEM_STRING( "test2" ),
 	     5,
-	     error ) != 1 )
+	     &error ) != 1 )
 #else
 	if( libcpath_path_join(
 	     &filename,
@@ -460,7 +463,7 @@ int main( int argc, char * const argv[] )
 	      argv[ 1 ] ),
 	     _LIBCSTRING_SYSTEM_STRING( "test2" ),
 	     5,
-	     error ) != 1 )
+	     &error ) != 1 )
 #endif
 	{
 		fprintf(
@@ -490,11 +493,12 @@ int main( int argc, char * const argv[] )
 	if( libcpath_path_join_wide(
 	     &filename,
 	     &filename_size,
+	     argv[ 1 ],
 	     libcstring_system_string_length(
 	      argv[ 1 ] ),
 	     _LIBCSTRING_SYSTEM_STRING( "test3" ),
 	     5,
-	     error ) != 1 )
+	     &error ) != 1 )
 #else
 	if( libcpath_path_join(
 	     &filename,
@@ -504,7 +508,7 @@ int main( int argc, char * const argv[] )
 	      argv[ 1 ] ),
 	     _LIBCSTRING_SYSTEM_STRING( "test3" ),
 	     5,
-	     error ) != 1 )
+	     &error ) != 1 )
 #endif
 	{
 		fprintf(
@@ -534,11 +538,12 @@ int main( int argc, char * const argv[] )
 	if( libcpath_path_join_wide(
 	     &filename,
 	     &filename_size,
+	     argv[ 1 ],
 	     libcstring_system_string_length(
 	      argv[ 1 ] ),
 	     _LIBCSTRING_SYSTEM_STRING( "test4" ),
 	     5,
-	     error ) != 1 )
+	     &error ) != 1 )
 #else
 	if( libcpath_path_join(
 	     &filename,
@@ -548,7 +553,7 @@ int main( int argc, char * const argv[] )
 	      argv[ 1 ] ),
 	     _LIBCSTRING_SYSTEM_STRING( "test4" ),
 	     5,
-	     error ) != 1 )
+	     &error ) != 1 )
 #endif
 	{
 		fprintf(

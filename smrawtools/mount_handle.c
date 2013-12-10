@@ -502,3 +502,40 @@ int mount_handle_get_media_size(
 	return( 1 );
 }
 
+/* Retrieves the number of input handles
+ * Returns 1 if successful or -1 on error
+ */
+int mount_handle_get_number_of_input_handles(
+     mount_handle_t *mount_handle,
+     int *number_of_input_handles,
+     libcerror_error_t **error )
+{
+	static char *function = "mount_handle_get_number_of_input_handles";
+
+	if( mount_handle == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid mount handle.",
+		 function );
+
+		return( -1 );
+	}
+	if( number_of_input_handles == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid number of input handles.",
+		 function );
+
+		return( -1 );
+	}
+	*number_of_input_handles = 1;
+
+	return( 1 );
+}
+

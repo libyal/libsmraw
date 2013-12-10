@@ -127,13 +127,11 @@ int main( int argc, char * const argv[] )
 #endif
 
 	libcstring_system_character_t *log_filename                   = NULL;
-	libcstring_system_character_t *program                        = _LIBCSTRING_SYSTEM_STRING( "smrawverify" );
 	libcstring_system_character_t *option_additional_digest_types = NULL;
 	libcstring_system_character_t *option_process_buffer_size     = NULL;
-
-	log_handle_t *log_handle                                      = NULL;
-
+	libcstring_system_character_t *program                        = _LIBCSTRING_SYSTEM_STRING( "smrawverify" );
 	libcstring_system_integer_t option                            = 0;
+	log_handle_t *log_handle                                      = NULL;
 	uint8_t calculate_md5                                         = 1;
 	uint8_t print_status_information                              = 1;
 	uint8_t verbose                                               = 0;
