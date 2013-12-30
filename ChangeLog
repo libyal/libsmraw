@@ -32,7 +32,10 @@ Test
 * make sure certain values cannot be changed if writing/reading from raw files
 * add glob test to msvscpp project
 
-20131012
+20131230
+* updated dependencies
+
+20131210
 * updated dependencies
 * smrawmount worked on Dokan support
 

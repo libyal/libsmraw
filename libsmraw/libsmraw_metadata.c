@@ -236,7 +236,7 @@ int libsmraw_handle_get_bytes_per_sector(
 
 			return( -1 );
 		}
-		*bytes_per_sector = (size_t) value_64bit;
+		*bytes_per_sector = (uint32_t) value_64bit;
 	}
 	return( 1 );
 }

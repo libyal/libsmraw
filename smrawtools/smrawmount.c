@@ -1292,7 +1292,7 @@ int __stdcall smrawmount_dokan_FindFiles(
 		 "%s: unable to retrieve number of input handles.",
 		 function );
 
-		result = -EIO;
+		result = -ERROR_GEN_FAILURE;
 
 		goto on_error;
 	}
