@@ -26,7 +26,6 @@ SUBDIRS = \
 	po \
 	manuals \
 	tests \
-	examples \
 	msvscpp
 
 DPKG_FILES = \
@@ -121,6 +120,7 @@ splint:
 	(cd $(srcdir)/libsmraw && $(MAKE) splint $(AM_MAKEFLAGS))
 	(cd $(srcdir)/libcsystem && $(MAKE) splint $(AM_MAKEFLAGS))
 	(cd $(srcdir)/smrawtools && $(MAKE) splint $(AM_MAKEFLAGS))
+	(cd $(srcdir)/smraw.net && $(MAKE) splint $(AM_MAKEFLAGS))
 	(cd $(srcdir)/pysmraw && $(MAKE) splint $(AM_MAKEFLAGS))
 	(cd $(srcdir)/po && $(MAKE) splint $(AM_MAKEFLAGS))
 	(cd $(srcdir)/tests && $(MAKE) splint $(AM_MAKEFLAGS))

@@ -1,5 +1,5 @@
 MSVSCPP_FILES = \
-	dokan_dll/dokan_dll.vcproj \
+	dokan/dokan.vcproj \
 	libbfio/libbfio.vcproj \
 	libcdata/libcdata.vcproj \
 	libcerror/libcerror.vcproj \
@@ -7,23 +7,27 @@ MSVSCPP_FILES = \
 	libclocale/libclocale.vcproj \
 	libcnotify/libcnotify.vcproj \
 	libcpath/libcpath.vcproj \
-	libcstring/libcstring.vcproj \
 	libcsplit/libcsplit.vcproj \
+	libcstring/libcstring.vcproj \
 	libcsystem/libcsystem.vcproj \
 	libcthreads/libcthreads.vcproj \
 	libfcache/libfcache.vcproj \
 	libfdata/libfdata.vcproj \
 	libfvalue/libfvalue.vcproj \
 	libhmac/libhmac.vcproj \
-	libsmraw_dll/libsmraw_dll.vcproj \
+	libsmraw/libsmraw.vcproj \
 	libuna/libuna.vcproj \
-	libsmraw.sln \
-	smraw.net_dll/smraw.net_dll.vcproj \
+	pysmraw/pysmraw.vcproj \
+	smraw.net/smraw.net.vcproj \
+	smraw_test_glob/smraw_test_glob.vcproj \
+	smraw_test_open_close/smraw_test_open_close.vcproj \
 	smraw_test_read/smraw_test_read.vcproj \
+	smraw_test_read_loop/smraw_test_read_loop.vcproj \
 	smraw_test_seek/smraw_test_seek.vcproj \
 	smraw_test_write/smraw_test_write.vcproj \
 	smrawmount/smrawmount.vcproj \
-	smrawverify/smrawverify.vcproj
+	smrawverify/smrawverify.vcproj \
+	libsmraw.sln
 
 SCRIPT_FILES = \
 	scripts/vs2008_x64.sh \

@@ -23,14 +23,16 @@ Tooling
 * smrawverify
   - get hashes from info file
 
-smraw.net
-* implement other functions ?
-* in examples print exception/backtrace on error
-
 Test
 * retrieve data from the information file on open
 * make sure certain values cannot be changed if writing/reading from raw files
 * add glob test to msvscpp project
+
+20140614
+* removed examples
+
+20140612
+* worked on Python bindings
 
 20140611
 * worked on Python bindings

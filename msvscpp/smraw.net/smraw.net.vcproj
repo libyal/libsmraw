@@ -2,10 +2,10 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9,00"
-	Name="smraw.net_dll"
-	ProjectGUID="{C9D11A1A-EF3A-4411-B8EA-1437B7511E5A}"
-	RootNamespace="libsmrawnet_dll"
-	TargetFrameworkVersion="196613"
+	Name="smraw.net"
+	ProjectGUID="{F4E520F8-316A-429E-963D-90D8A88DD33C}"
+	RootNamespace="smraw.net"
+	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform
@@ -22,7 +22,6 @@
 			ConfigurationType="2"
 			CharacterSet="1"
 			ManagedExtensions="1"
-			WholeProgramOptimization="0"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -41,15 +40,11 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="2"
-				EnableIntrinsicFunctions="false"
-				WholeProgramOptimization="false"
-				AdditionalIncludeDirectories="..\..\include;..\..\common;..\..\libcstring"
-				PreprocessorDefinitions="HAVE_LOCAL_LIBCSTRING;LIBSMRAW_DLL_IMPORT"
+				AdditionalIncludeDirectories="..\..\include;..\..\common"
+				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;LIBSMRAW_DLL_IMPORT"
 				RuntimeLibrary="2"
-				EnableFunctionLevelLinking="false"
 				WarningLevel="4"
-				DebugInformationFormat="0"
+				CompileAs="2"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -63,16 +58,12 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="libsmraw.lib"
-				OutputFile="$(OutDir)\smraw.net.dll"
+				OutputFile="$(OutDir)\$(ProjectName).dll"
 				AdditionalLibraryDirectories="&quot;$(OutDir)&quot;"
-				GenerateDebugInformation="false"
-				OptimizeReferences="0"
-				EnableCOMDATFolding="0"
-				RandomizedBaseAddress="1"
-				FixedBaseAddress="0"
-				DataExecutionPrevention="0"
-				ImportLibrary="$(OutDir)\dnsmraw.lib"
-				TargetMachine="0"
+				RandomizedBaseAddress="2"
+				DataExecutionPrevention="2"
+				TargetMachine="1"
+				ImportLibrary="$(OutDir)\$(ProjectName).lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -103,7 +94,6 @@
 			ConfigurationType="2"
 			CharacterSet="1"
 			ManagedExtensions="1"
-			WholeProgramOptimization="0"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -123,16 +113,12 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				EnableIntrinsicFunctions="false"
-				WholeProgramOptimization="false"
-				AdditionalIncludeDirectories="..\..\include;..\..\common;..\..\libcstring"
-				PreprocessorDefinitions="HAVE_LOCAL_LIBCSTRING;LIBSMRAW_DLL_IMPORT"
-				BasicRuntimeChecks="0"
-				SmallerTypeCheck="false"
+				AdditionalIncludeDirectories="..\..\include;..\..\common"
+				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;LIBSMRAW_DLL_IMPORT"
 				RuntimeLibrary="3"
-				EnableFunctionLevelLinking="false"
 				WarningLevel="4"
 				DebugInformationFormat="3"
+				CompileAs="2"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -146,16 +132,13 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="libsmraw.lib"
-				OutputFile="$(OutDir)\smraw.net.dll"
+				OutputFile="$(OutDir)\$(ProjectName).dll"
 				AdditionalLibraryDirectories="&quot;$(OutDir)&quot;"
 				GenerateDebugInformation="true"
-				OptimizeReferences="0"
-				EnableCOMDATFolding="0"
 				RandomizedBaseAddress="1"
-				FixedBaseAddress="0"
-				DataExecutionPrevention="0"
-				ImportLibrary="$(OutDir)\dnsmraw.lib"
-				TargetMachine="0"
+				DataExecutionPrevention="1"
+				TargetMachine="1"
+				ImportLibrary="$(OutDir)\$(ProjectName).lib"
 			/>
 			<Tool
 				Name="VCALinkTool"

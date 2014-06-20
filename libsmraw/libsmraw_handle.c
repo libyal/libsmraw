@@ -1352,6 +1352,7 @@ int libsmraw_handle_open_file_io_pool(
 	int number_of_file_io_handles               = 0;
 	int bfio_access_flags                       = 0;
 	int file_io_handle_index                    = 0;
+	int file_io_handle_is_open                  = 0;
 
 	if( handle == NULL )
 	{
@@ -1510,21 +1511,39 @@ int libsmraw_handle_open_file_io_pool(
 				 file_io_handle_index );
 			}
 #endif
-			if( libbfio_pool_open(
-			     file_io_pool,
-			     file_io_handle_index,
-			     bfio_access_flags,
-			     error ) != 1 )
+			file_io_handle_is_open = libbfio_handle_is_open(
+			                          file_io_handle,
+			                          error );
+
+			if( file_io_handle_is_open == -1 )
 			{
 				libcerror_error_set(
 				 error,
 				 LIBCERROR_ERROR_DOMAIN_IO,
 				 LIBCERROR_IO_ERROR_OPEN_FAILED,
-				 "%s: unable to open pool entry: %d.",
-				 function,
-				 file_io_handle_index );
+				 "%s: unable to determine if file IO handle is open.",
+				 function );
 
 				goto on_error;
+			}
+			else if( file_io_handle_is_open == 0 )
+			{
+				if( libbfio_pool_open(
+				     file_io_pool,
+				     file_io_handle_index,
+				     bfio_access_flags,
+				     error ) != 1 )
+				{
+					libcerror_error_set(
+					 error,
+					 LIBCERROR_ERROR_DOMAIN_IO,
+					 LIBCERROR_IO_ERROR_OPEN_FAILED,
+					 "%s: unable to open pool entry: %d.",
+					 function,
+					 file_io_handle_index );
+
+					goto on_error;
+				}
 			}
 			if( libbfio_pool_get_size(
 			     file_io_pool,
