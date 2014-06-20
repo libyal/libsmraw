@@ -2,7 +2,7 @@ Source: libsmraw
 Section: unknown
 Priority: extra
 Maintainer: Joachim Metz <joachim.metz@gmail.com>
-Build-Depends: debhelper (>= 7), autotools-dev, libssl-dev, libfuse-dev
+Build-Depends: debhelper (>= 7), autotools-dev, libssl-dev, libfuse-dev, python-dev
 Standards-Version: 3.8.3
 Homepage: http://code.google.com/p/libsmraw/
 
@@ -28,4 +28,11 @@ Depends: libsmraw (= ${Source-Version}), ${shlibs:Depends}
 Description: Several tools for reading and writing storage media (SM) (split) RAW files
  Several tools for reading and writing storage media (SM) (split) RAW files.
  It contains tools to acquire, export, query and verify storage media (SM) (split) RAW files.
+
+Package: libsmraw-python
+Section: python
+Architecture: any
+Depends: libsmraw (= ${Source-Version}), ${shlibs:Depends}, ${python:Depends}
+Description: Python bindings for libsmraw
+ Python bindings for libsmraw.
 

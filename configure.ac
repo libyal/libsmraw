@@ -2,7 +2,7 @@ AC_PREREQ( 2.59 )
 
 AC_INIT(
  [libsmraw],
- [20140119],
+ [20140611],
  [joachim.metz@gmail.com])
 
 AC_CONFIG_SRCDIR(
@@ -104,6 +104,9 @@ AX_LIBCSYSTEM_CHECK_ENABLE
 
 dnl Check for libfuse Filesystem in Userspace (FUSE) support
 AX_LIBFUSE_CHECK_ENABLE
+
+dnl Check if libewf python bindings (pysmraw) should be build
+AX_PYTHON_CHECK_ENABLE
 
 dnl Check for headers and functions used in tools
 
@@ -313,6 +316,7 @@ AC_CONFIG_FILES([libcsystem/Makefile])
 AC_CONFIG_FILES([libhmac/Makefile])
 AC_CONFIG_FILES([smrawtools/Makefile])
 AC_CONFIG_FILES([smraw.net/Makefile])
+AC_CONFIG_FILES([pysmraw/Makefile])
 AC_CONFIG_FILES([po/Makefile.in])
 AC_CONFIG_FILES([po/Makevars])
 AC_CONFIG_FILES([manuals/Makefile])
@@ -330,6 +334,7 @@ AC_CONFIG_FILES([common/types.h])
 AC_CONFIG_FILES([dpkg/changelog])
 AC_CONFIG_FILES([dpkg/copyright])
 AC_CONFIG_FILES([libsmraw/libsmraw.rc])
+AC_CONFIG_FILES([pysmraw/setup.py])
 AC_CONFIG_FILES([libsmraw.pc])
 AC_CONFIG_FILES([libsmraw.spec])
 dnl Have configure write its configuration
@@ -365,6 +370,7 @@ Features:
    Multi-threading support:                    $ac_cv_libcthreads_multi_threading
    Wide character type support:                $ac_cv_enable_wide_character_type
    smrawtools are build as static executables: $ac_cv_enable_static_executables
+   Python (pysmraw) support:                   $ac_cv_enable_python
    Verbose output:                             $ac_cv_enable_verbose_output
    Debug output:                               $ac_cv_enable_debug_output
 ]);

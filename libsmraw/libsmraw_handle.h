@@ -162,6 +162,14 @@ ssize_t libsmraw_handle_read_buffer(
          libcerror_error_t **error );
 
 LIBSMRAW_EXTERN \
+ssize_t libsmraw_handle_read_buffer_at_offset(
+         libsmraw_handle_t *handle,
+         void *buffer,
+         size_t buffer_size,
+         off64_t offset,
+         libcerror_error_t **error );
+
+LIBSMRAW_EXTERN \
 ssize_t libsmraw_handle_read_random(
          libsmraw_handle_t *handle,
          void *buffer,
@@ -174,6 +182,14 @@ ssize_t libsmraw_handle_write_buffer(
          libsmraw_handle_t *handle,
          const void *buffer,
          size_t buffer_size,
+         libcerror_error_t **error );
+
+LIBSMRAW_EXTERN \
+ssize_t libsmraw_handle_write_buffer_at_offset(
+         libsmraw_handle_t *handle,
+         const void *buffer,
+         size_t buffer_size,
+         off64_t offset,
          libcerror_error_t **error );
 
 LIBSMRAW_EXTERN \

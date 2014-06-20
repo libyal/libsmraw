@@ -32,6 +32,12 @@ Test
 * make sure certain values cannot be changed if writing/reading from raw files
 * add glob test to msvscpp project
 
+20140611
+* worked on Python bindings
+
+20140610
+* worked on Python bindings
+
 20140119
 * 2014 update
 * updated dependencies

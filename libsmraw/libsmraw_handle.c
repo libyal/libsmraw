@@ -2076,6 +2076,54 @@ ssize_t libsmraw_handle_read_buffer(
 /* Reads (media) data at a specific offset
  * Returns the number of bytes read or -1 on error
  */
+ssize_t libsmraw_handle_read_buffer_at_offset(
+         libsmraw_handle_t *handle,
+         void *buffer,
+         size_t buffer_size,
+         off64_t offset,
+         libcerror_error_t **error )
+{
+	static char *function = "libsmraw_handle_read_buffer_at_offset";
+	ssize_t read_count    = 0;
+
+	if( libsmraw_handle_seek_offset(
+	     handle,
+	     offset,
+	     SEEK_SET,
+	     error ) == -1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_IO,
+		 LIBCERROR_IO_ERROR_SEEK_FAILED,
+		 "%s: unable to seek offset.",
+		 function );
+
+		return( -1 );
+	}
+	read_count = libsmraw_handle_read_buffer(
+	              handle,
+	              buffer,
+	              buffer_size,
+	              error );
+
+	if( read_count != (ssize_t) buffer_size )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_IO,
+		 LIBCERROR_IO_ERROR_READ_FAILED,
+		 "%s: unable to read buffer.",
+		 function );
+
+		return( -1 );
+	}
+	return( read_count );
+}
+
+/* Reads (media) data at a specific offset
+ * Returns the number of bytes read or -1 on error
+ */
 ssize_t libsmraw_handle_read_random(
          libsmraw_handle_t *handle,
          void *buffer,
@@ -2245,6 +2293,54 @@ ssize_t libsmraw_handle_write_buffer(
 		 LIBCERROR_ERROR_DOMAIN_IO,
 		 LIBCERROR_IO_ERROR_READ_FAILED,
 		 "%s: unable to write buffer to segments stream.",
+		 function );
+
+		return( -1 );
+	}
+	return( write_count );
+}
+
+/* Writes (media) data at a specific offset,
+ * Returns the number of input bytes written, 0 when no longer bytes can be written or -1 on error
+ */
+ssize_t libsmraw_handle_write_buffer_at_offset(
+         libsmraw_handle_t *handle,
+         const void *buffer,
+         size_t buffer_size,
+         off64_t offset,
+         libcerror_error_t **error )
+{
+	static char *function = "libsmraw_handle_write_buffer_at_offset";
+	ssize_t write_count   = 0;
+
+	if( libsmraw_handle_seek_offset(
+	     handle,
+	     offset,
+	     SEEK_SET,
+	     error ) == -1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_IO,
+		 LIBCERROR_IO_ERROR_SEEK_FAILED,
+		 "%s: unable to seek offset.",
+		 function );
+
+		return( -1 );
+	}
+	write_count = libsmraw_handle_write_buffer(
+	               handle,
+	               buffer,
+	               buffer_size,
+	               error );
+
+	if( write_count != (ssize_t) buffer_size )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_IO,
+		 LIBCERROR_IO_ERROR_WRITE_FAILED,
+		 "%s: unable to write buffer.",
 		 function );
 
 		return( -1 );

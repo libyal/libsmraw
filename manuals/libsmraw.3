@@ -1,4 +1,4 @@
-.Dd January 19, 2014
+.Dd June 11, 2014
 .Dt libsmraw 3
 .Os libsmraw
 .Sh NAME
@@ -69,11 +69,11 @@ File/Handle functions
 .Ft ssize_t
 .Fn libsmraw_handle_read_buffer "libsmraw_handle_t *handle, void *buffer, size_t buffer_size, libsmraw_error_t **error"
 .Ft ssize_t
-.Fn libsmraw_handle_read_random "libsmraw_handle_t *handle, void *buffer, size_t buffer_size, off64_t offset, libsmraw_error_t **error"
+.Fn libsmraw_handle_read_buffer_at_offset "libsmraw_handle_t *handle, void *buffer, size_t buffer_size, off64_t offset, libsmraw_error_t **error"
 .Ft ssize_t
 .Fn libsmraw_handle_write_buffer "libsmraw_handle_t *handle, const void *buffer, size_t buffer_size, libsmraw_error_t **error"
 .Ft ssize_t
-.Fn libsmraw_handle_write_random "libsmraw_handle_t *handle, const void *buffer, size_t buffer_size, off64_t offset, libsmraw_error_t **error"
+.Fn libsmraw_handle_write_buffer_at_offset "libsmraw_handle_t *handle, const void *buffer, size_t buffer_size, off64_t offset, libsmraw_error_t **error"
 .Ft off64_t
 .Fn libsmraw_handle_seek_offset "libsmraw_handle_t *handle, off64_t offset, int whence, libsmraw_error_t **error"
 .Ft off64_t
