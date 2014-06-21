@@ -203,7 +203,6 @@ PyObject *pysmraw_glob(
 		result = libsmraw_glob_wide(
 			  filename_wide,
 			  filename_length,
-			  LIBSMRAW_FORMAT_UNKNOWN,
 			  &filenames_wide,
 			  &number_of_filenames,
 			  &error );
@@ -340,7 +339,6 @@ PyObject *pysmraw_glob(
 		result = libsmraw_glob(
 			  filename_narrow,
 			  filename_length,
-			  LIBSMRAW_FORMAT_UNKNOWN,
 			  &filenames_narrow,
 			  &number_of_filenames,
 			  &error );

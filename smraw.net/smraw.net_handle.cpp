@@ -31,7 +31,6 @@
 
 #include "smraw.net.h"
 #include "smraw.net_handle.h"
-#include "smraw.net_libcstring.h"
 
 #using <mscorlib.dll>
 

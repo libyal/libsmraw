@@ -167,10 +167,10 @@ int smraw_test_read_buffer(
 	return( result );
 }
 
-/* Tests libsmraw_handle_read_random
+/* Tests libsmraw_handle_read_buffer_at_offset
  * Returns 1 if successful, 0 if not or -1 on error
  */
-int smraw_test_read_random(
+int smraw_test_read_buffer_at_offset(
      libsmraw_handle_t *handle,
      off64_t input_offset,
      size64_t input_size,
@@ -195,7 +195,7 @@ int smraw_test_read_random(
 
 	fprintf(
 	 stdout,
-	 "Testing reading random with offset: %" PRIi64 " and size: %" PRIu64 "\t",
+	 "Testing reading buffer at offset: %" PRIi64 " with size: %" PRIu64 "\t",
 	 input_offset,
 	 input_size );
 
@@ -207,7 +207,7 @@ int smraw_test_read_random(
 		{
 			read_size = (size_t) remaining_size;
 		}
-		read_count = libsmraw_handle_read_random(
+		read_count = libsmraw_handle_read_buffer_at_offset(
 			      handle,
 			      buffer,
 			      read_size,
@@ -380,8 +380,11 @@ int smraw_test_read_from_handle(
 
 		return( -1 );
 	}
+#if defined( WINAPI )
+	read_size = rand();
+#else
 	read_size = random();
-
+#endif
 	if( read_size > media_size )
 	{
 		read_size %= media_size;
@@ -432,7 +435,7 @@ int smraw_test_read_from_handle(
 		return( result );
 	}
 
-	/* Case 1: test random read
+	/* Case 1: test read buffer at offset
 	 */
 
 	/* Test: offset: <read_size / 7> size: <read_size / 2>
@@ -559,13 +562,13 @@ int smraw_test_read_from_handle(
 			return( result );
 		}
 	}
-	/* Case 3: test random read
+	/* Case 3: test read buffer at offset
 	 */
 
 	/* Test: offset: <read_size / 7> size: <read_size / 2>
 	 * Expected result: offset: < ( read_size / 7 ) + ( read_size / 2 ) > size: <read_size / 2>
 	 */
-	result = smraw_test_read_random(
+	result = smraw_test_read_buffer_at_offset(
 	          handle,
 	          (off64_t) ( read_size / 7 ),
 	          read_size / 2,
@@ -576,14 +579,14 @@ int smraw_test_read_from_handle(
 	{
 		fprintf(
 		 stderr,
-		 "Unable to test read random.\n" );
+		 "Unable to test read buffer at offset.\n" );
 
 		return( result );
 	}
 	/* Test: offset: <read_size / 7> size: <read_size / 2>
 	 * Expected result: offset: < ( read_size / 7 ) + ( read_size / 2 ) > size: <read_size / 2>
 	 */
-	result = smraw_test_read_random(
+	result = smraw_test_read_buffer_at_offset(
 	          handle,
 	          (off64_t) ( read_size / 7 ),
 	          read_size / 2,
@@ -594,7 +597,7 @@ int smraw_test_read_from_handle(
 	{
 		fprintf(
 		 stderr,
-		 "Unable to test read random.\n" );
+		 "Unable to test read buffer at offset.\n" );
 
 		return( result );
 	}

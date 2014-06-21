@@ -28,6 +28,9 @@ Test
 * make sure certain values cannot be changed if writing/reading from raw files
 * add glob test to msvscpp project
 
+20140621
+* updated msvscpp files
+
 20140614
 * removed examples
 

@@ -193,10 +193,6 @@
 				RelativePath="..\..\smraw.net\smraw.net_handle.h"
 				>
 			</File>
-			<File
-				RelativePath="..\..\smraw.net\smraw.net_libcstring.h"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
