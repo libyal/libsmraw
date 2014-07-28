@@ -57,8 +57,8 @@ PyMethodDef pysmraw_module_methods[] = {
 	  METH_VARARGS | METH_KEYWORDS,
 	  "open(filenames, mode='r') -> Object\n"
 	  "\n"
-          "Opens file(s) from a sequence (list) of all the segment filenames.\n"
-          "Use pysmraw.glob() to determine the segment filenames from first (E01)." },
+	  "Opens file(s) from a sequence (list) of all the segment filenames.\n"
+	  "Use pysmraw.glob() to determine the segment filenames from first (E01)." },
 
 /* TODO: open file-like object using pool - list of file objects */
 

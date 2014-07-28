@@ -23,6 +23,7 @@
 #define _SMRAWOUTPUT_H
 
 #include <common.h>
+#include <file_stream.h>
 #include <types.h>
 
 #include "smrawtools_libcstring.h"

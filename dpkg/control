@@ -10,9 +10,17 @@ Package: libsmraw
 Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
+Suggests: libsmraw-dbg
 Description: Library to access the storage media (SM) RAW format
  libsmraw is a library to access the storage media (SM) RAW format.
  The library supports both RAW and split RAW.
+
+Package: libsmraw-dbg
+Architecture: any
+Section: debug
+Depends: libsmraw (= ${Source-Version}), ${misc:Depends}
+Description: Debugging symbols for libsmraw
+ Debugging symbols for libsmraw.
 
 Package: libsmraw-dev
 Section: libdevel
@@ -33,6 +41,14 @@ Package: libsmraw-python
 Section: python
 Architecture: any
 Depends: libsmraw (= ${Source-Version}), ${shlibs:Depends}, ${python:Depends}
+Suggests: libsmraw-python-dbg
 Description: Python bindings for libsmraw
  Python bindings for libsmraw.
+
+Package: libsmraw-python-dbg
+Section: debug
+Architecture: any
+Depends: libsmraw-python (= ${Source-Version})
+Description: Debugging symbols for libsmraw-python
+ Debugging symbols for libsmraw-python.
 

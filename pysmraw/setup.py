@@ -25,11 +25,11 @@ class custom_sdist(sdist):
 		sys.exit(1)
 
 
-LIBRARY_NAME = "libsmdev"
-LIBRARY_VERSION = "20140621"
+LIBRARY_NAME = "libsmraw"
+LIBRARY_VERSION = "20140728"
 MODULE_NAME = "py%s" % (LIBRARY_NAME[3:])
 # bdist_msi does not support the library version, neither a date as a version.
-MODULE_VERSION = "20140621.1"
+MODULE_VERSION = "20140728.1"
 PROJECT_URL = "http://code.google.com/p/%s/" % (LIBRARY_NAME)
 
 DIRECTORY_NAMES = [
@@ -97,8 +97,6 @@ if platform.system() == "Windows":
 
 	LIBRARY_DLL_FILES = [
 		"%s.dll" % (LIBRARY_NAME),
-		"bzip2.dll",
-		"zlib.dll",
 	]
 	for library_dll_filename in LIBRARY_DLL_FILES:
 		library_dll_file = os.path.join(library_directory, library_dll_filename)

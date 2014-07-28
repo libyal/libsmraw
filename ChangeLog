@@ -28,6 +28,11 @@ Test
 * make sure certain values cannot be changed if writing/reading from raw files
 * add glob test to msvscpp project
 
+20140728
+* updated dependencies
+* fixes for FreeBSD 8 compilation
+* updated dpkg files
+
 20140621
 * updated msvscpp files
 

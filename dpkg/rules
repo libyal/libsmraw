@@ -7,83 +7,90 @@
 # This has to be exported to make some magic below work.
 export DH_OPTIONS
 
-PYTHON_PACKAGE_DIR=$(shell python -c "import distutils.sysconfig;print distutils.sysconfig.get_python_lib(True) ")
-
-
 %:
 	dh  $@
 
-install_libsmraw:
-	# Set up libsmraw package directories and files
-	mkdir -p debian/libsmraw/usr/lib
-	install -p -m755 debian/tmp/usr/lib/lib*.so.*.*.* debian/libsmraw/usr/lib
-
-install_libsmraw_dev:
-	# Set up libsmraw-dev package directories and files
-	mkdir -p debian/libsmraw-dev/usr/include
-	mkdir -p debian/libsmraw-dev/usr/include/libsmraw
-	mkdir -p debian/libsmraw-dev/usr/lib
-	mkdir -p debian/libsmraw-dev/usr/lib/pkgconfig
-	mkdir -p debian/libsmraw-dev/usr/share/man/man3
-	install -p -m755 debian/tmp/usr/include/*.h debian/libsmraw-dev/usr/include
-	install -p -m755 debian/tmp/usr/include/libsmraw/*.h debian/libsmraw-dev/usr/include/libsmraw
-	install -p -m755 debian/tmp/usr/lib/*.la debian/libsmraw-dev/usr/lib
-	install -p -m755 debian/tmp/usr/lib/lib*.a debian/libsmraw-dev/usr/lib
-	install -p -m755 debian/tmp/usr/lib/lib*.so debian/libsmraw-dev/usr/lib
-	install -p -m755 debian/tmp/usr/lib/pkgconfig/* debian/libsmraw-dev/usr/lib/pkgconfig
-	install -p -m755 debian/tmp/usr/share/man/man3/* debian/libsmraw-dev/usr/share/man/man3
-
-install_libsmraw_tools:
-	# Set up libsmraw-tools package directories and files
-	mkdir -p debian/libsmraw-tools/usr/bin
-	mkdir -p debian/libsmraw-tools/usr/share/man/man1
-	install -p -m755 debian/tmp/usr/bin/* debian/libsmraw-tools/usr/bin
-	install -p -m755 debian/tmp/usr/share/man/man1/* debian/libsmraw-tools/usr/share/man/man1
-
-install_libsmraw_python:
-	# Set up libsmraw-python package directories and files
-	mkdir -p debian/libsmraw-python/$(PYTHON_PACKAGE_DIR)
-	install -p -m775 debian/tmp$(PYTHON_PACKAGE_DIR)/pysmraw.* debian/libsmraw-python$(PYTHON_PACKAGE_DIR)
-
-
+.PHONY: override_dh_auto_configure
 override_dh_auto_configure:
-	dh_auto_configure -- --enable-python
+	dh_auto_configure -- --enable-python CFLAGS="-g"
 
+.PHONY: override_dh_auto_test
 override_dh_auto_test:
 
-override_dh_installinit: install_libsmraw install_libsmraw_dev install_libsmraw_tools install_libsmraw_python
+.PHONY: override_dh_install
+override_dh_install:
+	# Create the libsmraw package.
+	dh_install "debian/tmp/usr/lib/lib*.so.*.*.*" -p libsmraw
+	# Create the libsmraw-dev package.
+	dh_install "debian/tmp/usr/include/*.h" -p libsmraw-dev
+	dh_install "debian/tmp/usr/include/lib*/*.h" -p libsmraw-dev
+	dh_install "debian/tmp/usr/lib/*.a" -p libsmraw-dev
+	dh_install "debian/tmp/usr/lib/*.la" -p libsmraw-dev
+	dh_install "debian/tmp/usr/lib/*.so" -p libsmraw-dev
+	dh_install "debian/tmp/usr/lib/pkgconfig/*" -p libsmraw-dev
+	dh_install "debian/tmp/usr/share/man/man3/*" -p libsmraw-dev
+	# Create the libsmraw-tools package.
+	dh_install "debian/tmp/usr/bin/*" -p libsmraw-tools
+	dh_install "debian/tmp/usr/share/man/man1/*" -p libsmraw-tools
+	# Create the libsmraw-python package.
+	dh_install -X"*_d.so" "debian/tmp/usr/lib/python*/*" -p libsmraw-python
+	# The libsmraw-dbg and libsmraw-python-dbg packages are created by dh_strip.
+	dh_install
 
+.PHONY: override_dh_installmenu
 override_dh_installmenu:
 
+.PHONY: override_dh_installmime
 override_dh_installmime:
 
+.PHONY: override_dh_installmodules
 override_dh_installmodules:
 
+.PHONY: override_dh_installlogcheck
 override_dh_installlogcheck:
 
+.PHONY: override_dh_installlogrotate
 override_dh_installlogrotate:
 
+.PHONY: override_dh_installpam
 override_dh_installpam:
 
+.PHONY: override_dh_installppp
 override_dh_installppp:
 
+.PHONY: override_dh_installudev
 override_dh_installudev:
 
+.PHONY: override_dh_installwm
 override_dh_installwm:
 
+.PHONY: override_dh_installxfonts
 override_dh_installxfonts:
 
+.PHONY: override_dh_gconf
 override_dh_gconf:
 
+.PHONY: override_dh_icons
 override_dh_icons:
 
+.PHONY: override_dh_perl
 override_dh_perl:
 
+.PHONY: override_dh_pysupport
 override_dh_pysupport:
 
+.PHONY: override_dh_strip
+override_dh_strip:
+ifeq (,$(filter nostrip,$(DEB_BUILD_OPTIONS)))
+	dh_strip -plibsmraw --dbg-package=libsmraw-dbg
+	dh_strip -plibsmraw-python --dbg-package=libsmraw-python-dbg
+endif
+
+.PHONY: override_dh_shlibdeps
 override_dh_shlibdeps:
 	dh_shlibdeps -Llibsmraw -l${PWD}/debian/tmp/usr/lib
 
+.PHONY: override_dh_makeshlibs
 override_dh_makeshlibs:
 	dh_makeshlibs -Xlibsmraw-dev
 
