@@ -81,14 +81,14 @@ off64_t mount_handle_seek_offset(
          int whence,
          libcerror_error_t **error );
 
-int mount_handle_get_media_size(
-     mount_handle_t *mount_handle,
-     size64_t *size,
-     libcerror_error_t **error );
-
 int mount_handle_get_number_of_input_handles(
      mount_handle_t *mount_handle,
      int *number_of_input_handles,
+     libcerror_error_t **error );
+
+int mount_handle_get_size(
+     mount_handle_t *mount_handle,
+     size64_t *size,
      libcerror_error_t **error );
 
 #if defined( __cplusplus )

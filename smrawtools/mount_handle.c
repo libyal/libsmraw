@@ -464,44 +464,6 @@ off64_t mount_handle_seek_offset(
 	return( offset );
 }
 
-/* Retrieves the media size of the input handle
- * Returns 1 if successful or -1 on error
- */
-int mount_handle_get_media_size(
-     mount_handle_t *mount_handle,
-     size64_t *size,
-     libcerror_error_t **error )
-{
-	static char *function = "mount_handle_get_media_size";
-
-	if( mount_handle == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid mount handle.",
-		 function );
-
-		return( -1 );
-	}
-	if( libsmraw_handle_get_media_size(
-	     mount_handle->input_handle,
-	     size,
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve media size from input handle.",
-		 function );
-
-		return( -1 );
-	}
-	return( 1 );
-}
-
 /* Retrieves the number of input handles
  * Returns 1 if successful or -1 on error
  */
@@ -536,6 +498,44 @@ int mount_handle_get_number_of_input_handles(
 	}
 	*number_of_input_handles = 1;
 
+	return( 1 );
+}
+
+/* Retrieves the size of the input volume
+ * Returns 1 if successful or -1 on error
+ */
+int mount_handle_get_size(
+     mount_handle_t *mount_handle,
+     size64_t *size,
+     libcerror_error_t **error )
+{
+	static char *function = "mount_handle_get_size";
+
+	if( mount_handle == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid mount handle.",
+		 function );
+
+		return( -1 );
+	}
+	if( libsmraw_handle_get_media_size(
+	     mount_handle->input_handle,
+	     size,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve size from input handle.",
+		 function );
+
+		return( -1 );
+	}
 	return( 1 );
 }
 

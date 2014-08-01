@@ -71,6 +71,10 @@ int libsmraw_io_handle_free(
      libsmraw_io_handle_t **io_handle,
      libcerror_error_t **error );
 
+int libsmraw_io_handle_clear(
+     libsmraw_io_handle_t *io_handle,
+     libcerror_error_t **error );
+
 int libsmraw_io_handle_create_segment(
      libsmraw_io_handle_t *io_handle,
      libbfio_pool_t *file_io_pool,

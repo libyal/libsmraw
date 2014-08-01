@@ -143,6 +143,50 @@ int libsmraw_io_handle_free(
 	return( 1 );
 }
 
+/* Clears the IO handle
+ * Returns 1 if successful or -1 on error
+ */
+int libsmraw_io_handle_clear(
+     libsmraw_io_handle_t *io_handle,
+     libcerror_error_t **error )
+{
+	static char *function = "libsmraw_io_handle_clear";
+
+	if( io_handle == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid IO handle.",
+		 function );
+
+		return( -1 );
+	}
+	if( io_handle->basename != NULL )
+	{
+		memory_free(
+		 io_handle->basename );
+	}
+	if( memory_set(
+	     io_handle,
+	     0,
+	     sizeof( libsmraw_io_handle_t ) ) == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_MEMORY,
+		 LIBCERROR_MEMORY_ERROR_SET_FAILED,
+		 "%s: unable to clear IO handle.",
+		 function );
+
+		return( -1 );
+	}
+	io_handle->maximum_segment_size = LIBSMRAW_DEFAULT_MAXIMUM_SEGMENT_SIZE;
+
+	return( 1 );
+}
+
 /* Creates a new segment file
  * Callback function for the segments stream
  * Returns the number of bytes read or -1 on error

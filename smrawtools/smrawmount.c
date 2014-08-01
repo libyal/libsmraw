@@ -478,7 +478,7 @@ int smrawmount_fuse_filldir(
      char *name,
      size_t name_size,
      struct stat *stat_info,
-     libsmraw_handle_t *handle,
+     mount_handle_t *mount_handle,
      uint8_t use_mount_time,
      libcerror_error_t **error )
 {
@@ -497,14 +497,14 @@ int smrawmount_fuse_filldir(
 
 		return( -1 );
 	}
-	if( handle == NULL )
+	if( mount_handle == NULL )
 	{
 		number_of_sub_items = 1;
 	}
 	else
 	{
-		if( libsmraw_handle_get_media_size(
-		     handle,
+		if( mount_handle_get_size(
+		     mount_handle,
 		     &media_size,
 		     error ) != 1 )
 		{
@@ -565,7 +565,6 @@ int smrawmount_fuse_filldir(
 	}
 	return( 1 );
 }
-
 
 /* Reads a directory
  * Returns 0 if successful or a negative errno value otherwise
@@ -763,7 +762,7 @@ int smrawmount_fuse_readdir(
 		     &( smrawmount_fuse_path[ 1 ] ),
 		     string_index - 1,
 		     stat_info,
-		     smrawmount_mount_handle->input_handle,
+		     smrawmount_mount_handle,
 		     1,
 		     &error ) != 1 )
 		{
@@ -781,8 +780,6 @@ int smrawmount_fuse_readdir(
 	}
 	memory_free(
 	 stat_info );
-
-	stat_info = NULL;
 
 	return( 0 );
 
@@ -911,8 +908,8 @@ int smrawmount_fuse_getattr(
 				goto on_error;
 			}
 /* TODO add support for multiple input handles ? */
-			if( libsmraw_handle_get_media_size(
-			     smrawmount_mount_handle->input_handle,
+			if( mount_handle_get_size(
+			     smrawmount_mount_handle,
 			     &media_size,
 			     &error ) != 1 )
 			{
@@ -1469,7 +1466,7 @@ int smrawmount_dokan_filldir(
      wchar_t *name,
      size_t name_size,
      WIN32_FIND_DATAW *find_data,
-     libsmraw_handle_t *handle,
+     mount_handle_t *mount_handle,
      uint8_t use_mount_time,
      libcerror_error_t **error )
 {
@@ -1510,14 +1507,14 @@ int smrawmount_dokan_filldir(
 
 		return( -1 );
 	}
-	if( handle == NULL )
+	if( mount_handle == NULL )
 	{
 		number_of_sub_items = 1;
 	}
 	else
 	{
-		if( libsmraw_handle_get_media_size(
-		     handle,
+		if( mount_handle_get_size(
+		     mount_handle,
 		     &media_size,
 		     error ) != 1 )
 		{
@@ -1785,7 +1782,7 @@ int __stdcall smrawmount_dokan_FindFiles(
 		     &( smrawmount_dokan_path[ 1 ] ),
 		     string_index - 1,
 		     &find_data,
-		     smrawmount_mount_handle->input_volume,
+		     smrawmount_mount_handle->input_handle,
 		     1,
 		     &error ) != 1 )
 		{
@@ -1973,8 +1970,8 @@ int __stdcall smrawmount_dokan_GetFileInformation(
 			goto on_error;
 		}
 /* TODO add support for multiple input handles ? */
-		if( libsmraw_handle_get_media_size(
-		     smrawmount_mount_handle->input_handle,
+		if( mount_handle_get_size(
+		     smrawmount_mount_handle,
 		     &media_size,
 		     &error ) != 1 )
 		{
@@ -1991,7 +1988,7 @@ int __stdcall smrawmount_dokan_GetFileInformation(
 		}
 		use_mount_time = 1;
 	}
-	if( bdemount_dokan_set_file_information(
+	if( smrawmount_dokan_set_file_information(
 	     file_information,
 	     media_size,
 	     number_of_sub_items,
@@ -2240,7 +2237,6 @@ int main( int argc, char * const argv[] )
 		fprintf(
 		 stderr,
 		 "Missing SMRAW image file(s).\n" );
-
 
 		usage_fprint(
 		 stdout );
