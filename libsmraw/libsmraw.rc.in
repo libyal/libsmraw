@@ -28,7 +28,7 @@ BEGIN
       VALUE "OriginalFilename",		"libsmraw.dll\0"
       VALUE "ProductName",		"libsmraw\0"
       VALUE "ProductVersion",		"@VERSION@" "\0"
-      VALUE "Comments",			"For more information visit http://code.google.com/p/libsmraw/\0"
+      VALUE "Comments",			"For more information visit https://github.com/libyal/libsmraw/\0"
     END
   END
   BLOCK "VarFileInfo"

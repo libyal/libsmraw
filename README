@@ -1,10 +1,14 @@
-Dependencies
-smrawmount requires:
-* libfuse
-  (optional but recommended)
+libsmraw is a library to access the (split) RAW image format.
 
+Work in progress:
+* Dokan library support
 
-See:
-* http://code.google.com/p/libsmraw/wiki/Building
-* README.macosx
+Planned:
+* Info file support
+* Multi-threading support
+* Python 3 support
+
+For more information see:
+* Project documentation: https://github.com/libyal/libsmraw/wiki/Home
+* How to build from source: https://github.com/libyal/libsmraw/wiki/Building
 
