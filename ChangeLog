@@ -28,6 +28,12 @@ Test
 * make sure certain values cannot be changed if writing/reading from raw files
 * add glob test to msvscpp project
 
+20140930
+* removed README.macosx
+
+20140817
+* updated msvscpp files - fixes for smraw.net
+
 20140801
 * Worked on smrawmount
 
