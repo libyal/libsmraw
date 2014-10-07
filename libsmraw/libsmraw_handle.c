@@ -1455,7 +1455,7 @@ int libsmraw_handle_open_file_io_pool(
 	     (ssize_t (*)(intptr_t *, intptr_t *, int, int, uint8_t *, size_t, uint32_t, uint8_t, libcerror_error_t **)) &libsmraw_io_handle_read_segment_data,
 	     (ssize_t (*)(intptr_t *, intptr_t *, int, int, const uint8_t *, size_t, uint32_t, uint8_t, libcerror_error_t **)) &libsmraw_io_handle_write_segment_data,
 	     (off64_t (*)(intptr_t *, intptr_t *, int, int, off64_t, libcerror_error_t **)) &libsmraw_io_handle_seek_segment_offset,
-	     LIBFDATA_FLAG_DATA_HANDLE_NON_MANAGED,
+	     LIBFDATA_DATA_HANDLE_FLAG_NON_MANAGED,
 	     error ) != 1 )
 	{
 		libcerror_error_set(

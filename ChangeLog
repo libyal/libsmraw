@@ -28,6 +28,10 @@ Test
 * make sure certain values cannot be changed if writing/reading from raw files
 * add glob test to msvscpp project
 
+20141007
+* updated dependencies and corresponding changes
+* worked on autogen.sh and synclibs.sh scripts
+
 20140930
 * removed README.macosx
 * changes for project site move
