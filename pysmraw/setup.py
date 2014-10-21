@@ -26,10 +26,10 @@ class custom_sdist(sdist):
 
 
 LIBRARY_NAME = "libsmraw"
-LIBRARY_VERSION = "20141007"
+LIBRARY_VERSION = "20141021"
 MODULE_NAME = "py%s" % (LIBRARY_NAME[3:])
 # bdist_msi does not support the library version, neither a date as a version.
-MODULE_VERSION = "20141007.1"
+MODULE_VERSION = "20141021.1"
 PROJECT_URL = "https://github.com/libyal/%s/" % (LIBRARY_NAME)
 
 DIRECTORY_NAMES = [
