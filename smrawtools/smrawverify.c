@@ -325,7 +325,7 @@ int main( int argc, char * const argv[] )
 	if( libcsystem_glob_get_results(
 	     glob,
 	     &number_of_filenames,
-	     &argv_filenames,
+	     (libcstring_system_character_t **) &argv_filenames,
 	     &error ) != 1 )
 	{
 		fprintf(
