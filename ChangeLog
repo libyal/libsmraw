@@ -28,6 +28,9 @@ Test
 * make sure certain values cannot be changed if writing/reading from raw files
 * add glob test to msvscpp project
 
+20141022
+* changes for deployment
+
 20141021
 * changes for deployment
 

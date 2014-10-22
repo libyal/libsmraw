@@ -2144,7 +2144,7 @@ int main( int argc, char * const argv[] )
 	int result                                             = 0;
 	int verbose                                            = 0;
 
-#if !defined( LIBCSYSTEM_HAVE_GLOB )
+#if !defined( HAVE_GLOB_H )
 	libcsystem_glob_t *glob                                = NULL;
 #endif
 
@@ -2264,7 +2264,7 @@ int main( int argc, char * const argv[] )
 	libsmraw_notify_set_verbose(
 	 verbose );
 
-#if !defined( LIBCSYSTEM_HAVE_GLOB )
+#if !defined( HAVE_GLOB_H )
 	if( libcsystem_glob_initialize(
 	     &glob,
 	     &error ) != 1 )
@@ -2287,8 +2287,18 @@ int main( int argc, char * const argv[] )
 
 		goto on_error;
 	}
-	argv_filenames      = glob->result;
-	number_of_filenames = glob->number_of_results;
+	if( libcsystem_glob_get_results(
+	     glob,
+	     &number_of_filenames,
+	     &argv_filenames,
+	     &error ) != 1 )
+	{
+		fprintf(
+		 stderr,
+		 "Unable to retrieve glob results.\n" );
+
+		goto on_error;
+	}
 #else
 	argv_filenames      = &( argv[ optind ] );
 	number_of_filenames = argc - optind - 1;
