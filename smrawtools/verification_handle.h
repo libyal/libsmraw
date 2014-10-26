@@ -26,11 +26,11 @@
 #include <types.h>
 
 #include "digest_hash.h"
+#include "log_handle.h"
 #include "smrawtools_libcerror.h"
 #include "smrawtools_libcstring.h"
 #include "smrawtools_libsmraw.h"
 #include "smrawtools_libhmac.h"
-#include "log_handle.h"
 #include "storage_media_buffer.h"
 
 #if defined( __cplusplus )

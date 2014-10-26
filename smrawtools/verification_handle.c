@@ -25,13 +25,13 @@
 
 #include "byte_size_string.h"
 #include "digest_hash.h"
+#include "log_handle.h"
+#include "process_status.h"
 #include "smrawtools_libcerror.h"
 #include "smrawtools_libcsplit.h"
 #include "smrawtools_libcstring.h"
 #include "smrawtools_libhmac.h"
 #include "smrawtools_libsmraw.h"
-#include "log_handle.h"
-#include "process_status.h"
 #include "storage_media_buffer.h"
 #include "verification_handle.h"
 
