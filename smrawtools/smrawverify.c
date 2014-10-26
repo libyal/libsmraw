@@ -20,15 +20,25 @@
  */
 
 #include <common.h>
+#include <file_stream.h>
 #include <memory.h>
 #include <types.h>
+
+#if defined( HAVE_UNISTD_H )
+#include <unistd.h>
+#endif
 
 #if defined( HAVE_STDLIB_H ) || defined( WINAPI )
 #include <stdlib.h>
 #endif
 
+#if defined( HAVE_GLOB_H )
+#include <glob.h>
+#endif
+
 #include "byte_size_string.h"
 #include "digest_hash.h"
+#include "log_handle.h"
 #include "smrawoutput.h"
 #include "smrawtools_libcerror.h"
 #include "smrawtools_libclocale.h"
@@ -36,7 +46,6 @@
 #include "smrawtools_libcstring.h"
 #include "smrawtools_libcsystem.h"
 #include "smrawtools_libsmraw.h"
-#include "log_handle.h"
 #include "verification_handle.h"
 
 verification_handle_t *smrawverify_verification_handle = NULL;

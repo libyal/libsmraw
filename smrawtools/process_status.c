@@ -20,6 +20,7 @@
  */
 
 #include <common.h>
+#include <file_stream.h>
 #include <memory.h>
 #include <types.h>
 
@@ -31,6 +32,8 @@
 #else
 #include <time.h>
 #endif
+
+#include <stdio.h>
 
 #include "byte_size_string.h"
 #include "process_status.h"

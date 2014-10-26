@@ -47,6 +47,10 @@
 #endif
 #endif
 
+#if defined( HAVE_GLOB_H )
+#include <glob.h>
+#endif
+
 #if defined( HAVE_LIBFUSE ) || defined( HAVE_LIBOSXFUSE )
 #define FUSE_USE_VERSION	26
 
