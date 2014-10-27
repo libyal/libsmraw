@@ -1,5 +1,9 @@
 libsmraw is a library to access the (split) RAW image format.
 
+Project information:
+* Status: alpha
+* Licence: LGPLv3+
+
 Work in progress:
 * Dokan library support
 
