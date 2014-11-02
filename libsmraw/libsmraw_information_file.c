@@ -595,7 +595,7 @@ int libsmraw_information_file_read_section(
 				     value,
 				     (uint8_t *) value_identifier,
 				     value_identifier_length,
-				     LIBFVALUE_VALUE_FLAG_IDENTIFIER_MANAGED,
+				     LIBFVALUE_VALUE_IDENTIFIER_FLAG_MANAGED,
 				     error ) != 1 )
 				{
 					libcerror_error_set(

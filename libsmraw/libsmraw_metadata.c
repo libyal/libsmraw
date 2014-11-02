@@ -321,7 +321,7 @@ int libsmraw_handle_set_bytes_per_sector(
 		     value,
 		     (uint8_t *) identifier,
 		     identifier_size,
-		     LIBFVALUE_VALUE_FLAG_IDENTIFIER_MANAGED,
+		     LIBFVALUE_VALUE_IDENTIFIER_FLAG_MANAGED,
 		     error ) != 1 )
 		{
 			libcerror_error_set(
@@ -642,7 +642,7 @@ int libsmraw_handle_set_media_type(
 		     value,
 		     (uint8_t *) identifier,
 		     identifier_size,
-		     LIBFVALUE_VALUE_FLAG_IDENTIFIER_MANAGED,
+		     LIBFVALUE_VALUE_IDENTIFIER_FLAG_MANAGED,
 		     error ) != 1 )
 		{
 			libcerror_error_set(
@@ -927,7 +927,7 @@ int libsmraw_handle_set_media_flags(
 		     value,
 		     (uint8_t *) identifier,
 		     identifier_size,
-		     LIBFVALUE_VALUE_FLAG_IDENTIFIER_MANAGED,
+		     LIBFVALUE_VALUE_IDENTIFIER_FLAG_MANAGED,
 		     error ) != 1 )
 		{
 			libcerror_error_set(
@@ -1512,7 +1512,7 @@ int libsmraw_handle_set_utf8_information_value(
 		     value,
 		     identifier,
 		     identifier_length + 1,
-		     LIBFVALUE_VALUE_FLAG_IDENTIFIER_MANAGED,
+		     LIBFVALUE_VALUE_IDENTIFIER_FLAG_MANAGED,
 		     error ) != 1 )
 		{
 			libcerror_error_set(
@@ -1847,7 +1847,7 @@ int libsmraw_handle_set_utf16_information_value(
 		     value,
 		     identifier,
 		     identifier_length + 1,
-		     LIBFVALUE_VALUE_FLAG_IDENTIFIER_MANAGED,
+		     LIBFVALUE_VALUE_IDENTIFIER_FLAG_MANAGED,
 		     error ) != 1 )
 		{
 			libcerror_error_set(
@@ -2433,7 +2433,7 @@ int libsmraw_handle_set_utf8_integrity_hash_value(
 		     value,
 		     identifier,
 		     identifier_length + 1,
-		     LIBFVALUE_VALUE_FLAG_IDENTIFIER_MANAGED,
+		     LIBFVALUE_VALUE_IDENTIFIER_FLAG_MANAGED,
 		     error ) != 1 )
 		{
 			libcerror_error_set(
@@ -2768,7 +2768,7 @@ int libsmraw_handle_set_utf16_integrity_hash_value(
 		     value,
 		     identifier,
 		     identifier_length + 1,
-		     LIBFVALUE_VALUE_FLAG_IDENTIFIER_MANAGED,
+		     LIBFVALUE_VALUE_IDENTIFIER_FLAG_MANAGED,
 		     error ) != 1 )
 		{
 			libcerror_error_set(

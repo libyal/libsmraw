@@ -23,9 +23,14 @@ Tooling
 * smrawverify
   - get hashes from info file
 
-Test
+Tests:
 * retrieve data from the information file on open
 * make sure certain values cannot be changed if writing/reading from raw files
+* add tests for Python-bindings
+* information file
+
+20141102
+* bug fixes for information file
 
 20141030
 * bug fix in Python-bindings
