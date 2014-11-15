@@ -32,6 +32,7 @@
 #include "libsmraw_libcerror.h"
 #include "libsmraw_libcnotify.h"
 #include "libsmraw_libcstring.h"
+#include "libsmraw_libcthreads.h"
 #include "libsmraw_libfdata.h"
 #include "libsmraw_libfvalue.h"
 #include "libsmraw_libuna.h"
@@ -156,6 +157,21 @@ int libsmraw_handle_initialize(
 
 		goto on_error;
 	}
+#if defined( HAVE_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_initialize(
+	     &( internal_handle->read_write_lock ),
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 "%s: unable to intialize read/write lock.",
+		 function );
+
+		goto on_error;
+	}
+#endif
 	internal_handle->maximum_number_of_open_handles = LIBBFIO_POOL_UNLIMITED_NUMBER_OF_OPEN_HANDLES;
 
 	*handle = (libsmraw_handle_t *) internal_handle;
@@ -165,6 +181,12 @@ int libsmraw_handle_initialize(
 on_error:
 	if( internal_handle != NULL )
 	{
+		if( internal_handle->integrity_hash_values != NULL )
+		{
+			libfvalue_table_free(
+			 &( internal_handle->integrity_hash_values ),
+			 NULL );
+		}
 		if( internal_handle->information_values != NULL )
 		{
 			libfvalue_table_free(
@@ -234,6 +256,21 @@ int libsmraw_handle_free(
 		}
 		*handle = NULL;
 
+#if defined( HAVE_MULTI_THREAD_SUPPORT )
+		if( libcthreads_read_write_lock_free(
+		     &( internal_handle->read_write_lock ),
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+			 "%s: unable to free read/write lock.",
+			 function );
+
+			result = -1;
+		}
+#endif
 		if( libsmraw_io_handle_free(
 		     &( internal_handle->io_handle ),
 		     error ) != 1 )
@@ -247,53 +284,44 @@ int libsmraw_handle_free(
 
 			result = -1;
 		}
-		if( internal_handle->media_values != NULL )
+		if( libfvalue_table_free(
+		     &( internal_handle->media_values ),
+		     error ) != 1 )
 		{
-			if( libfvalue_table_free(
-			     &( internal_handle->media_values ),
-			     error ) != 1 )
-			{
-				libcerror_error_set(
-				 error,
-				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-				 "%s: unable to free media values table.",
-				 function );
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+			 "%s: unable to free media values table.",
+			 function );
 
-				result = -1;
-			}
+			result = -1;
 		}
-		if( internal_handle->information_values != NULL )
+		if( libfvalue_table_free(
+		     &( internal_handle->information_values ),
+		     error ) != 1 )
 		{
-			if( libfvalue_table_free(
-			     &( internal_handle->information_values ),
-			     error ) != 1 )
-			{
-				libcerror_error_set(
-				 error,
-				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-				 "%s: unable to free information values table.",
-				 function );
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+			 "%s: unable to free information values table.",
+			 function );
 
-				result = -1;
-			}
+			result = -1;
 		}
-		if( internal_handle->integrity_hash_values != NULL )
+		if( libfvalue_table_free(
+		     &( internal_handle->integrity_hash_values ),
+		     error ) != 1 )
 		{
-			if( libfvalue_table_free(
-			     &( internal_handle->integrity_hash_values ),
-			     error ) != 1 )
-			{
-				libcerror_error_set(
-				 error,
-				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-				 "%s: unable to free integrity hash values table.",
-				 function );
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+			 "%s: unable to free integrity hash values table.",
+			 function );
 
-				result = -1;
-			}
+			result = -1;
 		}
 		memory_free(
 		 internal_handle );

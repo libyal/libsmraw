@@ -31,6 +31,7 @@
 #include "libsmraw_libbfio.h"
 #include "libsmraw_libcerror.h"
 #include "libsmraw_libcstring.h"
+#include "libsmraw_libcthreads.h"
 #include "libsmraw_libfdata.h"
 #include "libsmraw_libfvalue.h"
 #include "libsmraw_types.h"
@@ -99,6 +100,12 @@ struct libsmraw_internal_handle
 	/* The integrity hash values table
 	 */
 	libfvalue_table_t *integrity_hash_values;
+
+#if defined( HAVE_MULTI_THREAD_SUPPORT )
+	/* The read/write lock
+	 */
+	libcthreads_read_write_lock_t *read_write_lock;
+#endif
 };
 
 LIBSMRAW_EXTERN \

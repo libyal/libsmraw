@@ -1,4 +1,12 @@
 TODO
+* refactor:
+  - libsmraw_handle_get_bytes_per_sector
+  - equiv?
+* add thread-safety in
+  - handle get/read functions
+  - handle set/write functions
+* libsmraw_handle_get_bytes_per_sector change to return 0 if value
+  is not available?
 * remove io_handle from fdata stream callback functions?
 * TODO: libfvalue_value_write_to_file_stream
 * update smraw.net bindings
@@ -28,6 +36,9 @@ Tests:
 * make sure certain values cannot be changed if writing/reading from raw files
 * add tests for Python-bindings
 * information file
+
+20141107
+* worked on multi-threading support
 
 20141102
 * bug fixes for information file

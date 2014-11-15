@@ -14,6 +14,7 @@ AM_CPPFLAGS = \
 	@LIBBFIO_CPPFLAGS@ \
 	@LIBHMAC_CPPFLAGS@ \
 	@LIBCRYPTO_CPPFLAGS@ \
+	@PTHREAD_CPPFLAGS@ \
 	@LIBSMRAW_DLL_IMPORT@
 
 TESTS = \
@@ -52,7 +53,10 @@ smraw_test_glob_SOURCES = \
 
 smraw_test_glob_LDADD = \
 	../libsmraw/libsmraw.la \
-	@LIBCSTRING_LIBADD@
+	@LIBCTHREADS_LIBADD@ \
+	@LIBCERROR_LIBADD@ \
+	@LIBCSTRING_LIBADD@ \
+	@PTHREAD_LIBADD@
 
 smraw_test_open_close_SOURCES = \
 	smraw_test_libcerror.h \
@@ -63,8 +67,10 @@ smraw_test_open_close_SOURCES = \
 
 smraw_test_open_close_LDADD = \
 	../libsmraw/libsmraw.la \
+	@LIBCTHREADS_LIBADD@ \
 	@LIBCERROR_LIBADD@ \
-	@LIBCSTRING_LIBADD@
+	@LIBCSTRING_LIBADD@ \
+	@PTHREAD_LIBADD@
 
 smraw_test_read_SOURCES = \
 	smraw_test_libcerror.h \
@@ -75,8 +81,10 @@ smraw_test_read_SOURCES = \
 
 smraw_test_read_LDADD = \
 	../libsmraw/libsmraw.la \
+	@LIBCTHREADS_LIBADD@ \
 	@LIBCERROR_LIBADD@ \
-	@LIBCSTRING_LIBADD@
+	@LIBCSTRING_LIBADD@ \
+	@PTHREAD_LIBADD@
 
 smraw_test_read_loop_SOURCES = \
 	smraw_test_libcerror.h \
@@ -87,8 +95,10 @@ smraw_test_read_loop_SOURCES = \
 
 smraw_test_read_loop_LDADD = \
 	../libsmraw/libsmraw.la \
+	@LIBCTHREADS_LIBADD@ \
 	@LIBCERROR_LIBADD@ \
-	@LIBCSTRING_LIBADD@
+	@LIBCSTRING_LIBADD@ \
+	@PTHREAD_LIBADD@
 
 smraw_test_seek_SOURCES = \
 	smraw_test_libcstring.h \
@@ -98,7 +108,10 @@ smraw_test_seek_SOURCES = \
 
 smraw_test_seek_LDADD = \
 	../libsmraw/libsmraw.la \
-	@LIBCSTRING_LIBADD@
+	@LIBCTHREADS_LIBADD@ \
+	@LIBCERROR_LIBADD@ \
+	@LIBCSTRING_LIBADD@ \
+	@PTHREAD_LIBADD@
 
 smraw_test_write_SOURCES = \
 	smraw_test_libcpath.h \
@@ -113,7 +126,10 @@ smraw_test_write_LDADD = \
 	@LIBCRYPTO_LIBADD@ \
 	@LIBCPATH_LIBADD@ \
 	../libsmraw/libsmraw.la \
+	@LIBCTHREADS_LIBADD@ \
+	@LIBCERROR_LIBADD@ \
 	@LIBCSTRING_LIBADD@ \
+	@PTHREAD_LIBADD@
 	@LIBDL_LIBADD@
 
 MAINTAINERCLEANFILES = \
