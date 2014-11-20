@@ -32,24 +32,14 @@
 #include <string.h>
 #endif
 
-#if defined( HAVE_LOCAL_LIBBFIO )
-#include <libbfio_definitions.h>
-#elif defined( HAVE_LIBBFIO )
-#include <libbfio.h>
-#endif
-
-#if defined( HAVE_LOCAL_LIBFVALUE )
-#include <libfvalue_definitions.h>
-#elif defined( HAVE_LIBFVALUE )
-#include <libfvalue.h>
-#endif
-
 #include "smrawoutput.h"
+#include "smrawtools_libbfio.h"
 #include "smrawtools_libcerror.h"
 #include "smrawtools_libclocale.h"
 #include "smrawtools_libcnotify.h"
 #include "smrawtools_libcstring.h"
 #include "smrawtools_libcsystem.h"
+#include "smrawtools_libfvalue.h"
 #include "smrawtools_libsmraw.h"
 #include "smrawtools_libuna.h"
 

@@ -29,11 +29,13 @@ bin_PROGRAMS = \
 smrawmount_SOURCES = \
 	smrawmount.c \
 	smrawoutput.c smrawoutput.h \
+	smrawtools_libbio.h \
 	smrawtools_libcerror.h \
 	smrawtools_libclocale.h \
 	smrawtools_libcnotify.h \
 	smrawtools_libcstring.h \
 	smrawtools_libcsystem.h \
+	smrawtools_libfvalue.h \
 	smrawtools_libsmraw.h \
 	smrawtools_libuna.h \
 	mount_handle.c mount_handle.h
@@ -55,12 +57,14 @@ smrawverify_SOURCES = \
 	process_status.c process_status.h \
 	smrawverify.c \
 	smrawoutput.c smrawoutput.h \
+	smrawtools_libbio.h \
 	smrawtools_libcerror.h \
 	smrawtools_libclocale.h \
 	smrawtools_libcnotify.h \
 	smrawtools_libcsplit.h \
 	smrawtools_libcstring.h \
 	smrawtools_libcsystem.h \
+	smrawtools_libfvalue.h \
 	smrawtools_libhmac.h \
 	smrawtools_libsmraw.h \
 	smrawtools_libuna.h \
