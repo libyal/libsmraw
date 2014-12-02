@@ -157,7 +157,7 @@ int libsmraw_handle_initialize(
 
 		goto on_error;
 	}
-#if defined( HAVE_MULTI_THREAD_SUPPORT )
+#if defined( HAVE_LIBSMRAW_MULTI_THREAD_SUPPORT )
 	if( libcthreads_read_write_lock_initialize(
 	     &( internal_handle->read_write_lock ),
 	     error ) != 1 )
@@ -256,7 +256,7 @@ int libsmraw_handle_free(
 		}
 		*handle = NULL;
 
-#if defined( HAVE_MULTI_THREAD_SUPPORT )
+#if defined( HAVE_LIBSMRAW_MULTI_THREAD_SUPPORT )
 		if( libcthreads_read_write_lock_free(
 		     &( internal_handle->read_write_lock ),
 		     error ) != 1 )

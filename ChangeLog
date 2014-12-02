@@ -37,6 +37,9 @@ Tests:
 * add tests for Python-bindings
 * information file
 
+20141201
+* worked on multi-threading support
+
 20141129
 * code clean up
 

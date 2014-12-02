@@ -90,7 +90,7 @@ int libsmraw_handle_get_media_size(
 
 		return( -1 );
 	}
-#if defined( HAVE_MULTI_THREAD_SUPPORT )
+#if defined( HAVE_LIBSMRAW_MULTI_THREAD_SUPPORT )
 	if( libcthreads_read_write_lock_grab_for_read(
 	     internal_handle->read_write_lock,
 	     error ) != 1 )
@@ -107,7 +107,7 @@ int libsmraw_handle_get_media_size(
 #endif
 	*media_size = internal_handle->io_handle->media_size;
 
-#if defined( HAVE_MULTI_THREAD_SUPPORT )
+#if defined( HAVE_LIBSMRAW_MULTI_THREAD_SUPPORT )
 	if( libcthreads_read_write_lock_release_for_read(
 	     internal_handle->read_write_lock,
 	     error ) != 1 )
@@ -218,7 +218,7 @@ int libsmraw_handle_get_bytes_per_sector(
 
 		return( -1 );
 	}
-#if defined( HAVE_MULTI_THREAD_SUPPORT )
+#if defined( HAVE_LIBSMRAW_MULTI_THREAD_SUPPORT )
 	if( libcthreads_read_write_lock_grab_for_read(
 	     internal_handle->read_write_lock,
 	     error ) != 1 )
@@ -286,7 +286,7 @@ int libsmraw_handle_get_bytes_per_sector(
 		}
 		*bytes_per_sector = (uint32_t) value_64bit;
 	}
-#if defined( HAVE_MULTI_THREAD_SUPPORT )
+#if defined( HAVE_LIBSMRAW_MULTI_THREAD_SUPPORT )
 	if( libcthreads_read_write_lock_release_for_read(
 	     internal_handle->read_write_lock,
 	     error ) != 1 )
@@ -304,7 +304,7 @@ int libsmraw_handle_get_bytes_per_sector(
 	return( 1 );
 
 on_error:
-#if defined( HAVE_MULTI_THREAD_SUPPORT )
+#if defined( HAVE_LIBSMRAW_MULTI_THREAD_SUPPORT )
 	libcthreads_read_write_lock_release_for_read(
 	 internal_handle->read_write_lock,
 	 NULL );

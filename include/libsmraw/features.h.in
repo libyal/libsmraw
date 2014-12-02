@@ -26,6 +26,10 @@
 #define LIBSMRAW_HAVE_WIDE_CHARACTER_TYPE	1
 #endif
 
+#if defined( WINAPI ) || @HAVE_MULTI_THREAD_SUPPORT@
+#define LIBSMRAW_HAVE_MULTI_THREAD_SUPPORT	1
+#endif
+
 #if defined( HAVE_LIBBFIO ) || ( !defined( WINAPI ) && @HAVE_LIBBFIO@ )
 #define LIBSMRAW_HAVE_BFIO			1
 #endif

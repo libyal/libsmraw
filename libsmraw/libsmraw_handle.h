@@ -101,7 +101,7 @@ struct libsmraw_internal_handle
 	 */
 	libfvalue_table_t *integrity_hash_values;
 
-#if defined( HAVE_MULTI_THREAD_SUPPORT )
+#if defined( HAVE_LIBSMRAW_MULTI_THREAD_SUPPORT )
 	/* The read/write lock
 	 */
 	libcthreads_read_write_lock_t *read_write_lock;
