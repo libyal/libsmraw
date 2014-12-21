@@ -37,6 +37,10 @@ Tests:
 * add tests for Python-bindings
 * information file
 
+20141221
+* worked on Python 3 support
+* worked on tests
+
 20141201
 * worked on multi-threading support
 

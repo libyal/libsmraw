@@ -193,10 +193,8 @@ PyGetSetDef pysmraw_handle_object_get_set_definitions[] = {
 };
 
 PyTypeObject pysmraw_handle_type_object = {
-	PyObject_HEAD_INIT( NULL )
+	PyVarObject_HEAD_INIT( NULL, 0 )
 
-	/* ob_size */
-	0,
 	/* tp_name */
 	"pysmraw.handle",
 	/* tp_basicsize */
@@ -420,9 +418,10 @@ int pysmraw_handle_init(
 void pysmraw_handle_free(
       pysmraw_handle_t *pysmraw_handle )
 {
-	libcerror_error_t *error = NULL;
-	static char *function    = "pysmraw_handle_free";
-	int result               = 0;
+	libcerror_error_t *error    = NULL;
+	struct _typeobject *ob_type = NULL;
+	static char *function       = "pysmraw_handle_free";
+	int result                  = 0;
 
 	if( pysmraw_handle == NULL )
 	{
@@ -433,29 +432,32 @@ void pysmraw_handle_free(
 
 		return;
 	}
-	if( pysmraw_handle->ob_type == NULL )
-	{
-		PyErr_Format(
-		 PyExc_TypeError,
-		 "%s: invalid handle - missing ob_type.",
-		 function );
-
-		return;
-	}
-	if( pysmraw_handle->ob_type->tp_free == NULL )
-	{
-		PyErr_Format(
-		 PyExc_TypeError,
-		 "%s: invalid handle - invalid ob_type - missing tp_free.",
-		 function );
-
-		return;
-	}
 	if( pysmraw_handle->handle == NULL )
 	{
 		PyErr_Format(
 		 PyExc_TypeError,
 		 "%s: invalid handle - missing libsmraw handle.",
+		 function );
+
+		return;
+	}
+	ob_type = Py_TYPE(
+	           pysmraw_handle );
+
+	if( ob_type == NULL )
+	{
+		PyErr_Format(
+		 PyExc_ValueError,
+		 "%s: missing ob_type.",
+		 function );
+
+		return;
+	}
+	if( ob_type->tp_free == NULL )
+	{
+		PyErr_Format(
+		 PyExc_ValueError,
+		 "%s: invalid ob_type - missing tp_free.",
 		 function );
 
 		return;
@@ -479,7 +481,7 @@ void pysmraw_handle_free(
 		libcerror_error_free(
 		 &error );
 	}
-	pysmraw_handle->ob_type->tp_free(
+	ob_type->tp_free(
 	 (PyObject*) pysmraw_handle );
 }
 
@@ -544,20 +546,17 @@ PyObject *pysmraw_handle_open(
 	wchar_t **filenames              = NULL;
 	wchar_t *filename                = NULL;
 	const char *errors               = NULL;
+	char *narrow_string              = NULL;
+	size_t narrow_string_size        = 0;
 	int is_unicode_string            = 0;
 #else
 	char **filenames                 = NULL;
 	char *filename                   = NULL;
 #endif
-	PyObject *exception_string       = NULL;
-	PyObject *exception_traceback    = NULL;
-	PyObject *exception_type         = NULL;
-	PyObject *exception_value        = NULL;
 	PyObject *filename_string_object = NULL;
 	PyObject *sequence_object        = NULL;
 	PyObject *string_object          = NULL;
 	libcerror_error_t *error         = NULL;
-	char *error_string               = NULL;
 	char *mode                       = NULL;
 	static char *keyword_list[]      = { "filenames", "mode", NULL };
 	static char *function            = "pysmraw_handle_open";
@@ -716,36 +715,11 @@ PyObject *pysmraw_handle_open(
 
 		if( result == -1 )
 		{
-			PyErr_Fetch(
-			 &exception_type,
-			 &exception_value,
-			 &exception_traceback );
-
-			exception_string = PyObject_Repr(
-					    exception_value );
-
-			error_string = PyString_AsString(
-					exception_string );
-
-			if( error_string != NULL )
-			{
-				PyErr_Format(
-				 PyExc_ValueError,
-				 "%s: unable to determine if the sequence object: %d is of type unicode with error: %s.",
-				 function,
-				 filename_index,
-				 error_string );
-			}
-			else
-			{
-				PyErr_Format(
-				 PyExc_ValueError,
-				 "%s: unable to determine if the sequence object: %d is of type unicode.",
-				 function,
-				 filename_index );
-			}
-			Py_DecRef(
-			 exception_string );
+			pysmraw_error_fetch_and_raise(
+			 PyExc_ValueError,
+			 "%s: unable to determine if the sequence object: %d is of type unicode.",
+			 function,
+			 filename_index );
 
 			goto on_error;
 		}
@@ -753,40 +727,21 @@ PyObject *pysmraw_handle_open(
 		{
 			PyErr_Clear();
 
+#if PY_MAJOR_VERSION >= 3
+			result = PyObject_IsInstance(
+				  string_object,
+				  (PyObject *) &PyBytes_Type );
+#else
 			result = PyObject_IsInstance(
 				  string_object,
 				  (PyObject *) &PyString_Type );
-
+#endif
 			if( result == -1 )
 			{
-				PyErr_Fetch(
-				 &exception_type,
-				 &exception_value,
-				 &exception_traceback );
-
-				exception_string = PyObject_Repr(
-						    exception_value );
-
-				error_string = PyString_AsString(
-						exception_string );
-
-				if( error_string != NULL )
-				{
-					PyErr_Format(
-					 PyExc_RuntimeError,
-					 "%s: unable to determine if string object is of type string with error: %s.",
-					 function,
-					 error_string );
-				}
-				else
-				{
-					PyErr_Format(
-					 PyExc_RuntimeError,
-					 "%s: unable to determine if string object is of type string.",
-					 function );
-				}
-				Py_DecRef(
-				 exception_string );
+				pysmraw_error_fetch_and_raise(
+				 PyExc_RuntimeError,
+				 "%s: unable to determine if string object is of type string.",
+				 function );
 
 				goto on_error;
 			}
@@ -820,11 +775,22 @@ PyObject *pysmraw_handle_open(
 		}
 		else
 		{
+#if PY_MAJOR_VERSION >= 3
+			narrow_string = PyBytes_AsString(
+			                 string_object );
+
+			narrow_string_size = PyBytes_Size(
+			                      string_object );
+#else
+			narrow_string = PyString_AsString(
+			                 string_object );
+
+			narrow_string_size = PyString_Size(
+			                      string_object );
+#endif
 			filename_string_object = PyUnicode_Decode(
-						  PyString_AsString(
-			                           string_object ),
-						  PyString_Size(
-			                           string_object ),
+						  narrow_string,
+						  narrow_string_size,
 						  PyUnicode_GetDefaultEncoding(),
 						  errors );
 
@@ -846,9 +812,13 @@ PyObject *pysmraw_handle_open(
 #else
 		/* A Unicode string object can be converted into UFT-8 formatted narrow string
 		 */
+#if PY_MAJOR_VERSION >= 3
+		filename = PyBytes_AsString(
+		            string_object );
+#else
 		filename = PyString_AsString(
 		            string_object );
-
+#endif
 		filename_length = libcstring_narrow_string_length(
 		                   filename );
 #endif
@@ -1162,6 +1132,7 @@ PyObject *pysmraw_handle_read_buffer(
 	PyObject *string_object     = NULL;
 	static char *function       = "pysmraw_handle_read_buffer";
 	static char *keyword_list[] = { "size", NULL };
+	char *buffer                = NULL;
 	ssize_t read_count          = 0;
 	int read_size               = -1;
 
@@ -1203,16 +1174,26 @@ PyObject *pysmraw_handle_read_buffer(
 
 		return( NULL );
 	}
+#if PY_MAJOR_VERSION >= 3
+	string_object = PyBytes_FromStringAndSize(
+	                 NULL,
+	                 read_size );
+
+	buffer = PyBytes_AsString(
+	          string_object );
+#else
 	string_object = PyString_FromStringAndSize(
 	                 NULL,
 	                 read_size );
 
+	buffer = PyString_AsString(
+	          string_object );
+#endif
 	Py_BEGIN_ALLOW_THREADS
 
 	read_count = libsmraw_handle_read_buffer(
 	              pysmraw_handle->handle,
-	              PyString_AsString(
-	               string_object ),
+	              (uint8_t *) buffer,
 	              (size_t) read_size,
 	              &error );
 
@@ -1236,9 +1217,15 @@ PyObject *pysmraw_handle_read_buffer(
 	}
 	/* Need to resize the string here in case read_size was not fully read.
 	 */
+#if PY_MAJOR_VERSION >= 3
+	if( _PyBytes_Resize(
+	     &string_object,
+	     (Py_ssize_t) read_count ) != 0 )
+#else
 	if( _PyString_Resize(
 	     &string_object,
 	     (Py_ssize_t) read_count ) != 0 )
+#endif
 	{
 		Py_DecRef(
 		 (PyObject *) string_object );
@@ -1260,6 +1247,7 @@ PyObject *pysmraw_handle_read_buffer_at_offset(
 	PyObject *string_object     = NULL;
 	static char *function       = "pysmraw_handle_read_buffer_at_offset";
 	static char *keyword_list[] = { "size", "offset", NULL };
+	char *buffer                = NULL;
 	off64_t read_offset         = 0;
 	ssize_t read_count          = 0;
 	int read_size               = 0;
@@ -1312,16 +1300,26 @@ PyObject *pysmraw_handle_read_buffer_at_offset(
 
 		return( NULL );
 	}
+#if PY_MAJOR_VERSION >= 3
+	string_object = PyBytes_FromStringAndSize(
+	                 NULL,
+	                 read_size );
+
+	buffer = PyBytes_AsString(
+	          string_object );
+#else
 	string_object = PyString_FromStringAndSize(
 	                 NULL,
 	                 read_size );
 
+	buffer = PyString_AsString(
+	          string_object );
+#endif
 	Py_BEGIN_ALLOW_THREADS
 
 	read_count = libsmraw_handle_read_buffer_at_offset(
 	              pysmraw_handle->handle,
-	              PyString_AsString(
-	               string_object ),
+	              (uint8_t *) buffer,
 	              (size_t) read_size,
 	              (off64_t) read_offset,
 	              &error );
@@ -1346,9 +1344,15 @@ PyObject *pysmraw_handle_read_buffer_at_offset(
 	}
 	/* Need to resize the string here in case read_size was not fully read.
 	 */
+#if PY_MAJOR_VERSION >= 3
+	if( _PyBytes_Resize(
+	     &string_object,
+	     (Py_ssize_t) read_count ) != 0 )
+#else
 	if( _PyString_Resize(
 	     &string_object,
 	     (Py_ssize_t) read_count ) != 0 )
+#endif
 	{
 		Py_DecRef(
 		 (PyObject *) string_object );
@@ -1370,6 +1374,7 @@ PyObject *pysmraw_handle_write_buffer(
 	PyObject *string_object     = NULL;
 	static char *function       = "pysmraw_handle_write_buffer";
 	static char *keyword_list[] = { "buffer", NULL };
+	char *buffer                = NULL;
 	Py_ssize_t buffer_size      = 0;
 	ssize_t write_count         = 0;
 
@@ -1391,9 +1396,19 @@ PyObject *pysmraw_handle_write_buffer(
 	{
 		return( NULL );
 	}
+#if PY_MAJOR_VERSION >= 3
+	buffer = PyBytes_AsString(
+	          string_object );
+
+	buffer_size = PyBytes_Size(
+	               string_object );
+#else
+	buffer = PyString_AsString(
+	          string_object );
+
 	buffer_size = PyString_Size(
 	               string_object );
-
+#endif
 	if( ( buffer_size < 0 )
 	 || ( buffer_size > (Py_ssize_t) SSIZE_MAX ) )
 	{
@@ -1408,8 +1423,7 @@ PyObject *pysmraw_handle_write_buffer(
 
 	write_count = libsmraw_handle_write_buffer(
 	               pysmraw_handle->handle,
-	               PyString_AsString(
-	                string_object ),
+	               (uint8_t *) buffer,
 	               (size_t) buffer_size,
 	               &error );
 
@@ -1446,6 +1460,7 @@ PyObject *pysmraw_handle_write_buffer_at_offset(
 	PyObject *string_object     = NULL;
 	static char *function       = "pysmraw_handle_write_buffer_at_offset";
 	static char *keyword_list[] = { "size", "offset", NULL };
+	char *buffer                = NULL;
 	off64_t write_offset        = 0;
 	Py_ssize_t buffer_size      = 0;
 	ssize_t write_count         = 0;
@@ -1469,9 +1484,19 @@ PyObject *pysmraw_handle_write_buffer_at_offset(
 	{
 		return( NULL );
 	}
+#if PY_MAJOR_VERSION >= 3
+	buffer = PyBytes_AsString(
+	          string_object );
+
+	buffer_size = PyBytes_Size(
+	               string_object );
+#else
+	buffer = PyString_AsString(
+	          string_object );
+
 	buffer_size = PyString_Size(
 	               string_object );
-
+#endif
 	if( ( buffer_size < 0 )
 	 || ( buffer_size > (Py_ssize_t) SSIZE_MAX ) )
 	{
@@ -1495,8 +1520,7 @@ PyObject *pysmraw_handle_write_buffer_at_offset(
 
 	write_count = libsmraw_handle_write_buffer_at_offset(
 	               pysmraw_handle->handle,
-	               PyString_AsString(
-	                string_object ),
+	               (uint8_t *) buffer,
 	               (size_t) buffer_size,
 	               write_offset,
 	               &error );

@@ -17,6 +17,12 @@ AM_CPPFLAGS = \
 	@PTHREAD_CPPFLAGS@ \
 	@LIBSMRAW_DLL_IMPORT@
 
+if HAVE_PYTHON
+TESTS_PYSMRAW  = \
+	test_pysmraw_open_close.sh \
+	test_pysmraw_seek.sh
+endif
+
 TESTS = \
 	test_glob.sh \
 	test_open_close.sh \
@@ -26,8 +32,12 @@ TESTS = \
 	test_smrawverify.sh
 
 check_SCRIPTS = \
+	pysmraw_test_open_close.py \
+	pysmraw_test_seek.py \
 	test_glob.sh \
 	test_open_close.sh \
+	test_pysmraw_open_close.sh \
+	test_pysmraw_seek.sh \
 	test_read.sh \
 	test_runner.sh \
 	test_seek.sh \

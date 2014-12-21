@@ -112,10 +112,6 @@ PyObject *pysmraw_glob(
 {
 	char **filenames_narrow          = NULL;
 	libcerror_error_t *error         = NULL;
-	PyObject *exception_string       = NULL;
-	PyObject *exception_traceback    = NULL;
-	PyObject *exception_type         = NULL;
-	PyObject *exception_value        = NULL;
 	PyObject *filename_string_object = NULL;
 	PyObject *list_object            = NULL;
 	PyObject *string_object          = NULL;
@@ -123,7 +119,6 @@ PyObject *pysmraw_glob(
 	static char *keyword_list[]      = { "filename", NULL };
 	const char *errors               = NULL;
 	const char *filename_narrow      = NULL;
-	char *error_string               = NULL;
 	size_t filename_length           = 0;
 	int filename_index               = 0;
 	int number_of_filenames          = 0;
@@ -160,34 +155,10 @@ PyObject *pysmraw_glob(
 
 	if( result == -1 )
 	{
-		PyErr_Fetch(
-		 &exception_type,
-		 &exception_value,
-		 &exception_traceback );
-
-		exception_string = PyObject_Repr(
-		                    exception_value );
-
-		error_string = PyString_AsString(
-		                exception_string );
-
-		if( error_string != NULL )
-		{
-			PyErr_Format(
-		         PyExc_RuntimeError,
-			 "%s: unable to determine if string object is of type unicode with error: %s.",
-			 function,
-			 error_string );
-		}
-		else
-		{
-			PyErr_Format(
-		         PyExc_RuntimeError,
-			 "%s: unable to determine if string object is of type unicode.",
-			 function );
-		}
-		Py_DecRef(
-		 exception_string );
+		pysmraw_error_fetch_and_raise(
+	         PyExc_RuntimeError,
+		 "%s: unable to determine if string object is of type unicode.",
+		 function );
 
 		goto on_error;
 	}
@@ -218,40 +189,20 @@ PyObject *pysmraw_glob(
 
 		if( utf8_string_object == NULL )
 		{
-			PyErr_Fetch(
-			 &exception_type,
-			 &exception_value,
-			 &exception_traceback );
-
-			exception_string = PyObject_Repr(
-					    exception_value );
-
-			error_string = PyString_AsString(
-					exception_string );
-
-			if( error_string != NULL )
-			{
-				PyErr_Format(
-				 PyExc_RuntimeError,
-				 "%s: unable to convert unicode string to UTF-8 with error: %s.",
-				 function,
-				 error_string );
-			}
-			else
-			{
-				PyErr_Format(
-				 PyExc_RuntimeError,
-				 "%s: unable to convert unicode string to UTF-8.",
-				 function );
-			}
-			Py_DecRef(
-			 exception_string );
+			pysmraw_error_fetch_and_raise(
+			 PyExc_RuntimeError,
+			 "%s: unable to convert unicode string to UTF-8.",
+			 function );
 
 			return( NULL );
 		}
+#if PY_MAJOR_VERSION >= 3
+		filename_narrow = PyBytes_AsString(
+				   utf8_string_object );
+#else
 		filename_narrow = PyString_AsString(
 				   utf8_string_object );
-
+#endif
 		Py_BEGIN_ALLOW_THREADS
 
 		result = libsmraw_glob(
@@ -364,40 +315,21 @@ PyObject *pysmraw_glob(
 	}
 	PyErr_Clear();
 
+#if PY_MAJOR_VERSION >= 3
+	result = PyObject_IsInstance(
+		  string_object,
+		  (PyObject *) &PyBytes_Type );
+#else
 	result = PyObject_IsInstance(
 		  string_object,
 		  (PyObject *) &PyString_Type );
-
+#endif
 	if( result == -1 )
 	{
-		PyErr_Fetch(
-		 &exception_type,
-		 &exception_value,
-		 &exception_traceback );
-
-		exception_string = PyObject_Repr(
-				    exception_value );
-
-		error_string = PyString_AsString(
-				exception_string );
-
-		if( error_string != NULL )
-		{
-			PyErr_Format(
-		         PyExc_RuntimeError,
-			 "%s: unable to determine if string object is of type string with error: %s.",
-			 function,
-			 error_string );
-		}
-		else
-		{
-			PyErr_Format(
-		         PyExc_RuntimeError,
-			 "%s: unable to determine if string object is of type string.",
-			 function );
-		}
-		Py_DecRef(
-		 exception_string );
+		pysmraw_error_fetch_and_raise(
+	         PyExc_RuntimeError,
+		 "%s: unable to determine if string object is of type string.",
+		 function );
 
 		goto on_error;
 	}
@@ -405,9 +337,13 @@ PyObject *pysmraw_glob(
 	{
 		PyErr_Clear();
 
+#if PY_MAJOR_VERSION >= 3
+		filename_narrow = PyBytes_AsString(
+				   string_object );
+#else
 		filename_narrow = PyString_AsString(
 				   string_object );
-
+#endif
 		filename_length = libcstring_narrow_string_length(
 		                   filename_narrow );
 
@@ -543,16 +479,42 @@ on_error:
 	return( NULL );
 }
 
-/* Declarations for DLL import/export
+#if PY_MAJOR_VERSION >= 3
+
+/* The pysmraw module definition
  */
-#ifndef PyMODINIT_FUNC
-#define PyMODINIT_FUNC void
-#endif
+PyModuleDef pysmraw_module_definition = {
+	PyModuleDef_HEAD_INIT,
+
+	/* m_name */
+	"pysmraw",
+	/* m_doc */
+	"Python libsmraw module (pysmraw).",
+	/* m_size */
+	-1,
+	/* m_methods */
+	pysmraw_module_methods,
+	/* m_reload */
+	NULL,
+	/* m_traverse */
+	NULL,
+	/* m_clear */
+	NULL,
+	/* m_free */
+	NULL,
+};
+
+#endif /* PY_MAJOR_VERSION >= 3 */
 
 /* Initializes the pysmraw module
  */
+#if PY_MAJOR_VERSION >= 3
+PyMODINIT_FUNC PyInit_pysmraw(
+                void )
+#else
 PyMODINIT_FUNC initpysmraw(
                 void )
+#endif
 {
 	PyObject *module                 = NULL;
 	PyTypeObject *handle_type_object = NULL;
@@ -562,11 +524,23 @@ PyMODINIT_FUNC initpysmraw(
 	 * This function must be called before grabbing the GIL
 	 * otherwise the module will segfault on a version mismatch
 	 */
+#if PY_MAJOR_VERSION >= 3
+	module = PyModule_Create(
+	          &pysmraw_module_definition );
+#else
 	module = Py_InitModule3(
 	          "pysmraw",
 	          pysmraw_module_methods,
 	          "Python libsmraw module (pysmraw)." );
-
+#endif
+	if( module == NULL )
+	{
+#if PY_MAJOR_VERSION >= 3
+		return( NULL );
+#else
+		return;
+#endif
+	}
 	PyEval_InitThreads();
 
 	gil_state = PyGILState_Ensure();
@@ -590,8 +564,23 @@ PyMODINIT_FUNC initpysmraw(
 	 "handle",
 	 (PyObject *) handle_type_object );
 
+	PyGILState_Release(
+	 gil_state );
+
+#if PY_MAJOR_VERSION >= 3
+	return( module );
+#else
+	return;
+#endif
+
 on_error:
 	PyGILState_Release(
 	 gil_state );
+
+#if PY_MAJOR_VERSION >= 3
+	return( NULL );
+#else
+	return;
+#endif
 }
 

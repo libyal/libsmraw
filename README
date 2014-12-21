@@ -6,11 +6,11 @@ Project information:
 
 Work in progress:
 * Dokan library support
+* Python 3 support
 * Thread-safety in handle API functions
 
 Planned:
 * Info file support
-* Python 3 support
 
 For more information see:
 * Project documentation: https://github.com/libyal/libsmraw/wiki/Home
