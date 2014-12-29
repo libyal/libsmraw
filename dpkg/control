@@ -1,13 +1,12 @@
 Source: libsmraw
-Section: unknown
+Section: libs
 Priority: extra
 Maintainer: Joachim Metz <joachim.metz@gmail.com>
 Build-Depends: debhelper (>= 7), autotools-dev, libssl-dev, libfuse-dev, python-dev
-Standards-Version: 3.8.3
+Standards-Version: 3.9.5
 Homepage: https://github.com/libyal/libsmraw/
 
 Package: libsmraw
-Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Suggests: libsmraw-dbg
@@ -18,21 +17,21 @@ Description: Library to access the storage media (SM) RAW format
 Package: libsmraw-dbg
 Architecture: any
 Section: debug
-Depends: libsmraw (= ${Source-Version}), ${misc:Depends}
+Depends: libsmraw (= ${binary:Version}), ${misc:Depends}
 Description: Debugging symbols for libsmraw
  Debugging symbols for libsmraw.
 
 Package: libsmraw-dev
 Section: libdevel
 Architecture: any
-Depends: libsmraw (= ${Source-Version})
+Depends: libsmraw (= ${binary:Version}), ${misc:Depends}
 Description: Header files and libraries for developing applications for libsmraw
  Header files and libraries for developing applications for libsmraw.
 
 Package: libsmraw-tools
 Section: utils
 Architecture: any
-Depends: libsmraw (= ${Source-Version}), ${shlibs:Depends}
+Depends: libsmraw (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
 Description: Several tools for reading and writing storage media (SM) (split) RAW files
  Several tools for reading and writing storage media (SM) (split) RAW files.
  It contains tools to acquire, export, query and verify storage media (SM) (split) RAW files.
@@ -40,7 +39,7 @@ Description: Several tools for reading and writing storage media (SM) (split) RA
 Package: libsmraw-python
 Section: python
 Architecture: any
-Depends: libsmraw (= ${Source-Version}), ${shlibs:Depends}, ${python:Depends}
+Depends: libsmraw (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
 Suggests: libsmraw-python-dbg
 Description: Python bindings for libsmraw
  Python bindings for libsmraw.
@@ -48,7 +47,7 @@ Description: Python bindings for libsmraw
 Package: libsmraw-python-dbg
 Section: debug
 Architecture: any
-Depends: libsmraw-python (= ${Source-Version})
+Depends: libsmraw-python (= ${binary:Version}), ${misc:Depends}
 Description: Debugging symbols for libsmraw-python
  Debugging symbols for libsmraw-python.
 
