@@ -34,6 +34,7 @@ libsmraw_la_SOURCES = \
 	libsmraw_libclocale.h \
 	libsmraw_libcnotify.h \
 	libsmraw_libcstring.h \
+	libsmraw_libcthreads.h \
 	libsmraw_libfdata.h \
 	libsmraw_libfvalue.h \
 	libsmraw_libuna.h \
