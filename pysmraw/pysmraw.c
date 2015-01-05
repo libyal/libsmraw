@@ -520,6 +520,14 @@ PyMODINIT_FUNC initpysmraw(
 	PyTypeObject *handle_type_object = NULL;
 	PyGILState_STATE gil_state       = 0;
 
+#if defined( HAVE_DEBUG_OUTPUT )
+	libsmraw_notify_set_stream(
+	 stderr,
+	 NULL );
+	libsmraw_notify_set_verbose(
+	 1 );
+#endif
+
 	/* Create the module
 	 * This function must be called before grabbing the GIL
 	 * otherwise the module will segfault on a version mismatch
