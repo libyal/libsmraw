@@ -202,7 +202,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\smrawtools\smrawtools_libbio.h"
+				RelativePath="..\..\smrawtools\smrawtools_libbfio.h"
 				>
 			</File>
 			<File

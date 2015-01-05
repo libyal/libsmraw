@@ -29,7 +29,7 @@ bin_PROGRAMS = \
 smrawmount_SOURCES = \
 	smrawmount.c \
 	smrawoutput.c smrawoutput.h \
-	smrawtools_libbio.h \
+	smrawtools_libbfio.h \
 	smrawtools_libcerror.h \
 	smrawtools_libclocale.h \
 	smrawtools_libcnotify.h \
@@ -57,7 +57,7 @@ smrawverify_SOURCES = \
 	process_status.c process_status.h \
 	smrawverify.c \
 	smrawoutput.c smrawoutput.h \
-	smrawtools_libbio.h \
+	smrawtools_libbfio.h \
 	smrawtools_libcerror.h \
 	smrawtools_libclocale.h \
 	smrawtools_libcnotify.h \
