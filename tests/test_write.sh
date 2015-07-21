@@ -26,18 +26,20 @@ EXIT_IGNORE=77;
 
 test_write()
 { 
-	rm -rf tmp;
-	mkdir tmp;
+	TMPDIR="tmp$$";
+
+	rm -rf ${TMPDIR};
+	mkdir ${TMPDIR};
 
 	echo "Testing write";
 
-	${TEST_RUNNER} ./${SMRAW_TEST_WRITE} tmp/;
+	${TEST_RUNNER} ${TMPDIR} ./${SMRAW_TEST_WRITE} ${TMPDIR}/;
 
 	RESULT=$?;
 
 	echo "";
 
-	rm -rf tmp;
+	rm -rf ${TMPDIR};
 
 	return ${RESULT};
 }

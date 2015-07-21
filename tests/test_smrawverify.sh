@@ -46,25 +46,27 @@ test_verify()
 	INPUT_FILE=$2;
 	BASENAME=`basename ${INPUT_FILE}`;
 
-	rm -rf tmp;
-	mkdir tmp;
+	TMPDIR="tmp$$";
 
-	${TEST_RUNNER} ${SMRAWVERIFY} -q ${INPUT_FILE} | sed '1,2d' > tmp/${BASENAME}.log;
+	rm -rf ${TMPDIR};
+	mkdir ${TMPDIR};
+
+	${TEST_RUNNER} ${TMPDIR} ${SMRAWVERIFY} -q ${INPUT_FILE} | sed '1,2d' > ${TMPDIR}/${BASENAME}.log;
 
 	RESULT=$?;
 
 	if test -f "input/.smrawverify/${DIRNAME}/${BASENAME}.log.gz";
 	then
-		zdiff "input/.smrawverify/${DIRNAME}/${BASENAME}.log.gz" "tmp/${BASENAME}.log";
+		zdiff "input/.smrawverify/${DIRNAME}/${BASENAME}.log.gz" "${TMPDIR}/${BASENAME}.log";
 
 		RESULT=$?;
 	else
-		mv "tmp/${BASENAME}.log" "input/.smrawverify/${DIRNAME}";
+		mv "${TMPDIR}/${BASENAME}.log" "input/.smrawverify/${DIRNAME}";
 
 		gzip "input/.smrawverify/${DIRNAME}/${BASENAME}.log";
 	fi
 
-	rm -rf tmp;
+	rm -rf ${TMPDIR};
 
 	echo -n "Testing smrawverify of input: ${INPUT_FILE} ";
 

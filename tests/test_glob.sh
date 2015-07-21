@@ -45,28 +45,30 @@ test_glob()
 	SCHEMA=$2;
 	FILENAMES=$3;
 
-	FILENAMES=`echo ${FILENAMES} | sed 's?^?tmp/?' | sed 's? ? tmp/?g'`;
+	TMPDIR="tmp$$";
 
-	rm -rf tmp;
-	mkdir tmp;
+	rm -rf ${TMPDIR};
+	mkdir ${TMPDIR};
 
-	echo ${FILENAMES} > tmp/input;
+	FILENAMES=`echo ${FILENAMES} | sed "s?^?${TMPDIR}/?" | sed "s? ? ${TMPDIR}/?g"`;
+
+	echo ${FILENAMES} > ${TMPDIR}/input;
 
 	touch ${FILENAMES};
 
-	${TEST_RUNNER} ./${SMRAW_TEST_GLOB} tmp/${BASENAME} > tmp/output;
+	${TEST_RUNNER} ${TMPDIR} ./${SMRAW_TEST_GLOB} ${TMPDIR}/${BASENAME} > ${TMPDIR}/output;
 
 	RESULT=$?;
 
 	if test ${RESULT} -eq ${EXIT_SUCCESS};
 	then
-		if ! cmp -s tmp/input tmp/output;
+		if ! cmp -s ${TMPDIR}/input ${TMPDIR}/output;
 		then
 			RESULT=${EXIT_FAILURE};
 		fi
 	fi
 
-	rm -rf tmp;
+	rm -rf ${TMPDIR};
 
 	echo -n "Testing glob: for basename: ${BASENAME} and schema: ${SCHEMA} ";
 
@@ -89,28 +91,30 @@ test_glob_sequence()
 	SEQUENCE=`seq 1 ${LAST}`;
 	FILENAMES=`for NUMBER in ${SEQUENCE}; do echo -n "${FILENAME}.${NUMBER}of${LAST} "; echo $FILE; done`;
 
-	FILENAMES=`echo ${FILENAMES} | sed 's?^?tmp/?' | sed 's? ? tmp/?g'`;
+	TMPDIR="tmp$$";
 
-	rm -rf tmp;
-	mkdir tmp;
+	rm -rf ${TMPDIR};
+	mkdir ${TMPDIR};
 
-	echo ${FILENAMES} > tmp/input;
+	FILENAMES=`echo ${FILENAMES} | sed "s?^?${TMPDIR}/?" | sed "s? ? ${TMPDIR}/?g"`;
+
+	echo ${FILENAMES} > ${TMPDIR}/input;
 
 	touch ${FILENAMES};
 
-	${TEST_RUNNER} ./${SMRAW_TEST_GLOB} tmp/${BASENAME} > tmp/output;
+	${TEST_RUNNER} ${TMPDIR} ./${SMRAW_TEST_GLOB} ${TMPDIR}/${BASENAME} > ${TMPDIR}/output;
 
 	RESULT=$?;
 
 	if test ${RESULT} -eq ${EXIT_SUCCESS};
 	then
-		if ! cmp -s tmp/input tmp/output;
+		if ! cmp -s ${TMPDIR}/input ${TMPDIR}/output;
 		then
 			RESULT=${EXIT_FAILURE};
 		fi
 	fi
 
-	rm -rf tmp;
+	rm -rf ${TMPDIR};
 
 	echo -n "Testing glob: for basename: ${BASENAME} and schema: ${SCHEMA} ";
 
