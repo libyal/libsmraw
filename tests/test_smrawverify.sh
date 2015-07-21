@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# smrawverify tool testing script
+# Verify tool testing script
 #
 # Copyright (C) 2010-2015, Joachim Metz <joachim.metz@gmail.com>
 #
@@ -24,14 +24,17 @@ EXIT_SUCCESS=0;
 EXIT_FAILURE=1;
 EXIT_IGNORE=77;
 
+TEST_PREFIX="smraw";
+OPTION_SETS="";
+
 list_contains()
 {
 	LIST=$1;
 	SEARCH=$2;
 
-	for LINE in $LIST;
+	for LINE in ${LIST};
 	do
-		if test $LINE = $SEARCH;
+		if test ${LINE} = ${SEARCH};
 		then
 			return ${EXIT_SUCCESS};
 		fi
@@ -40,35 +43,70 @@ list_contains()
 	return ${EXIT_FAILURE};
 }
 
-test_verify()
+run_test()
 { 
-	DIRNAME=$1;
-	INPUT_FILE=$2;
-	BASENAME=`basename ${INPUT_FILE}`;
+	TEST_SET_DIR=$1;
+	TEST_DESCRIPTION=$2;
+	TEST_EXECUTABLE=$3;
+	INPUT_FILE=$4;
+	OPTION_SET=$5;
 
+	TEST_RUNNER="tests/test_runner.sh";
+
+	if ! test -x "${TEST_RUNNER}";
+	then
+		TEST_RUNNER="./test_runner.sh";
+	fi
+
+	if ! test -x "${TEST_RUNNER}";
+	then
+		echo "Missing test runner: ${TEST_RUNNER}";
+
+		return ${EXIT_FAILURE};
+	fi
+
+	INPUT_NAME=`basename ${INPUT_FILE}`;
+
+	if test -z "${OPTION_SET}";
+	then
+		OPTIONS="";
+		TEST_OUTPUT="${INPUT_NAME}";
+	else
+		OPTIONS=`cat "${TEST_SET_DIR}/${INPUT_NAME}.${OPTION_SET}" | head -n 1 | sed 's/[\r\n]*$//'`;
+		TEST_OUTPUT="${INPUT_NAME}-${OPTION_SET}";
+	fi
 	TMPDIR="tmp$$";
 
 	rm -rf ${TMPDIR};
 	mkdir ${TMPDIR};
 
-	${TEST_RUNNER} ${TMPDIR} ${SMRAWVERIFY} -q ${INPUT_FILE} | sed '1,2d' > ${TMPDIR}/${BASENAME}.log;
+	STORED_TEST_RESULTS="${TEST_SET_DIR}/${TEST_OUTPUT}.log.gz";
+	TEST_RESULTS="${TMPDIR}/${TEST_OUTPUT}.log";
+
+	# Note that options should not contain spaces otherwise the test_runner
+	# will fail parsing the arguments.
+	${TEST_RUNNER} ${TMPDIR} ${TEST_EXECUTABLE} -q ${OPTIONS} ${INPUT_FILE} | sed '1,2d' > ${TEST_RESULTS};
 
 	RESULT=$?;
 
-	if test -f "input/.smrawverify/${DIRNAME}/${BASENAME}.log.gz";
+	if test -f "${STORED_TEST_RESULTS}";
 	then
-		zdiff "input/.smrawverify/${DIRNAME}/${BASENAME}.log.gz" "${TMPDIR}/${BASENAME}.log";
+		zdiff ${STORED_TEST_RESULTS} ${TEST_RESULTS};
 
 		RESULT=$?;
 	else
-		mv "${TMPDIR}/${BASENAME}.log" "input/.smrawverify/${DIRNAME}";
+		gzip ${TEST_RESULTS};
 
-		gzip "input/.smrawverify/${DIRNAME}/${BASENAME}.log";
+		mv "${TEST_RESULTS}.gz" ${TEST_SET_DIR};
 	fi
-
 	rm -rf ${TMPDIR};
 
-	echo -n "Testing smrawverify of input: ${INPUT_FILE} ";
+	if test -z "${OPTION_SET}";
+	then
+		echo -n "Testing ${TEST_DESCRIPTION} with input: ${INPUT_FILE}";
+	else
+		echo -n "Testing ${TEST_DESCRIPTION} with option: ${OPTION_SET} and input: ${INPUT_FILE}";
+	fi
 
 	if test ${RESULT} -ne ${EXIT_SUCCESS};
 	then
@@ -79,96 +117,121 @@ test_verify()
 	return ${RESULT};
 }
 
-SMRAWVERIFY="../smrawtools/smrawverify";
+run_tests()
+{
+	TEST_PROFILE=$1;
+	TEST_DESCRIPTION=$2;
+	TEST_EXECUTABLE=$3;
 
-if ! test -x ${SMRAWVERIFY};
+	if ! test -d "input";
+	then
+		echo "No input directory found.";
+
+		return ${EXIT_IGNORE};
+	fi
+	RESULT=`ls input/* | tr ' ' '\n' | wc -l`;
+
+	if test ${RESULT} -eq 0;
+	then
+		echo "No files or directories found in the input directory.";
+
+		return ${EXIT_IGNORE};
+	fi
+	TEST_PROFILE_DIR="input/.${TEST_PROFILE}";
+
+	if ! test -d "${TEST_PROFILE_DIR}";
+	then
+		mkdir ${TEST_PROFILE_DIR};
+	fi
+	IGNORE_FILE="${TEST_PROFILE_DIR}/ignore";
+	IGNORE_LIST="";
+
+	if test -f "${IGNORE_FILE}";
+	then
+		IGNORE_LIST=`cat ${IGNORE_FILE} | sed '/^#/d'`;
+	fi
+
+	for INPUT_DIR in input/*;
+	do
+		if ! test -d "${INPUT_DIR}";
+		then
+			continue
+		fi
+		INPUT_NAME=`basename ${INPUT_DIR}`;
+
+		if list_contains "${IGNORE_LIST}" "${INPUT_NAME}";
+		then
+			continue
+		fi
+		TEST_SET_DIR="${TEST_PROFILE_DIR}/${INPUT_NAME}";
+
+		if ! test -d "${TEST_SET_DIR}";
+		then
+			mkdir "${TEST_SET_DIR}";
+		fi
+
+		if test -f "${TEST_SET_DIR}/files";
+		then
+			INPUT_FILES=`cat ${TEST_SET_DIR}/files | sed "s?^?${INPUT_DIR}/?"`;
+		else
+			INPUT_FILES=`ls ${INPUT_DIR}/*`;
+		fi
+
+		for INPUT_FILE in ${INPUT_FILES};
+		do
+			INPUT_NAME=`basename ${INPUT_FILE}`;
+
+			for OPTION_SET in `echo ${OPTION_SETS} | tr ' ' '\n'`;
+			do
+				OPTION_FILE="${TEST_SET_DIR}/${INPUT_NAME}.${OPTION_SET}";
+
+				if ! test -f "${OPTION_FILE}";
+				then
+					continue
+				fi
+
+				if ! run_test "${TEST_SET_DIR}" "${TEST_DESCRIPTION}" "${TEST_EXECUTABLE}" "${INPUT_FILE}" "${OPTION_SET}";
+				then
+					return ${EXIT_FAILURE};
+				fi
+			done
+
+			if test -z "${OPTION_SETS}";
+			then
+				if ! run_test "${TEST_SET_DIR}" "${TEST_DESCRIPTION}" "${TEST_EXECUTABLE}" "${INPUT_FILE}" "";
+				then
+					return ${EXIT_FAILURE};
+				fi
+			fi
+		done
+	done
+
+	return ${EXIT_SUCCESS};
+}
+
+VERIFY_TOOL="../${TEST_PREFIX}tools/${TEST_PREFIX}verify";
+
+if ! test -x ${VERIFY_TOOL};
 then
-	SMRAWVERIFY="../smrawtools/smrawverify.exe";
+	VERIFY_TOOL="../${TEST_PREFIX}tools/${TEST_PREFIX}verify.exe";
 fi
 
-if ! test -x ${SMRAWVERIFY};
+if ! test -x ${VERIFY_TOOL};
 then
-	echo "Missing executable: ${SMRAWVERIFY}";
+	echo "Missing executable: ${VERIFY_TOOL}";
 
 	exit ${EXIT_FAILURE};
-fi
-
-TEST_RUNNER="tests/test_runner.sh";
-
-if ! test -x ${TEST_RUNNER};
-then
-	TEST_RUNNER="./test_runner.sh";
-fi
-
-if ! test -x ${TEST_RUNNER};
-then
-	echo "Missing test runner: ${TEST_RUNNER}";
-
-	exit ${EXIT_FAILURE};
-fi
-
-if ! test -d "input";
-then
-	echo "No input directory found.";
-
-	exit ${EXIT_IGNORE};
 fi
 
 OLDIFS=${IFS};
 IFS="
 ";
 
-RESULT=`ls input/* | tr ' ' '\n' | wc -l`;
+run_tests "${TEST_PREFIX}verify" "${TEST_PREFIX}verify" "${VERIFY_TOOL}";
 
-if test ${RESULT} -eq 0;
-then
-	echo "No files or directories found in the input directory.";
-
-	EXIT_RESULT=${EXIT_IGNORE};
-else
-	IGNORELIST="";
-
-	if ! test -d "input/.smrawverify";
-	then
-		mkdir "input/.smrawverify";
-	fi
-	if test -f "input/.smrawverify/ignore";
-	then
-		IGNORELIST=`cat input/.smrawverify/ignore | sed '/^#/d'`;
-	fi
-	for TESTDIR in input/*;
-	do
-		if test -d "${TESTDIR}";
-		then
-			DIRNAME=`basename ${TESTDIR}`;
-
-			if ! list_contains "${IGNORELIST}" "${DIRNAME}";
-			then
-				if ! test -d "input/.smrawverify/${DIRNAME}";
-				then
-					mkdir "input/.smrawverify/${DIRNAME}";
-				fi
-				if test -f "input/.smrawverify/${DIRNAME}/files";
-				then
-					TESTFILES=`cat input/.smrawverify/${DIRNAME}/files | sed "s?^?${TESTDIR}/?"`;
-				else
-					TESTFILES=`ls ${TESTDIR}/*`;
-				fi
-				for TESTFILE in ${TESTFILES};
-				do
-					if ! test_verify "${DIRNAME}" "${TESTFILE}";
-					then
-						exit ${EXIT_FAILURE};
-					fi
-				done
-			fi
-		fi
-	done
-
-	EXIT_RESULT=${EXIT_SUCCESS};
-fi
+RESULT=$?;
 
 IFS=${OLDIFS};
 
-exit ${EXIT_RESULT};
+exit ${RESULT};
 
