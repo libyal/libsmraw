@@ -1,6 +1,6 @@
 # Files to ignore by git
 #
-# Version: 20141227
+# Version: 20150720
 
 # Generic auto-generated build files
 *~
@@ -120,7 +120,7 @@ stamp-h[1-9]
 /tests/smraw_test_read_loop
 /tests/smraw_test_seek
 /tests/smraw_test_write
-/tests/tmp
+/tests/tmp*
 
 # Local library dependencies specific files
 /libbfio
