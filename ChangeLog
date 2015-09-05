@@ -37,6 +37,9 @@ Tests:
 * add tests for Python-bindings
 * information file
 
+20150905
+* updated dependencies
+
 20150721
 * worked on tests
 
