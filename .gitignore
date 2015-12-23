@@ -112,7 +112,6 @@ stamp-h[1-9]
 /include/libsmraw/types.h
 /libsmraw/libsmraw.rc
 /libsmraw/libsmraw_definitions.h
-/pysmraw/setup.py
 /smrawtools/smrawmount
 /smrawtools/smrawverify
 /tests/input
