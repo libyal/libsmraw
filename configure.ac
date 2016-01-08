@@ -106,7 +106,10 @@ dnl Check for libfuse Filesystem in Userspace (FUSE) support
 AX_LIBFUSE_CHECK_ENABLE
 
 dnl Check if libewf python bindings (pysmraw) should be build
+AX_PYTHON_CHECK_PYPREFIX
 AX_PYTHON_CHECK_ENABLE
+AX_PYTHON2_CHECK_ENABLE
+AX_PYTHON3_CHECK_ENABLE
 
 dnl Check for headers and functions used in tools
 
@@ -338,6 +341,8 @@ AC_CONFIG_FILES([libhmac/Makefile])
 AC_CONFIG_FILES([smrawtools/Makefile])
 AC_CONFIG_FILES([smraw.net/Makefile])
 AC_CONFIG_FILES([pysmraw/Makefile])
+AC_CONFIG_FILES([pysmraw2/Makefile])
+AC_CONFIG_FILES([pysmraw3/Makefile])
 AC_CONFIG_FILES([po/Makefile.in])
 AC_CONFIG_FILES([po/Makevars])
 AC_CONFIG_FILES([manuals/Makefile])
@@ -390,6 +395,8 @@ Features:
    Wide character type support:                $ac_cv_enable_wide_character_type
    smrawtools are build as static executables: $ac_cv_enable_static_executables
    Python (pysmraw) support:                   $ac_cv_enable_python
+   Python version 2 (pysmraw) support:         $ac_cv_enable_python2
+   Python version 3 (pysmraw) support:         $ac_cv_enable_python3
    Verbose output:                             $ac_cv_enable_verbose_output
    Debug output:                               $ac_cv_enable_debug_output
 ]);

@@ -23,6 +23,8 @@ SUBDIRS = \
 	smrawtools \
 	smraw.net \
 	pysmraw \
+	pysmraw2 \
+	pysmraw3 \
 	po \
 	manuals \
 	tests \
@@ -36,8 +38,10 @@ DPKG_FILES = \
 	dpkg/copyright \
 	dpkg/copyright.in \
 	dpkg/rules \
-	dpkg/libsmraw-dev.docs \
 	dpkg/libsmraw.docs \
+	dpkg/libsmraw-dev.docs \
+	dpkg/libsmraw-python.docs \
+	dpkg/libsmraw-python3.docs \
 	dpkg/libsmraw-tools.docs \
 	dpkg/source/format
 
