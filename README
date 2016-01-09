@@ -1,18 +1,21 @@
 libsmraw is a library to access the (split) RAW image format.
 
 Project information:
+
 * Status: alpha
 * Licence: LGPLv3+
 
 Work in progress:
+
 * Dokan library support
-* Python 3 support
 * Thread-safety in handle API functions
 
 Planned:
+
 * Info file support
 
 For more information see:
+
 * Project documentation: https://github.com/libyal/libsmraw/wiki/Home
 * How to build from source: https://github.com/libyal/libsmraw/wiki/Building
 

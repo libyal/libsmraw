@@ -56,15 +56,15 @@ pysmraw_la_CPPFLAGS = $(PYTHON3_CPPFLAGS)
 pysmraw_la_LDFLAGS  = -module -avoid-version $(PYTHON3_LDFLAGS)
 
 $(BUILT_SOURCES):
-	/bin/cp -f $(top_srcdir)/pysmraw/pysmraw*.[ch] .
-
-clean-local:
-	/bin/rm -f pysmraw*.[ch]
+	/bin/cp -f $(top_srcdir)/pysmraw/$@ $@
 
 endif
 
 MAINTAINERCLEANFILES = \
 	Makefile.in
+
+clean-local:
+	/bin/rm -f pysmraw*.[ch]
 
 distclean: clean
 	/bin/rm -f Makefile
