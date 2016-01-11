@@ -23,8 +23,8 @@ SUBDIRS = \
 	smrawtools \
 	smraw.net \
 	pysmraw \
-	pysmraw2 \
-	pysmraw3 \
+	pysmraw-python2 \
+	pysmraw-python3 \
 	po \
 	manuals \
 	tests \
