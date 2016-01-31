@@ -208,6 +208,11 @@ run_tests()
 	return ${EXIT_SUCCESS};
 }
 
+if ! test -z ${SKIP_TOOLS_TESTS};
+then
+	exit ${EXIT_IGNORE};
+fi
+
 VERIFY_TOOL="../${TEST_PREFIX}tools/${TEST_PREFIX}verify";
 
 if ! test -x ${VERIFY_TOOL};
