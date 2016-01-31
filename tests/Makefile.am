@@ -12,15 +12,17 @@ AM_CPPFLAGS = \
 	@LIBCFILE_CPPFLAGS@ \
 	@LIBCPATH_CPPFLAGS@ \
 	@LIBBFIO_CPPFLAGS@ \
+	@LIBCSYSTEM_CPPFLAGS@ \
 	@LIBHMAC_CPPFLAGS@ \
 	@LIBCRYPTO_CPPFLAGS@ \
 	@PTHREAD_CPPFLAGS@ \
 	@LIBSMRAW_DLL_IMPORT@
 
-if HAVE_PYTHON
+if HAVE_PYTHON_TESTS
 TESTS_PYSMRAW  = \
 	test_pysmraw_open_close.sh \
-	test_pysmraw_seek.sh
+	test_pysmraw_seek.sh \
+	test_pysmraw_read.sh
 endif
 
 TESTS = \
@@ -29,14 +31,17 @@ TESTS = \
 	test_seek.sh \
 	test_read.sh \
 	test_write.sh \
-	test_smrawverify.sh
+	test_smrawverify.sh \
+	$(TESTS_PYSMRAW)
 
 check_SCRIPTS = \
 	pysmraw_test_open_close.py \
+	pysmraw_test_read.py \
 	pysmraw_test_seek.py \
 	test_glob.sh \
 	test_open_close.sh \
 	test_pysmraw_open_close.sh \
+	test_pysmraw_read.sh \
 	test_pysmraw_seek.sh \
 	test_read.sh \
 	test_runner.sh \
@@ -76,6 +81,7 @@ smraw_test_open_close_SOURCES = \
 	smraw_test_unused.h
 
 smraw_test_open_close_LDADD = \
+	@LIBCSYSTEM_LIBADD@ \
 	../libsmraw/libsmraw.la \
 	@LIBCTHREADS_LIBADD@ \
 	@LIBCERROR_LIBADD@ \
@@ -90,6 +96,7 @@ smraw_test_read_SOURCES = \
 	smraw_test_unused.h
 
 smraw_test_read_LDADD = \
+	@LIBCSYSTEM_LIBADD@ \
 	../libsmraw/libsmraw.la \
 	@LIBCTHREADS_LIBADD@ \
 	@LIBCERROR_LIBADD@ \
@@ -104,6 +111,7 @@ smraw_test_read_loop_SOURCES = \
 	smraw_test_unused.h
 
 smraw_test_read_loop_LDADD = \
+	@LIBCSYSTEM_LIBADD@ \
 	../libsmraw/libsmraw.la \
 	@LIBCTHREADS_LIBADD@ \
 	@LIBCERROR_LIBADD@ \
@@ -117,6 +125,7 @@ smraw_test_seek_SOURCES = \
 	smraw_test_unused.h
 
 smraw_test_seek_LDADD = \
+	@LIBCSYSTEM_LIBADD@ \
 	../libsmraw/libsmraw.la \
 	@LIBCTHREADS_LIBADD@ \
 	@LIBCERROR_LIBADD@ \
