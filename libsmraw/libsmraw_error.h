@@ -64,11 +64,11 @@ int libsmraw_error_backtrace_sprint(
      char *string,
      size_t size );
 
-#endif
+#endif /* !defined( HAVE_LOCAL_LIBSMRAW ) */
 
 #if defined( __cplusplus )
 }
 #endif
 
-#endif
+#endif /* !defined( _LIBSMRAW_INTERNAL_ERROR_H ) */
 

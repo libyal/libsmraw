@@ -59,5 +59,5 @@ int libsmraw_notify_stream_close(
 }
 #endif
 
-#endif
+#endif /* !defined( _LIBSMRAW_NOTIFY_H ) */
 

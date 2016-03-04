@@ -28,7 +28,7 @@
 #include "pysmraw_libcerror.h"
 #include "pysmraw_python.h"
 
-#define PYSMRAW_ERROR_STRING_SIZE		2048
+#define PYSMRAW_ERROR_STRING_SIZE	2048
 
 #if defined( __cplusplus )
 extern "C" {
@@ -56,5 +56,5 @@ void pysmraw_error_raise(
 }
 #endif
 
-#endif
+#endif /* !defined( _PYSMRAW_ERROR_H ) */
 

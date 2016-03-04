@@ -107,6 +107,7 @@ int libsmraw_glob_free(
      libsmraw_error_t **error );
 
 #if defined( HAVE_WIDE_CHARACTER_TYPE )
+
 /* Globs the files according to common (split) RAW naming schemas
  * Make sure the value filenames is referencing, is set to NULL
  * Returns 1 if successful or -1 on error
@@ -127,7 +128,8 @@ int libsmraw_glob_wide_free(
      wchar_t *filenames[],
      int number_of_filenames,
      libsmraw_error_t **error );
-#endif
+
+#endif /* defined( HAVE_WIDE_CHARACTER_TYPE ) */
 
 /* -------------------------------------------------------------------------
  * Notify functions
@@ -250,6 +252,7 @@ int libsmraw_handle_open(
      libsmraw_error_t **error );
 
 #if defined( LIBSMRAW_HAVE_WIDE_CHARACTER_TYPE )
+
 /* Opens a set of storage media RAW files
  * Returns 1 if successful or -1 on error
  */
@@ -260,9 +263,11 @@ int libsmraw_handle_open_wide(
      int number_of_filenames,
      int access_flags,
      libsmraw_error_t **error );
-#endif
+
+#endif /* defined( HAVE_WIDE_CHARACTER_TYPE ) */
 
 #if defined( LIBSMRAW_HAVE_BFIO )
+
 /* Opens a set of storage media RAW files using a Basic File IO (bfio) pool
  * Returns 1 if successful or -1 on error
  */
@@ -272,7 +277,8 @@ int libsmraw_handle_open_file_io_pool(
      libbfio_pool_t *file_io_pool,
      int access_flags,
      libsmraw_error_t **error );
-#endif
+
+#endif /* defined( LIBSMRAW_HAVE_BFIO ) */
 
 /* Closes the handle
  * Returns the 0 if succesful or -1 on error
@@ -384,6 +390,7 @@ int libsmraw_handle_set_segment_filename(
      libsmraw_error_t **error );
 
 #if defined( LIBSMRAW_HAVE_WIDE_CHARACTER_TYPE )
+
 /* Retrieves the segment filename size
  * The filename size includes the end of string character
  * Returns 1 if successful, 0 if value not present or -1 on error
@@ -414,7 +421,8 @@ int libsmraw_handle_set_segment_filename_wide(
      const wchar_t *filename,
      size_t filename_length,
      libsmraw_error_t **error );
-#endif
+
+#endif /* defined( LIBSMRAW_HAVE_WIDE_CHARACTER_TYPE ) */
 
 /* Retrieves the maximum segment file size
  * 0 represents the maximum possible segment file size
@@ -458,6 +466,7 @@ int libsmraw_handle_get_filename(
      libsmraw_error_t **error );
 
 #if defined( LIBSMRAW_HAVE_WIDE_CHARACTER_TYPE )
+
 /* Retrieves the filename size of the segment file of the current offset
  * The filename size includes the end of string character
  * Returns 1 if successful or -1 on error
@@ -478,9 +487,11 @@ int libsmraw_handle_get_filename_wide(
      wchar_t *filename,
      size_t filename_size,
      libsmraw_error_t **error );
-#endif
+
+#endif /* defined( LIBSMRAW_HAVE_WIDE_CHARACTER_TYPE ) */
 
 #if defined( LIBSMRAW_HAVE_BFIO )
+
 /* Retrieves the file IO handle of the segment file of the current offset
  * Returns 1 if successful or -1 on error
  */
@@ -489,7 +500,8 @@ int libsmraw_handle_get_file_io_handle(
      libsmraw_handle_t *handle,
      libbfio_handle_t **file_io_handle,
      libsmraw_error_t **error );
-#endif
+
+#endif /* defined( LIBSMRAW_HAVE_BFIO ) */
 
 /* -------------------------------------------------------------------------
  * Handle functions - deprecated

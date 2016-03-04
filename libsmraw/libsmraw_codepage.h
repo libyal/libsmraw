@@ -80,11 +80,11 @@ enum LIBSMRAW_CODEPAGES
 	LIBSMRAW_CODEPAGE_WINDOWS_1258			= 1258
 };
 
-#endif
+#endif /* !defined( HAVE_LOCAL_LIBSMRAW ) */
 
 #if defined( __cplusplus )
 }
 #endif
 
-#endif
+#endif /* !defined( _LIBSMRAW_INTERNAL_CODEPAGE_H ) */
 

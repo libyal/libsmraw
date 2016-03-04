@@ -1,9 +1,9 @@
-.Dd January  5, 2015
+.Dd March  4, 2016
 .Dt libsmraw 3
 .Os libsmraw
 .Sh NAME
 .Nm libsmraw.h
-.Nd Library to access the storage media (SM) RAW format
+.Nd Library to access the storage media (SM) (split) RAW format
 .Sh LIBRARY
 .Lb libsmraw
 .Sh SYNOPSIS
@@ -26,8 +26,6 @@ Support functions
 .Fn libsmraw_glob "const char *filename, size_t filename_length, char **filenames[], int *number_of_filenames, libsmraw_error_t **error"
 .Ft int
 .Fn libsmraw_glob_free "char *filenames[], int number_of_filenames, libsmraw_error_t **error"
-.Ft #endif
-.Fn 
 .Pp
 Available when compiled with wide character string support:
 .Ft int
@@ -66,7 +64,7 @@ Handle functions
 .Fn libsmraw_handle_signal_abort "libsmraw_handle_t *handle, libsmraw_error_t **error"
 .Ft int
 .Fn libsmraw_handle_open "libsmraw_handle_t *handle, char * const filenames[], int number_of_filenames, int access_flags, libsmraw_error_t **error"
-.Ft #endif int
+.Ft int
 .Fn libsmraw_handle_close "libsmraw_handle_t *handle, libsmraw_error_t **error"
 .Ft ssize_t
 .Fn libsmraw_handle_read_buffer "libsmraw_handle_t *handle, void *buffer, size_t buffer_size, libsmraw_error_t **error"
@@ -88,7 +86,7 @@ Handle functions
 .Fn libsmraw_handle_get_segment_filename "libsmraw_handle_t *handle, char *filename, size_t filename_size, libsmraw_error_t **error"
 .Ft int
 .Fn libsmraw_handle_set_segment_filename "libsmraw_handle_t *handle, const char *filename, size_t filename_length, libsmraw_error_t **error"
-.Ft #endif int
+.Ft int
 .Fn libsmraw_handle_get_maximum_segment_size "libsmraw_handle_t *handle, size64_t *maximum_segment_size, libsmraw_error_t **error"
 .Ft int
 .Fn libsmraw_handle_set_maximum_segment_size "libsmraw_handle_t *handle, size64_t maximum_segment_size, libsmraw_error_t **error"
@@ -96,8 +94,6 @@ Handle functions
 .Fn libsmraw_handle_get_filename_size "libsmraw_handle_t *handle, size_t *filename_size, libsmraw_error_t **error"
 .Ft int
 .Fn libsmraw_handle_get_filename "libsmraw_handle_t *handle, char *filename, size_t filename_size, libsmraw_error_t **error"
-.Ft #endif
-.Fn 
 .Pp
 Available when compiled with wide character string support:
 .Ft int
@@ -114,9 +110,9 @@ Available when compiled with wide character string support:
 .Fn libsmraw_handle_get_filename_wide "libsmraw_handle_t *handle, wchar_t *filename, size_t filename_size, libsmraw_error_t **error"
 .Pp
 Available when compiled with libbfio support:
-.Ft #endif int
+.Ft int
 .Fn libsmraw_handle_open_file_io_pool "libsmraw_handle_t *handle, libbfio_pool_t *file_io_pool, int access_flags, libsmraw_error_t **error"
-.Ft #endif int
+.Ft int
 .Fn libsmraw_handle_get_file_io_handle "libsmraw_handle_t *handle, libbfio_handle_t **file_io_handle, libsmraw_error_t **error"
 .Pp
 Meta data functions
@@ -183,6 +179,7 @@ For the actual return values see "libsmraw.h".
 None
 .Sh FILES
 None
+.Sh NOTES
 libsmraw allows to be compiled with wide character support (wchar_t).
 
 To compile libsmraw with wide character support use:

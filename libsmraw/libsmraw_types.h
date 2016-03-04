@@ -39,9 +39,9 @@ typedef struct libsmraw_handle {}	libsmraw_handle_t;
 #else
 typedef intptr_t libsmraw_handle_t;
 
-#endif
+#endif /* defined( HAVE_DEBUG_OUTPUT ) && !defined( WINAPI ) */
 
 #endif /* defined( HAVE_LOCAL_LIBSMRAW ) */
 
-#endif
+#endif /* !defined( _LIBSMRAW_INTERNAL_TYPES_H ) */
 
