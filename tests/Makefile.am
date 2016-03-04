@@ -19,7 +19,7 @@ AM_CPPFLAGS = \
 	@LIBSMRAW_DLL_IMPORT@
 
 if HAVE_PYTHON_TESTS
-TESTS_PYSMRAW  = \
+TESTS_PYSMRAW = \
 	test_pysmraw_open_close.sh \
 	test_pysmraw_seek.sh \
 	test_pysmraw_read.sh
