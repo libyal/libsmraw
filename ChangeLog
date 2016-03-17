@@ -19,7 +19,6 @@ TODO
 
 Features
 * allow set of segment filename during write (as alternative writing locations)
-* add read and write random functions
 * implement write resume
 * glob of .1ofN for PREFIX (without the initial extension to help the glob function)
 
@@ -36,6 +35,9 @@ Tests:
 * make sure certain values cannot be changed if writing/reading from raw files
 * add tests for Python-bindings
 * information file
+
+20160317
+* removed read/write random
 
 20160111
 * Changes to Python bindings

@@ -504,38 +504,6 @@ int libsmraw_handle_get_file_io_handle(
 #endif /* defined( LIBSMRAW_HAVE_BFIO ) */
 
 /* -------------------------------------------------------------------------
- * Handle functions - deprecated
- * ------------------------------------------------------------------------- */
-
-/* Reads (media) data at a specific offset
- * Returns the number of bytes read or -1 on error
- *
- * This function is deprecated use libsmraw_handle_read_buffer_at_offset instead
- */
-LIBSMRAW_DEPRECATED \
-LIBSMRAW_EXTERN \
-ssize_t libsmraw_handle_read_random(
-         libsmraw_handle_t *handle,
-         void *buffer,
-         size_t buffer_size,
-         off64_t offset,
-         libsmraw_error_t **error );
-
-/* Writes (media) data at a specific offset,
- * Returns the number of input bytes written, 0 when no longer bytes can be written or -1 on error
- *
- * This function is deprecated use libsmraw_handle_write_buffer_at_offset instead
- */
-LIBSMRAW_DEPRECATED \
-LIBSMRAW_EXTERN \
-ssize_t libsmraw_handle_write_random(
-         libsmraw_handle_t *handle,
-         const void *buffer,
-         size_t buffer_size,
-         off64_t offset,
-         libsmraw_error_t **error );
-
-/* -------------------------------------------------------------------------
  * Meta data functions
  * ------------------------------------------------------------------------- */
 

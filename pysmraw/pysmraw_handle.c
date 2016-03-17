@@ -95,13 +95,6 @@ PyMethodDef pysmraw_handle_object_methods[] = {
 	  "\n"
 	  "Reads a buffer of media data at a specific offset." },
 
-	{ "read_random",
-	  (PyCFunction) pysmraw_handle_read_buffer_at_offset,
-	  METH_VARARGS | METH_KEYWORDS,
-	  "read_random(size, offset) -> String\n"
-	  "\n"
-	  "Reads a buffer of media data at a specific offset." },
-
 	{ "write_buffer",
 	  (PyCFunction) pysmraw_handle_write_buffer,
 	  METH_VARARGS | METH_KEYWORDS,
@@ -113,13 +106,6 @@ PyMethodDef pysmraw_handle_object_methods[] = {
 	  (PyCFunction) pysmraw_handle_write_buffer_at_offset,
 	  METH_VARARGS | METH_KEYWORDS,
 	  "write_buffer_at_offset(buffer, offset) -> None\n"
-	  "\n"
-	  "Writes a buffer of media data at a specific offset." },
-
-	{ "write_random",
-	  (PyCFunction) pysmraw_handle_write_buffer_at_offset,
-	  METH_VARARGS | METH_KEYWORDS,
-	  "write_random(buffer, offset) -> None\n"
 	  "\n"
 	  "Writes a buffer of media data at a specific offset." },
 
