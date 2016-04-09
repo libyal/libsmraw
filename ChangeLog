@@ -36,6 +36,9 @@ Tests:
 * add tests for Python-bindings
 * information file
 
+20160409
+* bug fix for information file
+
 20160317
 * removed read/write random
 

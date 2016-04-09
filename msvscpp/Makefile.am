@@ -19,6 +19,7 @@ MSVSCPP_FILES = \
 	libuna/libuna.vcproj \
 	pysmraw/pysmraw.vcproj \
 	smraw.net/smraw.net.vcproj \
+	smraw_test_get_version/smraw_test_get_version.vcproj \
 	smraw_test_glob/smraw_test_glob.vcproj \
 	smraw_test_open_close/smraw_test_open_close.vcproj \
 	smraw_test_read/smraw_test_read.vcproj \

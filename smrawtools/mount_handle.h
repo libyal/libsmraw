@@ -42,7 +42,7 @@ struct mount_handle
 	 */
 	libsmraw_handle_t *input_handle;
 
-	/* The nofication output stream
+	/* The notification output stream
 	 */
 	FILE *notify_stream;
 };

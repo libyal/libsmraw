@@ -1,17 +1,19 @@
 #!/bin/bash
 # Library glob testing script
 #
-# Version: 20160131
+# Version: 20160327
 
 EXIT_SUCCESS=0;
 EXIT_FAILURE=1;
 EXIT_IGNORE=77;
 
-TEST_PREFIX=`pwd`;
-TEST_PREFIX=`dirname ${TEST_PREFIX}`;
-TEST_PREFIX=`basename ${TEST_PREFIX} | sed 's/^lib//'`;
+TEST_PREFIX=`dirname ${PWD}`;
+TEST_PREFIX=`basename ${TEST_PREFIX} | sed 's/^lib\([^-]*\)/\1/'`;
 
-TEST_EXECUTABLE="${TEST_PREFIX}_test_glob";
+TEST_PROFILE="lib${TEST_PREFIX}";
+
+TEST_TOOL_DIRECTORY=".";
+TEST_TOOL="${TEST_PREFIX}_test_glob";
 
 seq()
 {
@@ -45,7 +47,7 @@ test_glob()
 
 	touch ${FILENAMES};
 
-	${TEST_RUNNER} ${TMPDIR} ./${TEST_GLOB} ${TMPDIR}/${BASENAME} > ${TMPDIR}/output;
+	run_test_with_arguments ${TEST_EXECUTABLE} ${TMPDIR}/${BASENAME} > ${TMPDIR}/output;
 
 	RESULT=$?;
 
@@ -91,7 +93,7 @@ test_glob_sequence()
 
 	touch ${FILENAMES};
 
-	${TEST_RUNNER} ${TMPDIR} ./${TEST_GLOB} ${TMPDIR}/${BASENAME} > ${TMPDIR}/output;
+	run_test_with_arguments ${TEST_EXECUTABLE} ${TMPDIR}/${BASENAME} > ${TMPDIR}/output;
 
 	RESULT=$?;
 
@@ -121,26 +123,35 @@ then
 	exit ${EXIT_IGNORE};
 fi
 
-TEST_GLOB="./${TEST_EXECUTABLE}";
+TEST_EXECUTABLE="${TEST_TOOL_DIRECTORY}/${TEST_TOOL}";
 
-if ! test -x "${TEST_GLOB}";
+if ! test -x "${TEST_EXECUTABLE}";
 then
-	TEST_GLOB="${TEST_EXECUTABLE}.exe";
+	TEST_EXECUTABLE="${TEST_TOOL_DIRECTORY}/${TEST_TOOL}.exe";
+fi
+
+if ! test -x "${TEST_EXECUTABLE}";
+then
+	echo "Missing test executable: ${TEST_EXECUTABLE}";
+
+	exit ${EXIT_FAILURE};
 fi
 
 TEST_RUNNER="tests/test_runner.sh";
 
-if ! test -x ${TEST_RUNNER};
+if ! test -f "${TEST_RUNNER}";
 then
 	TEST_RUNNER="./test_runner.sh";
 fi
 
-if ! test -x ${TEST_RUNNER};
+if ! test -f "${TEST_RUNNER}";
 then
 	echo "Missing test runner: ${TEST_RUNNER}";
 
 	exit ${EXIT_FAILURE};
 fi
+
+source ${TEST_RUNNER};
 
 if ! test_glob "PREFIX" ".dd" "PREFIX.dd";
 then

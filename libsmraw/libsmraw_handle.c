@@ -769,7 +769,7 @@ int libsmraw_handle_open(
 	 */
 	if( internal_handle->io_handle->basename != NULL )
 	{
-		information_filename_length = internal_handle->io_handle->basename_size + 8;
+		information_filename_length = internal_handle->io_handle->basename_size + 9;
 
 		information_filename = libcstring_system_string_allocate(
 		                        information_filename_length + 1 );
@@ -832,11 +832,13 @@ int libsmraw_handle_open(
 
 			goto on_error;
 		}
+		information_filename_length = libcstring_system_string_length(
+		                               information_filename );
+
 		if( libsmraw_information_file_set_name(
 		     internal_handle->information_file,
 		     information_filename,
-		     libcstring_system_string_length(
-		      information_filename ),
+		     information_filename_length,
 		     error ) != 1 )
 		{
 			libcerror_error_set(
@@ -1236,7 +1238,7 @@ int libsmraw_handle_open_wide(
 	 */
 	if( internal_handle->io_handle->basename != NULL )
 	{
-		information_filename_length = internal_handle->io_handle->basename_size + 8;
+		information_filename_length = internal_handle->io_handle->basename_size + 9;
 
 		information_filename = libcstring_system_string_allocate(
 		                        information_filename_length + 1 );
@@ -1299,11 +1301,13 @@ int libsmraw_handle_open_wide(
 
 			goto on_error;
 		}
+		information_filename_length = libcstring_system_string_length(
+		                               information_filename );
+
 		if( libsmraw_information_file_set_name(
 		     internal_handle->information_file,
 		     information_filename,
-		     libcstring_system_string_length(
-		      information_filename ),
+		     information_filename_length,
 		     error ) != 1 )
 		{
 			libcerror_error_set(

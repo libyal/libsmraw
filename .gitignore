@@ -120,6 +120,7 @@ stamp-h[1-9]
 /smrawtools/smrawmount
 /smrawtools/smrawverify
 /tests/input
+/tests/smraw_test_get_version
 /tests/smraw_test_glob
 /tests/smraw_test_open_close
 /tests/smraw_test_read

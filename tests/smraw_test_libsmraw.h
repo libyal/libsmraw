@@ -19,21 +19,19 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _SMRAWTOOLS_LIBSMRAW_H )
-#define _SMRAWTOOLS_LIBSMRAW_H
+#if !defined( _SMRAW_TEST_LIBSMRAW_H )
+#define _SMRAW_TEST_LIBSMRAW_H
 
 #include <common.h>
 
 /* If Cygwin libtool DLL support is enabled set LIBSMRAW_DLL_IMPORT
  * before including libsmraw.h
  */
-#if defined( _WIN32 ) && defined( DLL_EXPORT )
-#if !defined( HAVE_STATIC_EXECUTABLES )
+#if defined( _WIN32 ) && defined( DLL_EXPORT ) && !defined( HAVE_STATIC_EXECUTABLES )
 #define LIBSMRAW_DLL_IMPORT
-#endif
 #endif
 
 #include <libsmraw.h>
 
-#endif
+#endif /* !defined( _SMRAW_TEST_LIBSMRAW_H ) */
 

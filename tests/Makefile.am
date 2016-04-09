@@ -20,17 +20,13 @@ AM_CPPFLAGS = \
 
 if HAVE_PYTHON_TESTS
 TESTS_PYSMRAW = \
-	test_pysmraw_open_close.sh \
-	test_pysmraw_seek.sh \
-	test_pysmraw_read.sh
+	test_python_functions.sh
 endif
 
 TESTS = \
 	test_glob.sh \
-	test_open_close.sh \
-	test_seek.sh \
-	test_read.sh \
-	test_write.sh \
+	test_api_functions.sh \
+	test_write_functions.sh \
 	test_smrawverify.sh \
 	$(TESTS_PYSMRAW)
 
@@ -38,27 +34,34 @@ check_SCRIPTS = \
 	pysmraw_test_open_close.py \
 	pysmraw_test_read.py \
 	pysmraw_test_seek.py \
+	test_api_functions.sh \
 	test_glob.sh \
-	test_open_close.sh \
-	test_pysmraw_open_close.sh \
-	test_pysmraw_read.sh \
-	test_pysmraw_seek.sh \
-	test_read.sh \
+	test_python_functions.sh \
 	test_runner.sh \
-	test_seek.sh \
 	test_smrawverify.sh \
-	test_write.sh
+	test_write_functions.sh
 
 EXTRA_DIST = \
 	$(check_SCRIPTS)
 
 check_PROGRAMS = \
+	smraw_test_get_version \
 	smraw_test_glob \
 	smraw_test_open_close \
 	smraw_test_read \
 	smraw_test_read_loop \
 	smraw_test_seek \
 	smraw_test_write
+
+smraw_test_get_version_SOURCES = \
+	smraw_test_get_version.c \
+	smraw_test_libcstring.h \
+	smraw_test_libsmraw.h \
+	smraw_test_unused.h
+
+smraw_test_get_version_LDADD = \
+	../libsmraw/libsmraw.la \
+	@LIBCSTRING_LIBADD@
 
 smraw_test_glob_SOURCES = \
 	smraw_test_glob.c \

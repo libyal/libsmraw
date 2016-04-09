@@ -25,20 +25,26 @@
 #include <common.h>
 
 #if !defined( SMRAW_TEST_ATTRIBUTE_UNUSED )
+
 #if defined( __GNUC__ ) && __GNUC__ >= 3
 #define SMRAW_TEST_ATTRIBUTE_UNUSED	__attribute__ ((__unused__))
+
 #else
 #define SMRAW_TEST_ATTRIBUTE_UNUSED
-#endif
-#endif
+
+#endif /* defined( __GNUC__ ) && __GNUC__ >= 3 */
+
+#endif /* !defined( SMRAW_TEST_ATTRIBUTE_UNUSED ) */
 
 #if defined( _MSC_VER )
 #define SMRAW_TEST_UNREFERENCED_PARAMETER( parameter ) \
 	UNREFERENCED_PARAMETER( parameter );
+
 #else
 #define SMRAW_TEST_UNREFERENCED_PARAMETER( parameter ) \
 	/* parameter */
-#endif
 
-#endif
+#endif /* defined( _MSC_VER ) */
+
+#endif /* !defined( _SMRAW_TEST_UNUSED_H ) */
 
