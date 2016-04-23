@@ -18,13 +18,19 @@
 #
 # You should have received a copy of the GNU Lesser General Public License
 # along with this software.  If not, see <http://www.gnu.org/licenses/>.
-#
 
 from __future__ import print_function
 import argparse
 import sys
 
 import pysmraw
+
+
+def get_filename_string(filename):
+  """Retrieves a human readable string representation of the filename."""
+  if not filename:
+    return "None"
+  return filename
 
 
 def get_mode_string(mode):
@@ -39,26 +45,28 @@ def get_mode_string(mode):
 
 
 def pysmraw_test_single_open_close_file(filename, mode):
-  if not filename:
-    filename_string = "None"
-  else:
-    filename_string = filename
+  """Tests a single open and close."""
+  description = (
+      "Testing single open close of: {0:s} with access: {1:s}"
+      "\t").format(get_filename_string(filename), get_mode_string(mode))
+  print(description, end="")
 
-  print(
-      "Testing single open close of: {0:s} with access: {1:s}\t".format(
-          filename_string, get_mode_string(mode)), end="")
-
+  error_string = None
   result = True
+
   try:
-    filenames = pysmraw.glob(filename)
     smraw_handle = pysmraw.handle()
+
+    filenames = None
+    if filename:
+      filenames = pysmraw.glob(filename)
 
     smraw_handle.open(filenames, mode)
     smraw_handle.close()
 
   except TypeError as exception:
     expected_message = (
-        "{0:s}: unsupported string object type.").format(
+        "{0:s}: argument: files must be a sequence object.").format(
             "pysmraw_handle_open")
 
     if not filename and str(exception) == expected_message:
@@ -92,14 +100,21 @@ def pysmraw_test_single_open_close_file(filename, mode):
 
 
 def pysmraw_test_multi_open_close_file(filename, mode):
-  print(
-      "Testing multi open close of: {0:s} with access: {1:s}\t".format(
-          filename, get_mode_string(mode)), end="")
+  """Tests multiple open and close."""
+  description = (
+      "Testing multi open close of: {0:s} with access: {1:s}"
+      "\t").format(get_filename_string(filename), get_mode_string(mode))
+  print(description, end="")
 
+  error_string = None
   result = True
+
   try:
-    filenames = pysmraw.glob(filename)
     smraw_handle = pysmraw.handle()
+
+    filenames = None
+    if filename:
+      filenames = pysmraw.glob(filename)
 
     smraw_handle.open(filenames, mode)
     smraw_handle.close()
@@ -121,21 +136,26 @@ def pysmraw_test_multi_open_close_file(filename, mode):
 
 
 def pysmraw_test_single_open_close_file_object(filename, mode):
-  print(
-      ("Testing single open close of file-like object of: {0:s} "
-       "with access: {1:s}\t").format(filename, get_mode_string(mode)), end="")
+  """Tests a single file-like object open and close."""
+  description = (
+      "Testing single open close of file-like object of: {0:s} with access: "
+      "{1:s}\t").format(get_filename_string(filename), get_mode_string(mode))
+  print(description, end="")
 
+  error_string = None
   result = True
+
   try:
-    filenames = pysmraw.glob(filename)
     file_objects = []
-    for filename in filenames:
-      file_object = open(filename, "rb")
-      file_objects.append(file_object)
+    if filename:
+      filenames = pysmraw.glob(filename)
+      for filename in filenames:
+        file_object = open(filename, "rb")
+        file_objects.append(file_object)
 
     smraw_handle = pysmraw.handle()
 
-    smraw_handle.open_file_object(file_objects, mode)
+    smraw_handle.open_file_objects(file_objects, mode)
     smraw_handle.close()
 
   except Exception as exception:
@@ -154,22 +174,28 @@ def pysmraw_test_single_open_close_file_object(filename, mode):
 
 def pysmraw_test_single_open_close_file_object_with_dereference(
     filename, mode):
-  print(
-      ("Testing single open close of file-like object with dereference "
-       "of: {0:s} with access: {1:s}\t").format(
-          filename, get_mode_string(mode)), end="")
+  """Tests single file-like object open and close with dereference."""
+  description = (
+      "Testing single open close of file-like object with dereference of: "
+      "{0:s} with access: {1:s}\t").format(
+          get_filename_string(filename), get_mode_string(mode))
+  print(description, end="")
 
+  error_string = None
   result = True
+
   try:
-    filenames = pysmraw.glob(filename)
     file_objects = []
-    for filename in filenames:
-      file_object = open(filename, "rb")
-      file_objects.append(file_object)
+    if filename:
+      filenames = pysmraw.glob(filename)
+      file_objects = []
+      for filename in filenames:
+        file_object = open(filename, "rb")
+        file_objects.append(file_object)
 
     smraw_handle = pysmraw.handle()
 
-    smraw_handle.open_file_object(file_objects, mode)
+    smraw_handle.open_file_objects(file_objects, mode)
 
     for file_object in file_objects:
       del file_object
@@ -192,23 +218,30 @@ def pysmraw_test_single_open_close_file_object_with_dereference(
 
 
 def pysmraw_test_multi_open_close_file_object(filename, mode):
-  print(
-      ("Testing multi open close of file-like object of: {0:s} "
-       "with access: {1:s}\t").format(filename, get_mode_string(mode)), end="")
+  """Tests multiple file-like object open and close."""
+  description = (
+      "Testing multi open close of file-like object of: {0:s} "
+      "with access: {1:s}\t").format(
+          get_filename_string(filename), get_mode_string(mode))
+  print(description, end="")
 
+  error_string = None
   result = True
+
   try:
-    filenames = pysmraw.glob(filename)
     file_objects = []
-    for filename in filenames:
-      file_object = open(filename, "rb")
-      file_objects.append(file_object)
+    if filename:
+      filenames = pysmraw.glob(filename)
+      file_objects = []
+      for filename in filenames:
+        file_object = open(filename, "rb")
+        file_objects.append(file_object)
 
     smraw_handle = pysmraw.handle()
 
-    smraw_handle.open_file_object(file_objects, mode)
+    smraw_handle.open_file_objects(file_objects, mode)
     smraw_handle.close()
-    smraw_handle.open_file_object(file_objects, mode)
+    smraw_handle.open_file_objects(file_objects, mode)
     smraw_handle.close()
 
   except Exception as exception:
@@ -226,8 +259,8 @@ def pysmraw_test_multi_open_close_file_object(filename, mode):
 
 
 def main():
-  args_parser = argparse.ArgumentParser(description=(
-      "Tests open and close."))
+  args_parser = argparse.ArgumentParser(
+      description="Tests open and close.")
 
   args_parser.add_argument(
       "source", nargs="?", action="store", metavar="FILENAME",
@@ -270,4 +303,3 @@ if __name__ == "__main__":
     sys.exit(1)
   else:
     sys.exit(0)
-

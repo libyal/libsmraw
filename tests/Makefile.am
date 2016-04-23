@@ -31,6 +31,7 @@ TESTS = \
 	$(TESTS_PYSMRAW)
 
 check_SCRIPTS = \
+	pysmraw_test_get_version.py \
 	pysmraw_test_open_close.py \
 	pysmraw_test_read.py \
 	pysmraw_test_seek.py \

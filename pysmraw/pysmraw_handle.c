@@ -758,6 +758,9 @@ PyObject *pysmraw_handle_open(
 		{
 			filename = (wchar_t *) PyUnicode_AsUnicode(
 			                        string_object );
+
+			filename_length = PyUnicode_GetSize(
+			                   string_object );
 		}
 		else
 		{
@@ -792,21 +795,26 @@ PyObject *pysmraw_handle_open(
 			}
 			filename = (wchar_t *) PyUnicode_AsUnicode(
 			                        filename_string_object );
+
+			filename_length = PyUnicode_GetSize(
+			                   filename_string_object );
 		}
-		filename_length = libcstring_wide_string_length(
-		                   filename );
 #else
-		/* A Unicode string object can be converted into UFT-8 formatted narrow string
+		/* A Unicode string object can be converted into UTF-8 formatted narrow string
 		 */
 #if PY_MAJOR_VERSION >= 3
 		filename = PyBytes_AsString(
 		            string_object );
+
+		filename_length = PyBytes_Size(
+		                   string_object );
 #else
 		filename = PyString_AsString(
 		            string_object );
-#endif
-		filename_length = libcstring_narrow_string_length(
-		                   filename );
+
+		filename_length = PyString_Size(
+		                   string_object );
+#endif /* PY_MAJOR_VERSION >= 3 */
 #endif
 
 #if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )

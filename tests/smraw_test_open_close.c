@@ -35,15 +35,96 @@
  * Returns 1 if successful, 0 if not or -1 on error
  */
 int smraw_test_single_open_close_handle(
-     libcstring_system_character_t *filenames[],
-     int number_of_filenames,
+     libcstring_system_character_t *filename,
      int access_flags,
      int expected_result )
 {
-	libcerror_error_t *error  = NULL;
-	libsmraw_handle_t *handle = NULL;
-	static char *function     = "smraw_test_single_open_close_handle";
-	int result                = 0;
+	libcstring_system_character_t **filenames = NULL;
+	libcerror_error_t *error                  = NULL;
+	libsmraw_handle_t *handle                 = NULL;
+	static char *function                     = "smraw_test_single_open_close_handle";
+	char *access_string                       = NULL;
+	size_t filename_length                    = 0;
+	int number_of_filenames                   = 0;
+	int result                                = 0;
+
+	if( access_flags == LIBSMRAW_OPEN_READ )
+	{
+		access_string = "read";
+	}
+	else if( access_flags == LIBSMRAW_OPEN_WRITE )
+	{
+		access_string = "write";
+	}
+	else
+	{
+		access_string = "UNKNOWN";
+	}
+	fprintf(
+	 stdout,
+	 "Testing single open close of: " );
+
+	if( filename == NULL )
+	{
+		fprintf(
+		 stdout,
+		 "NULL" );
+
+		filename_length = 0;
+	}
+	else
+	{
+		fprintf(
+		 stdout,
+		 "%" PRIs_LIBCSTRING_SYSTEM "",
+		 filename );
+
+		filename_length = libcstring_system_string_length(
+		                   filename );
+
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+		if( libsmraw_glob_wide(
+		     filename,
+		     filename_length,
+		     &filenames,
+		     &number_of_filenames,
+		     &error ) != 1 )
+#else
+		if( libsmraw_glob(
+		     filename,
+		     filename_length,
+		     &filenames,
+		     &number_of_filenames,
+		     &error ) != 1 )
+#endif
+		{
+			fprintf(
+			 stderr,
+			 "Unable to glob filenames.\n" );
+
+			goto on_error;
+		}
+		if( number_of_filenames < 0 )
+		{
+			fprintf(
+			 stderr,
+			 "Invalid number of filenames.\n" );
+
+			goto on_error;
+		}
+		else if( number_of_filenames == 0 )
+		{
+			fprintf(
+			 stderr,
+			 "Missing filenames.\n" );
+
+			goto on_error;
+		}
+	}
+	fprintf(
+	 stdout,
+	 " with access: %s\t",
+	 access_string );
 
 	if( libsmraw_handle_initialize(
 	     &handle,
@@ -120,6 +201,27 @@ int smraw_test_single_open_close_handle(
 	 stdout,
 	 "\n" );
 
+	if( filenames != NULL )
+	{
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+		if( libsmraw_glob_wide_free(
+		     filenames,
+		     number_of_filenames,
+		     &error ) != 1 )
+#else
+		if( libsmraw_glob_free(
+		     filenames,
+		     number_of_filenames,
+		     &error ) != 1 )
+#endif
+		{
+			fprintf(
+			 stderr,
+			 "Unable to free glob.\n" );
+
+			goto on_error;
+		}
+	}
 	if( error != NULL )
 	{
 		libcerror_error_backtrace_fprint(
@@ -145,6 +247,20 @@ on_error:
 		 &handle,
 		 NULL);
 	}
+	if( filenames != NULL )
+	{
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+		libsmraw_glob_wide_free(
+		 filenames,
+		 number_of_filenames,
+		 NULL );
+#else
+		libsmraw_glob_free(
+		 filenames,
+		 number_of_filenames,
+		 NULL );
+#endif
+	}
 	return( -1 );
 }
 
@@ -152,15 +268,96 @@ on_error:
  * Returns 1 if successful, 0 if not or -1 on error
  */
 int smraw_test_multi_open_close_handle(
-     libcstring_system_character_t *filenames[],
-     int number_of_filenames,
+     libcstring_system_character_t *filename,
      int access_flags,
      int expected_result )
 {
-	libcerror_error_t *error  = NULL;
-	libsmraw_handle_t *handle = NULL;
-	static char *function     = "smraw_test_multi_open_close_handle";
-	int result                = 0;
+	libcstring_system_character_t **filenames = NULL;
+	libcerror_error_t *error                  = NULL;
+	libsmraw_handle_t *handle                 = NULL;
+	static char *function                     = "smraw_test_multi_open_close_handle";
+	char *access_string                       = NULL;
+	size_t filename_length                    = 0;
+	int number_of_filenames                   = 0;
+	int result                                = 0;
+
+	if( access_flags == LIBSMRAW_OPEN_READ )
+	{
+		access_string = "read";
+	}
+	else if( access_flags == LIBSMRAW_OPEN_WRITE )
+	{
+		access_string = "write";
+	}
+	else
+	{
+		access_string = "UNKNOWN";
+	}
+	fprintf(
+	 stdout,
+	 "Testing multi open close of: " );
+
+	if( filename == NULL )
+	{
+		fprintf(
+		 stdout,
+		 "NULL" );
+
+		filename_length = 0;
+	}
+	else
+	{
+		fprintf(
+		 stdout,
+		 "%" PRIs_LIBCSTRING_SYSTEM "",
+		 filename );
+
+		filename_length = libcstring_system_string_length(
+		                   filename );
+
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+		if( libsmraw_glob_wide(
+		     filename,
+		     filename_length,
+		     &filenames,
+		     &number_of_filenames,
+		     &error ) != 1 )
+#else
+		if( libsmraw_glob(
+		     filename,
+		     filename_length,
+		     &filenames,
+		     &number_of_filenames,
+		     &error ) != 1 )
+#endif
+		{
+			fprintf(
+			 stderr,
+			 "Unable to glob filenames.\n" );
+
+			goto on_error;
+		}
+		if( number_of_filenames < 0 )
+		{
+			fprintf(
+			 stderr,
+			 "Invalid number of filenames.\n" );
+
+			goto on_error;
+		}
+		else if( number_of_filenames == 0 )
+		{
+			fprintf(
+			 stderr,
+			 "Missing filenames.\n" );
+
+			goto on_error;
+		}
+	}
+	fprintf(
+	 stdout,
+	 " with access: %s\t",
+	 access_string );
 
 	if( libsmraw_handle_initialize(
 	     &handle,
@@ -268,6 +465,27 @@ int smraw_test_multi_open_close_handle(
 	 stdout,
 	 "\n" );
 
+	if( filenames != NULL )
+	{
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+		if( libsmraw_glob_wide_free(
+		     filenames,
+		     number_of_filenames,
+		     &error ) != 1 )
+#else
+		if( libsmraw_glob_free(
+		     filenames,
+		     number_of_filenames,
+		     &error ) != 1 )
+#endif
+		{
+			fprintf(
+			 stderr,
+			 "Unable to free glob.\n" );
+
+			goto on_error;
+		}
+	}
 	if( error != NULL )
 	{
 		libcerror_error_backtrace_fprint(
@@ -293,6 +511,20 @@ on_error:
 		 &handle,
 		 NULL);
 	}
+	if( filenames != NULL )
+	{
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+		libsmraw_glob_wide_free(
+		 filenames,
+		 number_of_filenames,
+		 NULL );
+#else
+		libsmraw_glob_free(
+		 filenames,
+		 number_of_filenames,
+		 NULL );
+#endif
+	}
 	return( -1 );
 }
 
@@ -304,10 +536,8 @@ int wmain( int argc, wchar_t * const argv[] )
 int main( int argc, char * const argv[] )
 #endif
 {
-	libcstring_system_character_t **filenames = NULL;
-	libcerror_error_t *error                  = NULL;
-	libcstring_system_integer_t option        = 0;
-	int number_of_filenames                   = 0;
+	libcstring_system_character_t *source = NULL;
+	libcstring_system_integer_t option    = 0;
 
 	while( ( option = libcsystem_getopt(
 	                   argc,
@@ -334,6 +564,8 @@ int main( int argc, char * const argv[] )
 
 		return( EXIT_FAILURE );
 	}
+	source = argv[ optind ];
+
 #if defined( HAVE_DEBUG_OUTPUT ) && defined( SMRAW_TEST_OPEN_CLOSE_VERBOSE )
 	libsmraw_notify_set_verbose(
 	 1 );
@@ -342,56 +574,10 @@ int main( int argc, char * const argv[] )
 	 NULL );
 #endif
 
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
-	if( libsmraw_glob_wide(
-	     argv[ 1 ],
-	     libcstring_wide_string_length(
-	      argv[ 1 ] ),
-	     &filenames,
-	     &number_of_filenames,
-	     &error ) != 1 )
-#else
-	if( libsmraw_glob(
-	     argv[ 1 ],
-	     libcstring_narrow_string_length(
-	      argv[ 1 ] ),
-	     &filenames,
-	     &number_of_filenames,
-	     &error ) != 1 )
-#endif
-	{
-		fprintf(
-		 stderr,
-		 "Unable to glob filenames.\n" );
-
-		goto on_error;
-	}
-	if( number_of_filenames < 0 )
-	{
-		fprintf(
-		 stderr,
-		 "Invalid number of filenames.\n" );
-
-		goto on_error;
-	}
-	else if( number_of_filenames == 0 )
-	{
-		fprintf(
-		 stderr,
-		 "Missing filenames.\n" );
-
-		goto on_error;
-	}
-	/* Case 0: single open and close of a handle using filenames
+	/* Case 0: single open and close of a handle using filename
 	 */
-	fprintf(
-	 stdout,
-	 "Testing single open close of: %s with access: read\t",
-	 filenames[ 0 ] );
-
 	if( smraw_test_single_open_close_handle(
-	     filenames,
-	     number_of_filenames,
+	     source,
 	     LIBSMRAW_OPEN_READ,
 	     1 ) != 1 )
 	{
@@ -399,15 +585,10 @@ int main( int argc, char * const argv[] )
 		 stderr,
 		 "Unable to test single open close.\n" );
 
-		goto on_error;
+		return( EXIT_FAILURE );
 	}
-	fprintf(
-	 stdout,
-	 "Testing single open close of: NULL with access: read\t" );
-
 	if( smraw_test_single_open_close_handle(
 	     NULL,
-	     0,
 	     LIBSMRAW_OPEN_READ,
 	     -1 ) != 1 )
 	{
@@ -415,18 +596,12 @@ int main( int argc, char * const argv[] )
 		 stderr,
 		 "Unable to test single open close.\n" );
 
-		goto on_error;
+		return( EXIT_FAILURE );
 	}
-	/* Case 1: multiple open and close of a handle using filenames
+	/* Case 1: multiple open and close of a handle using filename
 	 */
-	fprintf(
-	 stdout,
-	 "Testing multi open close of: %s with access: read\t",
-	 filenames[ 0 ] );
-
 	if( smraw_test_multi_open_close_handle(
-	     filenames,
-	     number_of_filenames,
+	     source,
 	     LIBSMRAW_OPEN_READ,
 	     1 ) != 1 )
 	{
@@ -434,51 +609,8 @@ int main( int argc, char * const argv[] )
 		 stderr,
 		 "Unable to test multi open close.\n" );
 
-		goto on_error;
-	}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
-	if( libsmraw_glob_wide_free(
-	     filenames,
-	     number_of_filenames,
-	     &error ) != 1 )
-#else
-	if( libsmraw_glob_free(
-	     filenames,
-	     number_of_filenames,
-	     &error ) != 1 )
-#endif
-	{
-		fprintf(
-		 stderr,
-		 "Unable to free glob.\n" );
-
-		goto on_error;
+		return( EXIT_FAILURE );
 	}
 	return( EXIT_SUCCESS );
-
-on_error:
-	if( error != NULL )
-	{
-		libsmraw_error_backtrace_fprint(
-		 error,
-		 stderr );
-		libsmraw_error_free(
-		 &error );
-	}
-	if( filenames != NULL )
-	{
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
-		libsmraw_glob_wide_free(
-		 filenames,
-		 number_of_filenames,
-		 NULL );
-#else
-		libsmraw_glob_free(
-		 filenames,
-		 number_of_filenames,
-		 NULL );
-#endif
-	}
-	return( EXIT_FAILURE );
 }
 

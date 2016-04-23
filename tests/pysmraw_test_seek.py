@@ -18,7 +18,6 @@
 #
 # You should have received a copy of the GNU Lesser General Public License
 # along with this software.  If not, see <http://www.gnu.org/licenses/>.
-#
 
 from __future__ import print_function
 import argparse
@@ -43,11 +42,12 @@ def get_whence_string(whence):
 
 def pysmraw_test_seek_offset(
     smraw_handle, input_offset, input_whence, expected_offset):
+  """Tests seeking an offset."""
+  description = "Testing seek of offset: {0:d} and whence: {1:s}\t".format(
+      input_offset, get_whence_string(input_whence))
+  print(description, end="")
 
-  print("Testing seek of offset: {0:d} and whence: {1:s}\t".format(
-      input_offset, get_whence_string(input_whence)), end="")
-
-  error_string = ""
+  error_string = None
   result = True
   try:
     smraw_handle.seek(input_offset, input_whence)
@@ -72,22 +72,29 @@ def pysmraw_test_seek_offset(
 
 
 def pysmraw_test_seek(smraw_handle):
+  """Tests the seek function."""
   media_size = smraw_handle.media_size
 
   # Test: SEEK_SET offset: 0
   # Expected result: 0
-  if not pysmraw_test_seek_offset(smraw_handle, 0, os.SEEK_SET, 0):
+  seek_offset = 0
+
+  if not pysmraw_test_seek_offset(
+      smraw_handle, seek_offset, os.SEEK_SET, seek_offset):
     return False
 
   # Test: SEEK_SET offset: <media_size>
   # Expected result: <media_size>
+  seek_offset = media_size
+
   if not pysmraw_test_seek_offset(
-      smraw_handle, media_size, os.SEEK_SET, media_size):
+      smraw_handle, seek_offset, os.SEEK_SET, seek_offset):
     return False
 
   # Test: SEEK_SET offset: <media_size / 5>
   # Expected result: <media_size / 5>
   seek_offset, _ = divmod(media_size, 5)
+
   if not pysmraw_test_seek_offset(
       smraw_handle, seek_offset, os.SEEK_SET, seek_offset):
     return False
@@ -95,6 +102,7 @@ def pysmraw_test_seek(smraw_handle):
   # Test: SEEK_SET offset: <media_size + 987>
   # Expected result: <media_size + 987>
   seek_offset = media_size + 987
+
   if not pysmraw_test_seek_offset(
       smraw_handle, seek_offset, os.SEEK_SET, seek_offset):
     return False
@@ -102,23 +110,31 @@ def pysmraw_test_seek(smraw_handle):
   # Test: SEEK_SET offset: -987
   # Expected result: -1
   seek_offset = -987
-  if not pysmraw_test_seek_offset(smraw_handle, seek_offset, os.SEEK_SET, -1):
+
+  if not pysmraw_test_seek_offset(
+      smraw_handle, seek_offset, os.SEEK_SET, -1):
     return False
 
   # Test: SEEK_CUR offset: 0
   # Expected result: <media_size + 987>
-  if not pysmraw_test_seek_offset(smraw_handle, 0, os.SEEK_CUR, media_size + 987):
+  seek_offset = 0
+
+  if not pysmraw_test_seek_offset(
+      smraw_handle, seek_offset, os.SEEK_CUR, media_size + 987):
     return False
 
   # Test: SEEK_CUR offset: <-1 * (media_size + 987)>
   # Expected result: 0
+  seek_offset = -1 * (media_size + 987)
+
   if not pysmraw_test_seek_offset(
-      smraw_handle, -1 * (media_size + 987), os.SEEK_CUR, 0):
+      smraw_handle, seek_offset, os.SEEK_CUR, 0):
     return False
 
   # Test: SEEK_CUR offset: <media_size / 3>
   # Expected result: <media_size / 3>
   seek_offset, _ = divmod(media_size, 3)
+
   if not pysmraw_test_seek_offset(
       smraw_handle, seek_offset, os.SEEK_CUR, seek_offset):
     return False
@@ -127,57 +143,74 @@ def pysmraw_test_seek(smraw_handle):
     # Test: SEEK_CUR offset: <-2 * (media_size / 3)>
     # Expected result: 0
     seek_offset, _ = divmod(media_size, 3)
-    if not pysmraw_test_seek_offset(smraw_handle, -2 * seek_offset, os.SEEK_CUR, 0):
+
+    if not pysmraw_test_seek_offset(
+        smraw_handle, -2 * seek_offset, os.SEEK_CUR, 0):
       return False
 
   else:
     # Test: SEEK_CUR offset: <-2 * (media_size / 3)>
     # Expected result: -1
     seek_offset, _ = divmod(media_size, 3)
+
     if not pysmraw_test_seek_offset(
         smraw_handle, -2 * seek_offset, os.SEEK_CUR, -1):
       return False
 
   # Test: SEEK_END offset: 0
   # Expected result: <media_size>
-  if not pysmraw_test_seek_offset(smraw_handle, 0, os.SEEK_END, media_size):
+  seek_offset = 0
+
+  if not pysmraw_test_seek_offset(
+      smraw_handle, seek_offset, os.SEEK_END, media_size):
     return False
 
   # Test: SEEK_END offset: <-1 * media_size>
   # Expected result: 0
-  if not pysmraw_test_seek_offset(smraw_handle, -1 * media_size, os.SEEK_END, 0):
+  seek_offset = -1 * media_size
+
+  if not pysmraw_test_seek_offset(
+      smraw_handle, seek_offset, os.SEEK_END, 0):
     return False
 
   # Test: SEEK_END offset: <-1 * (media_size / 4)>
   # Expected result: <media_size - (media_size / 4)>
   seek_offset, _ = divmod(media_size, 4)
+
   if not pysmraw_test_seek_offset(
       smraw_handle, -1 * seek_offset, os.SEEK_END, media_size - seek_offset):
     return False
 
   # Test: SEEK_END offset: 542
   # Expected result: <media_size + 542>
-  if not pysmraw_test_seek_offset(smraw_handle, 542, os.SEEK_END, media_size + 542):
+  seek_offset = 542
+
+  if not pysmraw_test_seek_offset(
+      smraw_handle, seek_offset, os.SEEK_END, media_size + 542):
     return False
 
   # Test: SEEK_END offset: <-1 * (media_size + 542)>
   # Expected result: -1
+  seek_offset = -1 * (media_size + 542)
+
   if not pysmraw_test_seek_offset(
-      smraw_handle, -1 * (media_size + 542), os.SEEK_END, -1):
+      smraw_handle, seek_offset, os.SEEK_END, -1):
     return False
 
   # Test: UNKNOWN (88) offset: 0
   # Expected result: -1
-  if not pysmraw_test_seek_offset(smraw_handle, 0, 88, -1):
+  if not pysmraw_test_seek_offset(
+      smraw_handle, 0, 88, -1):
     return False
 
   return True
 
 
 def pysmraw_test_seek_file(filename):
-  filenames = pysmraw.glob(filename)
+  """Tests the seek function with a file."""
   smraw_handle = pysmraw.handle()
 
+  filenames = pysmraw.glob(filename)
   smraw_handle.open(filenames, "r")
   result = pysmraw_test_seek(smraw_handle)
   smraw_handle.close()
@@ -186,16 +219,16 @@ def pysmraw_test_seek_file(filename):
 
 
 def pysmraw_test_seek_file_object(filename):
+  """Tests the seek function with a file-like object."""
+  smraw_handle = pysmraw.handle()
+
   filenames = pysmraw.glob(filename)
   file_objects = []
   for filename in filenames:
     file_object = open(filename, "rb")
     file_objects.append(file_object)
 
-  smraw_handle = pysmraw.handle()
-
   smraw_handle.open_file_objects(file_objects, "r")
-
   result = pysmraw_test_seek(smraw_handle)
   smraw_handle.close()
 
@@ -203,11 +236,13 @@ def pysmraw_test_seek_file_object(filename):
 
 
 def pysmraw_test_seek_file_no_open(filename):
-  print("Testing seek of offset without open:\t", end="")
+  """Tests the seek function with a file without open."""
+  description = "Testing seek of offset without open:\t"
+  print(description, end="")
 
   smraw_handle = pysmraw.handle()
 
-  error_string = ""
+  error_string = None
   result = False
   try:
     smraw_handle.seek(0, os.SEEK_SET)
@@ -226,8 +261,8 @@ def pysmraw_test_seek_file_no_open(filename):
 
 
 def main():
-  args_parser = argparse.ArgumentParser(description=(
-      "Tests seek."))
+  args_parser = argparse.ArgumentParser(
+      description="Tests seek.")
 
   args_parser.add_argument(
       "source", nargs="?", action="store", metavar="FILENAME",
@@ -259,4 +294,3 @@ if __name__ == "__main__":
     sys.exit(1)
   else:
     sys.exit(0)
-

@@ -119,11 +119,12 @@ int smraw_test_seek_offset(
 /* Tests seeking in a handle
  * Returns 1 if successful, 0 if not or -1 on error
  */
-int smraw_test_seek(
+int smraw_test_seek_handle(
      libsmraw_handle_t *handle,
      size64_t media_size )
 {
-	int result = 0;
+	size64_t seek_offset = 0;
+	int result           = 0;
 
 	if( handle == NULL )
 	{
@@ -140,11 +141,13 @@ int smraw_test_seek(
 	/* Test: SEEK_SET offset: 0
 	 * Expected result: 0
 	 */
+	seek_offset = 0;
+
 	result = smraw_test_seek_offset(
 	          handle,
-	          0,
+	          seek_offset,
 	          SEEK_SET,
-	          0 );
+	          seek_offset );
 
 	if( result != 1 )
 	{
@@ -157,11 +160,13 @@ int smraw_test_seek(
 	/* Test: SEEK_SET offset: <media_size>
 	 * Expected result: <media_size>
 	 */
+	seek_offset = (off64_t) media_size;
+
 	result = smraw_test_seek_offset(
 	          handle,
-	          (off64_t) media_size,
+	          seek_offset,
 	          SEEK_SET,
-	          (off64_t) media_size );
+	          seek_offset );
 
 	if( result != 1 )
 	{
@@ -174,11 +179,13 @@ int smraw_test_seek(
 	/* Test: SEEK_SET offset: <media_size / 5>
 	 * Expected result: <media_size / 5>
 	 */
+	seek_offset = (off64_t) ( media_size / 5 );
+
 	result = smraw_test_seek_offset(
 	          handle,
-	          (off64_t) ( media_size / 5 ),
+	          seek_offset,
 	          SEEK_SET,
-	          (off64_t) ( media_size / 5 ) );
+	          seek_offset );
 
 	if( result != 1 )
 	{
@@ -191,11 +198,13 @@ int smraw_test_seek(
 	/* Test: SEEK_SET offset: <media_size + 987>
 	 * Expected result: <media_size + 987>
 	 */
+	seek_offset = (off64_t) ( media_size + 987 );
+
 	result = smraw_test_seek_offset(
 	          handle,
-	          (off64_t) ( media_size + 987 ),
+	          seek_offset,
 	          SEEK_SET,
-	          (off64_t) ( media_size + 987 ) );
+	          seek_offset );
 
 	if( result != 1 )
 	{
@@ -208,9 +217,11 @@ int smraw_test_seek(
 	/* Test: SEEK_SET offset: -987
 	 * Expected result: -1
 	 */
+	seek_offset = -987;
+
 	result = smraw_test_seek_offset(
 	          handle,
-	          -987,
+	          seek_offset,
 	          SEEK_SET,
 	          -1 );
 
@@ -225,9 +236,11 @@ int smraw_test_seek(
 	/* Test: SEEK_CUR offset: 0
 	 * Expected result: <media_size + 987>
 	 */
+	seek_offset = 0;
+
 	result = smraw_test_seek_offset(
 	          handle,
-	          0,
+	          seek_offset,
 	          SEEK_CUR,
 	          (off64_t) ( media_size + 987 ) );
 
@@ -242,9 +255,11 @@ int smraw_test_seek(
 	/* Test: SEEK_CUR offset: <-1 * (media_size + 987)>
 	 * Expected result: 0
 	 */
+	seek_offset = -1 * (off64_t) ( media_size + 987 );
+
 	result = smraw_test_seek_offset(
 	          handle,
-	          -1 * (off64_t) ( media_size + 987 ),
+	          seek_offset,
 	          SEEK_CUR,
 	          0 );
 
@@ -259,11 +274,13 @@ int smraw_test_seek(
 	/* Test: SEEK_CUR offset: <media_size / 3>
 	 * Expected result: <media_size / 3>
 	 */
+	seek_offset = (off64_t) ( media_size / 3 );
+
 	result = smraw_test_seek_offset(
 	          handle,
-	          (off64_t) ( media_size / 3 ),
+	          seek_offset,
 	          SEEK_CUR,
-	          (off64_t) ( media_size / 3 ) );
+	          seek_offset );
 
 	if( result != 1 )
 	{
@@ -273,6 +290,8 @@ int smraw_test_seek(
 
 		return( result );
 	}
+	seek_offset = -2 * (off64_t) ( media_size / 3 );
+
 	if( media_size == 0 )
 	{
 		/* Test: SEEK_CUR offset: <-2 * (media_size / 3)>
@@ -280,7 +299,7 @@ int smraw_test_seek(
 		 */
 		result = smraw_test_seek_offset(
 		          handle,
-		          -2 * (off64_t) ( media_size / 3 ),
+		          seek_offset,
 		          SEEK_CUR,
 		          0 );
 
@@ -300,7 +319,7 @@ int smraw_test_seek(
 		 */
 		result = smraw_test_seek_offset(
 		          handle,
-		          -2 * (off64_t) ( media_size / 3 ),
+		          seek_offset,
 		          SEEK_CUR,
 		          -1 );
 
@@ -316,9 +335,11 @@ int smraw_test_seek(
 	/* Test: SEEK_END offset: 0
 	 * Expected result: <media_size>
 	 */
+	seek_offset = 0;
+
 	result = smraw_test_seek_offset(
 	          handle,
-	          0,
+	          seek_offset,
 	          SEEK_END,
 	          (off64_t) media_size );
 
@@ -333,9 +354,11 @@ int smraw_test_seek(
 	/* Test: SEEK_END offset: <-1 * media_size>
 	 * Expected result: 0
 	 */
+	seek_offset = -1 * (off64_t) media_size;
+
 	result = smraw_test_seek_offset(
 	          handle,
-	          -1 * (off64_t) media_size,
+	          seek_offset,
 	          SEEK_END,
 	          0 );
 
@@ -350,11 +373,13 @@ int smraw_test_seek(
 	/* Test: SEEK_END offset: <-1 * (media_size / 4)>
 	 * Expected result: <media_size - (media_size / 4)>
 	 */
+	seek_offset = (off64_t) ( media_size / 4 );
+
 	result = smraw_test_seek_offset(
 	          handle,
-	          -1 * (off64_t) ( media_size / 4 ),
+	          -1 * seek_offset,
 	          SEEK_END,
-	          (off64_t) media_size - (off64_t) ( media_size / 4 ) );
+	          (off64_t) media_size - seek_offset );
 
 	if( result != 1 )
 	{
@@ -367,9 +392,11 @@ int smraw_test_seek(
 	/* Test: SEEK_END offset: 542
 	 * Expected result: <media_size + 542>
 	 */
+	seek_offset = 542;
+
 	result = smraw_test_seek_offset(
 	          handle,
-	          542,
+	          seek_offset,
 	          SEEK_END,
 	          (off64_t) ( media_size + 542 ) );
 
@@ -384,9 +411,11 @@ int smraw_test_seek(
 	/* Test: SEEK_END offset: <-1 * (media_size + 542)>
 	 * Expected result: -1
 	 */
+	seek_offset = -1 * (off64_t) ( media_size + 542 );
+
 	result = smraw_test_seek_offset(
 	          handle,
-	          -1 * (off64_t) ( media_size + 542 ),
+	          seek_offset,
 	          SEEK_END,
 	          -1 );
 
@@ -421,34 +450,31 @@ int smraw_test_seek(
 /* Tests seeking in a handle
  * Returns 1 if successful, 0 if not or -1 on error
  */
-int smraw_test_seek_handle(
+int smraw_test_seek(
      libcstring_system_character_t *source,
      libcerror_error_t **error )
 {
 	libcstring_system_character_t **filenames = NULL;
 	libsmraw_handle_t *handle                 = NULL;
 	size64_t media_size                       = 0;
-	size_t string_length                      = 0;
+	size_t source_length                      = 0;
 	int number_of_filenames                   = 0;
 	int result                                = 0;
 
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
-	string_length = libcstring_wide_string_length(
+	source_length = libcstring_system_string_length(
 	                 source );
 
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
 	if( libsmraw_glob_wide(
 	     source,
-	     string_length,
+	     source_length,
 	     &filenames,
 	     &number_of_filenames,
 	     error ) != 1 )
 #else
-	string_length = libcstring_narrow_string_length(
-	                 source );
-
 	if( libsmraw_glob(
 	     source,
-	     string_length,
+	     source_length,
 	     &filenames,
 	     &number_of_filenames,
 	     error ) != 1 )
@@ -489,14 +515,14 @@ int smraw_test_seek_handle(
 #if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
 	if( libsmraw_handle_open_wide(
 	     handle,
-	     (wchar_t * const *) filenames,
+	     filenames,
 	     number_of_filenames,
 	     LIBSMRAW_OPEN_READ,
 	     error ) != 1 )
 #else
 	if( libsmraw_handle_open(
 	     handle,
-	     (char * const *) filenames,
+	     filenames,
 	     number_of_filenames,
 	     LIBSMRAW_OPEN_READ,
 	     error ) != 1 )
@@ -519,7 +545,7 @@ int smraw_test_seek_handle(
 
 		goto on_error;
 	}
-	result = smraw_test_seek(
+	result = smraw_test_seek_handle(
 	          handle,
 	          media_size );
 
@@ -601,7 +627,7 @@ on_error:
 /* Tests seeking in a handle without opening it
  * Returns 1 if successful, 0 if not or -1 on error
  */
-int smraw_test_seek_handle_no_open(
+int smraw_test_seek_no_open(
      libcstring_system_character_t *source SMRAW_TEST_ATTRIBUTE_UNUSED,
      libcerror_error_t **error )
 {
@@ -696,7 +722,6 @@ int main( int argc, char * const argv[] )
 	libcerror_error_t *error              = NULL;
 	libcstring_system_character_t *source = NULL;
 	libcstring_system_integer_t option    = 0;
-	int result                            = 0;
 
 	while( ( option = libcsystem_getopt(
 	                   argc,
@@ -732,27 +757,23 @@ int main( int argc, char * const argv[] )
 	 stderr,
 	 NULL );
 #endif
-	result = smraw_test_seek_handle(
-	          source,
-	          &error );
-
-	if( result != 1 )
+	if( smraw_test_seek(
+	     source,
+	     &error ) != 1 )
 	{
 		fprintf(
 		 stderr,
-		 "Unable to seek in handle.\n" );
+		 "Unable to seek in file.\n" );
 
 		goto on_error;
 	}
-	result = smraw_test_seek_handle_no_open(
-	          source,
-	          &error );
-
-	if( result != 1 )
+	if( smraw_test_seek_no_open(
+	     source,
+	     &error ) != 1 )
 	{
 		fprintf(
 		 stderr,
-		 "Unable to seek in handle without open.\n" );
+		 "Unable to seek in file without open.\n" );
 
 		goto on_error;
 	}

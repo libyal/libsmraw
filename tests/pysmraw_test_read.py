@@ -18,7 +18,6 @@
 #
 # You should have received a copy of the GNU Lesser General Public License
 # along with this software.  If not, see <http://www.gnu.org/licenses/>.
-#
 
 from __future__ import print_function
 import argparse
@@ -42,16 +41,15 @@ def get_whence_string(whence):
 
 
 def pysmraw_test_seek_offset_and_read_buffer(
-    smraw_handle, input_offset, input_whence, input_size, expected_offset,
-    expected_size):
+    smraw_handle, input_offset, input_whence, input_size,
+    expected_offset, expected_size):
+  """Tests seeking an offset and reading a buffer."""
+  description = (
+      "Testing reading buffer at offset: {0:d}, whence: {1:s} of size: {2:d}"
+      "\t").format(input_offset, get_whence_string(input_whence), input_size)
+  print(description, end="")
 
-  print(
-      ("Testing reading buffer at offset: {0:d}, whence: {1:s} and "
-       "size: {2:d}\t").format(
-          input_offset, get_whence_string(input_whence), input_size),
-      end="")
-
-  error_string = ""
+  error_string = None
   result = True
   try:
     smraw_handle.seek(input_offset, input_whence)
@@ -81,7 +79,7 @@ def pysmraw_test_seek_offset_and_read_buffer(
         result = False
 
   except Exception as exception:
-    print(str(exception))
+    error_string = str(exception)
     if expected_offset != -1:
       result = False
 
@@ -96,12 +94,15 @@ def pysmraw_test_seek_offset_and_read_buffer(
 
 
 def pysmraw_test_read_buffer_at_offset(
-    smraw_handle, input_offset, input_size, expected_offset, expected_size):
+    smraw_handle, input_offset, input_size,
+    expected_offset, expected_size):
+  """Tests reading a buffer at a specific offset."""
+  description = (
+      "Testing reading buffer at offset: {0:d} and size: {1:d}"
+      "\t").format(input_offset, input_size)
+  print(description, end="")
 
-  print("Testing reading buffer at offset: {0:d} and size: {1:d}\t".format(
-      input_offset, input_size), end="")
-
-  error_string = ""
+  error_string = None
   result = True
   try:
     result_size = 0
@@ -129,7 +130,7 @@ def pysmraw_test_read_buffer_at_offset(
       result = False
 
   except Exception as exception:
-    print(str(exception))
+    error_string = str(exception)
     if expected_offset != -1:
       result = False
 
@@ -144,36 +145,41 @@ def pysmraw_test_read_buffer_at_offset(
 
 
 def pysmraw_test_read(smraw_handle):
+  """Tests the read function."""
   media_size = smraw_handle.media_size
 
   # Case 0: test full read
 
   # Test: offset: 0 size: <media_size>
   # Expected result: offset: 0 size: <media_size>
+  read_offset = 0
+  read_size = media_size
+
   if not pysmraw_test_seek_offset_and_read_buffer(
-      smraw_handle, 0, os.SEEK_SET, media_size, 0, media_size):
+      smraw_handle, read_offset, os.SEEK_SET, read_size,
+      read_offset, read_size):
     return False
 
-  # Test: offset: 0 size: <media_size>
-  # Expected result: offset: 0 size: <media_size>
   if not pysmraw_test_seek_offset_and_read_buffer(
-      smraw_handle, 0, os.SEEK_SET, media_size, 0, media_size):
+      smraw_handle, read_offset, os.SEEK_SET, read_size,
+      read_offset, read_size):
     return False
 
   # Case 1: test buffer at offset read
 
   # Test: offset: <media_size / 7> size: <media_size / 2>
   # Expected result: offset: <media_size / 7> size: <media_size / 2>
+  read_offset, _ = divmod(media_size, 7)
+  read_size, _ = divmod(media_size, 2)
+
   if not pysmraw_test_seek_offset_and_read_buffer(
-      smraw_handle, media_size / 7, os.SEEK_SET, media_size / 2,
-      media_size / 7, media_size / 2):
+      smraw_handle, read_offset, os.SEEK_SET, read_size,
+      read_offset, read_size):
     return False
 
-  # Test: offset: <media_size / 7> size: <media_size / 2>
-  # Expected result: offset: <media_size / 7> size: <media_size / 2>
   if not pysmraw_test_seek_offset_and_read_buffer(
-      smraw_handle, media_size / 7, os.SEEK_SET, media_size / 2,
-      media_size / 7, media_size / 2):
+      smraw_handle, read_offset, os.SEEK_SET, read_size,
+      read_offset, read_size):
     return False
 
   # Case 2: test read beyond media size
@@ -181,55 +187,59 @@ def pysmraw_test_read(smraw_handle):
   if media_size < 1024:
     # Test: offset: <media_size - 1024> size: 4096
     # Expected result: offset: -1 size: <undetermined>
+    read_offset = media_size - 1024
+    read_size = 4096
+
     if not pysmraw_test_seek_offset_and_read_buffer(
-        smraw_handle, media_size - 1024, os.SEEK_SET, 4096, -1, -1):
+        smraw_handle, read_offset, os.SEEK_SET, read_size, -1, -1):
       return False
 
-    # Test: offset: <media_size - 1024> size: 4096
-    # Expected result: offset: -1 size: <undetermined>
     if not pysmraw_test_seek_offset_and_read_buffer(
-        smraw_handle, media_size - 1024, os.SEEK_SET, 4096, -1, -1):
+        smraw_handle, read_offset, os.SEEK_SET, read_size, -1, -1):
       return False
 
   else:
     # Test: offset: <media_size - 1024> size: 4096
     # Expected result: offset: <media_size - 1024> size: 1024
+    read_offset = media_size - 1024
+    read_size = 4096
+
     if not pysmraw_test_seek_offset_and_read_buffer(
-        smraw_handle, media_size - 1024, os.SEEK_SET, 4096,
-        media_size - 1024, 1024):
+        smraw_handle, read_offset, os.SEEK_SET, read_size,
+        read_offset, 1024):
       return False
 
-    # Test: offset: <media_size - 1024> size: 4096
-    # Expected result: offset: <media_size - 1024> size: 1024
     if not pysmraw_test_seek_offset_and_read_buffer(
-        smraw_handle, media_size - 1024, os.SEEK_SET, 4096,
-        media_size - 1024, 1024):
+        smraw_handle, read_offset, os.SEEK_SET, read_size,
+        read_offset, 1024):
       return False
 
   # Case 3: test buffer at offset read
 
   # Test: offset: <media_size / 7> size: <media_size / 2>
   # Expected result: offset: < ( media_size / 7 ) + ( media_size / 2 ) > size: <media_size / 2>
+  read_offset, _ = divmod(media_size, 7)
+  read_size, _ = divmod(media_size, 2)
+
   if not pysmraw_test_read_buffer_at_offset(
-      smraw_handle, media_size / 7, media_size / 2,
-      (media_size / 7) + (media_size / 2), media_size / 2):
+      smraw_handle, read_offset, read_size,
+      read_offset + read_size, read_size):
     return False
 
-  # Test: offset: <media_size / 7> size: <media_size / 2>
-  # Expected result: offset: < ( media_size / 7 ) + ( media_size / 2 ) > size: <media_size / 2>
   if not pysmraw_test_read_buffer_at_offset(
-      smraw_handle, media_size / 7, media_size / 2,
-      (media_size / 7) + (media_size / 2), media_size / 2):
+      smraw_handle, read_offset, read_size,
+      read_offset + read_size, read_size):
     return False
 
   return True
 
 
 def pysmraw_test_read_file(filename):
-  filenames = pysmraw.glob(filename)
+  """Tests the read function with a file."""
   smraw_handle = pysmraw.handle()
 
-  smraw_handle.open(filenameis, "r")
+  filenames = pysmraw.glob(filename)
+  smraw_handle.open(filenames, "r")
   result = pysmraw_test_read(smraw_handle)
   smraw_handle.close()
 
@@ -237,14 +247,16 @@ def pysmraw_test_read_file(filename):
 
 
 def pysmraw_test_read_file_object(filename):
+  """Tests the read function with a file-like object."""
+  smraw_handle = pysmraw.handle()
+
   filenames = pysmraw.glob(filename)
   file_objects = []
   for filename in filenames:
     file_object = open(filename, "rb")
     file_objects.append(file_object)
 
-  smraw_handle.open_file_object(file_objects, "r")
-
+  smraw_handle.open_file_objects(file_objects, "r")
   result = pysmraw_test_read(smraw_handle)
   smraw_handle.close()
 
@@ -252,11 +264,13 @@ def pysmraw_test_read_file_object(filename):
 
 
 def pysmraw_test_read_file_no_open(filename):
-  print("Testing read of offset without open:\t", end="")
+  """Tests the read function with a file without open."""
+  description = "Testing read of without open:\t"
+  print(description, end="")
 
   smraw_handle = pysmraw.handle()
 
-  error_string = ""
+  error_string = None
   result = False
   try:
     smraw_handle.read(size=4096)
@@ -275,8 +289,8 @@ def pysmraw_test_read_file_no_open(filename):
 
 
 def main():
-  args_parser = argparse.ArgumentParser(description=(
-      "Tests read."))
+  args_parser = argparse.ArgumentParser(
+      description="Tests read.")
 
   args_parser.add_argument(
       "source", nargs="?", action="store", metavar="FILENAME",
@@ -308,4 +322,3 @@ if __name__ == "__main__":
     sys.exit(1)
   else:
     sys.exit(0)
-

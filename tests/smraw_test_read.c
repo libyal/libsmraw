@@ -125,7 +125,7 @@ int smraw_test_read_buffer(
 			      read_size,
 			      &error );
 
-		if( read_count < 0 )
+		if( read_count <= 0 )
 		{
 			break;
 		}
@@ -209,7 +209,7 @@ int smraw_test_read_buffer_at_offset(
 			      input_offset,
 			      &error );
 
-		if( read_count < 0 )
+		if( read_count <= 0 )
 		{
 			break;
 		}
@@ -360,7 +360,9 @@ int smraw_test_read_from_handle(
      libsmraw_handle_t *handle,
      size64_t media_size )
 {
-	int result = 0;
+	off64_t read_offset = 0;
+	size64_t read_size  = 0;
+	int result          = 0;
 
 	if( handle == NULL )
 	{
@@ -380,13 +382,16 @@ int smraw_test_read_from_handle(
 	/* Test: offset: 0 size: <media_size>
 	 * Expected result: offset: 0 size: <media_size>
 	 */
+	read_offset = 0;
+	read_size   = media_size;
+
 	result = smraw_test_seek_offset_and_read_buffer(
 	          handle,
-	          0,
+	          read_offset,
 	          SEEK_SET,
-	          media_size,
-	          0,
-	          media_size );
+	          read_size,
+	          read_offset,
+	          read_size );
 
 	if( result != 1 )
 	{
@@ -396,16 +401,13 @@ int smraw_test_read_from_handle(
 
 		return( result );
 	}
-	/* Test: offset: 0 size: <media_size>
-	 * Expected result: offset: 0 size: <media_size>
-	 */
 	result = smraw_test_seek_offset_and_read_buffer(
 	          handle,
-	          0,
+	          read_offset,
 	          SEEK_SET,
-	          media_size,
-	          0,
-	          media_size );
+	          read_size,
+	          read_offset,
+	          read_size );
 
 	if( result != 1 )
 	{
@@ -422,13 +424,16 @@ int smraw_test_read_from_handle(
 	/* Test: offset: <media_size / 7> size: <media_size / 2>
 	 * Expected result: offset: <media_size / 7> size: <media_size / 2>
 	 */
+	read_offset = (off64_t) ( media_size / 7 );
+	read_size   = media_size / 2;
+
 	result = smraw_test_seek_offset_and_read_buffer(
 	          handle,
-	          (off64_t) ( media_size / 7 ),
+	          read_offset,
 	          SEEK_SET,
-	          media_size / 2,
-	          (off64_t) ( media_size / 7 ),
-	          media_size / 2 );
+	          read_size,
+	          read_offset,
+	          read_size );
 
 	if( result != 1 )
 	{
@@ -438,16 +443,13 @@ int smraw_test_read_from_handle(
 
 		return( result );
 	}
-	/* Test: offset: <media_size / 7> size: <media_size / 2>
-	 * Expected result: offset: <media_size / 7> size: <media_size / 2>
-	 */
 	result = smraw_test_seek_offset_and_read_buffer(
 	          handle,
-	          (off64_t) ( media_size / 7 ),
+	          read_offset,
 	          SEEK_SET,
-	          media_size / 2,
-	          (off64_t) ( media_size / 7 ),
-	          media_size / 2 );
+	          read_size,
+	          read_offset,
+	          read_size );
 
 	if( result != 1 )
 	{
@@ -460,6 +462,8 @@ int smraw_test_read_from_handle(
 
 	/* Case 2: test read beyond media size
 	 */
+	read_offset = (off64_t) ( media_size - 1024 );
+	read_size   = 4096;
 
 	if( media_size < 1024 )
 	{
@@ -468,9 +472,9 @@ int smraw_test_read_from_handle(
 		 */
 		result = smraw_test_seek_offset_and_read_buffer(
 		          handle,
-		          (off64_t) ( media_size - 1024 ),
+		          read_offset,
 		          SEEK_SET,
-		          4096,
+		          read_size,
 		          -1,
 		          (size64_t) -1 );
 
@@ -482,14 +486,11 @@ int smraw_test_read_from_handle(
 
 			return( result );
 		}
-		/* Test: offset: <media_size - 1024> size: 4096
-		 * Expected result: offset: -1 size: <undetermined>
-		 */
 		result = smraw_test_seek_offset_and_read_buffer(
 		          handle,
-		          (off64_t) ( media_size - 1024 ),
+		          read_offset,
 		          SEEK_SET,
-		          4096,
+		          read_size,
 		          -1,
 		          (size64_t) -1 );
 
@@ -509,10 +510,10 @@ int smraw_test_read_from_handle(
 		 */
 		result = smraw_test_seek_offset_and_read_buffer(
 		          handle,
-		          (off64_t) ( media_size - 1024 ),
+		          read_offset,
 		          SEEK_SET,
-		          4096,
-		          (off64_t) ( media_size - 1024 ),
+		          read_size,
+		          read_offset,
 		          1024 );
 
 		if( result != 1 )
@@ -523,15 +524,12 @@ int smraw_test_read_from_handle(
 
 			return( result );
 		}
-		/* Test: offset: <media_size - 1024> size: 4096
-		 * Expected result: offset: <media_size - 1024> size: 1024
-		 */
 		result = smraw_test_seek_offset_and_read_buffer(
 		          handle,
-		          (off64_t) ( media_size - 1024 ),
+		          read_offset,
 		          SEEK_SET,
-		          4096,
-		          (off64_t) ( media_size - 1024 ),
+		          read_size,
+		          read_offset,
 		          1024 );
 
 		if( result != 1 )
@@ -549,12 +547,15 @@ int smraw_test_read_from_handle(
 	/* Test: offset: <media_size / 7> size: <media_size / 2>
 	 * Expected result: offset: < ( media_size / 7 ) + ( media_size / 2 ) > size: <media_size / 2>
 	 */
+	read_offset = (off64_t) ( media_size / 7 );
+	read_size   = media_size / 2;
+
 	result = smraw_test_read_buffer_at_offset(
 	          handle,
-	          (off64_t) ( media_size / 7 ),
-	          media_size / 2,
-	          (off64_t) ( media_size / 7 ) + ( media_size / 2 ),
-	          media_size / 2 );
+	          read_offset,
+	          read_size,
+	          read_offset + read_size,
+	          read_size );
 
 	if( result != 1 )
 	{
@@ -564,15 +565,12 @@ int smraw_test_read_from_handle(
 
 		return( result );
 	}
-	/* Test: offset: <media_size / 7> size: <media_size / 2>
-	 * Expected result: offset: < ( media_size / 7 ) + ( media_size / 2 ) > size: <media_size / 2>
-	 */
 	result = smraw_test_read_buffer_at_offset(
 	          handle,
-	          (off64_t) ( media_size / 7 ),
-	          media_size / 2,
-	          (off64_t) ( media_size / 7 ) + ( media_size / 2 ),
-	          media_size / 2 );
+	          read_offset,
+	          read_size,
+	          read_offset + read_size,
+	          read_size );
 
 	if( result != 1 )
 	{
@@ -583,6 +581,188 @@ int smraw_test_read_from_handle(
 		return( result );
 	}
 	return( 1 );
+}
+
+/* Tests reading a handle
+ * Returns 1 if successful, 0 if not or -1 on error
+ */
+int smraw_test_read(
+     libcstring_system_character_t *source,
+     libcerror_error_t **error )
+{
+	libcstring_system_character_t **filenames = NULL;
+	libsmraw_handle_t *handle                 = NULL;
+	size64_t media_size                       = 0;
+	size_t source_length                      = 0;
+	int number_of_filenames                   = 0;
+	int result                                = 0;
+
+	source_length = libcstring_system_string_length(
+	                 source );
+
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+	if( libsmraw_glob_wide(
+	     source,
+	     source_length,
+	     &filenames,
+	     &number_of_filenames,
+	     error ) != 1 )
+#else
+	if( libsmraw_glob(
+	     source,
+	     source_length,
+	     &filenames,
+	     &number_of_filenames,
+	     error ) != 1 )
+#endif
+	{
+		fprintf(
+		 stderr,
+		 "Unable to glob filenames.\n" );
+
+		goto on_error;
+	}
+	if( number_of_filenames < 0 )
+	{
+		fprintf(
+		 stderr,
+		 "Invalid number of filenames.\n" );
+
+		goto on_error;
+	}
+	else if( number_of_filenames == 0 )
+	{
+		fprintf(
+		 stderr,
+		 "Missing filenames.\n" );
+
+		goto on_error;
+	}
+	if( libsmraw_handle_initialize(
+	     &handle,
+	     error ) != 1 )
+	{
+		fprintf(
+		 stderr,
+		 "Unable to create handle.\n" );
+
+		goto on_error;
+	}
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+	if( libsmraw_handle_open_wide(
+	     handle,
+	     filenames,
+	     number_of_filenames,
+	     LIBSMRAW_OPEN_READ,
+	     error ) != 1 )
+#else
+	if( libsmraw_handle_open(
+	     handle,
+	     filenames,
+	     number_of_filenames,
+	     LIBSMRAW_OPEN_READ,
+	     error ) != 1 )
+#endif
+	{
+		fprintf(
+		 stderr,
+		 "Unable to open handle\n" );
+
+		goto on_error;
+	}
+	if( libsmraw_handle_get_media_size(
+	     handle,
+	     &media_size,
+	     error ) != 1 )
+	{
+		fprintf(
+		 stderr,
+		 "Unable to retrieve media size.\n" );
+
+		goto on_error;
+	}
+	fprintf(
+	 stdout,
+	 "Media size: %" PRIu64 " bytes\n",
+	 media_size );
+
+	result = smraw_test_read_from_handle(
+	          handle,
+	          media_size );
+
+	if( result == -1 )
+	{
+		fprintf(
+		 stderr,
+		 "Unable to read from handle.\n" );
+
+		goto on_error;
+	}
+	if( libsmraw_handle_close(
+	     handle,
+	     error ) != 0 )
+	{
+		fprintf(
+		 stderr,
+		 "Unable to close handle.\n" );
+
+		goto on_error;
+	}
+	if( libsmraw_handle_free(
+	     &handle,
+	     error ) != 1 )
+	{
+		fprintf(
+		 stderr,
+		 "Unable to free handle.\n" );
+
+		goto on_error;
+	}
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+	if( libsmraw_glob_wide_free(
+	     filenames,
+	     number_of_filenames,
+	     error ) != 1 )
+#else
+	if( libsmraw_glob_free(
+	     filenames,
+	     number_of_filenames,
+	     error ) != 1 )
+#endif
+	{
+		fprintf(
+		 stderr,
+		 "Unable to free glob.\n" );
+
+		goto on_error;
+	}
+	return( result );
+
+on_error:
+	if( handle != NULL )
+	{
+		libsmraw_handle_close(
+		 handle,
+		 NULL );
+		libsmraw_handle_free(
+		 &handle,
+		 NULL );
+	}
+	if( filenames != NULL )
+	{
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+		libsmraw_glob_wide_free(
+		 filenames,
+		 number_of_filenames,
+		 NULL );
+#else
+		libsmraw_glob_free(
+		 filenames,
+		 number_of_filenames,
+		 NULL );
+#endif
+	}
+	return( -1 );
 }
 
 #if defined( HAVE_MULTI_THREAD_SUPPORT )
@@ -848,6 +1028,197 @@ on_error:
 	return( -1 );
 }
 
+/* Tests reading a handle in multiple threads
+ * Returns 1 if successful, 0 if not or -1 on error
+ */
+int smraw_test_read_multi_thread(
+     libcstring_system_character_t *source,
+     libcerror_error_t **error )
+{
+	libcstring_system_character_t **filenames = NULL;
+	libsmraw_handle_t *handle                 = NULL;
+	size64_t media_size                       = 0;
+	size_t source_length                      = 0;
+	int number_of_filenames                   = 0;
+	int result                                = 0;
+
+	source_length = libcstring_system_string_length(
+	                 source );
+
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+	if( libsmraw_glob_wide(
+	     source,
+	     source_length,
+	     &filenames,
+	     &filenames,
+	     &number_of_filenames,
+	     error ) != 1 )
+#else
+	if( libsmraw_glob(
+	     source,
+	     source_length,
+	     &filenames,
+	     &number_of_filenames,
+	     error ) != 1 )
+#endif
+	{
+		fprintf(
+		 stderr,
+		 "Unable to glob filenames.\n" );
+
+		goto on_error;
+	}
+	if( number_of_filenames < 0 )
+	{
+		fprintf(
+		 stderr,
+		 "Invalid number of filenames.\n" );
+
+		goto on_error;
+	}
+	else if( number_of_filenames == 0 )
+	{
+		fprintf(
+		 stderr,
+		 "Missing filenames.\n" );
+
+		goto on_error;
+	}
+	if( libsmraw_handle_initialize(
+	     &handle,
+	     error ) != 1 )
+	{
+		fprintf(
+		 stderr,
+		 "Unable to create handle.\n" );
+
+		goto on_error;
+	}
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+	if( libsmraw_handle_open_wide(
+	     handle,
+	     filenames,
+	     number_of_filenames,
+	     LIBSMRAW_OPEN_READ,
+	     error ) != 1 )
+#else
+	if( libsmraw_handle_open(
+	     handle,
+	     filenames,
+	     number_of_filenames,
+	     LIBSMRAW_OPEN_READ,
+	     error ) != 1 )
+#endif
+	{
+		fprintf(
+		 stderr,
+		 "Unable to open handle.\n" );
+
+		goto on_error;
+	}
+	if( libsmraw_handle_get_media_size(
+	     handle,
+	     &media_size,
+	     error ) != 1 )
+	{
+		fprintf(
+		 stderr,
+		 "Unable to retrieve media size.\n" );
+
+		goto on_error;
+	}
+	fprintf(
+	 stdout,
+	 "Media size: %" PRIu64 " bytes\n",
+	 media_size );
+
+	if( media_size == 0 )
+	{
+		result = 1;
+	}
+	else
+	{
+		result = smraw_test_read_from_handle_multi_thread(
+		          handle,
+		          media_size,
+		          SMRAW_TEST_READ_NUMBER_OF_THREADS );
+
+		if( result == -1 )
+		{
+			fprintf(
+			 stderr,
+			 "Unable to read from handle in multiple threads.\n" );
+
+			goto on_error;
+		}
+	}
+	if( libsmraw_handle_close(
+	     handle,
+	     error ) != 0 )
+	{
+		fprintf(
+		 stderr,
+		 "Unable to close handle.\n" );
+
+		goto on_error;
+	}
+	if( libsmraw_handle_free(
+	     &handle,
+	     error ) != 1 )
+	{
+		fprintf(
+		 stderr,
+		 "Unable to free handle.\n" );
+
+		goto on_error;
+	}
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+	if( libsmraw_glob_wide_free(
+	     filenames,
+	     number_of_filenames,
+	     error ) != 1 )
+#else
+	if( libsmraw_glob_free(
+	     filenames,
+	     number_of_filenames,
+	     error ) != 1 )
+#endif
+	{
+		fprintf(
+		 stderr,
+		 "Unable to free glob.\n" );
+
+		goto on_error;
+	}
+	return( result );
+
+on_error:
+	if( handle != NULL )
+	{
+		libsmraw_handle_close(
+		 handle,
+		 NULL );
+		libsmraw_handle_free(
+		 &handle,
+		 NULL );
+	}
+	if( filenames != NULL )
+	{
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+		libsmraw_glob_wide_free(
+		 filenames,
+		 number_of_filenames,
+		 NULL );
+#else
+		libsmraw_glob_free(
+		 filenames,
+		 number_of_filenames,
+		 NULL );
+#endif
+	}
+	return( -1 );
+}
+
 #endif /* defined( HAVE_MULTI_THREAD_SUPPORT ) */
 
 /* The main program
@@ -858,12 +1229,9 @@ int wmain( int argc, wchar_t * const argv[] )
 int main( int argc, char * const argv[] )
 #endif
 {
-	libcstring_system_character_t **filenames = NULL;
-	libcerror_error_t *error                  = NULL;
-	libsmraw_handle_t *handle                 = NULL;
-	libcstring_system_integer_t option        = 0;
-	int number_of_filenames                   = 0;
-	size64_t media_size                       = 0;
+	libcerror_error_t *error              = NULL;
+	libcstring_system_character_t *source = NULL;
+	libcstring_system_integer_t option    = 0;
 
 	while( ( option = libcsystem_getopt(
 	                   argc,
@@ -890,6 +1258,8 @@ int main( int argc, char * const argv[] )
 
 		return( EXIT_FAILURE );
 	}
+	source = argv[ optind ];
+
 #if defined( HAVE_DEBUG_OUTPUT ) && defined( SMRAW_TEST_READ_VERBOSE )
 	libsmraw_notify_set_verbose(
 	 1 );
@@ -897,162 +1267,28 @@ int main( int argc, char * const argv[] )
 	 stderr,
 	 NULL );
 #endif
-
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
-	if( libsmraw_glob_wide(
-	     argv[ 1 ],
-	     libcstring_wide_string_length(
-	      argv[ 1 ] ),
-	     &filenames,
-	     &number_of_filenames,
-	     &error ) != 1 )
-#else
-	if( libsmraw_glob(
-	     argv[ 1 ],
-	     libcstring_narrow_string_length(
-	      argv[ 1 ] ),
-	     &filenames,
-	     &number_of_filenames,
-	     &error ) != 1 )
-#endif
-	{
-		fprintf(
-		 stderr,
-		 "Unable to glob filenames.\n" );
-
-		goto on_error;
-	}
-	if( number_of_filenames < 0 )
-	{
-		fprintf(
-		 stderr,
-		 "Invalid number of filenames.\n" );
-
-		goto on_error;
-	}
-	else if( number_of_filenames == 0 )
-	{
-		fprintf(
-		 stderr,
-		 "Missing filenames.\n" );
-
-		goto on_error;
-	}
-	/* Initialization
-	 */
-	if( libsmraw_handle_initialize(
-	     &handle,
+	if( smraw_test_read(
+	     source,
 	     &error ) != 1 )
 	{
 		fprintf(
 		 stderr,
-		 "Unable to create handle.\n" );
+		 "Unable to read file.\n" );
 
 		goto on_error;
 	}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
-	if( libsmraw_handle_open_wide(
-	     handle,
-	     filenames,
-	     number_of_filenames,
-	     LIBSMRAW_OPEN_READ,
-	     &error ) != 1 )
-#else
-	if( libsmraw_handle_open(
-	     handle,
-	     filenames,
-	     number_of_filenames,
-	     LIBSMRAW_OPEN_READ,
-	     &error ) != 1 )
-#endif
-	{
-		fprintf(
-		 stderr,
-		 "Unable to open handle.\n" );
-
-		goto on_error;
-	}
-	if( libsmraw_handle_get_media_size(
-	     handle,
-	     &media_size,
-	     &error ) != 1 )
-	{
-		fprintf(
-		 stderr,
-		 "Unable to retrieve media size.\n" );
-
-		goto on_error;
-	}
-	fprintf(
-	 stdout,
-	 "Media size: %" PRIu64 " bytes\n",
-	 media_size );
-
-	if( smraw_test_read_from_handle(
-	     handle,
-	     media_size ) != 1 )
-	{
-		fprintf(
-		 stderr,
-		 "Unable to read from handle.\n" );
-
-		goto on_error;
-	}
-/* TODO implement thread support
 #if defined( HAVE_MULTI_THREAD_SUPPORT )
-	if( smraw_test_read_from_handle_multi_thread(
-	     handle,
-	     media_size,
-	     SMRAW_TEST_READ_NUMBER_OF_THREADS ) != 1 )
+	if( smraw_test_read_multi_thread(
+	     source,
+	     &error ) != 1 )
 	{
 		fprintf(
 		 stderr,
-		 "Unable to read from handle in multiple threads.\n" );
+		 "Unable to read file in multiple threads.\n" );
 
 		goto on_error;
 	}
 #endif
-*/
-	/* Clean up
-	 */
-	if( libsmraw_handle_close(
-	     handle,
-	     &error ) != 0 )
-	{
-		fprintf(
-		 stderr,
-		 "Unable to close handle.\n" );
-
-		goto on_error;
-	}
-	if( libsmraw_handle_free(
-	     &handle,
-	     &error ) != 1 )
-	{
-		fprintf(
-		 stderr,
-		 "Unable to free handle.\n" );
-
-		goto on_error;
-	}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
-	if( libsmraw_glob_wide_free(
-	     filenames,
-	     number_of_filenames,
-	     &error ) != 1 )
-#else
-	if( libsmraw_glob_free(
-	     filenames,
-	     number_of_filenames,
-	     &error ) != 1 )
-#endif
-	{
-		fprintf(
-		 stderr,
-		 "Unable to free glob.\n" );
-
-		goto on_error;
-	}
 	return( EXIT_SUCCESS );
 
 on_error:
@@ -1063,29 +1299,6 @@ on_error:
 		 stderr );
 		libcerror_error_free(
 		 &error );
-	}
-	if( handle != NULL )
-	{
-		libsmraw_handle_close(
-		 handle,
-		 NULL );
-		libsmraw_handle_free(
-		 &handle,
-		 NULL );
-	}
-	if( filenames != NULL )
-	{
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
-		libsmraw_glob_wide_free(
-		 filenames,
-		 number_of_filenames,
-		 NULL );
-#else
-		libsmraw_glob_free(
-		 filenames,
-		 number_of_filenames,
-		 NULL );
-#endif
 	}
 	return( EXIT_FAILURE );
 }

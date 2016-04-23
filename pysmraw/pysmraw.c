@@ -58,7 +58,7 @@ PyMethodDef pysmraw_module_methods[] = {
 	  "open(filenames, mode='r') -> Object\n"
 	  "\n"
 	  "Opens file(s) from a sequence (list) of all the segment filenames.\n"
-	  "Use pysmraw.glob() to determine the segment filenames from first (E01)." },
+	  "Use pysmraw.glob() to determine the segment filenames from first." },
 
 /* TODO: open file-like object using pool - list of file objects */
 
@@ -170,8 +170,8 @@ PyObject *pysmraw_glob(
 		filename_wide = (wchar_t *) PyUnicode_AsUnicode(
 		                             string_object );
 
-		filename_length = libcstring_wide_string_length(
-		                   filename_wide );
+		filename_length = PyUnicode_GetSize(
+		                   string_object );
 
 		Py_BEGIN_ALLOW_THREADS
 
@@ -199,10 +199,17 @@ PyObject *pysmraw_glob(
 #if PY_MAJOR_VERSION >= 3
 		filename_narrow = PyBytes_AsString(
 				   utf8_string_object );
+
+		filename_length = PyBytes_Size(
+				   utf8_string_object );
 #else
 		filename_narrow = PyString_AsString(
 				   utf8_string_object );
+
+		filename_length = PyString_Size(
+				   utf8_string_object );
 #endif
+
 		Py_BEGIN_ALLOW_THREADS
 
 		result = libsmraw_glob(
@@ -221,7 +228,7 @@ PyObject *pysmraw_glob(
 		{
 			pysmraw_error_raise(
 			 error,
-			 PyExc_IOError,
+			 PyExc_RuntimeError,
 			 "%s: unable to glob filenames.",
 			 function );
 
@@ -260,7 +267,7 @@ PyObject *pysmraw_glob(
 			if( filename_string_object == NULL )
 			{
 				PyErr_Format(
-				 PyExc_IOError,
+				 PyExc_RuntimeError,
 				 "%s: unable to convert filename: %d into Unicode.",
 				 function,
 				 filename_index );
@@ -340,13 +347,16 @@ PyObject *pysmraw_glob(
 #if PY_MAJOR_VERSION >= 3
 		filename_narrow = PyBytes_AsString(
 				   string_object );
+
+		filename_length = PyBytes_Size(
+				   string_object );
 #else
 		filename_narrow = PyString_AsString(
 				   string_object );
-#endif
-		filename_length = libcstring_narrow_string_length(
-		                   filename_narrow );
 
+		filename_length = PyString_Size(
+				   string_object );
+#endif
 		Py_BEGIN_ALLOW_THREADS
 
 		result = libsmraw_glob(
@@ -362,7 +372,7 @@ PyObject *pysmraw_glob(
 		{
 			pysmraw_error_raise(
 			 error,
-			 PyExc_IOError,
+			 PyExc_RuntimeError,
 			 "%s: unable to glob filenames.",
 			 function );
 
@@ -390,7 +400,7 @@ PyObject *pysmraw_glob(
 			if( filename_string_object == NULL )
 			{
 				PyErr_Format(
-				 PyExc_IOError,
+				 PyExc_RuntimeError,
 				 "%s: unable to convert filename: %d into Unicode.",
 				 function,
 				 filename_index );
