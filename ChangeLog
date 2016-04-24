@@ -1,5 +1,4 @@
 TODO
-* fix bug in pysmraw glob for Python 3
 * refactor:
   - libsmraw_handle_get_bytes_per_sector
   - equiv?
@@ -36,6 +35,9 @@ Tests:
 * make sure certain values cannot be changed if writing/reading from raw files
 * add tests for Python-bindings
 * information file
+
+20160424
+* changes for Python 3 support
 
 20160423
 * worked on tests

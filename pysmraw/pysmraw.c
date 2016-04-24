@@ -141,7 +141,7 @@ PyObject *pysmraw_glob(
 	if( PyArg_ParseTupleAndKeywords(
 	     arguments,
 	     keywords,
-	     "|O",
+	     "O",
 	     keyword_list,
 	     &string_object ) == 0 )
 	{
@@ -209,7 +209,6 @@ PyObject *pysmraw_glob(
 		filename_length = PyString_Size(
 				   utf8_string_object );
 #endif
-
 		Py_BEGIN_ALLOW_THREADS
 
 		result = libsmraw_glob(
@@ -302,7 +301,6 @@ PyObject *pysmraw_glob(
 			  number_of_filenames,
 			  &error );
 #endif
-
 		Py_END_ALLOW_THREADS
 
 		if( result != 1 )

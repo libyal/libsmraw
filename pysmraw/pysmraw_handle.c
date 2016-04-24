@@ -40,13 +40,15 @@
 #include "pysmraw_unused.h"
 
 #if !defined( LIBSMRAW_HAVE_BFIO )
+
 LIBSMRAW_EXTERN \
 int libsmraw_handle_open_file_io_pool(
      libsmraw_handle_t *handle,
      libbfio_pool_t *file_io_pool,
      int access_flags,
      libsmraw_error_t **error );
-#endif
+
+#endif /* !defined( LIBSMRAW_HAVE_BFIO ) */
 
 PyMethodDef pysmraw_handle_object_methods[] = {
 
@@ -65,7 +67,7 @@ PyMethodDef pysmraw_handle_object_methods[] = {
 	  "open(filenames, mode='r') -> None\n"
 	  "\n"
 	  "Opens a handle from a sequence (list) of all the segment filenames.\n"
-	  "Use pysmraw.glob() to determine the segment filenames from first (e.g. E01)." },
+	  "Use pysmraw.glob() to determine the segment filenames from first." },
 
 	{ "open_file_objects",
 	  (PyCFunction) pysmraw_handle_open_file_objects,
@@ -529,20 +531,18 @@ PyObject *pysmraw_handle_open(
            PyObject *keywords )
 {
 #if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+	PyObject *codepage_string_object = NULL;
 	wchar_t **filenames              = NULL;
-	wchar_t *filename                = NULL;
+	wchar_t *filename_wide           = NULL;
 	const char *errors               = NULL;
-	char *narrow_string              = NULL;
-	size_t narrow_string_size        = 0;
-	int is_unicode_string            = 0;
 #else
+	PyObject *utf8_string_object     = NULL;
 	char **filenames                 = NULL;
-	char *filename                   = NULL;
 #endif
-	PyObject *filename_string_object = NULL;
 	PyObject *sequence_object        = NULL;
 	PyObject *string_object          = NULL;
 	libcerror_error_t *error         = NULL;
+	char *filename_narrow            = NULL;
 	char *mode                       = NULL;
 	static char *keyword_list[]      = { "filenames", "mode", NULL };
 	static char *function            = "pysmraw_handle_open";
@@ -550,6 +550,7 @@ PyObject *pysmraw_handle_open(
 	size_t filename_length           = 0;
 	int access_flags                 = 0;
 	int filename_index               = 0;
+	int is_unicode_string            = 0;
 	int number_of_filenames          = 0;
 	int result                       = 0;
 
@@ -709,8 +710,14 @@ PyObject *pysmraw_handle_open(
 
 			goto on_error;
 		}
-		else if( result == 0 )
+		else if( result != 0 )
 		{
+			is_unicode_string = 1;
+		}
+		else
+		{
+			is_unicode_string = 0;
+
 			PyErr_Clear();
 
 #if PY_MAJOR_VERSION >= 3
@@ -721,7 +728,8 @@ PyObject *pysmraw_handle_open(
 			result = PyObject_IsInstance(
 				  string_object,
 				  (PyObject *) &PyString_Type );
-#endif
+#endif /* PY_MAJOR_VERSION >= 3 */
+
 			if( result == -1 )
 			{
 				pysmraw_error_fetch_and_raise(
@@ -740,83 +748,113 @@ PyObject *pysmraw_handle_open(
 
 				goto on_error;
 			}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
-			else
-			{
-				is_unicode_string = 0;
-			}
-#endif
 		}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
-		else
-		{
-			is_unicode_string = 1;
-		}
-#endif
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
 		if( is_unicode_string != 0 )
 		{
-			filename = (wchar_t *) PyUnicode_AsUnicode(
-			                        string_object );
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+			filename_wide = (wchar_t *) PyUnicode_AsUnicode(
+			                             string_object );
 
 			filename_length = PyUnicode_GetSize(
 			                   string_object );
+#else
+			utf8_string_object = PyUnicode_AsUTF8String(
+			                      string_object );
+
+			if( utf8_string_object == NULL )
+			{
+				pysmraw_error_fetch_and_raise(
+				 PyExc_RuntimeError,
+				 "%s: unable to convert unicode string to UTF-8.",
+				 function );
+
+				return( NULL );
+			}
+#if PY_MAJOR_VERSION >= 3
+			filename_narrow = PyBytes_AsString(
+					   utf8_string_object );
+
+			filename_length = PyBytes_Size(
+					   utf8_string_object );
+#else
+			filename_narrow = PyString_AsString(
+					   utf8_string_object );
+
+			filename_length = PyString_Size(
+					   utf8_string_object );
+#endif /* PY_MAJOR_VERSION >= 3 */
+#endif /* defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER ) */
 		}
 		else
 		{
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
 #if PY_MAJOR_VERSION >= 3
-			narrow_string = PyBytes_AsString(
-			                 string_object );
+			filename_narrow = PyBytes_AsString(
+			                   string_object );
 
-			narrow_string_size = PyBytes_Size(
-			                      string_object );
+			filename_length = PyBytes_Size(
+			                   string_object );
 #else
-			narrow_string = PyString_AsString(
-			                 string_object );
+			filename_narrow = PyString_AsString(
+			                   string_object );
 
-			narrow_string_size = PyString_Size(
-			                      string_object );
-#endif
-			filename_string_object = PyUnicode_Decode(
-						  narrow_string,
-						  narrow_string_size,
+			filename_length = PyString_Size(
+			                   string_object );
+#endif /* PY_MAJOR_VERSION >= 3 */
+
+			codepage_string_object = PyUnicode_Decode(
+						  filename_narrow,
+						  filename_length,
 						  PyUnicode_GetDefaultEncoding(),
 						  errors );
 
-			if( filename_string_object == NULL )
+			if( codepage_string_object == NULL )
 			{
 				PyErr_Format(
-				 PyExc_IOError,
+				 PyExc_RuntimeError,
 				 "%s: unable to convert filename: %d into Unicode.",
 				 function,
 				 filename_index );
 
 				goto on_error;
 			}
-			filename = (wchar_t *) PyUnicode_AsUnicode(
-			                        filename_string_object );
+			filename_wide = (wchar_t *) PyUnicode_AsUnicode(
+			                             codepage_string_object );
 
 			filename_length = PyUnicode_GetSize(
-			                   filename_string_object );
-		}
+			                   codepage_string_object );
 #else
-		/* A Unicode string object can be converted into UTF-8 formatted narrow string
-		 */
 #if PY_MAJOR_VERSION >= 3
-		filename = PyBytes_AsString(
-		            string_object );
+			filename_narrow = PyBytes_AsString(
+			                   string_object );
 
-		filename_length = PyBytes_Size(
-		                   string_object );
+			filename_length = PyBytes_Size(
+			                   string_object );
 #else
-		filename = PyString_AsString(
-		            string_object );
+			filename_narrow = PyString_AsString(
+			                   string_object );
 
-		filename_length = PyString_Size(
-		                   string_object );
+			filename_length = PyString_Size(
+			                   string_object );
 #endif /* PY_MAJOR_VERSION >= 3 */
+#endif /* defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER ) */
+		}
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+		if( ( filename_wide == NULL )
+		 || ( filename_length == 0 ) )
+#else
+		if( ( filename_narrow == NULL )
+		 || ( filename_length == 0 ) )
 #endif
+		{
+			PyErr_Format(
+			 PyExc_RuntimeError,
+			 "%s: missing filename: %d.",
+			 function,
+			 filename_index );
 
+			goto on_error;
+		}
 #if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
 		filenames[ filename_index ] = (wchar_t *) PyMem_Malloc(
 		                                           sizeof( wchar_t ) * ( filename_length + 1 ) );
@@ -837,12 +875,12 @@ PyObject *pysmraw_handle_open(
 #if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
 		if( libcstring_wide_string_copy(
 		     filenames[ filename_index ],
-		     filename,
+		     filename_wide,
 		     filename_length ) == NULL )
 #else
 		if( libcstring_narrow_string_copy(
 		     filenames[ filename_index ],
-		     filename,
+		     filename_narrow,
 		     filename_length ) == NULL )
 #endif
 		{
@@ -856,13 +894,23 @@ PyObject *pysmraw_handle_open(
 		}
 		( filenames[ filename_index ] )[ filename_length ] = 0;
 
-		if( filename_string_object != NULL )
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+		if( codepage_string_object != NULL )
 		{
 			Py_DecRef(
-			 filename_string_object );
+			 codepage_string_object );
 
-			filename_string_object = NULL;
+			codepage_string_object = NULL;
 		}
+#else
+		if( utf8_string_object != NULL )
+		{
+			Py_DecRef(
+			 utf8_string_object );
+
+			utf8_string_object = NULL;
+		}
+#endif
 		/* The string object was reference by PySequence_GetItem
 		 */
 		Py_DecRef(
@@ -918,11 +966,19 @@ PyObject *pysmraw_handle_open(
 	return( Py_None );
 
 on_error:
-	if( filename_string_object != NULL )
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+	if( codepage_string_object != NULL )
 	{
 		Py_DecRef(
-		 filename_string_object );
+		 codepage_string_object );
 	}
+#else
+	if( utf8_string_object != NULL )
+	{
+		Py_DecRef(
+		 utf8_string_object );
+	}
+#endif
 	if( string_object != NULL )
 	{
 		Py_DecRef(

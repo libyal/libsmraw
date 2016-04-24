@@ -1433,7 +1433,7 @@ int libsmraw_glob_wide_exists_segment_file(
 		 "%s: unable to create segment filename.",
 		 function );
 
-		return( -1 );
+		goto on_error;
 	}
 	if( libcstring_wide_string_copy(
 	     *segment_filename,
@@ -1447,13 +1447,7 @@ int libsmraw_glob_wide_exists_segment_file(
 		 "%s: unable to set prefix in segment filename.",
 		 function );
 
-		memory_free(
-		 *segment_filename );
-
-		*segment_filename      = NULL;
-		*segment_filename_size = 0;
-
-		return( -1 );
+		goto on_error;
 	}
 	( *segment_filename )[ prefix_length ] = 0;
 
@@ -1471,13 +1465,7 @@ int libsmraw_glob_wide_exists_segment_file(
 			 "%s: unable to set suffix in segment filename.",
 			 function );
 
-			memory_free(
-			 *segment_filename );
-
-			*segment_filename      = NULL;
-			*segment_filename_size = 0;
-
-			return( -1 );
+			goto on_error;
 		}
 		( *segment_filename )[ prefix_length + suffix_length ] = 0;
 	}
@@ -1494,13 +1482,7 @@ int libsmraw_glob_wide_exists_segment_file(
 		 "%s: unable to set name in file IO handle.",
 		 function );
 
-		memory_free(
-		 *segment_filename );
-
-		*segment_filename      = NULL;
-		*segment_filename_size = 0;
-
-		return( -1 );
+		goto on_error;
 	}
 	result = libbfio_handle_exists(
 		  file_io_handle,
@@ -1516,15 +1498,21 @@ int libsmraw_glob_wide_exists_segment_file(
 		 function,
 		 *segment_filename );
 
+		goto on_error;
+	}
+	return( result );
+
+on_error:
+	if( *segment_filename != NULL )
+	{
 		memory_free(
 		 *segment_filename );
 
-		*segment_filename      = NULL;
-		*segment_filename_size = 0;
-
-		return( -1 );
+		*segment_filename = NULL;
 	}
-	return( result );
+	*segment_filename_size = 0;
+
+	return( -1 );
 }
 
 /* Determines the naming schema
