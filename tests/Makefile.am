@@ -46,6 +46,7 @@ EXTRA_DIST = \
 	$(check_SCRIPTS)
 
 check_PROGRAMS = \
+	smraw_test_error \
 	smraw_test_get_version \
 	smraw_test_glob \
 	smraw_test_open_close \
@@ -54,10 +55,22 @@ check_PROGRAMS = \
 	smraw_test_seek \
 	smraw_test_write
 
+smraw_test_error_SOURCES = \
+	smraw_test_error.c \
+	smraw_test_libcstring.h \
+	smraw_test_libsmraw.h \
+	smraw_test_macros.h \
+	smraw_test_unused.h
+
+smraw_test_error_LDADD = \
+	../libsmraw/libsmraw.la \
+	@LIBCSTRING_LIBADD@
+
 smraw_test_get_version_SOURCES = \
 	smraw_test_get_version.c \
 	smraw_test_libcstring.h \
 	smraw_test_libsmraw.h \
+	smraw_test_macros.h \
 	smraw_test_unused.h
 
 smraw_test_get_version_LDADD = \

@@ -19,6 +19,7 @@ MSVSCPP_FILES = \
 	libuna/libuna.vcproj \
 	pysmraw/pysmraw.vcproj \
 	smraw.net/smraw.net.vcproj \
+	smraw_test_error/smraw_test_error.vcproj \
 	smraw_test_get_version/smraw_test_get_version.vcproj \
 	smraw_test_glob/smraw_test_glob.vcproj \
 	smraw_test_open_close/smraw_test_open_close.vcproj \
@@ -30,17 +31,8 @@ MSVSCPP_FILES = \
 	smrawverify/smrawverify.vcproj \
 	libsmraw.sln
 
-SCRIPT_FILES = \
-	scripts/vs2008_x64.sh \
-	scripts/vs2008_x64_sln.sed \
-	scripts/vs2008_x64_vcproj.sed \
-	scripts/vs2010_x64.sh \
-	scripts/vs2010_x64_sln.sed \
-	scripts/vs2010_x64_vcxproj.sed
-
 EXTRA_DIST = \
-	$(MSVSCPP_FILES) \
-	$(SCRIPT_FILES)
+	$(MSVSCPP_FILES)
 
 MAINTAINERCLEANFILES = \
 	Makefile.in

@@ -194,6 +194,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\tests\smraw_test_macros.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\tests\smraw_test_unused.h"
 				>
 			</File>

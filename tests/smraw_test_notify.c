@@ -1,5 +1,5 @@
 /*
- * Library get version test program
+ * Library notification functions test program
  *
  * Copyright (C) 2010-2016, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -25,36 +25,67 @@
 #include <stdlib.h>
 #endif
 
-#include "smraw_test_libcstring.h"
+#include "smraw_test_libcerror.h"
 #include "smraw_test_libsmraw.h"
 #include "smraw_test_macros.h"
 #include "smraw_test_unused.h"
 
-/* Tests retrieving the library version
+/* Tests the libsmraw_notify_set_verbose function
  * Returns 1 if successful or 0 if not
  */
-int smraw_test_get_version(
+int smraw_test_notify_set_verbose(
      void )
 {
-	const char *version_string = NULL;
-	int result                 = 0;
-
-	version_string = libsmraw_get_version();
-
-	result = libcstring_narrow_string_compare(
-	          version_string,
-	          LIBSMRAW_VERSION_STRING,
-	          9 );
-
-	SMRAW_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
+	/* Test invocation of function only
+	 */
+	libsmraw_notify_set_verbose(
 	 0 );
 
 	return( 1 );
+}
 
-on_error:
-	return( 0 );
+/* Tests the libsmraw_notify_set_stream function
+ * Returns 1 if successful or 0 if not
+ */
+int smraw_test_notify_set_stream(
+     void )
+{
+	/* Test invocation of function only
+	 */
+	libsmraw_notify_set_stream(
+	 NULL,
+	 NULL );
+
+	return( 1 );
+}
+
+/* Tests the libsmraw_notify_stream_open function
+ * Returns 1 if successful or 0 if not
+ */
+int smraw_test_notify_stream_open(
+     void )
+{
+	/* Test invocation of function only
+	 */
+	libsmraw_notify_stream_open(
+	 NULL,
+	 NULL );
+
+	return( 1 );
+}
+
+/* Tests the libsmraw_notify_stream_close function
+ * Returns 1 if successful or 0 if not
+ */
+int smraw_test_notify_stream_close(
+     void )
+{
+	/* Test invocation of function only
+	 */
+	libsmraw_notify_stream_close(
+	 NULL );
+
+	return( 1 );
 }
 
 /* The main program
@@ -73,8 +104,20 @@ int main(
 	SMRAW_TEST_UNREFERENCED_PARAMETER( argv )
 
 	SMRAW_TEST_RUN(
-	 "libsmraw_get_version",
-	 smraw_test_get_version() )
+	 "libsmraw_notify_set_verbose",
+	 smraw_test_notify_set_verbose() )
+
+	SMRAW_TEST_RUN(
+	 "libsmraw_notify_set_stream",
+	 smraw_test_notify_set_stream() )
+
+	SMRAW_TEST_RUN(
+	 "libsmraw_notify_stream_open",
+	 smraw_test_notify_stream_open() )
+
+	SMRAW_TEST_RUN(
+	 "libsmraw_notify_stream_close",
+	 smraw_test_notify_stream_close() )
 
 	return( EXIT_SUCCESS );
 
