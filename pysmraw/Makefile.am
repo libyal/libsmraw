@@ -2,7 +2,6 @@ if HAVE_PYTHON
 AM_CFLAGS = \
 	-I$(top_srcdir)/include \
 	-I$(top_srcdir)/common \
-	@LIBCSTRING_CPPFLAGS@ \
 	@LIBCERROR_CPPFLAGS@ \
 	@LIBCDATA_CPPFLAGS@ \
 	@LIBCLOCALE_CPPFLAGS@ \
@@ -24,14 +23,12 @@ pysmraw_la_SOURCES = \
 	pysmraw_libbfio.h \
 	pysmraw_libcerror.h \
 	pysmraw_libclocale.h \
-	pysmraw_libcstring.h \
 	pysmraw_libsmraw.h \
 	pysmraw_metadata.c pysmraw_metadata.h \
 	pysmraw_python.h \
 	pysmraw_unused.h
 
 pysmraw_la_LIBADD = \
-	@LIBCSTRING_LIBADD@ \
 	@LIBCERROR_LIBADD@ \
 	../libsmraw/libsmraw.la \
 	@LIBCDATA_LIBADD@ \

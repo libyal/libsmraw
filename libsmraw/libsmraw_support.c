@@ -21,13 +21,14 @@
 
 #include <common.h>
 #include <memory.h>
+#include <narrow_string.h>
 #include <types.h>
+#include <wide_string.h>
 
 #include "libsmraw_definitions.h"
 #include "libsmraw_libbfio.h"
 #include "libsmraw_libcerror.h"
 #include "libsmraw_libclocale.h"
-#include "libsmraw_libcstring.h"
 #include "libsmraw_support.h"
 
 #if !defined( HAVE_LOCAL_LIBSMRAW )
@@ -294,7 +295,7 @@ int libsmraw_glob_exists_segment_file(
 
 		goto on_error;
 	}
-	if( libcstring_narrow_string_copy(
+	if( narrow_string_copy(
 	     *segment_filename,
 	     prefix,
 	     prefix_length ) == NULL )
@@ -312,7 +313,7 @@ int libsmraw_glob_exists_segment_file(
 
 	if( suffix != NULL )
 	{
-		if( libcstring_narrow_string_copy(
+		if( narrow_string_copy(
 		     &( ( *segment_filename )[ prefix_length ] ),
 		     suffix,
 		     suffix_length ) == NULL )
@@ -723,7 +724,7 @@ int libsmraw_glob(
 			{
 				break;
 			}
-			suffix_length = libcstring_narrow_string_length(
+			suffix_length = narrow_string_length(
 			                 suffix );
 
 			result = libsmraw_glob_exists_segment_file(
@@ -777,7 +778,7 @@ int libsmraw_glob(
 	}
 	/* Make a copy of the segment filename to tamper with
 	 */
-	segment_filename_copy = libcstring_narrow_string_allocate(
+	segment_filename_copy = narrow_string_allocate(
 	                         segment_filename_size + identifier_expansion_length );
 
 	if( segment_filename_copy == NULL )
@@ -791,7 +792,7 @@ int libsmraw_glob(
 
 		goto on_error;
 	}
-	if( libcstring_narrow_string_copy(
+	if( narrow_string_copy(
 	     segment_filename_copy,
 	     segment_filename,
 	     segment_filename_size ) == NULL )
@@ -1435,7 +1436,7 @@ int libsmraw_glob_wide_exists_segment_file(
 
 		goto on_error;
 	}
-	if( libcstring_wide_string_copy(
+	if( wide_string_copy(
 	     *segment_filename,
 	     prefix,
 	     prefix_length ) == NULL )
@@ -1453,7 +1454,7 @@ int libsmraw_glob_wide_exists_segment_file(
 
 	if( suffix != NULL )
 	{
-		if( libcstring_wide_string_copy(
+		if( wide_string_copy(
 		     &( ( *segment_filename )[ prefix_length ] ),
 		     suffix,
 		     suffix_length ) == NULL )
@@ -1853,7 +1854,7 @@ int libsmraw_glob_wide(
 			{
 				break;
 			}
-			suffix_length = libcstring_wide_string_length(
+			suffix_length = wide_string_length(
 			                 suffix );
 
 			result = libsmraw_glob_wide_exists_segment_file(
@@ -1907,7 +1908,7 @@ int libsmraw_glob_wide(
 	}
 	/* Make a copy of the segment filename to tamper with
 	 */
-	segment_filename_copy = libcstring_wide_string_allocate(
+	segment_filename_copy = wide_string_allocate(
 	                         segment_filename_size + identifier_expansion_length );
 
 	if( segment_filename_copy == NULL )
@@ -1921,7 +1922,7 @@ int libsmraw_glob_wide(
 
 		goto on_error;
 	}
-	if( libcstring_wide_string_copy(
+	if( wide_string_copy(
 	     segment_filename_copy,
 	     segment_filename,
 	     segment_filename_size ) == NULL )

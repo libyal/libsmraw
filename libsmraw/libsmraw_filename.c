@@ -22,7 +22,10 @@
 #include <common.h>
 #include <file_stream.h>
 #include <memory.h>
+#include <narrow_string.h>
+#include <system_string.h>
 #include <types.h>
+#include <wide_string.h>
 
 #include "libsmraw_definitions.h"
 #include "libsmraw_handle.h"
@@ -30,7 +33,6 @@
 #include "libsmraw_libbfio.h"
 #include "libsmraw_libcerror.h"
 #include "libsmraw_libcnotify.h"
-#include "libsmraw_libcstring.h"
 #include "libsmraw_handle.h"
 #include "libsmraw_types.h"
 
@@ -38,9 +40,9 @@
  * Returns 1 if successful or -1 on error
  */
 int libsmraw_filename_create(
-     libcstring_system_character_t **filename,
+     system_character_t **filename,
      size_t *filename_size,
-     libcstring_system_character_t *basename,
+     system_character_t *basename,
      size_t basename_size,
      int number_of_segments,
      int segment_index,
@@ -142,7 +144,7 @@ int libsmraw_filename_create(
 	}
 	*filename_size = basename_size + additional_length;
 
-	*filename = libcstring_system_string_allocate(
+	*filename = system_string_allocate(
 	             *filename_size );
 
 	if( *filename == NULL )
@@ -156,7 +158,7 @@ int libsmraw_filename_create(
 
 		goto on_error;
 	}
-	if( libcstring_system_string_copy(
+	if( system_string_copy(
 	     *filename,
 	     basename,
 	     basename_size - 1 ) == NULL )
@@ -172,9 +174,9 @@ int libsmraw_filename_create(
 	}
 	filename_index = basename_size - 1;
 
-	if( libcstring_system_string_copy(
+	if( system_string_copy(
 	     &( ( *filename )[ filename_index ] ),
-	     _LIBCSTRING_SYSTEM_STRING( ".raw" ),
+	     _SYSTEM_STRING( ".raw" ),
 	     4 ) == NULL )
 	{
 		libcerror_error_set(
@@ -190,20 +192,20 @@ int libsmraw_filename_create(
 
 	if( number_of_segments != 1 )
 	{
-		( *filename )[ filename_index++ ] = (libcstring_system_character_t) '.';
+		( *filename )[ filename_index++ ] = (system_character_t) '.';
 
-		( *filename )[ filename_index++ ] = (libcstring_system_character_t) '0'
-		                                  + (libcstring_system_character_t) ( segment_index / 100 );
+		( *filename )[ filename_index++ ] = (system_character_t) '0'
+		                                  + (system_character_t) ( segment_index / 100 );
 
 		segment_index %= 100;
 
-		( *filename )[ filename_index++ ] = (libcstring_system_character_t) '0'
-		                                  + (libcstring_system_character_t) ( segment_index / 10 );
+		( *filename )[ filename_index++ ] = (system_character_t) '0'
+		                                  + (system_character_t) ( segment_index / 10 );
 
 		segment_index %= 10;
 
-		( *filename )[ filename_index++ ] = (libcstring_system_character_t) '0'
-		                                  + (libcstring_system_character_t) segment_index;
+		( *filename )[ filename_index++ ] = (system_character_t) '0'
+		                                  + (system_character_t) segment_index;
 	}
 	( *filename )[ filename_index ] = 0;
 

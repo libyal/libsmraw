@@ -21,6 +21,7 @@
 
 #include <common.h>
 #include <memory.h>
+#include <narrow_string.h>
 #include <types.h>
 
 #include "libsmraw_definitions.h"
@@ -28,7 +29,6 @@
 #include "libsmraw_libbfio.h"
 #include "libsmraw_libcerror.h"
 #include "libsmraw_libcnotify.h"
-#include "libsmraw_libcstring.h"
 #include "libsmraw_libcthreads.h"
 #include "libsmraw_libfvalue.h"
 #include "libsmraw_types.h"
@@ -555,7 +555,7 @@ int libsmraw_handle_get_media_type(
 		}
 		if( value_data_size == 6 )
 		{
-			if( libcstring_narrow_string_compare(
+			if( narrow_string_compare(
 			     "fixed",
 			     value_data,
 			     5 ) == 0 )
@@ -565,7 +565,7 @@ int libsmraw_handle_get_media_type(
 		}
 		else if( value_data_size == 7 )
 		{
-			if( libcstring_narrow_string_compare(
+			if( narrow_string_compare(
 			     "memory",
 			     value_data,
 			     6 ) == 0 )
@@ -575,7 +575,7 @@ int libsmraw_handle_get_media_type(
 		}
 		else if( value_data_size == 8 )
 		{
-			if( libcstring_narrow_string_compare(
+			if( narrow_string_compare(
 			     "optical",
 			     value_data,
 			     7 ) == 0 )
@@ -585,7 +585,7 @@ int libsmraw_handle_get_media_type(
 		}
 		else if( value_data_size == 10 )
 		{
-			if( libcstring_narrow_string_compare(
+			if( narrow_string_compare(
 			     "removable",
 			     value_data,
 			     9 ) == 0 )
@@ -877,7 +877,7 @@ int libsmraw_handle_get_media_flags(
 		}
 		if( value_data_size == 8 )
 		{
-			if( libcstring_narrow_string_compare(
+			if( narrow_string_compare(
 			     "logical",
 			     value_data,
 			     7 ) == 0 )
@@ -887,7 +887,7 @@ int libsmraw_handle_get_media_flags(
 		}
 		else if( value_data_size == 9 )
 		{
-			if( libcstring_narrow_string_compare(
+			if( narrow_string_compare(
 			     "physical",
 			     value_data,
 			     8 ) == 0 )

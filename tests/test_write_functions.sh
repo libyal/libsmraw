@@ -1,7 +1,7 @@
 #!/bin/bash
 # Library API write functions testing script
 #
-# Version: 20160403
+# Version: 20161108
 
 EXIT_SUCCESS=0;
 EXIT_FAILURE=1;
@@ -37,42 +37,32 @@ test_api_write_function()
 
 		return ${EXIT_FAILURE};
 	fi
-	TMPDIR="tmp$$";
+	TEST_DESCRIPTION="Testing write function: lib${TEST_PREFIX}_${TEST_FUNCTION}";
+
+	local TMPDIR="tmp$$";
 
 	rm -rf ${TMPDIR};
 	mkdir ${TMPDIR};
 
-	run_test_with_arguments ${TEST_EXECUTABLE} ${ARGUMENTS[@]} "${TMPDIR}";
-
-	RESULT=$?;
+	run_test_with_arguments "${TEST_DESCRIPTION}" "${TEST_EXECUTABLE}" ${ARGUMENTS[@]} "${TMPDIR}";
+	local RESULT=$?;
 
 	rm -rf ${TMPDIR};
 
-	echo -n "Testing write function: lib${TEST_PREFIX}_${TEST_FUNCTION}";
-
-	if test ${RESULT} -ne ${EXIT_SUCCESS};
-	then
-		echo " (FAIL)";
-	else
-		echo " (PASS)";
-	fi
 	return ${RESULT};
 }
 
 test_write()
 {
-	local TEST_PROFILE=$1;
-	local TEST_FUNCTION=$2;
-	local OPTION_SETS=$3;
+	local TEST_FUNCTION=$1;
 
 	test_api_write_function "${TEST_FUNCTION}";
-	RESULT=$?;
+	local RESULT=$?;
 
 	if test ${RESULT} -ne ${EXIT_SUCCESS};
 	then
 		return ${RESULT};
 	fi
-
 	return ${RESULT};
 }
 
@@ -99,7 +89,7 @@ source ${TEST_RUNNER};
 
 for TEST_FUNCTION in ${TEST_FUNCTIONS};
 do
-	test_write "${TEST_PROFILE}" "${TEST_FUNCTION}" "${OPTION_SETS}";
+	test_write "${TEST_FUNCTION}";
 	RESULT=$?;
 
 	if test ${RESULT} -ne ${EXIT_SUCCESS};

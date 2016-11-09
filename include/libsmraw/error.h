@@ -39,7 +39,7 @@ enum LIBSMRAW_ERROR_DOMAINS
 	LIBSMRAW_ERROR_DOMAIN_INPUT			= (int) 'i',
 	LIBSMRAW_ERROR_DOMAIN_MEMORY			= (int) 'm',
 	LIBSMRAW_ERROR_DOMAIN_OUTPUT			= (int) 'o',
-	LIBSMRAW_ERROR_DOMAIN_RUNTIME			= (int) 'r',
+	LIBSMRAW_ERROR_DOMAIN_RUNTIME			= (int) 'r'
 };
 
 /* The argument error codes
@@ -208,6 +208,17 @@ enum LIBSMRAW_MEMORY_ERROR
 	LIBSMRAW_MEMORY_ERROR_SET_FAILED		= 3
 };
 
+/* The output error codes
+ */
+enum LIBSMRAW_OUTPUT_ERROR
+{
+	LIBSMRAW_OUTPUT_ERROR_GENERIC			= 0,
+
+	/* There is insuficient space to write the output
+	 */
+	LIBSMRAW_OUTPUT_ERROR_INSUFFICIENT_SPACE	= 1
+};
+
 /* The runtime error codes
  * to signify errors regarding runtime processing
  */
@@ -276,16 +287,5 @@ enum LIBSMRAW_RUNTIME_ERROR
 	LIBSMRAW_RUNTIME_ERROR_ABORT_REQUESTED		= 15
 };
 
-/* The output error codes
- */
-enum LIBSMRAW_OUTPUT_ERROR
-{
-	LIBSMRAW_OUTPUT_ERROR_GENERIC			= 0,
-
-	/* There is insuficient space to write the output
-	 */
-	LIBSMRAW_OUTPUT_ERROR_INSUFFICIENT_SPACE	= 1
-};
-
-#endif
+#endif /* !defined( _LIBSMRAW_ERROR_H ) */
 

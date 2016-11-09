@@ -22,6 +22,8 @@
 #if !defined( _LIBSMRAW_FEATURES_H )
 #define _LIBSMRAW_FEATURES_H
 
+/* The libsmraw type support features
+ */
 #if defined( WINAPI ) || @HAVE_WIDE_CHARACTER_TYPE@
 #define LIBSMRAW_HAVE_WIDE_CHARACTER_TYPE	1
 #endif
@@ -44,5 +46,5 @@
 #endif
 #endif
 
-#endif
+#endif /* !defined( _LIBSMRAW_FEATURES_H ) */
 

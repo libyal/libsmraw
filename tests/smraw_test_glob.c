@@ -21,23 +21,25 @@
 
 #include <common.h>
 #include <file_stream.h>
+#include <narrow_string.h>
+#include <types.h>
+#include <wide_string.h>
 
 #if defined( HAVE_STDLIB_H ) || defined( WINAPI )
 #include <stdlib.h>
 #endif
 
-#include "smraw_test_libcstring.h"
 #include "smraw_test_libsmraw.h"
 
 /* The main program
  */
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 int wmain( int argc, wchar_t * const argv[] )
 #else
 int main( int argc, char * const argv[] )
 #endif
 {
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 	wchar_t **filenames     = NULL;
 #else
 	char **filenames        = NULL;
@@ -54,10 +56,10 @@ int main( int argc, char * const argv[] )
 
 		return( EXIT_FAILURE );
 	}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 	if( libsmraw_glob_wide(
 	     argv[ 1 ],
-	     libcstring_wide_string_length(
+	     wide_string_length(
 	      argv[ 1 ] ),
 	     &filenames,
 	     &number_of_filenames,
@@ -65,7 +67,7 @@ int main( int argc, char * const argv[] )
 #else
 	if( libsmraw_glob(
 	     argv[ 1 ],
-	     libcstring_narrow_string_length(
+	     narrow_string_length(
 	      argv[ 1 ] ),
 	     &filenames,
 	     &number_of_filenames,
@@ -98,7 +100,7 @@ int main( int argc, char * const argv[] )
 	     filename_iterator < number_of_filenames;
 	     filename_iterator++ )
 	{
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 		fprintf(
 		 stdout,
 		 "%ls",
@@ -122,7 +124,7 @@ int main( int argc, char * const argv[] )
 			 " " );
 		}
 	}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 	if( libsmraw_glob_wide_free(
 	     filenames,
 	     number_of_filenames,

@@ -73,5 +73,5 @@ enum LIBSMRAW_MEDIA_FLAGS
 	LIBSMRAW_MEDIA_FLAG_PHYSICAL			= 0x01
 };
 
-#endif
+#endif /* !defined( _LIBSMRAW_DEFINITIONS_H ) */
 

@@ -21,13 +21,16 @@
 
 #include <common.h>
 #include <file_stream.h>
+#include <narrow_string.h>
+#include <system_string.h>
+#include <types.h>
+#include <wide_string.h>
 
 #if defined( HAVE_STDLIB_H ) || defined( WINAPI )
 #include <stdlib.h>
 #endif
 
 #include "smraw_test_libcerror.h"
-#include "smraw_test_libcstring.h"
 #include "smraw_test_libcsystem.h"
 #include "smraw_test_libsmraw.h"
 #include "smraw_test_unused.h"
@@ -451,20 +454,20 @@ int smraw_test_seek_handle(
  * Returns 1 if successful, 0 if not or -1 on error
  */
 int smraw_test_seek(
-     libcstring_system_character_t *source,
+     system_character_t *source,
      libcerror_error_t **error )
 {
-	libcstring_system_character_t **filenames = NULL;
-	libsmraw_handle_t *handle                 = NULL;
-	size64_t media_size                       = 0;
-	size_t source_length                      = 0;
-	int number_of_filenames                   = 0;
-	int result                                = 0;
+	libsmraw_handle_t *handle      = NULL;
+	system_character_t **filenames = NULL;
+	size64_t media_size            = 0;
+	size_t source_length           = 0;
+	int number_of_filenames        = 0;
+	int result                     = 0;
 
-	source_length = libcstring_system_string_length(
+	source_length = system_string_length(
 	                 source );
 
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 	if( libsmraw_glob_wide(
 	     source,
 	     source_length,
@@ -512,7 +515,7 @@ int smraw_test_seek(
 
 		goto on_error;
 	}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 	if( libsmraw_handle_open_wide(
 	     handle,
 	     filenames,
@@ -577,7 +580,7 @@ int smraw_test_seek(
 
 		goto on_error;
 	}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 	if( libsmraw_glob_wide_free(
 	     filenames,
 	     number_of_filenames,
@@ -609,7 +612,7 @@ on_error:
 	}
 	if( filenames != NULL )
 	{
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 		libsmraw_glob_wide_free(
 		 filenames,
 		 number_of_filenames,
@@ -628,7 +631,7 @@ on_error:
  * Returns 1 if successful, 0 if not or -1 on error
  */
 int smraw_test_seek_no_open(
-     libcstring_system_character_t *source SMRAW_TEST_ATTRIBUTE_UNUSED,
+     system_character_t *source SMRAW_TEST_ATTRIBUTE_UNUSED,
      libcerror_error_t **error )
 {
 	libsmraw_handle_t *handle = NULL;
@@ -713,28 +716,28 @@ on_error:
 
 /* The main program
  */
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 int wmain( int argc, wchar_t * const argv[] )
 #else
 int main( int argc, char * const argv[] )
 #endif
 {
-	libcerror_error_t *error              = NULL;
-	libcstring_system_character_t *source = NULL;
-	libcstring_system_integer_t option    = 0;
+	libcerror_error_t *error   = NULL;
+	system_character_t *source = NULL;
+	system_integer_t option    = 0;
 
 	while( ( option = libcsystem_getopt(
 	                   argc,
 	                   argv,
-	                   _LIBCSTRING_SYSTEM_STRING( "" ) ) ) != (libcstring_system_integer_t) -1 )
+	                   _SYSTEM_STRING( "" ) ) ) != (system_integer_t) -1 )
 	{
 		switch( option )
 		{
-			case (libcstring_system_integer_t) '?':
+			case (system_integer_t) '?':
 			default:
 				fprintf(
 				 stderr,
-				 "Invalid argument: %" PRIs_LIBCSTRING_SYSTEM ".\n",
+				 "Invalid argument: %" PRIs_SYSTEM ".\n",
 				 argv[ optind - 1 ] );
 
 				return( EXIT_FAILURE );

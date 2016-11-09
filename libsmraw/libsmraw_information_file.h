@@ -27,7 +27,6 @@
 #include <types.h>
 
 #include "libsmraw_libcerror.h"
-#include "libsmraw_libcstring.h"
 #include "libsmraw_libfvalue.h"
 
 #if defined( __cplusplus )
@@ -40,7 +39,7 @@ struct libsmraw_information_file
 {
 	/* The filename
 	 */
-	libcstring_system_character_t *name;
+	system_character_t *name;
 
 	/* The size of the filename
 	 */
@@ -61,13 +60,13 @@ int libsmraw_information_file_free(
 
 int libsmraw_information_file_set_name(
      libsmraw_information_file_t *information_file,
-     const libcstring_system_character_t *name,
+     const system_character_t *name,
      size_t name_length,
      libcerror_error_t **error );
 
 int libsmraw_information_file_open(
      libsmraw_information_file_t *information_file,
-     const libcstring_system_character_t *mode,
+     const system_character_t *mode,
      libcerror_error_t **error );
 
 int libsmraw_information_file_close(

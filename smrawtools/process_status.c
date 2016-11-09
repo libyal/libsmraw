@@ -22,7 +22,10 @@
 #include <common.h>
 #include <file_stream.h>
 #include <memory.h>
+#include <narrow_string.h>
+#include <system_string.h>
 #include <types.h>
+#include <wide_string.h>
 
 #if defined( TIME_WITH_SYS_TIME )
 #include <sys/time.h>
@@ -38,7 +41,6 @@
 #include "byte_size_string.h"
 #include "process_status.h"
 #include "smrawtools_libcerror.h"
-#include "smrawtools_libcstring.h"
 
 #if defined( HAVE_CTIME ) || defined( HAVE_CTIME_R ) || defined( WINAPI )
 
@@ -48,15 +50,15 @@
  */
 int process_status_get_ctime_string(
      const time_t *timestamp,
-     libcstring_system_character_t *string,
+     system_character_t *string,
      size_t string_size,
      libcerror_error_t **error )
 {
-	static char *function                                    = "process_status_get_ctime_string";
+	static char *function                         = "process_status_get_ctime_string";
 
 #if ( defined( HAVE_CTIME ) && !defined( HAVE_CTIME_R ) ) || ( defined( WINAPI ) && !defined( _MSC_VER ) )
-	const libcstring_system_character_t *static_ctime_string = NULL;
-	size_t static_ctime_string_length                        = 0;
+	const system_character_t *static_ctime_string = NULL;
+	size_t static_ctime_string_length             = 0;
 #endif
 
 	if( timestamp == NULL )
@@ -104,7 +106,7 @@ int process_status_get_ctime_string(
 		return( -1 );
 	}
 #if defined( _MSC_VER )
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 	if( _wctime_s(
 	     string,
 	     string_size,
@@ -129,7 +131,7 @@ int process_status_get_ctime_string(
 #elif defined( HAVE_CTIME_R )
 /* Sanity check
  */
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 #error Missing wide character ctime_r function
 #endif
 
@@ -157,11 +159,11 @@ int process_status_get_ctime_string(
 #else
 /* Sanity check
  */
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER ) && !defined( WINAPI )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER ) && !defined( WINAPI )
 #error Missing wide character ctime function
 #endif
 
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 	static_ctime_string = _wctime(
 	                       timestamp );
 #else
@@ -179,10 +181,10 @@ int process_status_get_ctime_string(
 
 		return( -1 );
 	}
-	static_ctime_string_length = libcstring_system_string_length(
+	static_ctime_string_length = system_string_length(
 	                              static_ctime_string );
 
-	if( libcstring_system_string_copy(
+	if( system_string_copy(
 	     string,
 	     static_ctime_string,
 	     static_ctime_string_length ) == NULL )
@@ -313,9 +315,9 @@ int process_status_get_time_elements_in_utc(
  */
 int process_status_initialize(
      process_status_t **process_status,
-     const libcstring_system_character_t *status_process_string,
-     const libcstring_system_character_t *status_update_string,
-     const libcstring_system_character_t *status_summary_string,
+     const system_character_t *status_process_string,
+     const system_character_t *status_update_string,
+     const system_character_t *status_summary_string,
      FILE *output_stream,
      uint8_t print_status_information,
      libcerror_error_t **error )
@@ -428,7 +430,7 @@ int process_status_start(
      process_status_t *process_status,
      libcerror_error_t **error )
 {
-	libcstring_system_character_t time_string[ 32 ];
+	system_character_t time_string[ 32 ];
 
 	static char *function = "process_status_start";
 
@@ -459,7 +461,7 @@ int process_status_start(
 		{
 			fprintf(
 			 process_status->output_stream,
-			 "%" PRIs_LIBCSTRING_SYSTEM " started at: %" PRIs_LIBCSTRING_SYSTEM "\n",
+			 "%" PRIs_SYSTEM " started at: %" PRIs_SYSTEM "\n",
 			 process_status->status_process_string,
 			 time_string );
 		}
@@ -467,7 +469,7 @@ int process_status_start(
 		{
 			fprintf(
 			 process_status->output_stream,
-			 "%" PRIs_LIBCSTRING_SYSTEM " started.\n",
+			 "%" PRIs_SYSTEM " started.\n",
 			 process_status->status_process_string );
 		}
 		fprintf(
@@ -529,7 +531,7 @@ int process_status_update(
 
 			fprintf(
 			 process_status->output_stream,
-			 "        %" PRIs_LIBCSTRING_SYSTEM "",
+			 "        %" PRIs_SYSTEM "",
 			 process_status->status_update_string );
 
 			process_status_bytes_fprint(
@@ -633,7 +635,7 @@ int process_status_update_unknown_total(
 
 				fprintf(
 				 process_status->output_stream,
-				 "Status: %" PRIs_LIBCSTRING_SYSTEM "",
+				 "Status: %" PRIs_SYSTEM "",
 				 process_status->status_update_string );
 
 				process_status_bytes_fprint(
@@ -677,11 +679,11 @@ int process_status_stop(
      int status,
      libcerror_error_t **error )
 {
-	libcstring_system_character_t time_string[ 32 ];
+	system_character_t time_string[ 32 ];
 
-	static char *function                      = "process_status_start";
-	const libcstring_system_character_t *status_string = NULL;
-	time_t seconds_total                       = 0;
+	const system_character_t *status_string = NULL;
+	static char *function                   = "process_status_start";
+	time_t seconds_total                    = 0;
 
 	if( process_status == NULL )
 	{
@@ -716,19 +718,19 @@ int process_status_stop(
 	{
 		if( status == PROCESS_STATUS_ABORTED )
 		{
-			status_string = _LIBCSTRING_SYSTEM_STRING( "aborted" );
+			status_string = _SYSTEM_STRING( "aborted" );
 		}
 		else if( status == PROCESS_STATUS_COMPLETED )
 		{
-			status_string = _LIBCSTRING_SYSTEM_STRING( "completed" );
+			status_string = _SYSTEM_STRING( "completed" );
 		}
 		else if( status == PROCESS_STATUS_FAILED )
 		{
-			status_string = _LIBCSTRING_SYSTEM_STRING( "failed" );
+			status_string = _SYSTEM_STRING( "failed" );
 		}
 		fprintf(
 		 process_status->output_stream,
-		 "%" PRIs_LIBCSTRING_SYSTEM " %" PRIs_LIBCSTRING_SYSTEM "",
+		 "%" PRIs_SYSTEM " %" PRIs_SYSTEM "",
 		 process_status->status_process_string,
 		 status_string );
 
@@ -740,7 +742,7 @@ int process_status_stop(
 		{
 			fprintf(
 			 process_status->output_stream,
-			 " at: %" PRIs_LIBCSTRING_SYSTEM "\n",
+			 " at: %" PRIs_SYSTEM "\n",
 			 time_string );
 		}
 		else
@@ -757,7 +759,7 @@ int process_status_stop(
 
 			fprintf(
 			process_status->output_stream,
-			"%" PRIs_LIBCSTRING_SYSTEM ":",
+			"%" PRIs_SYSTEM ":",
 			process_status->status_summary_string );
 
 			process_status_bytes_fprint(
@@ -845,7 +847,7 @@ void process_status_bytes_per_second_fprint(
       size64_t bytes,
       time_t seconds )
 {
-	libcstring_system_character_t bytes_per_second_string[ 16 ];
+	system_character_t bytes_per_second_string[ 16 ];
 
 	size64_t bytes_per_second = 0;
 	int result                = 0;
@@ -875,7 +877,7 @@ void process_status_bytes_per_second_fprint(
 		{
 			fprintf(
 			 stream,
-			 " %" PRIs_LIBCSTRING_SYSTEM "/s (%" PRIu64 " bytes/second)",
+			 " %" PRIs_SYSTEM "/s (%" PRIu64 " bytes/second)",
 			 bytes_per_second_string,
 			 bytes_per_second );
 		}
@@ -896,7 +898,7 @@ void process_status_bytes_fprint(
       FILE *stream,
       size64_t bytes )
 {
-	libcstring_system_character_t bytes_string[ 16 ];
+	system_character_t bytes_string[ 16 ];
 
 	int result = 0;
 
@@ -917,7 +919,7 @@ void process_status_bytes_fprint(
 	{
 		fprintf(
 		 stream,
-		 " %" PRIs_LIBCSTRING_SYSTEM " (%" PRIi64 " bytes)",
+		 " %" PRIs_SYSTEM " (%" PRIi64 " bytes)",
 		 bytes_string,
 		 bytes );
 	}

@@ -1,7 +1,7 @@
 #!/bin/bash
 # Library glob testing script
 #
-# Version: 20160327
+# Version: 20161109
 
 EXIT_SUCCESS=0;
 EXIT_FAILURE=1;
@@ -17,10 +17,10 @@ TEST_TOOL="${TEST_PREFIX}_test_glob";
 
 seq()
 {
-	VALUE=$1;
-	SEQUENCE="";
+	local VALUE=$1;
+	local SEQUENCE="";
 
-	while [ ${VALUE} -le $2 ];
+	while test ${VALUE} -le $2;
 	do
 		SEQUENCE="${SEQUENCE} ${VALUE}";
 
@@ -32,24 +32,25 @@ seq()
 
 test_glob()
 { 
-	BASENAME=$1;
-	SCHEMA=$2;
-	FILENAMES=$3;
+	local BASENAME=$1;
+	local SCHEMA=$2;
+	local FILENAMES=$3;
 
-	TMPDIR="tmp$$";
+	local TEST_DESCRIPTION="Testing glob: for basename: ${BASENAME} and schema: ${SCHEMA} ";
+
+	local TMPDIR="tmp$$";
 
 	rm -rf ${TMPDIR};
 	mkdir ${TMPDIR};
 
-	FILENAMES=`echo ${FILENAMES} | sed "s?^?${TMPDIR}/?" | sed "s? ? ${TMPDIR}/?g"`;
+	local FILENAMES=`echo ${FILENAMES} | sed "s?^?${TMPDIR}/?" | sed "s? ? ${TMPDIR}/?g"`;
 
 	echo ${FILENAMES} > ${TMPDIR}/input;
 
 	touch ${FILENAMES};
 
-	run_test_with_arguments ${TEST_EXECUTABLE} ${TMPDIR}/${BASENAME} > ${TMPDIR}/output;
-
-	RESULT=$?;
+	run_test_with_arguments "" "${TEST_EXECUTABLE}" "${TMPDIR}/${BASENAME}" > "${TMPDIR}/output";
+	local RESULT=$?;
 
 	if test ${RESULT} -eq ${EXIT_SUCCESS};
 	then
@@ -61,7 +62,7 @@ test_glob()
 
 	rm -rf ${TMPDIR};
 
-	echo -n "Testing glob: for basename: ${BASENAME} and schema: ${SCHEMA} ";
+	echo -n "${TEST_DESCRIPTION} ";
 
 	if test ${RESULT} -ne ${EXIT_SUCCESS};
 	then
@@ -74,28 +75,29 @@ test_glob()
 
 test_glob_sequence()
 { 
-	BASENAME=$1;
-	SCHEMA=$2;
-	FILENAME=$3;
-	LAST=$4;
+	local BASENAME=$1;
+	local SCHEMA=$2;
+	local FILENAME=$3;
+	local LAST=$4;
 
-	SEQUENCE=`seq 1 ${LAST}`;
-	FILENAMES=`for NUMBER in ${SEQUENCE}; do echo -n "${FILENAME}.${NUMBER}of${LAST} "; echo $FILE; done`;
+	local SEQUENCE=`seq 1 ${LAST}`;
+	local FILENAMES=`for NUMBER in ${SEQUENCE}; do echo -n "${FILENAME}.${NUMBER}of${LAST} "; echo $FILE; done`;
 
-	TMPDIR="tmp$$";
+	local TEST_DESCRIPTION="Testing glob: for basename: ${BASENAME} and schema: ${SCHEMA} ";
+
+	local TMPDIR="tmp$$";
 
 	rm -rf ${TMPDIR};
 	mkdir ${TMPDIR};
 
-	FILENAMES=`echo ${FILENAMES} | sed "s?^?${TMPDIR}/?" | sed "s? ? ${TMPDIR}/?g"`;
+	local FILENAMES=`echo ${FILENAMES} | sed "s?^?${TMPDIR}/?" | sed "s? ? ${TMPDIR}/?g"`;
 
 	echo ${FILENAMES} > ${TMPDIR}/input;
 
 	touch ${FILENAMES};
 
-	run_test_with_arguments ${TEST_EXECUTABLE} ${TMPDIR}/${BASENAME} > ${TMPDIR}/output;
-
-	RESULT=$?;
+	run_test_with_arguments "" "${TEST_EXECUTABLE}" "${TMPDIR}/${BASENAME}" > "${TMPDIR}/output";
+	local RESULT=$?;
 
 	if test ${RESULT} -eq ${EXIT_SUCCESS};
 	then
@@ -107,7 +109,7 @@ test_glob_sequence()
 
 	rm -rf ${TMPDIR};
 
-	echo -n "Testing glob: for basename: ${BASENAME} and schema: ${SCHEMA} ";
+	echo -n "${TEST_DESCRIPTION} ";
 
 	if test ${RESULT} -ne ${EXIT_SUCCESS};
 	then

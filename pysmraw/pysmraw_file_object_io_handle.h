@@ -27,7 +27,6 @@
 
 #include "pysmraw_libbfio.h"
 #include "pysmraw_libcerror.h"
-#include "pysmraw_libcstring.h"
 #include "pysmraw_python.h"
 
 #if defined( __cplusplus )

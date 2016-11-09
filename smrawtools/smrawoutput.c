@@ -22,6 +22,7 @@
 #include <common.h>
 #include <file_stream.h>
 #include <memory.h>
+#include <system_string.h>
 #include <types.h>
 
 #include "smrawoutput.h"
@@ -29,7 +30,6 @@
 #include "smrawtools_libcerror.h"
 #include "smrawtools_libclocale.h"
 #include "smrawtools_libcnotify.h"
-#include "smrawtools_libcstring.h"
 #include "smrawtools_libcsystem.h"
 #include "smrawtools_libfvalue.h"
 #include "smrawtools_libsmraw.h"
@@ -71,7 +71,7 @@ void smrawoutput_copyright_fprint(
  */
 void smrawoutput_version_fprint(
       FILE *stream,
-      const libcstring_system_character_t *program )
+      const system_character_t *program )
 {
 	if( stream == NULL )
 	{
@@ -83,7 +83,7 @@ void smrawoutput_version_fprint(
 	}
 	fprintf(
 	 stream,
-	 "%" PRIs_LIBCSTRING_SYSTEM " %s\n\n",
+	 "%" PRIs_SYSTEM " %s\n\n",
 	 program,
 	 LIBSMRAW_VERSION_STRING );
 }
@@ -92,7 +92,7 @@ void smrawoutput_version_fprint(
  */
 void smrawoutput_version_detailed_fprint(
       FILE *stream,
-      const libcstring_system_character_t *program )
+      const system_character_t *program )
 {
 	if( stream == NULL )
 	{
@@ -104,7 +104,7 @@ void smrawoutput_version_detailed_fprint(
 	}
 	fprintf(
 	 stream,
-	 "%" PRIs_LIBCSTRING_SYSTEM " %s (libsmraw %s",
+	 "%" PRIs_SYSTEM " %s (libsmraw %s",
 	 program,
 	 LIBSMRAW_VERSION_STRING,
 	 LIBSMRAW_VERSION_STRING );

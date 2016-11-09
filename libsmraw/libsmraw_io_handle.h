@@ -40,7 +40,7 @@ struct libsmraw_io_handle
 {
         /* The basename
 	 */
-        libcstring_system_character_t *basename;
+        system_character_t *basename;
 
         /* The basename size
 	 */

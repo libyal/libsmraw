@@ -20,6 +20,8 @@
  */
 
 #include <common.h>
+#include <file_stream.h>
+#include <types.h>
 
 #if defined( HAVE_STDLIB_H ) || defined( WINAPI )
 #include <stdlib.h>
@@ -90,7 +92,7 @@ int smraw_test_notify_stream_close(
 
 /* The main program
  */
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 int wmain(
      int argc SMRAW_TEST_ATTRIBUTE_UNUSED,
      wchar_t * const argv[] SMRAW_TEST_ATTRIBUTE_UNUSED )
@@ -105,19 +107,19 @@ int main(
 
 	SMRAW_TEST_RUN(
 	 "libsmraw_notify_set_verbose",
-	 smraw_test_notify_set_verbose() )
+	 smraw_test_notify_set_verbose )
 
 	SMRAW_TEST_RUN(
 	 "libsmraw_notify_set_stream",
-	 smraw_test_notify_set_stream() )
+	 smraw_test_notify_set_stream )
 
 	SMRAW_TEST_RUN(
 	 "libsmraw_notify_stream_open",
-	 smraw_test_notify_stream_open() )
+	 smraw_test_notify_stream_open )
 
 	SMRAW_TEST_RUN(
 	 "libsmraw_notify_stream_close",
-	 smraw_test_notify_stream_close() )
+	 smraw_test_notify_stream_close )
 
 	return( EXIT_SUCCESS );
 

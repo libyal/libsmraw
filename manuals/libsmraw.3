@@ -1,4 +1,4 @@
-.Dd March  4, 2016
+.Dd September 11, 2016
 .Dt libsmraw 3
 .Os libsmraw
 .Sh NAME
@@ -26,8 +26,6 @@ Support functions
 .Fn libsmraw_glob "const char *filename, size_t filename_length, char **filenames[], int *number_of_filenames, libsmraw_error_t **error"
 .Ft int
 .Fn libsmraw_glob_free "char *filenames[], int number_of_filenames, libsmraw_error_t **error"
-.Pp
-Available when compiled with wide character string support:
 .Ft int
 .Fn libsmraw_glob_wide "const wchar_t *filename, size_t filename_length, wchar_t **filenames[], int *number_of_filenames, libsmraw_error_t **error"
 .Ft int

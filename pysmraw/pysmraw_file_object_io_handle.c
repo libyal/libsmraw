@@ -28,7 +28,6 @@
 #include "pysmraw_integer.h"
 #include "pysmraw_libbfio.h"
 #include "pysmraw_libcerror.h"
-#include "pysmraw_libcstring.h"
 #include "pysmraw_python.h"
 
 /* Creates a file object IO handle

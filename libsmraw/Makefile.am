@@ -1,7 +1,6 @@
 AM_CPPFLAGS = \
 	-I$(top_srcdir)/include \
 	-I$(top_srcdir)/common \
-	@LIBCSTRING_CPPFLAGS@ \
 	@LIBCERROR_CPPFLAGS@ \
 	@LIBCTHREADS_CPPFLAGS@ \
 	@LIBCDATA_CPPFLAGS@ \
@@ -33,7 +32,6 @@ libsmraw_la_SOURCES = \
 	libsmraw_libcerror.h \
 	libsmraw_libclocale.h \
 	libsmraw_libcnotify.h \
-	libsmraw_libcstring.h \
 	libsmraw_libcthreads.h \
 	libsmraw_libfdata.h \
 	libsmraw_libfvalue.h \
@@ -45,7 +43,6 @@ libsmraw_la_SOURCES = \
 	libsmraw_unused.h
 
 libsmraw_la_LIBADD = \
-	@LIBCSTRING_LIBADD@ \
 	@LIBCERROR_LIBADD@ \
 	@LIBCTHREADS_LIBADD@ \
 	@LIBCDATA_LIBADD@ \

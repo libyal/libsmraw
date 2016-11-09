@@ -21,7 +21,9 @@
 
 #include <common.h>
 #include <memory.h>
+#include <narrow_string.h>
 #include <types.h>
+#include <wide_string.h>
 
 #if defined( HAVE_STDLIB_H )
 #include <stdlib.h>
@@ -33,7 +35,6 @@
 #include "pysmraw_integer.h"
 #include "pysmraw_libbfio.h"
 #include "pysmraw_libcerror.h"
-#include "pysmraw_libcstring.h"
 #include "pysmraw_libsmraw.h"
 #include "pysmraw_metadata.h"
 #include "pysmraw_python.h"
@@ -530,7 +531,7 @@ PyObject *pysmraw_handle_open(
            PyObject *arguments,
            PyObject *keywords )
 {
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 	PyObject *codepage_string_object = NULL;
 	wchar_t **filenames              = NULL;
 	wchar_t *filename_wide           = NULL;
@@ -648,7 +649,7 @@ PyObject *pysmraw_handle_open(
 
 		goto on_error;
 	}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 	filenames = (wchar_t **) PyMem_Malloc(
 	                          sizeof( wchar_t * ) * number_of_filenames );
 #else
@@ -664,7 +665,7 @@ PyObject *pysmraw_handle_open(
 
 		goto on_error;
 	}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 	if( memory_set(
 	     filenames,
 	     0,
@@ -751,7 +752,7 @@ PyObject *pysmraw_handle_open(
 		}
 		if( is_unicode_string != 0 )
 		{
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 			filename_wide = (wchar_t *) PyUnicode_AsUnicode(
 			                             string_object );
 
@@ -783,11 +784,11 @@ PyObject *pysmraw_handle_open(
 			filename_length = PyString_Size(
 					   utf8_string_object );
 #endif /* PY_MAJOR_VERSION >= 3 */
-#endif /* defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER ) */
+#endif /* defined( HAVE_WIDE_SYSTEM_CHARACTER ) */
 		}
 		else
 		{
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 #if PY_MAJOR_VERSION >= 3
 			filename_narrow = PyBytes_AsString(
 			                   string_object );
@@ -837,9 +838,9 @@ PyObject *pysmraw_handle_open(
 			filename_length = PyString_Size(
 			                   string_object );
 #endif /* PY_MAJOR_VERSION >= 3 */
-#endif /* defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER ) */
+#endif /* defined( HAVE_WIDE_SYSTEM_CHARACTER ) */
 		}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 		if( ( filename_wide == NULL )
 		 || ( filename_length == 0 ) )
 #else
@@ -855,7 +856,7 @@ PyObject *pysmraw_handle_open(
 
 			goto on_error;
 		}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 		filenames[ filename_index ] = (wchar_t *) PyMem_Malloc(
 		                                           sizeof( wchar_t ) * ( filename_length + 1 ) );
 #else
@@ -872,13 +873,13 @@ PyObject *pysmraw_handle_open(
 
 			goto on_error;
 		}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
-		if( libcstring_wide_string_copy(
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
+		if( wide_string_copy(
 		     filenames[ filename_index ],
 		     filename_wide,
 		     filename_length ) == NULL )
 #else
-		if( libcstring_narrow_string_copy(
+		if( narrow_string_copy(
 		     filenames[ filename_index ],
 		     filename_narrow,
 		     filename_length ) == NULL )
@@ -894,7 +895,7 @@ PyObject *pysmraw_handle_open(
 		}
 		( filenames[ filename_index ] )[ filename_length ] = 0;
 
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 		if( codepage_string_object != NULL )
 		{
 			Py_DecRef(
@@ -920,7 +921,7 @@ PyObject *pysmraw_handle_open(
 	}
 	Py_BEGIN_ALLOW_THREADS
 
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 	result = libsmraw_handle_open_wide(
 	          pysmraw_handle->handle,
 	          filenames,
@@ -966,7 +967,7 @@ PyObject *pysmraw_handle_open(
 	return( Py_None );
 
 on_error:
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 	if( codepage_string_object != NULL )
 	{
 		Py_DecRef(

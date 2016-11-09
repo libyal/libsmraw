@@ -26,16 +26,15 @@
 #include <types.h>
 
 #include "libsmraw_libcerror.h"
-#include "libsmraw_libcstring.h"
 
 #if defined( __cplusplus )
 extern "C" {
 #endif
 
 int libsmraw_filename_create(
-     libcstring_system_character_t **filename,
+     system_character_t **filename,
      size_t *filename_size,
-     libcstring_system_character_t *basename,
+     system_character_t *basename,
      size_t basename_size,
      int number_of_segments,
      int segment_index,

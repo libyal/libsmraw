@@ -27,7 +27,6 @@
 #include <types.h>
 
 #include "smrawtools_libcerror.h"
-#include "smrawtools_libcstring.h"
 #include "smrawtools_libsmraw.h"
 
 #if defined( __cplusplus )
@@ -61,7 +60,7 @@ int mount_handle_signal_abort(
 
 int mount_handle_open_input(
      mount_handle_t *mount_handle,
-     libcstring_system_character_t * const * filenames,
+     system_character_t * const * filenames,
      int number_of_filenames,
      libcerror_error_t **error );
 

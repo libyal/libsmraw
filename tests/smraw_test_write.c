@@ -22,6 +22,10 @@
 #include <common.h>
 #include <file_stream.h>
 #include <memory.h>
+#include <narrow_string.h>
+#include <system_string.h>
+#include <types.h>
+#include <wide_string.h>
 
 #if defined( HAVE_STDLIB_H ) || defined( WINAPI )
 #include <stdlib.h>
@@ -29,14 +33,13 @@
 
 #include "smraw_test_libcerror.h"
 #include "smraw_test_libcpath.h"
-#include "smraw_test_libcstring.h"
 #include "smraw_test_libhmac.h"
 #include "smraw_test_libsmraw.h"
 
 #define SMRAW_TEST_BUFFER_SIZE	4096
 
 int smraw_test_write(
-     const libcstring_system_character_t *filename,
+     const system_character_t *filename,
      size_t media_size,
      size_t maximum_segment_size,
      libcerror_error_t **error )
@@ -84,7 +87,7 @@ int smraw_test_write(
 
 		goto on_error;
 	}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 	if( libsmraw_handle_open_wide(
 	     handle,
 	     (wchar_t * const *) &filename,
@@ -381,15 +384,15 @@ on_error:
 
 /* The main program
  */
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 int wmain( int argc, wchar_t * const argv[] )
 #else
 int main( int argc, char * const argv[] )
 #endif
 {
-	libcstring_system_character_t *filename = NULL;
-	libsmraw_error_t *error                 = NULL;
-	size_t filename_size                    = 0;
+	libsmraw_error_t *error      = NULL;
+	system_character_t *filename = NULL;
+	size_t filename_size         = 0;
 
 	if( argc < 2 )
 	{
@@ -399,14 +402,14 @@ int main( int argc, char * const argv[] )
 
 		return( EXIT_FAILURE );
 	}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 	if( libcpath_path_join_wide(
 	     &filename,
 	     &filename_size,
 	     argv[ 1 ],
-	     libcstring_system_string_length(
+	     system_string_length(
 	      argv[ 1 ] ),
-	     _LIBCSTRING_SYSTEM_STRING( "test1" ),
+	     _SYSTEM_STRING( "test1" ),
 	     5,
 	     &error ) != 1 )
 #else
@@ -414,9 +417,9 @@ int main( int argc, char * const argv[] )
 	     &filename,
 	     &filename_size,
 	     argv[ 1 ],
-	     libcstring_system_string_length(
+	     system_string_length(
 	      argv[ 1 ] ),
-	     _LIBCSTRING_SYSTEM_STRING( "test1" ),
+	     _SYSTEM_STRING( "test1" ),
 	     5,
 	     &error ) != 1 )
 #endif
@@ -444,14 +447,14 @@ int main( int argc, char * const argv[] )
 
 	filename = NULL;
 
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 	if( libcpath_path_join_wide(
 	     &filename,
 	     &filename_size,
 	     argv[ 1 ],
-	     libcstring_system_string_length(
+	     system_string_length(
 	      argv[ 1 ] ),
-	     _LIBCSTRING_SYSTEM_STRING( "test2" ),
+	     _SYSTEM_STRING( "test2" ),
 	     5,
 	     &error ) != 1 )
 #else
@@ -459,9 +462,9 @@ int main( int argc, char * const argv[] )
 	     &filename,
 	     &filename_size,
 	     argv[ 1 ],
-	     libcstring_system_string_length(
+	     system_string_length(
 	      argv[ 1 ] ),
-	     _LIBCSTRING_SYSTEM_STRING( "test2" ),
+	     _SYSTEM_STRING( "test2" ),
 	     5,
 	     &error ) != 1 )
 #endif
@@ -489,14 +492,14 @@ int main( int argc, char * const argv[] )
 
 	filename = NULL;
 
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 	if( libcpath_path_join_wide(
 	     &filename,
 	     &filename_size,
 	     argv[ 1 ],
-	     libcstring_system_string_length(
+	     system_string_length(
 	      argv[ 1 ] ),
-	     _LIBCSTRING_SYSTEM_STRING( "test3" ),
+	     _SYSTEM_STRING( "test3" ),
 	     5,
 	     &error ) != 1 )
 #else
@@ -504,9 +507,9 @@ int main( int argc, char * const argv[] )
 	     &filename,
 	     &filename_size,
 	     argv[ 1 ],
-	     libcstring_system_string_length(
+	     system_string_length(
 	      argv[ 1 ] ),
-	     _LIBCSTRING_SYSTEM_STRING( "test3" ),
+	     _SYSTEM_STRING( "test3" ),
 	     5,
 	     &error ) != 1 )
 #endif
@@ -534,14 +537,14 @@ int main( int argc, char * const argv[] )
 
 	filename = NULL;
 
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 	if( libcpath_path_join_wide(
 	     &filename,
 	     &filename_size,
 	     argv[ 1 ],
-	     libcstring_system_string_length(
+	     system_string_length(
 	      argv[ 1 ] ),
-	     _LIBCSTRING_SYSTEM_STRING( "test4" ),
+	     _SYSTEM_STRING( "test4" ),
 	     5,
 	     &error ) != 1 )
 #else
@@ -549,9 +552,9 @@ int main( int argc, char * const argv[] )
 	     &filename,
 	     &filename_size,
 	     argv[ 1 ],
-	     libcstring_system_string_length(
+	     system_string_length(
 	      argv[ 1 ] ),
-	     _LIBCSTRING_SYSTEM_STRING( "test4" ),
+	     _SYSTEM_STRING( "test4" ),
 	     5,
 	     &error ) != 1 )
 #endif

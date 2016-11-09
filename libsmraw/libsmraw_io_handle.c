@@ -21,7 +21,10 @@
 
 #include <common.h>
 #include <memory.h>
+#include <narrow_string.h>
+#include <system_string.h>
 #include <types.h>
+#include <wide_string.h>
 
 #include "libsmraw_definitions.h"
 #include "libsmraw_filename.h"
@@ -29,7 +32,6 @@
 #include "libsmraw_libbfio.h"
 #include "libsmraw_libcerror.h"
 #include "libsmraw_libclocale.h"
-#include "libsmraw_libcstring.h"
 #include "libsmraw_libuna.h"
 #include "libsmraw_unused.h"
 
@@ -201,11 +203,11 @@ int libsmraw_io_handle_create_segment(
      uint32_t *segment_flags,
      libcerror_error_t **error )
 {
-	libbfio_handle_t *file_io_handle        = NULL;
-	libcstring_system_character_t *filename = NULL;
-	static char *function                   = "libsmraw_io_handle_create_segment";
-	size_t filename_size                    = 0;
-	int file_io_pool_entry                  = 0;
+	libbfio_handle_t *file_io_handle = NULL;
+	system_character_t *filename     = NULL;
+	static char *function            = "libsmraw_io_handle_create_segment";
+	size_t filename_size             = 0;
+	int file_io_pool_entry           = 0;
 
 	if( io_handle == NULL )
 	{
@@ -294,7 +296,7 @@ int libsmraw_io_handle_create_segment(
 
 		goto on_error;
 	}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 	if( libbfio_file_set_name_wide(
 	     file_io_handle,
 	     filename,
@@ -552,7 +554,7 @@ int libsmraw_io_handle_get_basename_size(
 {
 	static char *function = "libsmraw_io_handle_get_basename_size";
 
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 	int result            = 0;
 #endif
 
@@ -589,7 +591,7 @@ int libsmraw_io_handle_get_basename_size(
 
 		return( -1 );
 	}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 	if( libclocale_codepage == 0 )
 	{
 #if SIZEOF_WCHAR_T == 4
@@ -658,7 +660,7 @@ int libsmraw_io_handle_get_basename(
 	static char *function       = "libsmraw_io_handle_get_basename";
 	size_t narrow_basename_size = 0;
 
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 	int result                  = 0;
 #endif
 
@@ -695,7 +697,7 @@ int libsmraw_io_handle_get_basename(
 
 		return( -1 );
 	}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 	if( libclocale_codepage == 0 )
 	{
 #if SIZEOF_WCHAR_T == 4
@@ -759,7 +761,7 @@ int libsmraw_io_handle_get_basename(
 
 		return( -1 );
 	}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 	if( libclocale_codepage == 0 )
 	{
 #if SIZEOF_WCHAR_T == 4
@@ -814,7 +816,7 @@ int libsmraw_io_handle_get_basename(
 		return( -1 );
 	}
 #else
-	if( libcstring_system_string_copy(
+	if( system_string_copy(
 	     basename,
 	     io_handle->basename,
 	     io_handle->basename_size ) == NULL )
@@ -844,7 +846,7 @@ int libsmraw_io_handle_set_basename(
 {
 	static char *function = "libsmraw_io_handle_set_basename";
 
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 	int result            = 0;
 #endif
 
@@ -900,7 +902,7 @@ int libsmraw_io_handle_set_basename(
 		 io_handle->basename      = NULL;
 		 io_handle->basename_size = 0;
 	}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 	if( libclocale_codepage == 0 )
 	{
 #if SIZEOF_WCHAR_T == 4
@@ -953,7 +955,7 @@ int libsmraw_io_handle_set_basename(
 #else
 	io_handle->basename_size = basename_length + 1;
 #endif
-	io_handle->basename = libcstring_system_string_allocate(
+	io_handle->basename = system_string_allocate(
 	                       io_handle->basename_size );
 
 	if( io_handle->basename == NULL )
@@ -967,7 +969,7 @@ int libsmraw_io_handle_set_basename(
 
 		return( -1 );
 	}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 	if( libclocale_codepage == 0 )
 	{
 #if SIZEOF_WCHAR_T == 4
@@ -1028,7 +1030,7 @@ int libsmraw_io_handle_set_basename(
 		return( -1 );
 	}
 #else
-	if( libcstring_system_string_copy(
+	if( system_string_copy(
 	     io_handle->basename,
 	     basename,
 	     basename_length + 1 ) == NULL )
@@ -1066,7 +1068,7 @@ int libsmraw_io_handle_get_basename_size_wide(
 {
 	static char *function = "libsmraw_io_handle_get_basename_size_wide";
 
-#if !defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if !defined( HAVE_WIDE_SYSTEM_CHARACTER )
 	int result            = 0;
 #endif
 
@@ -1103,7 +1105,7 @@ int libsmraw_io_handle_get_basename_size_wide(
 
 		return( -1 );
 	}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 	*basename_size = io_handle->basename_size;
 #else
 	if( libclocale_codepage == 0 )
@@ -1172,7 +1174,7 @@ int libsmraw_io_handle_get_basename_wide(
 	static char *function     = "libsmraw_io_handle_get_basename_wide";
 	size_t wide_basename_size = 0;
 
-#if !defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if !defined( HAVE_WIDE_SYSTEM_CHARACTER )
 	int result                = 0;
 #endif
 
@@ -1209,7 +1211,7 @@ int libsmraw_io_handle_get_basename_wide(
 
 		return( -1 );
 	}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 	wide_basename_size = io_handle->basename_size;
 #else
 	if( libclocale_codepage == 0 )
@@ -1273,8 +1275,8 @@ int libsmraw_io_handle_get_basename_wide(
 
 		return( -1 );
 	}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
-	if( libcstring_system_string_copy(
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
+	if( system_string_copy(
 	     basename,
 	     io_handle->basename,
 	     io_handle->basename_size ) == NULL )
@@ -1358,7 +1360,7 @@ int libsmraw_io_handle_set_basename_wide(
 {
 	static char *function = "libsmraw_io_handle_set_basename_wide";
 
-#if !defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if !defined( HAVE_WIDE_SYSTEM_CHARACTER )
 	int result            = 0;
 #endif
 
@@ -1414,7 +1416,7 @@ int libsmraw_io_handle_set_basename_wide(
 		 io_handle->basename      = NULL;
 		 io_handle->basename_size = 0;
 	}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 	io_handle->basename_size = basename_length + 1;
 #else
 	if( libclocale_codepage == 0 )
@@ -1466,9 +1468,9 @@ int libsmraw_io_handle_set_basename_wide(
 
 		return( -1 );
 	}
-#endif /* defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER ) */
+#endif /* defined( HAVE_WIDE_SYSTEM_CHARACTER ) */
 
-	io_handle->basename = libcstring_system_string_allocate(
+	io_handle->basename = system_string_allocate(
 	                       io_handle->basename_size );
 
 	if( io_handle->basename == NULL )
@@ -1482,8 +1484,8 @@ int libsmraw_io_handle_set_basename_wide(
 
 		return( -1 );
 	}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
-	if( libcstring_system_string_copy(
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
+	if( system_string_copy(
 	     io_handle->basename,
 	     basename,
 	     basename_length + 1 ) == NULL )
@@ -1564,7 +1566,7 @@ int libsmraw_io_handle_set_basename_wide(
 
 		return( -1 );
 	}
-#endif /* defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER ) */
+#endif /* defined( HAVE_WIDE_SYSTEM_CHARACTER ) */
 
 	return( 1 );
 }

@@ -30,7 +30,6 @@
 #include "libsmraw_io_handle.h"
 #include "libsmraw_libbfio.h"
 #include "libsmraw_libcerror.h"
-#include "libsmraw_libcstring.h"
 #include "libsmraw_libcthreads.h"
 #include "libsmraw_libfdata.h"
 #include "libsmraw_libfvalue.h"

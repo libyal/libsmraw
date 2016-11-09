@@ -22,11 +22,13 @@
 #include <common.h>
 #include <file_stream.h>
 #include <memory.h>
+#include <narrow_string.h>
+#include <system_string.h>
 #include <types.h>
+#include <wide_string.h>
 
 #include "mount_handle.h"
 #include "smrawtools_libcerror.h"
-#include "smrawtools_libcstring.h"
 #include "smrawtools_libsmraw.h"
 
 /* Creates a mount handle
@@ -203,14 +205,14 @@ int mount_handle_signal_abort(
  */
 int mount_handle_open_input(
      mount_handle_t *mount_handle,
-     libcstring_system_character_t * const * filenames,
+     system_character_t * const * filenames,
      int number_of_filenames,
      libcerror_error_t **error )
 {
-	libcstring_system_character_t **libsmraw_filenames = NULL;
-	static char *function                              = "mount_handle_open_input";
-	size_t first_filename_length                       = 0;
-	int result                                         = 0;
+	system_character_t **libsmraw_filenames = NULL;
+	static char *function                   = "mount_handle_open_input";
+	size_t first_filename_length            = 0;
+	int result                              = 0;
 
 	if( mount_handle == NULL )
 	{
@@ -247,10 +249,10 @@ int mount_handle_open_input(
 	}
 	if( number_of_filenames == 1 )
 	{
-		first_filename_length = libcstring_system_string_length(
+		first_filename_length = system_string_length(
 		                         filenames[ 0 ] );
 
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 		result = libsmraw_glob_wide(
 		          filenames[ 0 ],
 		          first_filename_length,
@@ -274,10 +276,10 @@ int mount_handle_open_input(
 		}
 		else
 		{
-			filenames = (libcstring_system_character_t * const *) libsmraw_filenames;
+			filenames = (system_character_t * const *) libsmraw_filenames;
 		}
 	}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 	if( libsmraw_handle_open_wide(
 	     mount_handle->input_handle,
 	     filenames,
@@ -302,7 +304,7 @@ int mount_handle_open_input(
 
 		if( libsmraw_filenames != NULL )
 		{
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 			libsmraw_glob_wide_free(
 			 libsmraw_filenames,
 			 number_of_filenames,
@@ -318,7 +320,7 @@ int mount_handle_open_input(
 	}
 	if( libsmraw_filenames != NULL )
 	{
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 		if( libsmraw_glob_wide_free(
 		     libsmraw_filenames,
 		     number_of_filenames,

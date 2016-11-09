@@ -22,11 +22,13 @@
 #include <common.h>
 #include <file_stream.h>
 #include <memory.h>
+#include <narrow_string.h>
+#include <system_string.h>
 #include <types.h>
+#include <wide_string.h>
 
 #include "libsmraw_information_file.h"
 #include "libsmraw_libcerror.h"
-#include "libsmraw_libcstring.h"
 #include "libsmraw_libfvalue.h"
 
 /* Creates an information file
@@ -143,7 +145,7 @@ int libsmraw_information_file_free(
  */
 int libsmraw_information_file_set_name(
      libsmraw_information_file_t *information_file,
-     const libcstring_system_character_t *name,
+     const system_character_t *name,
      size_t name_length,
      libcerror_error_t **error )
 {
@@ -182,7 +184,7 @@ int libsmraw_information_file_set_name(
 
 		return( -1 );
 	}
-	information_file->name = libcstring_system_string_allocate(
+	information_file->name = system_string_allocate(
 	                          name_length + 1 );
 
 	if( information_file->name == NULL )
@@ -196,7 +198,7 @@ int libsmraw_information_file_set_name(
 
 		return( -1 );
 	}
-	if( libcstring_system_string_copy(
+	if( system_string_copy(
 	     information_file->name,
 	     name,
 	     name_length ) == NULL )
@@ -222,7 +224,7 @@ int libsmraw_information_file_set_name(
  */
 int libsmraw_information_file_open(
      libsmraw_information_file_t *information_file,
-     const libcstring_system_character_t *mode,
+     const system_character_t *mode,
      libcerror_error_t **error )
 {
 	static char *function = "libsmraw_information_file_open";
@@ -271,7 +273,7 @@ int libsmraw_information_file_open(
 
 		return( -1 );
 	}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 	information_file->file_stream = file_stream_open_wide(
 	                                 information_file->name,
 	                                 mode );
@@ -287,7 +289,7 @@ int libsmraw_information_file_open(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_IO,
 		 LIBCERROR_IO_ERROR_OPEN_FAILED,
-		 "%s: unable to open: %" PRIs_LIBCSTRING_SYSTEM ".",
+		 "%s: unable to open: %" PRIs_SYSTEM ".",
 		 function,
 		 information_file->name );
 
@@ -478,7 +480,7 @@ int libsmraw_information_file_read_section(
 			if( ( ( input_string_index + section_identifier_length + 2 ) < 128 )
 			 && ( input_string[ input_string_index ] == '<' )
 			 && ( input_string[ input_string_index + 1 ] == '/' )
-			 && ( libcstring_narrow_string_compare(
+			 && ( narrow_string_compare(
 			       &( input_string[ input_string_index + 2 ] ),
 			       section_identifier,
 			       section_identifier_length ) == 0 )
@@ -568,7 +570,7 @@ int libsmraw_information_file_read_section(
 
 				if( ( ( input_string_index + value_identifier_length + 2 ) >= 128 )
 				 || ( input_string[ input_string_index ] != '/' )
-				 || ( libcstring_narrow_string_compare(
+				 || ( narrow_string_compare(
 				       &( input_string[ input_string_index + 1 ] ),
 				       value_identifier,
 				       value_identifier_length ) != 0 )
@@ -650,7 +652,7 @@ int libsmraw_information_file_read_section(
 			 */
 			if( ( ( input_string_index + section_identifier_length + 1 ) < 128 )
 			 && ( input_string[ input_string_index ] == '<' )
-			 && ( libcstring_narrow_string_compare(
+			 && ( narrow_string_compare(
 			       &( input_string[ input_string_index + 1 ] ),
 			       section_identifier,
 			       section_identifier_length ) == 0 )

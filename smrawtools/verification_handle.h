@@ -28,7 +28,6 @@
 #include "digest_hash.h"
 #include "log_handle.h"
 #include "smrawtools_libcerror.h"
-#include "smrawtools_libcstring.h"
 #include "smrawtools_libsmraw.h"
 #include "smrawtools_libhmac.h"
 #include "storage_media_buffer.h"
@@ -61,7 +60,7 @@ struct verification_handle
 
 	/* The calculated MD5 digest hash string
 	 */
-	libcstring_system_character_t *calculated_md5_hash_string;
+	system_character_t *calculated_md5_hash_string;
 
 	/* Value to indicate if the SHA1 digest hash should be calculated
 	 */
@@ -77,7 +76,7 @@ struct verification_handle
 
 	/* The calculated SHA1 digest hash string
 	 */
-	libcstring_system_character_t *calculated_sha1_hash_string;
+	system_character_t *calculated_sha1_hash_string;
 
 	/* Value to indicate if the SHA256 digest hash should be calculated
 	 */
@@ -93,7 +92,7 @@ struct verification_handle
 
 	/* The calculated SHA256 digest hash string
 	 */
-	libcstring_system_character_t *calculated_sha256_hash_string;
+	system_character_t *calculated_sha256_hash_string;
 
 	/* The libsmraw input handle
 	 */
@@ -131,7 +130,7 @@ int verification_handle_signal_abort(
 
 int verification_handle_open_input(
      verification_handle_t *verification_handle,
-     libcstring_system_character_t * const * filenames,
+     system_character_t * const * filenames,
      int number_of_filenames,
      libcerror_error_t **error );
 
@@ -172,12 +171,12 @@ int verification_handle_verify_input(
 
 int verification_handle_set_process_buffer_size(
      verification_handle_t *verification_handle,
-     const libcstring_system_character_t *string,
+     const system_character_t *string,
      libcerror_error_t **error );
 
 int verification_handle_set_additional_digest_types(
      verification_handle_t *verification_handle,
-     const libcstring_system_character_t *string,
+     const system_character_t *string,
      libcerror_error_t **error );
 
 int verification_handle_append_read_error(

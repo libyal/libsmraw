@@ -20,6 +20,8 @@
  */
 
 #include <common.h>
+#include <file_stream.h>
+#include <types.h>
 
 #if defined( HAVE_STDLIB_H ) || defined( WINAPI )
 #include <stdlib.h>
@@ -108,7 +110,7 @@ int smraw_test_error_backtrace_sprint(
 
 /* The main program
  */
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 int wmain(
      int argc SMRAW_TEST_ATTRIBUTE_UNUSED,
      wchar_t * const argv[] SMRAW_TEST_ATTRIBUTE_UNUSED )
@@ -123,23 +125,23 @@ int main(
 
 	SMRAW_TEST_RUN(
 	 "libsmraw_error_free",
-	 smraw_test_error_free() )
+	 smraw_test_error_free );
 
 	SMRAW_TEST_RUN(
 	 "libsmraw_error_fprint",
-	 smraw_test_error_fprint() )
+	 smraw_test_error_fprint );
 
 	SMRAW_TEST_RUN(
 	 "libsmraw_error_sprint",
-	 smraw_test_error_sprint() )
+	 smraw_test_error_sprint );
 
 	SMRAW_TEST_RUN(
 	 "libsmraw_error_backtrace_fprint",
-	 smraw_test_error_backtrace_fprint() )
+	 smraw_test_error_backtrace_fprint );
 
 	SMRAW_TEST_RUN(
 	 "libsmraw_error_backtrace_sprint",
-	 smraw_test_error_backtrace_sprint() )
+	 smraw_test_error_backtrace_sprint );
 
 	return( EXIT_SUCCESS );
 

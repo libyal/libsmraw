@@ -22,7 +22,10 @@
 #include <common.h>
 #include <file_stream.h>
 #include <memory.h>
+#include <narrow_string.h>
+#include <system_string.h>
 #include <types.h>
+#include <wide_string.h>
 
 #include "libsmraw_definitions.h"
 #include "libsmraw_handle.h"
@@ -31,7 +34,6 @@
 #include "libsmraw_libbfio.h"
 #include "libsmraw_libcerror.h"
 #include "libsmraw_libcnotify.h"
-#include "libsmraw_libcstring.h"
 #include "libsmraw_libcthreads.h"
 #include "libsmraw_libfdata.h"
 #include "libsmraw_libfvalue.h"
@@ -460,16 +462,16 @@ int libsmraw_handle_open(
      int access_flags,
      libcerror_error_t **error )
 {
-	libbfio_handle_t *file_io_handle                    = NULL;
-	libbfio_pool_t *file_io_pool                        = NULL;
-	libsmraw_internal_handle_t *internal_handle         = NULL;
-	libcstring_system_character_t *information_filename = NULL;
-	static char *function                               = "libsmraw_handle_open";
-	size_t filename_index                               = 0;
-	size_t filename_length                              = 0;
-	size_t information_filename_length                  = 0;
-	int bfio_access_flags                               = 0;
-	int filename_iterator                               = 0;
+	libbfio_handle_t *file_io_handle            = NULL;
+	libbfio_pool_t *file_io_pool                = NULL;
+	libsmraw_internal_handle_t *internal_handle = NULL;
+	system_character_t *information_filename    = NULL;
+	static char *function                       = "libsmraw_handle_open";
+	size_t filename_index                       = 0;
+	size_t filename_length                      = 0;
+	size_t information_filename_length          = 0;
+	int bfio_access_flags                       = 0;
+	int filename_iterator                       = 0;
 
 	if( handle == NULL )
 	{
@@ -565,7 +567,7 @@ int libsmraw_handle_open(
 		}
 		/* Set the basename
 		 */
-		filename_length = libcstring_narrow_string_length(
+		filename_length = narrow_string_length(
 				   filenames[ 0 ] );
 
 		if( filename_length <= 4 )
@@ -613,7 +615,7 @@ int libsmraw_handle_open(
 		     filename_iterator < number_of_filenames;
 		     filename_iterator++ )
 		{
-			filename_length = libcstring_narrow_string_length(
+			filename_length = narrow_string_length(
 					   filenames[ filename_iterator ] );
 
 			if( filename_length == 0 )
@@ -701,7 +703,7 @@ int libsmraw_handle_open(
 	{
 		/* Set the basename
 		 */
-		filename_length = libcstring_narrow_string_length(
+		filename_length = narrow_string_length(
 				   filenames[ 0 ] );
 
 		if( filename_length == 0 )
@@ -771,7 +773,7 @@ int libsmraw_handle_open(
 	{
 		information_filename_length = internal_handle->io_handle->basename_size + 9;
 
-		information_filename = libcstring_system_string_allocate(
+		information_filename = system_string_allocate(
 		                        information_filename_length + 1 );
 
 		if( information_filename == NULL )
@@ -785,7 +787,7 @@ int libsmraw_handle_open(
 
 			goto on_error;
 		}
-		if( libcstring_system_string_copy(
+		if( system_string_copy(
 		     information_filename,
 		     internal_handle->io_handle->basename,
 		     internal_handle->io_handle->basename_size - 1 ) == NULL )
@@ -801,9 +803,9 @@ int libsmraw_handle_open(
 		}
 		filename_index = internal_handle->io_handle->basename_size - 1;
 
-		if( libcstring_system_string_copy(
+		if( system_string_copy(
 		     &( information_filename[ filename_index ] ),
-		     _LIBCSTRING_SYSTEM_STRING( ".raw.info" ),
+		     _SYSTEM_STRING( ".raw.info" ),
 		     9 ) == NULL )
 		{
 			libcerror_error_set(
@@ -832,7 +834,7 @@ int libsmraw_handle_open(
 
 			goto on_error;
 		}
-		information_filename_length = libcstring_system_string_length(
+		information_filename_length = system_string_length(
 		                               information_filename );
 
 		if( libsmraw_information_file_set_name(
@@ -929,16 +931,16 @@ int libsmraw_handle_open_wide(
      int access_flags,
      libcerror_error_t **error )
 {
-	libbfio_handle_t *file_io_handle                    = NULL;
-	libbfio_pool_t *file_io_pool                        = NULL;
-	libsmraw_internal_handle_t *internal_handle         = NULL;
-	libcstring_system_character_t *information_filename = NULL;
-	static char *function                               = "libsmraw_handle_open_wide";
-	size_t filename_index                               = 0;
-	size_t filename_length                              = 0;
-	size_t information_filename_length                  = 0;
-	int bfio_access_flags                               = 0;
-	int filename_iterator                               = 0;
+	libbfio_handle_t *file_io_handle            = NULL;
+	libbfio_pool_t *file_io_pool                = NULL;
+	libsmraw_internal_handle_t *internal_handle = NULL;
+	system_character_t *information_filename    = NULL;
+	static char *function                       = "libsmraw_handle_open_wide";
+	size_t filename_index                       = 0;
+	size_t filename_length                      = 0;
+	size_t information_filename_length          = 0;
+	int bfio_access_flags                       = 0;
+	int filename_iterator                       = 0;
 
 	if( handle == NULL )
 	{
@@ -1034,7 +1036,7 @@ int libsmraw_handle_open_wide(
 		}
 		/* Set the basename
 		 */
-		filename_length = libcstring_wide_string_length(
+		filename_length = wide_string_length(
 				   filenames[ 0 ] );
 
 		if( filename_length <= 4 )
@@ -1082,7 +1084,7 @@ int libsmraw_handle_open_wide(
 		     filename_iterator < number_of_filenames;
 		     filename_iterator++ )
 		{
-			filename_length = libcstring_wide_string_length(
+			filename_length = wide_string_length(
 					   filenames[ filename_iterator ] );
 
 			if( filename_length == 0 )
@@ -1170,7 +1172,7 @@ int libsmraw_handle_open_wide(
 	{
 		/* Set the basename
 		 */
-		filename_length = libcstring_wide_string_length(
+		filename_length = wide_string_length(
 				   filenames[ 0 ] );
 
 		if( filename_length == 0 )
@@ -1240,7 +1242,7 @@ int libsmraw_handle_open_wide(
 	{
 		information_filename_length = internal_handle->io_handle->basename_size + 9;
 
-		information_filename = libcstring_system_string_allocate(
+		information_filename = system_string_allocate(
 		                        information_filename_length + 1 );
 
 		if( information_filename == NULL )
@@ -1254,7 +1256,7 @@ int libsmraw_handle_open_wide(
 
 			goto on_error;
 		}
-		if( libcstring_system_string_copy(
+		if( system_string_copy(
 		     information_filename,
 		     internal_handle->io_handle->basename,
 		     internal_handle->io_handle->basename_size - 1 ) == NULL )
@@ -1270,9 +1272,9 @@ int libsmraw_handle_open_wide(
 		}
 		filename_index = internal_handle->io_handle->basename_size - 1;
 
-		if( libcstring_system_string_copy(
+		if( system_string_copy(
 		     &( information_filename[ filename_index ] ),
-		     _LIBCSTRING_SYSTEM_STRING( ".raw.info" ),
+		     _SYSTEM_STRING( ".raw.info" ),
 		     9 ) == NULL )
 		{
 			libcerror_error_set(
@@ -1301,7 +1303,7 @@ int libsmraw_handle_open_wide(
 
 			goto on_error;
 		}
-		information_filename_length = libcstring_system_string_length(
+		information_filename_length = system_string_length(
 		                               information_filename );
 
 		if( libsmraw_information_file_set_name(
@@ -1719,7 +1721,7 @@ int libsmraw_handle_read_information_file(
 
 		return( -1 );
 	}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 	if( libbfio_file_set_name_wide(
 	     file_io_handle,
 	     internal_handle->information_file->name,
@@ -1776,7 +1778,7 @@ int libsmraw_handle_read_information_file(
 	{
 		if( libsmraw_information_file_open(
 		     internal_handle->information_file,
-		     _LIBCSTRING_SYSTEM_STRING( FILE_STREAM_OPEN_READ ),
+		     _SYSTEM_STRING( FILE_STREAM_OPEN_READ ),
 		     error ) != 1 )
 		{
 			libcerror_error_set(
@@ -1902,7 +1904,7 @@ int libsmraw_handle_close(
 	{
 		if( libsmraw_information_file_open(
 		     internal_handle->information_file,
-		     _LIBCSTRING_SYSTEM_STRING( FILE_STREAM_OPEN_WRITE ),
+		     _SYSTEM_STRING( FILE_STREAM_OPEN_WRITE ),
 		     error ) != 1 )
 		{
 			libcerror_error_set(
@@ -2657,7 +2659,7 @@ int libsmraw_handle_set_segment_filename(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
-			 "%s: basename value already set: %" PRIs_LIBCSTRING_SYSTEM ".",
+			 "%s: basename value already set: %" PRIs_SYSTEM ".",
 			 function,
 			 internal_handle->io_handle->basename );
 
@@ -2814,7 +2816,7 @@ int libsmraw_handle_set_segment_filename_wide(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
-			 "%s: basename value already set: %" PRIs_LIBCSTRING_SYSTEM ".",
+			 "%s: basename value already set: %" PRIs_SYSTEM ".",
 			 function,
 			 internal_handle->io_handle->basename );
 

@@ -1,6 +1,6 @@
 # Files to ignore by git
 #
-# Version: 20160507
+# Version: 20161030
 
 # Generic auto-generated build files
 *~
@@ -57,6 +57,7 @@ stamp-h[1-9]
 /test-driver
 /ylwrap
 /m4/codeset.m4
+/m4/extern-inline.m4
 /m4/fcntl-o.m4
 /m4/gettext.m4
 /m4/glibc2.m4
@@ -124,7 +125,7 @@ stamp-h[1-9]
 /smrawtools/smrawverify
 /tests/input
 /tests/smraw_test_error
-/tests/smraw_test_get_version
+/tests/smraw_test_handle
 /tests/smraw_test_glob
 /tests/smraw_test_notify
 /tests/smraw_test_open_close
@@ -132,6 +133,7 @@ stamp-h[1-9]
 /tests/smraw_test_read_loop
 /tests/smraw_test_seek
 /tests/smraw_test_write
+/tests/smraw_test_support
 /tests/tmp*
 
 # Local library dependencies specific files
@@ -143,7 +145,6 @@ stamp-h[1-9]
 /libcnotify
 /libcpath
 /libcsplit
-/libcstring
 /libcsystem
 /libcthreads
 /libfcache

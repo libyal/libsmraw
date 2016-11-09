@@ -8,7 +8,6 @@ if HAVE_PYTHON2
 AM_CFLAGS = \
 	-I$(top_srcdir)/include \
 	-I$(top_srcdir)/common \
-	@LIBCSTRING_CPPFLAGS@ \
 	@LIBCERROR_CPPFLAGS@ \
 	@LIBCDATA_CPPFLAGS@ \
 	@LIBCLOCALE_CPPFLAGS@ \
@@ -30,7 +29,6 @@ BUILT_SOURCES = \
 	pysmraw_libbfio.h \
 	pysmraw_libcerror.h \
 	pysmraw_libclocale.h \
-	pysmraw_libcstring.h \
 	pysmraw_libsmraw.h \
 	pysmraw_metadata.c pysmraw_metadata.h \
 	pysmraw_python.h \
@@ -41,7 +39,6 @@ pyexec_LTLIBRARIES = pysmraw.la
 nodist_pysmraw_la_SOURCES = $(BUILT_SOURCES)
 
 pysmraw_la_LIBADD = \
-	@LIBCSTRING_LIBADD@ \
 	@LIBCERROR_LIBADD@ \
 	../libsmraw/libsmraw.la \
 	@LIBCDATA_LIBADD@ \

@@ -8,7 +8,6 @@ MSVSCPP_FILES = \
 	libcnotify/libcnotify.vcproj \
 	libcpath/libcpath.vcproj \
 	libcsplit/libcsplit.vcproj \
-	libcstring/libcstring.vcproj \
 	libcsystem/libcsystem.vcproj \
 	libcthreads/libcthreads.vcproj \
 	libfcache/libfcache.vcproj \
@@ -20,12 +19,14 @@ MSVSCPP_FILES = \
 	pysmraw/pysmraw.vcproj \
 	smraw.net/smraw.net.vcproj \
 	smraw_test_error/smraw_test_error.vcproj \
-	smraw_test_get_version/smraw_test_get_version.vcproj \
 	smraw_test_glob/smraw_test_glob.vcproj \
+	smraw_test_handle/smraw_test_handle.vcproj \
+	smraw_test_notify/smraw_test_notify.vcproj \
 	smraw_test_open_close/smraw_test_open_close.vcproj \
 	smraw_test_read/smraw_test_read.vcproj \
 	smraw_test_read_loop/smraw_test_read_loop.vcproj \
 	smraw_test_seek/smraw_test_seek.vcproj \
+	smraw_test_support/smraw_test_support.vcproj \
 	smraw_test_write/smraw_test_write.vcproj \
 	smrawmount/smrawmount.vcproj \
 	smrawverify/smrawverify.vcproj \

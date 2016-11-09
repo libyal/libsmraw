@@ -1,7 +1,6 @@
 AM_CPPFLAGS = \
 	-I$(top_srcdir)/include \
 	-I$(top_srcdir)/common \
-	@LIBCSTRING_CPPFLAGS@ \
 	@LIBCERROR_CPPFLAGS@ \
 	@LIBCDATA_CPPFLAGS@ \
 	@LIBCLOCALE_CPPFLAGS@ \
@@ -33,7 +32,6 @@ smrawmount_SOURCES = \
 	smrawtools_libcerror.h \
 	smrawtools_libclocale.h \
 	smrawtools_libcnotify.h \
-	smrawtools_libcstring.h \
 	smrawtools_libcsystem.h \
 	smrawtools_libfvalue.h \
 	smrawtools_libsmraw.h \
@@ -47,7 +45,6 @@ smrawmount_LDADD = \
 	@LIBCNOTIFY_LIBADD@ \
 	@LIBCLOCALE_LIBADD@ \
 	@LIBCERROR_LIBADD@ \
-	@LIBCSTRING_LIBADD@ \
 	@LIBINTL@
 
 smrawverify_SOURCES = \
@@ -62,7 +59,6 @@ smrawverify_SOURCES = \
 	smrawtools_libclocale.h \
 	smrawtools_libcnotify.h \
 	smrawtools_libcsplit.h \
-	smrawtools_libcstring.h \
 	smrawtools_libcsystem.h \
 	smrawtools_libfvalue.h \
 	smrawtools_libhmac.h \
@@ -80,7 +76,6 @@ smrawverify_LDADD = \
 	@LIBCNOTIFY_LIBADD@ \
 	@LIBCLOCALE_LIBADD@ \
 	@LIBCERROR_LIBADD@ \
-	@LIBCSTRING_LIBADD@ \
 	@LIBINTL@
 
 MAINTAINERCLEANFILES = \
