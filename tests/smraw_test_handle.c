@@ -1159,7 +1159,7 @@ int smraw_test_handle_open_wide(
          "error",
          error );
 
-	result = libsmraw_glob_free_wide(
+	result = libsmraw_glob_wide_free(
 	          filenames,
 	          number_of_filenames,
 	          &error );

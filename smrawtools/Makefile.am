@@ -64,6 +64,7 @@ smrawverify_SOURCES = \
 	smrawtools_libhmac.h \
 	smrawtools_libsmraw.h \
 	smrawtools_libuna.h \
+	smrawtools_system_split_string.h \
 	storage_media_buffer.c storage_media_buffer.h \
 	verification_handle.c verification_handle.h
 

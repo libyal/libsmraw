@@ -276,6 +276,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\smrawtools\smrawtools_system_split_string.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\smrawtools\storage_media_buffer.h"
 				>
 			</File>
