@@ -44,5 +44,5 @@ int libsmraw_filename_create(
 }
 #endif
 
-#endif
+#endif /* !defined( _LIBSMRAW_FILENAME_H ) */
 

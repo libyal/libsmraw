@@ -165,5 +165,5 @@ int libsmraw_io_handle_set_maximum_segment_size(
 }
 #endif
 
-#endif
+#endif /* !defined( _LIBSMRAW_IO_HANDLE_H ) */
 

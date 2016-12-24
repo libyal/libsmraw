@@ -22,10 +22,7 @@ MSVSCPP_FILES = \
 	smraw_test_glob/smraw_test_glob.vcproj \
 	smraw_test_handle/smraw_test_handle.vcproj \
 	smraw_test_notify/smraw_test_notify.vcproj \
-	smraw_test_open_close/smraw_test_open_close.vcproj \
-	smraw_test_read/smraw_test_read.vcproj \
 	smraw_test_read_loop/smraw_test_read_loop.vcproj \
-	smraw_test_seek/smraw_test_seek.vcproj \
 	smraw_test_support/smraw_test_support.vcproj \
 	smraw_test_write/smraw_test_write.vcproj \
 	smrawmount/smrawmount.vcproj \

@@ -1,5 +1,5 @@
 /*
- * Library handle type testing program
+ * Library handle type test program
  *
  * Copyright (C) 2010-2016, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -30,15 +30,16 @@
 #include <stdlib.h>
 #endif
 
+#include "smraw_test_getopt.h"
+#include "smraw_test_libbfio.h"
 #include "smraw_test_libcerror.h"
 #include "smraw_test_libclocale.h"
-#include "smraw_test_libcsystem.h"
 #include "smraw_test_libsmraw.h"
 #include "smraw_test_libuna.h"
 #include "smraw_test_macros.h"
 #include "smraw_test_memory.h"
 
-#if SIZEOF_WCHAR_T != 2 && SIZEOF_WCHAR_T != 4
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER ) && SIZEOF_WCHAR_T != 2 && SIZEOF_WCHAR_T != 4
 #error Unsupported size of wchar_t
 #endif
 
@@ -256,8 +257,8 @@ int smraw_test_handle_get_wide_source(
      libcerror_error_t **error )
 {
 	static char *function   = "smraw_test_handle_get_wide_source";
-	size_t wide_source_size = 0;
 	size_t source_length    = 0;
+	size_t wide_source_size = 0;
 
 #if !defined( HAVE_WIDE_SYSTEM_CHARACTER )
 	int result              = 0;
@@ -654,11 +655,17 @@ int smraw_test_handle_close_source(
 int smraw_test_handle_initialize(
      void )
 {
-	libcerror_error_t *error = NULL;
-	libsmraw_handle_t *handle      = NULL;
-	int result               = 0;
+	libcerror_error_t *error        = NULL;
+	libsmraw_handle_t *handle       = NULL;
+	int result                      = 0;
 
-	/* Test libsmraw_handle_initialize
+#if defined( HAVE_SMRAW_TEST_MEMORY )
+	int number_of_malloc_fail_tests = 1;
+	int number_of_memset_fail_tests = 1;
+	int test_number                 = 0;
+#endif
+
+	/* Test regular cases
 	 */
 	result = libsmraw_handle_initialize(
 	          &handle,
@@ -734,79 +741,89 @@ int smraw_test_handle_initialize(
 
 #if defined( HAVE_SMRAW_TEST_MEMORY )
 
-	/* Test libsmraw_handle_initialize with malloc failing
-	 */
-	smraw_test_malloc_attempts_before_fail = 0;
-
-	result = libsmraw_handle_initialize(
-	          &handle,
-	          &error );
-
-	if( smraw_test_malloc_attempts_before_fail != -1 )
+	for( test_number = 0;
+	     test_number < number_of_malloc_fail_tests;
+	     test_number++ )
 	{
-		smraw_test_malloc_attempts_before_fail = -1;
+		/* Test libsmraw_handle_initialize with malloc failing
+		 */
+		smraw_test_malloc_attempts_before_fail = test_number;
 
-		if( handle != NULL )
+		result = libsmraw_handle_initialize(
+		          &handle,
+		          &error );
+
+		if( smraw_test_malloc_attempts_before_fail != -1 )
 		{
-			libsmraw_handle_free(
-			 &handle,
-			 NULL );
+			smraw_test_malloc_attempts_before_fail = -1;
+
+			if( handle != NULL )
+			{
+				libsmraw_handle_free(
+				 &handle,
+				 NULL );
+			}
+		}
+		else
+		{
+			SMRAW_TEST_ASSERT_EQUAL_INT(
+			 "result",
+			 result,
+			 -1 );
+
+			SMRAW_TEST_ASSERT_IS_NULL(
+			 "handle",
+			 handle );
+
+			SMRAW_TEST_ASSERT_IS_NOT_NULL(
+			 "error",
+			 error );
+
+			libcerror_error_free(
+			 &error );
 		}
 	}
-	else
+	for( test_number = 0;
+	     test_number < number_of_memset_fail_tests;
+	     test_number++ )
 	{
-		SMRAW_TEST_ASSERT_EQUAL_INT(
-		 "result",
-		 result,
-		 -1 );
+		/* Test libsmraw_handle_initialize with memset failing
+		 */
+		smraw_test_memset_attempts_before_fail = test_number;
 
-		SMRAW_TEST_ASSERT_IS_NULL(
-		 "handle",
-		 handle );
+		result = libsmraw_handle_initialize(
+		          &handle,
+		          &error );
 
-		SMRAW_TEST_ASSERT_IS_NOT_NULL(
-		 "error",
-		 error );
-
-		libcerror_error_free(
-		 &error );
-	}
-	/* Test libsmraw_handle_initialize with memset failing
-	 */
-	smraw_test_memset_attempts_before_fail = 0;
-
-	result = libsmraw_handle_initialize(
-	          &handle,
-	          &error );
-
-	if( smraw_test_memset_attempts_before_fail != -1 )
-	{
-		smraw_test_memset_attempts_before_fail = -1;
-
-		if( handle != NULL )
+		if( smraw_test_memset_attempts_before_fail != -1 )
 		{
-			libsmraw_handle_free(
-			 &handle,
-			 NULL );
+			smraw_test_memset_attempts_before_fail = -1;
+
+			if( handle != NULL )
+			{
+				libsmraw_handle_free(
+				 &handle,
+				 NULL );
+			}
 		}
-	}
-	else
-	{
-		SMRAW_TEST_ASSERT_EQUAL_INT(
-		 "result",
-		 result,
-		 -1 );
+		else
+		{
+			SMRAW_TEST_ASSERT_EQUAL_INT(
+			 "result",
+			 result,
+			 -1 );
 
-		SMRAW_TEST_ASSERT_IS_NULL(
-		 "handle",
-		 handle );
+			SMRAW_TEST_ASSERT_IS_NULL(
+			 "handle",
+			 handle );
 
-		SMRAW_TEST_ASSERT_IS_NOT_NULL(
-		 "error",
-		 error );
+			SMRAW_TEST_ASSERT_IS_NOT_NULL(
+			 "error",
+			 error );
 
-		libcerror_error_free(
-		 &error );
+			libcerror_error_free(
+			 &error );
+		}
 	}
 #endif /* defined( HAVE_SMRAW_TEST_MEMORY ) */
 
@@ -1199,15 +1216,1186 @@ on_error:
 
 #endif /* defined( HAVE_WIDE_CHARACTER_TYPE ) */
 
+/* Tests the libsmraw_handle_close function
+ * Returns 1 if successful or 0 if not
+ */
+int smraw_test_handle_close(
+     void )
+{
+	libcerror_error_t *error = NULL;
+	int result               = 0;
+
+	/* Test error cases
+	 */
+	result = libsmraw_handle_close(
+	          NULL,
+	          &error );
+
+	SMRAW_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+        SMRAW_TEST_ASSERT_IS_NOT_NULL(
+         "error",
+         error );
+
+	libcerror_error_free(
+	 &error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	return( 0 );
+}
+
+/* Tests the libsmraw_handle_open and libsmraw_handle_close functions
+ * Returns 1 if successful or 0 if not
+ */
+int smraw_test_handle_open_close(
+     const system_character_t *source )
+{
+	libcerror_error_t *error       = NULL;
+	libsmraw_handle_t *handle      = NULL;
+	system_character_t **filenames = NULL;
+	size_t source_length           = 0;
+	int number_of_filenames        = 0;
+	int result                     = 0;
+
+	/* Initialize test
+	 */
+	source_length = system_string_length(
+	                 source );
+
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+	result = libsmraw_glob_wide(
+	          source,
+	          source_length,
+	          &filenames,
+	          &number_of_filenames,
+	          &error );
+#else
+	result = libsmraw_glob(
+	          source,
+	          source_length,
+	          &filenames,
+	          &number_of_filenames,
+	          &error );
+#endif
+
+	SMRAW_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+        SMRAW_TEST_ASSERT_IS_NOT_NULL(
+         "filenames",
+         filenames );
+
+        SMRAW_TEST_ASSERT_IS_NULL(
+         "error",
+         error );
+
+	result = libsmraw_handle_initialize(
+	          &handle,
+	          &error );
+
+	SMRAW_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+        SMRAW_TEST_ASSERT_IS_NOT_NULL(
+         "handle",
+         handle );
+
+        SMRAW_TEST_ASSERT_IS_NULL(
+         "error",
+         error );
+
+	/* Test open and close
+	 */
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
+	result = libsmraw_handle_open_wide(
+	          handle,
+	          (wchar_t * const *) filenames,
+	          number_of_filenames,
+	          LIBSMRAW_OPEN_READ,
+	          &error );
+#else
+	result = libsmraw_handle_open(
+	          handle,
+	          (char * const *) filenames,
+	          number_of_filenames,
+	          LIBSMRAW_OPEN_READ,
+	          &error );
+#endif
+
+	SMRAW_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+        SMRAW_TEST_ASSERT_IS_NULL(
+         "error",
+         error );
+
+	result = libsmraw_handle_close(
+	          handle,
+	          &error );
+
+	SMRAW_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 0 );
+
+        SMRAW_TEST_ASSERT_IS_NULL(
+         "error",
+         error );
+
+	/* Test open and close a second time to validate clean up on close
+	 */
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
+	result = libsmraw_handle_open_wide(
+	          handle,
+	          (wchar_t * const *) filenames,
+	          number_of_filenames,
+	          LIBSMRAW_OPEN_READ,
+	          &error );
+#else
+	result = libsmraw_handle_open(
+	          handle,
+	          (char * const *) filenames,
+	          number_of_filenames,
+	          LIBSMRAW_OPEN_READ,
+	          &error );
+#endif
+
+	SMRAW_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+        SMRAW_TEST_ASSERT_IS_NULL(
+         "error",
+         error );
+
+	result = libsmraw_handle_close(
+	          handle,
+	          &error );
+
+	SMRAW_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 0 );
+
+        SMRAW_TEST_ASSERT_IS_NULL(
+         "error",
+         error );
+
+	/* Clean up
+	 */
+	result = libsmraw_handle_free(
+	          &handle,
+	          &error );
+
+	SMRAW_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+        SMRAW_TEST_ASSERT_IS_NULL(
+         "handle",
+         handle );
+
+        SMRAW_TEST_ASSERT_IS_NULL(
+         "error",
+         error );
+
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+	result = libsmraw_glob_wide_free(
+	          filenames,
+	          number_of_filenames,
+	          &error );
+#else
+	result = libsmraw_glob_free(
+	          filenames,
+	          number_of_filenames,
+	          &error );
+#endif
+	filenames = NULL;
+
+	SMRAW_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+        SMRAW_TEST_ASSERT_IS_NULL(
+         "error",
+         error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	if( handle != NULL )
+	{
+		libsmraw_handle_free(
+		 &handle,
+		 NULL );
+	}
+	if( filenames != NULL )
+	{
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+		libsmraw_glob_wide_free(
+		 filenames,
+		 number_of_filenames,
+		 NULL );
+#else
+		libsmraw_glob_free(
+		 filenames,
+		 number_of_filenames,
+		 NULL );
+#endif
+	}
+	return( 0 );
+}
+
+/* Tests the libsmraw_handle_signal_abort function
+ * Returns 1 if successful or 0 if not
+ */
+int smraw_test_handle_signal_abort(
+     libsmraw_handle_t *handle )
+{
+	libcerror_error_t *error = NULL;
+	int result               = 0;
+
+	/* Test regular cases
+	 */
+	result = libsmraw_handle_signal_abort(
+	          handle,
+	          &error );
+
+	SMRAW_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+        SMRAW_TEST_ASSERT_IS_NULL(
+         "error",
+         error );
+
+	/* Test error cases
+	 */
+	result = libsmraw_handle_signal_abort(
+	          NULL,
+	          &error );
+
+	SMRAW_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+        SMRAW_TEST_ASSERT_IS_NOT_NULL(
+         "error",
+         error );
+
+	libcerror_error_free(
+	 &error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	return( 0 );
+}
+
+/* Tests the libsmraw_handle_read_buffer function
+ * Returns 1 if successful or 0 if not
+ */
+int smraw_test_handle_read_buffer(
+     libsmraw_handle_t *handle )
+{
+	uint8_t buffer[ 16 ];
+
+	libcerror_error_t *error = NULL;
+	size64_t size            = 0;
+	ssize_t read_count       = 0;
+	off64_t offset           = 0;
+
+	/* Test regular cases
+	 */
+	offset = libsmraw_handle_seek_offset(
+	          handle,
+	          0,
+	          SEEK_END,
+	          &error );
+
+	SMRAW_TEST_ASSERT_NOT_EQUAL_INT64(
+	 "offset",
+	 offset,
+	 (int64_t) -1 );
+
+	SMRAW_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	size = (size64_t) offset;
+
+	if( size > 16 )
+	{
+		read_count = libsmraw_handle_read_buffer(
+		              handle,
+		              buffer,
+		              16,
+		              &error );
+
+		SMRAW_TEST_ASSERT_EQUAL_SSIZE(
+		 "read_count",
+		 read_count,
+		 (ssize_t) 16 );
+
+		SMRAW_TEST_ASSERT_IS_NULL(
+		 "error",
+		 error );
+	}
+	/* Reset offset to 0
+	 */
+	offset = libsmraw_handle_seek_offset(
+	          handle,
+	          0,
+	          SEEK_SET,
+	          &error );
+
+	SMRAW_TEST_ASSERT_EQUAL_INT64(
+	 "offset",
+	 offset,
+	 (int64_t) 0 );
+
+	SMRAW_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test error cases
+	 */
+	read_count = libsmraw_handle_read_buffer(
+	              NULL,
+	              buffer,
+	              16,
+	              &error );
+
+	SMRAW_TEST_ASSERT_EQUAL_SSIZE(
+	 "read_count",
+	 read_count,
+	 (ssize_t) -1 );
+
+	SMRAW_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	read_count = libsmraw_handle_read_buffer(
+	              handle,
+	              NULL,
+	              16,
+	              &error );
+
+	SMRAW_TEST_ASSERT_EQUAL_SSIZE(
+	 "read_count",
+	 read_count,
+	 (ssize_t) -1 );
+
+	SMRAW_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	read_count = libsmraw_handle_read_buffer(
+	              handle,
+	              buffer,
+	              (size_t) SSIZE_MAX + 1,
+	              &error );
+
+	SMRAW_TEST_ASSERT_EQUAL_SSIZE(
+	 "read_count",
+	 read_count,
+	 (ssize_t) -1 );
+
+	SMRAW_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	return( 0 );
+}
+
+/* Tests the libsmraw_handle_seek_offset function
+ * Returns 1 if successful or 0 if not
+ */
+int smraw_test_handle_seek_offset(
+     libsmraw_handle_t *handle )
+{
+	libcerror_error_t *error = NULL;
+	size64_t size            = 0;
+	off64_t offset           = 0;
+
+	/* Test regular cases
+	 */
+	offset = libsmraw_handle_seek_offset(
+	          handle,
+	          0,
+	          SEEK_END,
+	          &error );
+
+	SMRAW_TEST_ASSERT_NOT_EQUAL_INT64(
+	 "offset",
+	 offset,
+	 (int64_t) -1 );
+
+	SMRAW_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	size = (size64_t) offset;
+
+	offset = libsmraw_handle_seek_offset(
+	          handle,
+	          1024,
+	          SEEK_SET,
+	          &error );
+
+	SMRAW_TEST_ASSERT_EQUAL_INT64(
+	 "offset",
+	 offset,
+	 (int64_t) 1024 );
+
+	SMRAW_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	offset = libsmraw_handle_seek_offset(
+	          handle,
+	          -512,
+	          SEEK_CUR,
+	          &error );
+
+	SMRAW_TEST_ASSERT_EQUAL_INT64(
+	 "offset",
+	 offset,
+	 (int64_t) 512 );
+
+	SMRAW_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	offset = libsmraw_handle_seek_offset(
+	          handle,
+	          (off64_t) ( size + 512 ),
+	          SEEK_SET,
+	          &error );
+
+	SMRAW_TEST_ASSERT_EQUAL_INT64(
+	 "offset",
+	 offset,
+	 (int64_t) ( size + 512 ) );
+
+	SMRAW_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Reset offset to 0
+	 */
+	offset = libsmraw_handle_seek_offset(
+	          handle,
+	          0,
+	          SEEK_SET,
+	          &error );
+
+	SMRAW_TEST_ASSERT_EQUAL_INT64(
+	 "offset",
+	 offset,
+	 (int64_t) 0 );
+
+	SMRAW_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test error cases
+	 */
+	offset = libsmraw_handle_seek_offset(
+	          NULL,
+	          0,
+	          SEEK_SET,
+	          &error );
+
+	SMRAW_TEST_ASSERT_EQUAL_INT64(
+	 "offset",
+	 offset,
+	 (int64_t) -1 );
+
+	SMRAW_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	offset = libsmraw_handle_seek_offset(
+	          handle,
+	          -1,
+	          SEEK_SET,
+	          &error );
+
+	SMRAW_TEST_ASSERT_EQUAL_INT64(
+	 "offset",
+	 offset,
+	 (int64_t) -1 );
+
+	SMRAW_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	offset = libsmraw_handle_seek_offset(
+	          handle,
+	          -1,
+	          SEEK_CUR,
+	          &error );
+
+	SMRAW_TEST_ASSERT_EQUAL_INT64(
+	 "offset",
+	 offset,
+	 (int64_t) -1 );
+
+	SMRAW_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	offset = libsmraw_handle_seek_offset(
+	          handle,
+	          (off64_t) ( -1 * ( size + 1 ) ),
+	          SEEK_END,
+	          &error );
+
+	SMRAW_TEST_ASSERT_EQUAL_INT64(
+	 "offset",
+	 offset,
+	 (int64_t) -1 );
+
+	SMRAW_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	return( 0 );
+}
+
+/* Tests the libsmraw_handle_get_offset function
+ * Returns 1 if successful or 0 if not
+ */
+int smraw_test_handle_get_offset(
+     libsmraw_handle_t *handle )
+{
+	libcerror_error_t *error = NULL;
+	off64_t offset           = 0;
+	int offset_is_set        = 0;
+	int result               = 0;
+
+	/* Test regular cases
+	 */
+	result = libsmraw_handle_get_offset(
+	          handle,
+	          &offset,
+	          &error );
+
+	SMRAW_TEST_ASSERT_NOT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SMRAW_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	offset_is_set = result;
+
+	/* Test error cases
+	 */
+	result = libsmraw_handle_get_offset(
+	          NULL,
+	          &offset,
+	          &error );
+
+	SMRAW_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SMRAW_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	if( offset_is_set != 0 )
+	{
+		result = libsmraw_handle_get_offset(
+		          handle,
+		          NULL,
+		          &error );
+
+		SMRAW_TEST_ASSERT_EQUAL_INT(
+		 "result",
+		 result,
+		 -1 );
+
+		SMRAW_TEST_ASSERT_IS_NOT_NULL(
+		 "error",
+		 error );
+
+		libcerror_error_free(
+		 &error );
+	}
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	return( 0 );
+}
+
+/* Tests the libsmraw_handle_get_segment_filename_size function
+ * Returns 1 if successful or 0 if not
+ */
+int smraw_test_handle_get_segment_filename_size(
+     libsmraw_handle_t *handle )
+{
+	libcerror_error_t *error         = NULL;
+	size_t segment_filename_size     = 0;
+	int result                       = 0;
+	int segment_filename_size_is_set = 0;
+
+	/* Test regular cases
+	 */
+	result = libsmraw_handle_get_segment_filename_size(
+	          handle,
+	          &segment_filename_size,
+	          &error );
+
+	SMRAW_TEST_ASSERT_NOT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SMRAW_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	segment_filename_size_is_set = result;
+
+	/* Test error cases
+	 */
+	result = libsmraw_handle_get_segment_filename_size(
+	          NULL,
+	          &segment_filename_size,
+	          &error );
+
+	SMRAW_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SMRAW_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	if( segment_filename_size_is_set != 0 )
+	{
+		result = libsmraw_handle_get_segment_filename_size(
+		          handle,
+		          NULL,
+		          &error );
+
+		SMRAW_TEST_ASSERT_EQUAL_INT(
+		 "result",
+		 result,
+		 -1 );
+
+		SMRAW_TEST_ASSERT_IS_NOT_NULL(
+		 "error",
+		 error );
+
+		libcerror_error_free(
+		 &error );
+	}
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	return( 0 );
+}
+
+#if defined( HAVE_WIDE_CHARACTER_TYPE )
+
+/* Tests the libsmraw_handle_get_segment_filename_size_wide function
+ * Returns 1 if successful or 0 if not
+ */
+int smraw_test_handle_get_segment_filename_size_wide(
+     libsmraw_handle_t *handle )
+{
+	libcerror_error_t *error              = NULL;
+	size_t segment_filename_size_wide     = 0;
+	int result                            = 0;
+	int segment_filename_size_wide_is_set = 0;
+
+	/* Test regular cases
+	 */
+	result = libsmraw_handle_get_segment_filename_size_wide(
+	          handle,
+	          &segment_filename_size_wide,
+	          &error );
+
+	SMRAW_TEST_ASSERT_NOT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SMRAW_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	segment_filename_size_wide_is_set = result;
+
+	/* Test error cases
+	 */
+	result = libsmraw_handle_get_segment_filename_size_wide(
+	          NULL,
+	          &segment_filename_size_wide,
+	          &error );
+
+	SMRAW_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SMRAW_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	if( segment_filename_size_wide_is_set != 0 )
+	{
+		result = libsmraw_handle_get_segment_filename_size_wide(
+		          handle,
+		          NULL,
+		          &error );
+
+		SMRAW_TEST_ASSERT_EQUAL_INT(
+		 "result",
+		 result,
+		 -1 );
+
+		SMRAW_TEST_ASSERT_IS_NOT_NULL(
+		 "error",
+		 error );
+
+		libcerror_error_free(
+		 &error );
+	}
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	return( 0 );
+}
+
+#endif /* defined( HAVE_WIDE_CHARACTER_TYPE ) */
+
+/* Tests the libsmraw_handle_get_maximum_segment_size function
+ * Returns 1 if successful or 0 if not
+ */
+int smraw_test_handle_get_maximum_segment_size(
+     libsmraw_handle_t *handle )
+{
+	libcerror_error_t *error        = NULL;
+	size64_t maximum_segment_size   = 0;
+	int maximum_segment_size_is_set = 0;
+	int result                      = 0;
+
+	/* Test regular cases
+	 */
+	result = libsmraw_handle_get_maximum_segment_size(
+	          handle,
+	          &maximum_segment_size,
+	          &error );
+
+	SMRAW_TEST_ASSERT_NOT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SMRAW_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	maximum_segment_size_is_set = result;
+
+	/* Test error cases
+	 */
+	result = libsmraw_handle_get_maximum_segment_size(
+	          NULL,
+	          &maximum_segment_size,
+	          &error );
+
+	SMRAW_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SMRAW_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	if( maximum_segment_size_is_set != 0 )
+	{
+		result = libsmraw_handle_get_maximum_segment_size(
+		          handle,
+		          NULL,
+		          &error );
+
+		SMRAW_TEST_ASSERT_EQUAL_INT(
+		 "result",
+		 result,
+		 -1 );
+
+		SMRAW_TEST_ASSERT_IS_NOT_NULL(
+		 "error",
+		 error );
+
+		libcerror_error_free(
+		 &error );
+	}
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	return( 0 );
+}
+
+/* Tests the libsmraw_handle_get_filename_size function
+ * Returns 1 if successful or 0 if not
+ */
+int smraw_test_handle_get_filename_size(
+     libsmraw_handle_t *handle )
+{
+	libcerror_error_t *error = NULL;
+	size_t filename_size     = 0;
+	int filename_size_is_set = 0;
+	int result               = 0;
+
+	/* Test regular cases
+	 */
+	result = libsmraw_handle_get_filename_size(
+	          handle,
+	          &filename_size,
+	          &error );
+
+	SMRAW_TEST_ASSERT_NOT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SMRAW_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	filename_size_is_set = result;
+
+	/* Test error cases
+	 */
+	result = libsmraw_handle_get_filename_size(
+	          NULL,
+	          &filename_size,
+	          &error );
+
+	SMRAW_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SMRAW_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	if( filename_size_is_set != 0 )
+	{
+		result = libsmraw_handle_get_filename_size(
+		          handle,
+		          NULL,
+		          &error );
+
+		SMRAW_TEST_ASSERT_EQUAL_INT(
+		 "result",
+		 result,
+		 -1 );
+
+		SMRAW_TEST_ASSERT_IS_NOT_NULL(
+		 "error",
+		 error );
+
+		libcerror_error_free(
+		 &error );
+	}
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	return( 0 );
+}
+
+#if defined( HAVE_WIDE_CHARACTER_TYPE )
+
+/* Tests the libsmraw_handle_get_filename_size_wide function
+ * Returns 1 if successful or 0 if not
+ */
+int smraw_test_handle_get_filename_size_wide(
+     libsmraw_handle_t *handle )
+{
+	libcerror_error_t *error      = NULL;
+	size_t filename_size_wide     = 0;
+	int filename_size_wide_is_set = 0;
+	int result                    = 0;
+
+	/* Test regular cases
+	 */
+	result = libsmraw_handle_get_filename_size_wide(
+	          handle,
+	          &filename_size_wide,
+	          &error );
+
+	SMRAW_TEST_ASSERT_NOT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SMRAW_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	filename_size_wide_is_set = result;
+
+	/* Test error cases
+	 */
+	result = libsmraw_handle_get_filename_size_wide(
+	          NULL,
+	          &filename_size_wide,
+	          &error );
+
+	SMRAW_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SMRAW_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	if( filename_size_wide_is_set != 0 )
+	{
+		result = libsmraw_handle_get_filename_size_wide(
+		          handle,
+		          NULL,
+		          &error );
+
+		SMRAW_TEST_ASSERT_EQUAL_INT(
+		 "result",
+		 result,
+		 -1 );
+
+		SMRAW_TEST_ASSERT_IS_NOT_NULL(
+		 "error",
+		 error );
+
+		libcerror_error_free(
+		 &error );
+	}
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	return( 0 );
+}
+
+#endif /* defined( HAVE_WIDE_CHARACTER_TYPE ) */
+
+#ifdef TODO
+
+/* Tests the libsmraw_handle_get_file_io_handle function
+ * Returns 1 if successful or 0 if not
+ */
+int smraw_test_handle_get_file_io_handle(
+     libsmraw_handle_t *handle )
+{
+	libcerror_error_t *error        = NULL;
+	libbfio_handle_t file_io_handle = 0;
+	int file_io_handle_is_set       = 0;
+	int result                      = 0;
+
+	/* Test regular cases
+	 */
+	result = libsmraw_handle_get_file_io_handle(
+	          handle,
+	          &file_io_handle,
+	          &error );
+
+	SMRAW_TEST_ASSERT_NOT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SMRAW_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	file_io_handle_is_set = result;
+
+	/* Test error cases
+	 */
+	result = libsmraw_handle_get_file_io_handle(
+	          NULL,
+	          &file_io_handle,
+	          &error );
+
+	SMRAW_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SMRAW_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	if( file_io_handle_is_set != 0 )
+	{
+		result = libsmraw_handle_get_file_io_handle(
+		          handle,
+		          NULL,
+		          &error );
+
+		SMRAW_TEST_ASSERT_EQUAL_INT(
+		 "result",
+		 result,
+		 -1 );
+
+		SMRAW_TEST_ASSERT_IS_NOT_NULL(
+		 "error",
+		 error );
+
+		libcerror_error_free(
+		 &error );
+	}
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	return( 0 );
+}
+
+#endif /* TODO */
+
 /* Tests the libsmraw_handle_get_number_of_information_values functions
  * Returns 1 if successful or 0 if not
  */
 int smraw_test_handle_get_number_of_information_values(
      libsmraw_handle_t *handle )
 {
-	libcerror_error_t *error = NULL;
-	int number_of_information_values    = 0;
-	int result               = 0;
+	libcerror_error_t *error         = NULL;
+	int number_of_information_values = 0;
+	int result                       = 0;
 
 	result = libsmraw_handle_get_number_of_information_values(
 	          handle,
@@ -1359,7 +2547,7 @@ int main(
 	system_integer_t option    = 0;
 	int result                 = 0;
 
-	while( ( option = libcsystem_getopt(
+	while( ( option = smraw_test_getopt(
 	                   argc,
 	                   argv,
 	                   _SYSTEM_STRING( "" ) ) ) != (system_integer_t) -1 )
@@ -1419,7 +2607,14 @@ int main(
 
 #endif /* defined( LIBSMRAW_HAVE_BFIO ) */
 
-		/* TODO add test for libsmraw_handle_close */
+		SMRAW_TEST_RUN(
+		 "libsmraw_handle_close",
+		 smraw_test_handle_close );
+
+		SMRAW_TEST_RUN_WITH_ARGS(
+		 "libsmraw_handle_open_close",
+		 smraw_test_handle_open_close,
+		 source );
 
 		/* Initialize test
 		 */
@@ -1440,6 +2635,96 @@ int main(
 	        SMRAW_TEST_ASSERT_IS_NULL(
 	         "error",
 	         error );
+
+		SMRAW_TEST_RUN_WITH_ARGS(
+		 "libsmraw_handle_signal_abort",
+		 smraw_test_handle_signal_abort,
+		 handle );
+
+		/* TODO: add tests for libsmraw_handle_open_file_io_pool */
+
+#if defined( __GNUC__ )
+
+		/* TODO: add tests for libsmraw_handle_read_information_file */
+
+#endif /* defined( __GNUC__ ) */
+
+		SMRAW_TEST_RUN_WITH_ARGS(
+		 "libsmraw_handle_read_buffer",
+		 smraw_test_handle_read_buffer,
+		 handle );
+
+		/* TODO: add tests for libsmraw_handle_read_buffer_at_offset */
+
+		/* TODO: add tests for libsmraw_handle_write_buffer */
+
+		/* TODO: add tests for libsmraw_handle_write_buffer_at_offset */
+
+		SMRAW_TEST_RUN_WITH_ARGS(
+		 "libsmraw_handle_seek_offset",
+		 smraw_test_handle_seek_offset,
+		 handle );
+
+		SMRAW_TEST_RUN_WITH_ARGS(
+		 "libsmraw_handle_get_offset",
+		 smraw_test_handle_get_offset,
+		 handle );
+
+		/* TODO: add tests for libsmraw_handle_set_maximum_number_of_open_handles */
+
+		SMRAW_TEST_RUN_WITH_ARGS(
+		 "libsmraw_handle_get_segment_filename_size",
+		 smraw_test_handle_get_segment_filename_size,
+		 handle );
+
+		/* TODO: add tests for libsmraw_handle_get_segment_filename */
+
+		/* TODO: add tests for libsmraw_handle_set_segment_filename */
+
+#if defined( HAVE_WIDE_CHARACTER_TYPE )
+
+		SMRAW_TEST_RUN_WITH_ARGS(
+		 "libsmraw_handle_get_segment_filename_size_wide",
+		 smraw_test_handle_get_segment_filename_size_wide,
+		 handle );
+
+		/* TODO: add tests for libsmraw_handle_get_segment_filename_wide */
+
+		/* TODO: add tests for libsmraw_handle_set_segment_filename_wide */
+
+#endif /* defined( HAVE_WIDE_CHARACTER_TYPE ) */
+
+		SMRAW_TEST_RUN_WITH_ARGS(
+		 "libsmraw_handle_get_maximum_segment_size",
+		 smraw_test_handle_get_maximum_segment_size,
+		 handle );
+
+		/* TODO: add tests for libsmraw_handle_set_maximum_segment_size */
+
+		SMRAW_TEST_RUN_WITH_ARGS(
+		 "libsmraw_handle_get_filename_size",
+		 smraw_test_handle_get_filename_size,
+		 handle );
+
+		/* TODO: add tests for libsmraw_handle_get_filename */
+
+#if defined( HAVE_WIDE_CHARACTER_TYPE )
+
+		SMRAW_TEST_RUN_WITH_ARGS(
+		 "libsmraw_handle_get_filename_size_wide",
+		 smraw_test_handle_get_filename_size_wide,
+		 handle );
+
+		/* TODO: add tests for libsmraw_handle_get_filename_wide */
+
+#endif /* defined( HAVE_WIDE_CHARACTER_TYPE ) */
+
+#ifdef TODO
+		SMRAW_TEST_RUN_WITH_ARGS(
+		 "libsmraw_handle_get_file_io_handle",
+		 smraw_test_handle_get_file_io_handle,
+		 handle );
+#endif /* TODO */
 
 		SMRAW_TEST_RUN_WITH_ARGS(
 		 "libsmraw_handle_get_number_of_information_values",

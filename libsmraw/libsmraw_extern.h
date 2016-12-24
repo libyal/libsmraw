@@ -38,9 +38,9 @@
 #include <libsmraw/extern.h>
 
 #else
-#define LIBSMRAW_EXTERN	extern
+#define LIBSMRAW_EXTERN	/* extern */
 
-#endif
+#endif /* !defined( HAVE_LOCAL_LIBSMRAW ) */
 
 #endif /* !defined( _LIBSMRAW_INTERNAL_EXTERN_H ) */
 

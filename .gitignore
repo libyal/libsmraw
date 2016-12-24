@@ -128,10 +128,7 @@ stamp-h[1-9]
 /tests/smraw_test_handle
 /tests/smraw_test_glob
 /tests/smraw_test_notify
-/tests/smraw_test_open_close
-/tests/smraw_test_read
 /tests/smraw_test_read_loop
-/tests/smraw_test_seek
 /tests/smraw_test_write
 /tests/smraw_test_support
 /tests/tmp*

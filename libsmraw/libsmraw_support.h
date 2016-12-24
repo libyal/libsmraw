@@ -141,5 +141,5 @@ int libsmraw_glob_wide_free(
 }
 #endif
 
-#endif
+#endif /* !defined( _LIBSMRAW_SUPPORT_H ) */
 

@@ -19,8 +19,8 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _LIBSMRAW_INTERNAL_HANDLE_H )
-#define _LIBSMRAW_INTERNAL_HANDLE_H
+#if !defined( _LIBSMRAW_HANDLE_H )
+#define _LIBSMRAW_HANDLE_H
 
 #include <common.h>
 #include <types.h>
@@ -34,14 +34,6 @@
 #include "libsmraw_libfdata.h"
 #include "libsmraw_libfvalue.h"
 #include "libsmraw_types.h"
-
-#if defined( _MSC_VER ) || defined( __BORLANDC__ ) || defined( __MINGW32_VERSION ) || defined( __MINGW64_VERSION_MAJOR )
-
-/* This inclusion is needed otherwise some linkers
- * mess up exporting the legacy and metadata functions
- */
-#include "libsmraw_metadata.h"
-#endif
 
 #if defined( __cplusplus )
 extern "C" {
@@ -135,6 +127,7 @@ int libsmraw_handle_open(
      libcerror_error_t **error );
 
 #if defined( HAVE_WIDE_CHARACTER_TYPE )
+
 LIBSMRAW_EXTERN \
 int libsmraw_handle_open_wide(
      libsmraw_handle_t *handle,
@@ -142,7 +135,8 @@ int libsmraw_handle_open_wide(
      int number_of_filenames,
      int access_flags,
      libcerror_error_t **error );
-#endif
+
+#endif /* defined( HAVE_WIDE_CHARACTER_TYPE ) */
 
 LIBSMRAW_EXTERN \
 int libsmraw_handle_open_file_io_pool(
@@ -230,6 +224,7 @@ int libsmraw_handle_set_segment_filename(
      libcerror_error_t **error );
 
 #if defined( HAVE_WIDE_CHARACTER_TYPE )
+
 LIBSMRAW_EXTERN \
 int libsmraw_handle_get_segment_filename_size_wide(
      libsmraw_handle_t *handle,
@@ -249,7 +244,8 @@ int libsmraw_handle_set_segment_filename_wide(
      const wchar_t *filename,
      size_t filename_length,
      libcerror_error_t **error );
-#endif
+
+#endif /* defined( HAVE_WIDE_CHARACTER_TYPE ) */
 
 LIBSMRAW_EXTERN \
 int libsmraw_handle_get_maximum_segment_size(
@@ -277,6 +273,7 @@ int libsmraw_handle_get_filename(
      libcerror_error_t **error );
 
 #if defined( HAVE_WIDE_CHARACTER_TYPE )
+
 LIBSMRAW_EXTERN \
 int libsmraw_handle_get_filename_size_wide(
      libsmraw_handle_t *handle,
@@ -289,7 +286,8 @@ int libsmraw_handle_get_filename_wide(
      wchar_t *filename,
      size_t filename_size,
      libcerror_error_t **error );
-#endif
+
+#endif /* defined( HAVE_WIDE_CHARACTER_TYPE ) */
 
 LIBSMRAW_EXTERN \
 int libsmraw_handle_get_file_io_handle(
@@ -297,9 +295,203 @@ int libsmraw_handle_get_file_io_handle(
      libbfio_handle_t **file_io_handle,
      libcerror_error_t **error );
 
+LIBSMRAW_EXTERN \
+int libsmraw_handle_get_media_size(
+     libsmraw_handle_t *handle,
+     size64_t *media_size,
+     libcerror_error_t **error );
+
+LIBSMRAW_EXTERN \
+int libsmraw_handle_set_media_size(
+     libsmraw_handle_t *handle,
+     size64_t media_size,
+     libcerror_error_t **error );
+
+LIBSMRAW_EXTERN \
+int libsmraw_handle_get_bytes_per_sector(
+     libsmraw_handle_t *handle,
+     uint32_t *bytes_per_sector,
+     libcerror_error_t **error );
+
+LIBSMRAW_EXTERN \
+int libsmraw_handle_set_bytes_per_sector(
+     libsmraw_handle_t *handle,
+     uint32_t bytes_per_sector,
+     libcerror_error_t **error );
+
+LIBSMRAW_EXTERN \
+int libsmraw_handle_get_media_type(
+     libsmraw_handle_t *handle,
+     uint8_t *media_type,
+     libcerror_error_t **error );
+
+LIBSMRAW_EXTERN \
+int libsmraw_handle_set_media_type(
+     libsmraw_handle_t *handle,
+     uint8_t media_type,
+     libcerror_error_t **error );
+
+LIBSMRAW_EXTERN \
+int libsmraw_handle_get_media_flags(
+     libsmraw_handle_t *handle,
+     uint8_t *media_flags,
+     libcerror_error_t **error );
+
+LIBSMRAW_EXTERN \
+int libsmraw_handle_set_media_flags(
+     libsmraw_handle_t *handle,
+     uint8_t media_flags,
+     libcerror_error_t **error );
+
+LIBSMRAW_EXTERN \
+int libsmraw_handle_get_number_of_information_values(
+     libsmraw_handle_t *handle,
+     int *number_of_information_values,
+     libcerror_error_t **error );
+
+LIBSMRAW_EXTERN \
+int libsmraw_handle_get_information_value_identifier_size(
+     libsmraw_handle_t *handle,
+     int information_value_index,
+     size_t *identifier_size,
+     libcerror_error_t **error );
+
+LIBSMRAW_EXTERN \
+int libsmraw_handle_get_information_value_identifier(
+     libsmraw_handle_t *handle,
+     int information_value_index,
+     uint8_t *identifier,
+     size_t identifier_size,
+     libcerror_error_t **error );
+
+LIBSMRAW_EXTERN \
+int libsmraw_handle_get_utf8_information_value_size(
+     libsmraw_handle_t *handle,
+     const uint8_t *identifier,
+     size_t identifier_length,
+     size_t *utf8_string_size,
+     libcerror_error_t **error );
+
+LIBSMRAW_EXTERN \
+int libsmraw_handle_get_utf8_information_value(
+     libsmraw_handle_t *handle,
+     const uint8_t *identifier,
+     size_t identifier_length,
+     uint8_t *utf8_string,
+     size_t utf8_string_size,
+     libcerror_error_t **error );
+
+LIBSMRAW_EXTERN \
+int libsmraw_handle_set_utf8_information_value(
+     libsmraw_handle_t *handle,
+     const uint8_t *identifier,
+     size_t identifier_length,
+     const uint8_t *utf8_string,
+     size_t utf8_string_length,
+     libcerror_error_t **error );
+
+LIBSMRAW_EXTERN \
+int libsmraw_handle_get_utf16_information_value_size(
+     libsmraw_handle_t *handle,
+     const uint8_t *identifier,
+     size_t identifier_length,
+     size_t *utf16_string_size,
+     libcerror_error_t **error );
+
+LIBSMRAW_EXTERN \
+int libsmraw_handle_get_utf16_information_value(
+     libsmraw_handle_t *handle,
+     const uint8_t *identifier,
+     size_t identifier_length,
+     uint16_t *utf16_string,
+     size_t utf16_string_size,
+     libcerror_error_t **error );
+
+LIBSMRAW_EXTERN \
+int libsmraw_handle_set_utf16_information_value(
+     libsmraw_handle_t *handle,
+     const uint8_t *identifier,
+     size_t identifier_length,
+     const uint16_t *utf16_string,
+     size_t utf16_string_length,
+     libcerror_error_t **error );
+
+LIBSMRAW_EXTERN \
+int libsmraw_handle_get_number_of_integrity_hash_values(
+     libsmraw_handle_t *handle,
+     int *number_of_integrity_hash_values,
+     libcerror_error_t **error );
+
+LIBSMRAW_EXTERN \
+int libsmraw_handle_get_integrity_hash_value_identifier_size(
+     libsmraw_handle_t *handle,
+     int integrity_hash_value_index,
+     size_t *identifier_size,
+     libcerror_error_t **error );
+
+LIBSMRAW_EXTERN \
+int libsmraw_handle_get_integrity_hash_value_identifier(
+     libsmraw_handle_t *handle,
+     int integrity_hash_value_index,
+     uint8_t *identifier,
+     size_t identifier_size,
+     libcerror_error_t **error );
+
+LIBSMRAW_EXTERN \
+int libsmraw_handle_get_utf8_integrity_hash_value_size(
+     libsmraw_handle_t *handle,
+     const uint8_t *identifier,
+     size_t identifier_length,
+     size_t *utf8_string_size,
+     libcerror_error_t **error );
+
+LIBSMRAW_EXTERN \
+int libsmraw_handle_get_utf8_integrity_hash_value(
+     libsmraw_handle_t *handle,
+     const uint8_t *identifier,
+     size_t identifier_length,
+     uint8_t *utf8_string,
+     size_t utf8_string_size,
+     libcerror_error_t **error );
+
+LIBSMRAW_EXTERN \
+int libsmraw_handle_set_utf8_integrity_hash_value(
+     libsmraw_handle_t *handle,
+     const uint8_t *identifier,
+     size_t identifier_length,
+     const uint8_t *utf8_string,
+     size_t utf8_string_length,
+     libcerror_error_t **error );
+
+LIBSMRAW_EXTERN \
+int libsmraw_handle_get_utf16_integrity_hash_value_size(
+     libsmraw_handle_t *handle,
+     const uint8_t *identifier,
+     size_t identifier_length,
+     size_t *utf16_string_size,
+     libcerror_error_t **error );
+
+LIBSMRAW_EXTERN \
+int libsmraw_handle_get_utf16_integrity_hash_value(
+     libsmraw_handle_t *handle,
+     const uint8_t *identifier,
+     size_t identifier_length,
+     uint16_t *utf16_string,
+     size_t utf16_string_size,
+     libcerror_error_t **error );
+
+LIBSMRAW_EXTERN \
+int libsmraw_handle_set_utf16_integrity_hash_value(
+     libsmraw_handle_t *handle,
+     const uint8_t *identifier,
+     size_t identifier_length,
+     const uint16_t *utf16_string,
+     size_t utf16_string_length,
+     libcerror_error_t **error );
+
 #if defined( __cplusplus )
 }
 #endif
 
-#endif
+#endif /* !defined( _LIBSMRAW_HANDLE_H ) */
 

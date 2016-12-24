@@ -1,5 +1,5 @@
 /*
- * Output functions
+ * The internal libcnotify header
  *
  * Copyright (C) 2010-2016, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -19,32 +19,32 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _SMRAWOUTPUT_H )
-#define _SMRAWOUTPUT_H
+#if !defined( _SMRAW_TEST_LIBCNOTIFY_H )
+#define _SMRAW_TEST_LIBCNOTIFY_H
 
 #include <common.h>
-#include <file_stream.h>
-#include <types.h>
 
+/* Define HAVE_LOCAL_LIBCNOTIFY for local use of libcnotify
+ */
+#if defined( HAVE_LOCAL_LIBCNOTIFY )
 
-#if defined( __cplusplus )
-extern "C" {
+#include <libcnotify_definitions.h>
+#include <libcnotify_print.h>
+#include <libcnotify_stream.h>
+#include <libcnotify_verbose.h>
+
+#else
+
+/* If libtool DLL support is enabled set LIBCNOTIFY_DLL_IMPORT
+ * before including libcnotify.h
+ */
+#if defined( _WIN32 ) && defined( DLL_IMPORT )
+#define LIBCNOTIFY_DLL_IMPORT
 #endif
 
-void smrawoutput_copyright_fprint(
-      FILE *stream );
+#include <libcnotify.h>
 
-void smrawoutput_version_fprint(
-      FILE *stream,
-      const system_character_t *program );
+#endif /* defined( HAVE_LOCAL_LIBCNOTIFY ) */
 
-void smrawoutput_version_detailed_fprint(
-      FILE *stream,
-      const system_character_t *program );
-
-#if defined( __cplusplus )
-}
-#endif
-
-#endif /* !defined( _SMRAWOUTPUT_H ) */
+#endif /* !defined( _SMRAW_TEST_LIBCNOTIFY_H ) */
 

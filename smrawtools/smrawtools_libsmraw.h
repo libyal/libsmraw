@@ -27,11 +27,11 @@
 /* If Cygwin libtool DLL support is enabled set LIBSMRAW_DLL_IMPORT
  * before including libsmraw.h
  */
-#if defined( _WIN32 ) && defined( DLL_EXPORT )
+#if defined( _WIN32 ) && defined( DLL_IMPORT ) && !defined( HAVE_STATIC_EXECUTABLES )
 #define LIBSMRAW_DLL_IMPORT
 #endif
 
 #include <libsmraw.h>
 
-#endif
+#endif /* !defined( _SMRAWTOOLS_LIBSMRAW_H ) */
 

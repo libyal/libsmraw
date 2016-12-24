@@ -91,5 +91,5 @@ int libsmraw_information_file_write_section(
 }
 #endif
 
-#endif
+#endif /* !defined( _LIBSMRAW_INFORMATION_FILE_H ) */
 
