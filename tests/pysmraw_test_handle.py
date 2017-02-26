@@ -30,6 +30,12 @@ import pysmraw
 class HandleTypeTests(unittest.TestCase):
   """Tests the handle type."""
 
+  def test_signal_abort(self):
+    """Tests the signal_abort function."""
+    smraw_handle = pysmraw.handle()
+
+    smraw_handle.signal_abort()
+
   def test_open(self):
     """Tests the open function."""
     if not unittest.source:
@@ -61,8 +67,7 @@ class HandleTypeTests(unittest.TestCase):
 
     smraw_handle.open_file_object(file_object)
 
-    # TODO: change MemoryError into IOError
-    with self.assertRaises(MemoryError):
+    with self.assertRaises(IOError):
       smraw_handle.open_file_object(file_object)
 
     smraw_handle.close()

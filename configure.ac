@@ -2,7 +2,7 @@ AC_PREREQ( 2.59 )
 
 AC_INIT(
  [libsmraw],
- [20161224],
+ [20170226],
  [joachim.metz@gmail.com])
 
 AC_CONFIG_SRCDIR(
@@ -93,11 +93,14 @@ AX_LIBFDATA_CHECK_ENABLE
 dnl Check for enabling libfvalue for file value support
 AX_LIBFVALUE_CHECK_ENABLE
 
+dnl Check for library function support
+AX_LIBSMRAW_CHECK_LOCAL
+
 dnl Check for enabling libhmac for message digest hash function support
 AX_LIBHMAC_CHECK_ENABLE
 
-dnl Check for enabling libcsystem for cross-platform C generic system functions
-AX_LIBCSYSTEM_CHECK_ENABLE
+dnl Check for smrawtools function support
+AX_SMRAWTOOLS_CHECK_LOCAL
 
 dnl Check for libfuse Filesystem in Userspace (FUSE) support
 AX_LIBFUSE_CHECK_ENABLE
@@ -112,143 +115,6 @@ AM_CONDITIONAL(
  HAVE_PYTHON_TESTS,
  [test "x${ac_cv_enable_python}" != xno || test "x${ac_cv_enable_python2}" != xno || test "x${ac_cv_enable_python3}" != xno])
 
-dnl Check for headers and functions used in tools
-
-dnl Function to detect if ctime_r or ctime is available
-dnl Also checks how to use ctime_r
-AC_DEFUN([AX_SMRAWTOOLS_CHECK_FUNC_CTIME],
- [AC_CHECK_FUNCS([ctime_r])
-
- AS_IF(
-  [test "x$ac_cv_func_ctime_r" = xyes],
-  [AC_MSG_CHECKING(
-   [how to use ctime_r])
-
-  AC_LANG_PUSH(C)
-
-  AC_LINK_IFELSE(
-   [AC_LANG_PROGRAM(
-    [[#include <time.h>]],
-    [[ctime_r( NULL, NULL, 0 )]] )],
-    [AC_MSG_RESULT(
-     [with additional size argument])
-    ac_cv_cv_ctime_r_size=yes],
-    [ac_cv_cv_ctime_r_size=no])
-
-  AS_IF(
-   [test "x$ac_cv_cv_ctime_r_size" = xno],
-   [AC_LINK_IFELSE(
-    [AC_LANG_PROGRAM(
-     [[#include <time.h>]],
-     [[ctime_r( NULL, NULL )]] )],
-    [AC_MSG_RESULT(
-     [with two arguments])
-    ac_cv_cv_ctime_r_posix=yes],
-    [ac_cv_cv_ctime_r_posix=no])
-   ])
-
-  AS_IF(
-   [test "x$ac_cv_cv_ctime_r_posix" = xno],
-   [CPPFLAGS="$CPPFLAGS -D_POSIX_PTHREAD_SEMANTICS"
-   AC_LINK_IFELSE(
-    [AC_LANG_PROGRAM(
-     [[#include <time.h>]],
-     [[ctime_r( NULL, NULL )]] )],
-    [AC_MSG_RESULT(
-     [with two arguments and definition _POSIX_PTHREAD_SEMANTICS])
-     ac_cv_cv_ctime_r_posix=yes],
-    [ac_cv_cv_ctime_r_posix=no])
-   ])
-
-  AC_LANG_POP(C)
-
-  AS_IF(
-   [test "x$ac_cv_cv_ctime_r_size" = xno && test "x$ac_cv_cv_ctime_r_posix" = xno],
-   [AC_MSG_WARN(
-    [unknown])
-   ac_cv_func_ctime_r=no])
-
-  AS_IF(
-   [test "x$ac_cv_func_ctime_r" = xyes],
-   [AC_DEFINE(
-    [HAVE_CTIME_R],
-    [1],
-    [Define to 1 if you have the ctime_r function.])
-   ])
-
-  AS_IF(
-   [test "x$ac_cv_cv_ctime_r_size" = xyes],
-   [AC_DEFINE(
-    [HAVE_CTIME_R_SIZE],
-    [1],
-    [Define to 1 if you have the ctime_r function with a third size argument.])
-   ])
-  ])
-
- AS_IF(
-  [test "x$ac_cv_func_ctime_r" = xno],
-  [AC_CHECK_FUNCS([ctime])
-
-  AS_IF(
-   [test "x$ac_cv_func_ctime" = xno],
-   [AC_MSG_FAILURE(
-    [Missing function: ctime_r and ctime],
-    [1])
-   ])
-  ])
- ])
-
-AS_IF(
- [test "x$ac_cv_enable_winapi" = xno],
- [AC_HEADER_TIME
- AC_CHECK_FUNCS([getegid geteuid getuid time])
- ])
-
-dnl Date and time functions used in libcsystem/libcsystem_date_time.c
-AC_CHECK_FUNCS([localtime localtime_r mktime])
-
-AS_IF(
- [test "x$ac_cv_func_localtime" != xyes && test "x$ac_cv_func_localtime_r" != xyes],
- [AC_MSG_FAILURE(
-  [Missing functions: localtime and localtime_r],
-  [1])
- ])
- 
-AS_IF(
- [test "x$ac_cv_func_mktime" != xyes],
- [AC_MSG_FAILURE(
-  [Missing function: mktime],
-  [1])
- ])
- 
-dnl Date and time functions used in libcsystem/libcsystem_date_time.h
-AX_SMRAWTOOLS_CHECK_FUNC_CTIME
- 
-AC_CHECK_FUNCS([gmtime gmtime_r time])
-
-AS_IF(
- [test "x$ac_cv_func_gmtime" != xyes && test "x$ac_cv_func_gmtime_r" != xyes],
- [AC_MSG_FAILURE(
-  [Missing functions: gmtime_r and gmtime],
-  [1])
- ])
- 
-AS_IF(
- [test "x$ac_cv_func_time" != xyes],
- [AC_MSG_FAILURE(
-  [Missing function: time],
-  [1])
- ])
- 
-dnl Check if smrawtools should be build as static executables
-AX_COMMON_CHECK_ENABLE_STATIC_EXECUTABLES
-
-dnl Check if libsmraw should be build with verbose output
-AX_COMMON_CHECK_ENABLE_VERBOSE_OUTPUT
-
-dnl Check if libsmraw should be build with debug output
-AX_COMMON_CHECK_ENABLE_DEBUG_OUTPUT
-
 dnl Headers included in various places
 AC_CHECK_HEADERS([stdarg.h varargs.h])
 
@@ -261,29 +127,6 @@ AS_IF(
 
 dnl Check for test function support
 AX_TESTS_CHECK_LOCAL
-
-dnl Check if DLL support is needed
-AS_IF(
- [test "x$enable_shared" = xyes],
- [AS_CASE(
-  [$host],
-  [*cygwin* | *mingw*],
-  [AC_DEFINE(
-   [HAVE_DLLMAIN],
-   [1],
-   [Define to 1 to enable the DllMain function.])
-  AC_SUBST(
-   [HAVE_DLLMAIN],
-   [1])
-
-  AS_IF(
-   [test "x$ac_cv_enable_static_executables" = xno],
-   [AC_SUBST(
-    [LIBSMRAW_DLL_IMPORT],
-    ["-DLIBSMRAW_DLL_IMPORT"])
-   ])
-  ])
- ])
 
 dnl Set additional compiler flags
 CFLAGS="$CFLAGS -Wall";
@@ -300,7 +143,7 @@ AS_IF(
  ])
 
 AS_IF(
- [test "x$ac_cv_libcsystem" = xyes || test "x$ac_cv_libhmac" = xyes || test "x$ac_cv_libcrypto" = xyes || test "x$ac_cv_libfuse" != xno],
+ [test "x$ac_cv_libhmac" = xyes || test "x$ac_cv_libcrypto" = xyes || test "x$ac_cv_libfuse" != xno],
  [AC_SUBST(
   [libsmraw_tools_spec_build_requires],
   [BuildRequires:])
@@ -339,7 +182,6 @@ AC_CONFIG_FILES([libfcache/Makefile])
 AC_CONFIG_FILES([libfdata/Makefile])
 AC_CONFIG_FILES([libfvalue/Makefile])
 AC_CONFIG_FILES([libsmraw/Makefile])
-AC_CONFIG_FILES([libcsystem/Makefile])
 AC_CONFIG_FILES([libhmac/Makefile])
 AC_CONFIG_FILES([smrawtools/Makefile])
 AC_CONFIG_FILES([smraw.net/Makefile])
@@ -389,7 +231,6 @@ Building:
    MD5 support:                                $ac_cv_libhmac_md5
    SHA1 support:                               $ac_cv_libhmac_sha1
    SHA256 support:                             $ac_cv_libhmac_sha256
-   libcsystem support:                         $ac_cv_libcsystem
    FUSE support:                               $ac_cv_libfuse
 
 Features:

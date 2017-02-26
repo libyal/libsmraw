@@ -17,7 +17,6 @@ SUBDIRS = \
 	libfdata \
 	libfvalue \
 	libsmraw \
-	libcsystem \
 	libhmac \
 	smrawtools \
 	smraw.net \
@@ -123,7 +122,6 @@ splint:
 	(cd $(srcdir)/libfdata && $(MAKE) splint $(AM_MAKEFLAGS))
 	(cd $(srcdir)/libfvalue && $(MAKE) splint $(AM_MAKEFLAGS))
 	(cd $(srcdir)/libsmraw && $(MAKE) splint $(AM_MAKEFLAGS))
-	(cd $(srcdir)/libcsystem && $(MAKE) splint $(AM_MAKEFLAGS))
 	(cd $(srcdir)/smrawtools && $(MAKE) splint $(AM_MAKEFLAGS))
 	(cd $(srcdir)/smraw.net && $(MAKE) splint $(AM_MAKEFLAGS))
 	(cd $(srcdir)/pysmraw && $(MAKE) splint $(AM_MAKEFLAGS))

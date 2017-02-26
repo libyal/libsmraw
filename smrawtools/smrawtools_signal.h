@@ -1,5 +1,5 @@
 /*
- * Output functions
+ * Signal handling functions
  *
  * Copyright (C) 2010-2017, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -19,32 +19,54 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _SMRAWOUTPUT_H )
-#define _SMRAWOUTPUT_H
+#if !defined( _SMRAWTOOLS_SIGNAL_H )
+#define _SMRAWTOOLS_SIGNAL_H
 
 #include <common.h>
-#include <file_stream.h>
 #include <types.h>
 
+#include "smrawtools_libcerror.h"
 
 #if defined( __cplusplus )
 extern "C" {
 #endif
 
-void smrawoutput_copyright_fprint(
-      FILE *stream );
+#if !defined( HAVE_SIGNAL_H ) && !defined( WINAPI )
+#error missing signal functions
+#endif
 
-void smrawoutput_version_fprint(
-      FILE *stream,
-      const system_character_t *program );
+#if defined( WINAPI )
+typedef unsigned long smrawtools_signal_t;
 
-void smrawoutput_version_detailed_fprint(
-      FILE *stream,
-      const system_character_t *program );
+#else
+typedef int smrawtools_signal_t;
+
+#endif /* defined( WINAPI ) */
+
+#if defined( WINAPI )
+
+BOOL WINAPI smrawtools_signal_handler(
+             smrawtools_signal_t signal );
+
+#if defined( _MSC_VER )
+
+void smrawtools_signal_initialize_memory_debug(
+      void );
+
+#endif /* defined( _MSC_VER ) */
+
+#endif /* defined( WINAPI ) */
+
+int smrawtools_signal_attach(
+     void (*signal_handler)( smrawtools_signal_t ),
+     libcerror_error_t **error );
+
+int smrawtools_signal_detach(
+     libcerror_error_t **error );
 
 #if defined( __cplusplus )
 }
 #endif
 
-#endif /* !defined( _SMRAWOUTPUT_H ) */
+#endif /* !defined( _SMRAWTOOLS_SIGNAL_H ) */
 

@@ -40,5 +40,5 @@ PyObject *pysmraw_handle_get_media_size(
 }
 #endif
 
-#endif
+#endif /* !defined( _PYSMRAW_METADATA_H ) */
 

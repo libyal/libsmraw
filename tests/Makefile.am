@@ -11,7 +11,6 @@ AM_CPPFLAGS = \
 	@LIBCFILE_CPPFLAGS@ \
 	@LIBCPATH_CPPFLAGS@ \
 	@LIBBFIO_CPPFLAGS@ \
-	@LIBCSYSTEM_CPPFLAGS@ \
 	@LIBHMAC_CPPFLAGS@ \
 	@LIBCRYPTO_CPPFLAGS@ \
 	@PTHREAD_CPPFLAGS@ \
@@ -19,13 +18,12 @@ AM_CPPFLAGS = \
 
 if HAVE_PYTHON_TESTS
 TESTS_PYSMRAW = \
-	test_python_functions.sh
+	test_python_module.sh
 endif
 
 TESTS = \
 	test_glob.sh \
-	test_api_functions.sh \
-	test_api_types.sh \
+	test_library.sh \
 	test_write_functions.sh \
 	test_smrawverify.sh \
 	$(TESTS_PYSMRAW)
@@ -34,10 +32,9 @@ check_SCRIPTS = \
 	pysmraw_test_handle.py \
 	pysmraw_test_read.py \
 	pysmraw_test_support.py \
-	test_api_functions.sh \
-	test_api_types.sh \
 	test_glob.sh \
-	test_python_functions.sh \
+	test_library.sh \
+	test_python_module.sh \
 	test_runner.sh \
 	test_smrawverify.sh \
 	test_write_functions.sh
@@ -109,9 +106,8 @@ smraw_test_read_loop_SOURCES = \
 	smraw_test_unused.h
 
 smraw_test_read_loop_LDADD = \
-	@LIBCSYSTEM_LIBADD@ \
-	../libsmraw/libsmraw.la \
 	@LIBCTHREADS_LIBADD@ \
+	../libsmraw/libsmraw.la \
 	@LIBCERROR_LIBADD@
 	@PTHREAD_LIBADD@
 

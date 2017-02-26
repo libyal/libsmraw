@@ -52,5 +52,5 @@ PyMODINIT_FUNC initpysmraw(
 }
 #endif
 
-#endif
+#endif /* !defined( _PYSMRAW_H ) */
 

@@ -25,15 +25,75 @@
 #include <system_string.h>
 #include <types.h>
 
-#include "smrawoutput.h"
+#include "smrawtools_i18n.h"
 #include "smrawtools_libbfio.h"
 #include "smrawtools_libcerror.h"
 #include "smrawtools_libclocale.h"
 #include "smrawtools_libcnotify.h"
-#include "smrawtools_libcsystem.h"
 #include "smrawtools_libfvalue.h"
 #include "smrawtools_libsmraw.h"
 #include "smrawtools_libuna.h"
+#include "smrawtools_output.h"
+#include "smrawtools_signal.h"
+#include "smrawtools_unused.h"
+
+/* Initializes output settings
+ * Returns 1 if successful or -1 on error
+ */
+int smrawtools_output_initialize(
+     int stdio_mode,
+     libcerror_error_t **error )
+{
+	static char *function = "smrawtools_output_initialize";
+
+	if( ( stdio_mode != _IOFBF )
+	 && ( stdio_mode != _IOLBF )
+	 && ( stdio_mode != _IONBF ) )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
+		 "%s: unsupported standard IO mode.",
+		 function );
+
+		return( -1 );
+	}
+#if !defined( __BORLANDC__ )
+	if( setvbuf(
+	     stdout,
+	     NULL,
+	     stdio_mode,
+	     0 ) != 0 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to set IO mode of stdout.",
+		 function );
+
+		return( -1 );
+	}
+	if( setvbuf(
+	     stderr,
+	     NULL,
+	     stdio_mode,
+	     0 ) != 0 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to set IO mode of stderr.",
+		 function );
+
+		return( -1 );
+	}
+#endif /* !defined( __BORLANDC__ ) */
+
+	return( 1 );
+}
 
 /* Prints the executable version information
  */

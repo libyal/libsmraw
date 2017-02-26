@@ -1,5 +1,5 @@
 /*
- * Memory allocation functions for testing
+ * Output functions
  *
  * Copyright (C) 2010-2017, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -19,34 +19,37 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _SMRAW_TEST_MEMORY_H )
-#define _SMRAW_TEST_MEMORY_H
+#if !defined( _SMRAWTOOLS_OUTPUT_H )
+#define _SMRAWTOOLS_OUTPUT_H
 
 #include <common.h>
+#include <file_stream.h>
+#include <types.h>
+
+#include "smrawtools_libcerror.h"
 
 #if defined( __cplusplus )
 extern "C" {
 #endif
 
-#if defined( HAVE_GNU_DL_DLSYM ) && defined( __GNUC__ ) && !defined( __clang__ ) && !defined( __arm__ ) && !defined( __mips__ ) && !defined( __hppa__ ) && !defined( __sparc__ )
-#define HAVE_SMRAW_TEST_MEMORY		1
-#endif
+int smrawtools_output_initialize(
+     int stdio_mode,
+     libcerror_error_t **error );
 
-#if defined( HAVE_SMRAW_TEST_MEMORY )
+void smrawoutput_copyright_fprint(
+      FILE *stream );
 
-extern int smraw_test_malloc_attempts_before_fail;
+void smrawoutput_version_fprint(
+      FILE *stream,
+      const system_character_t *program );
 
-extern int smraw_test_memcpy_attempts_before_fail;
-
-extern int smraw_test_memset_attempts_before_fail;
-
-extern int smraw_test_realloc_attempts_before_fail;
-
-#endif /* defined( HAVE_SMRAW_TEST_MEMORY ) */
+void smrawoutput_version_detailed_fprint(
+      FILE *stream,
+      const system_character_t *program );
 
 #if defined( __cplusplus )
 }
 #endif
 
-#endif /* !defined( _SMRAW_TEST_MEMORY_H ) */
+#endif /* !defined( _SMRAWTOOLS_OUTPUT_H ) */
 

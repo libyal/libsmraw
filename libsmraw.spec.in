@@ -25,8 +25,8 @@ Header files and libraries for developing applications for libsmraw.
 %package tools
 Summary: Several tools for reading and writing storage media (SM) (split) RAW files
 Group: Applications/System
-Requires: libsmraw = %{version}-%{release} @ax_libcrypto_spec_requires@ @ax_libcsystem_spec_requires@ @ax_libfuse_spec_requires@ @ax_libhmac_spec_requires@
-@libsmraw_tools_spec_build_requires@ @ax_libcrypto_spec_build_requires@ @ax_libcsystem_spec_build_requires@ @ax_libfuse_spec_build_requires@ @ax_libhmac_spec_build_requires@
+Requires: libsmraw = %{version}-%{release} @ax_libcrypto_spec_requires@ @ax_libfuse_spec_requires@ @ax_libhmac_spec_requires@
+@libsmraw_tools_spec_build_requires@ @ax_libcrypto_spec_build_requires@ @ax_libfuse_spec_build_requires@ @ax_libhmac_spec_build_requires@
 
 %description tools
 Several tools for reading and writing storage media (SM) (split) RAW files.

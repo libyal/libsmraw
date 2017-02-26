@@ -27,7 +27,6 @@
 #include <types.h>
 
 #include "smrawtools_libcerror.h"
-#include "smrawtools_libcsystem.h"
 
 #if defined( __cplusplus )
 extern "C" {

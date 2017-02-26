@@ -1,5 +1,5 @@
 /*
- * Python object definition of the libsmraw handle
+ * Python object wrapper of libsmraw_handle_t
  *
  * Copyright (C) 2010-2017, Joachim Metz <joachim.metz@gmail.com>
  *
