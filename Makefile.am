@@ -34,13 +34,12 @@ DPKG_FILES = \
 	dpkg/compat \
 	dpkg/control \
 	dpkg/copyright \
-	dpkg/copyright.in \
 	dpkg/rules \
-	dpkg/libsmraw.docs \
-	dpkg/libsmraw-dev.docs \
-	dpkg/libsmraw-python.docs \
-	dpkg/libsmraw-python3.docs \
-	dpkg/libsmraw-tools.docs \
+	dpkg/libsmraw.install \
+	dpkg/libsmraw-dev.install \
+	dpkg/libsmraw-python.install \
+	dpkg/libsmraw-python3.install \
+	dpkg/libsmraw-tools.install \
 	dpkg/source/format
 
 GETTEXT_FILES = \
