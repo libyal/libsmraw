@@ -77,7 +77,8 @@ smraw_test_handle_LDADD = \
 	@LIBCLOCALE_LIBADD@ \
 	@LIBCDATA_LIBADD@ \
 	../libsmraw/libsmraw.la \
-	@LIBCERROR_LIBADD@
+	@LIBCERROR_LIBADD@ \
+	@PTHREAD_LIBADD@
 
 smraw_test_glob_SOURCES = \
 	smraw_test_glob.c \

@@ -914,7 +914,7 @@ int smraw_test_handle_open(
          "error",
          error );
 
-	narrow_source_length = system_string_length(
+	narrow_source_length = narrow_string_length(
 	                        narrow_source );
 
 	result = libsmraw_glob(
@@ -1072,6 +1072,8 @@ int smraw_test_handle_open_wide(
 	          256,
 	          &error );
 
+SMRAW_TEST_FPRINT_ERROR( error );
+
 	SMRAW_TEST_ASSERT_EQUAL_INT(
 	 "result",
 	 result,
@@ -1081,7 +1083,7 @@ int smraw_test_handle_open_wide(
          "error",
          error );
 
-	wide_source_length = system_string_length(
+	wide_source_length = wide_string_length(
 	                      wide_source );
 
 	result = libsmraw_glob_wide(
@@ -1536,7 +1538,7 @@ int smraw_test_handle_read_buffer(
 	ssize_t read_count       = 0;
 	off64_t offset           = 0;
 
-	/* Test regular cases
+	/* Determine size
 	 */
 	offset = libsmraw_handle_seek_offset(
 	          handle,
@@ -1555,6 +1557,25 @@ int smraw_test_handle_read_buffer(
 
 	size = (size64_t) offset;
 
+	/* Reset offset to 0
+	 */
+	offset = libsmraw_handle_seek_offset(
+	          handle,
+	          0,
+	          SEEK_SET,
+	          &error );
+
+	SMRAW_TEST_ASSERT_NOT_EQUAL_INT64(
+	 "offset",
+	 offset,
+	 (int64_t) -1 );
+
+	SMRAW_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test regular cases
+	 */
 	if( size > 16 )
 	{
 		read_count = libsmraw_handle_read_buffer(
@@ -1595,42 +1616,6 @@ int smraw_test_handle_read_buffer(
 	              NULL,
 	              buffer,
 	              16,
-	              &error );
-
-	SMRAW_TEST_ASSERT_EQUAL_SSIZE(
-	 "read_count",
-	 read_count,
-	 (ssize_t) -1 );
-
-	SMRAW_TEST_ASSERT_IS_NOT_NULL(
-	 "error",
-	 error );
-
-	libcerror_error_free(
-	 &error );
-
-	read_count = libsmraw_handle_read_buffer(
-	              handle,
-	              NULL,
-	              16,
-	              &error );
-
-	SMRAW_TEST_ASSERT_EQUAL_SSIZE(
-	 "read_count",
-	 read_count,
-	 (ssize_t) -1 );
-
-	SMRAW_TEST_ASSERT_IS_NOT_NULL(
-	 "error",
-	 error );
-
-	libcerror_error_free(
-	 &error );
-
-	read_count = libsmraw_handle_read_buffer(
-	              handle,
-	              buffer,
-	              (size_t) SSIZE_MAX + 1,
 	              &error );
 
 	SMRAW_TEST_ASSERT_EQUAL_SSIZE(
@@ -2153,8 +2138,49 @@ int smraw_test_handle_get_filename_size(
 {
 	libcerror_error_t *error = NULL;
 	size_t filename_size     = 0;
+	off64_t offset           = 0;
 	int filename_size_is_set = 0;
 	int result               = 0;
+
+	/* Determine size
+	 */
+	offset = libsmraw_handle_seek_offset(
+	          handle,
+	          0,
+	          SEEK_END,
+	          &error );
+
+	SMRAW_TEST_ASSERT_NOT_EQUAL_INT64(
+	 "offset",
+	 offset,
+	 (int64_t) -1 );
+
+	SMRAW_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* libsmraw_handle_get_filename_size will fail on an empty file
+	 */
+	if( offset == 0 )
+	{
+		return( 1 );
+	}
+	/* Reset offset to 0
+	 */
+	offset = libsmraw_handle_seek_offset(
+	          handle,
+	          0,
+	          SEEK_SET,
+	          &error );
+
+	SMRAW_TEST_ASSERT_NOT_EQUAL_INT64(
+	 "offset",
+	 offset,
+	 (int64_t) -1 );
+
+	SMRAW_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
 
 	/* Test regular cases
 	 */
@@ -2233,8 +2259,49 @@ int smraw_test_handle_get_filename_size_wide(
 {
 	libcerror_error_t *error      = NULL;
 	size_t filename_size_wide     = 0;
+	off64_t offset                = 0;
 	int filename_size_wide_is_set = 0;
 	int result                    = 0;
+
+	/* Determine size
+	 */
+	offset = libsmraw_handle_seek_offset(
+	          handle,
+	          0,
+	          SEEK_END,
+	          &error );
+
+	SMRAW_TEST_ASSERT_NOT_EQUAL_INT64(
+	 "offset",
+	 offset,
+	 (int64_t) -1 );
+
+	SMRAW_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* libsmraw_handle_get_filename_size_wide will fail on an empty file
+	 */
+	if( offset == 0 )
+	{
+		return( 1 );
+	}
+	/* Reset offset to 0
+	 */
+	offset = libsmraw_handle_seek_offset(
+	          handle,
+	          0,
+	          SEEK_SET,
+	          &error );
+
+	SMRAW_TEST_ASSERT_NOT_EQUAL_INT64(
+	 "offset",
+	 offset,
+	 (int64_t) -1 );
+
+	SMRAW_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
 
 	/* Test regular cases
 	 */

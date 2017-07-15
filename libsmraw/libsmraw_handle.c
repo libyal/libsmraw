@@ -2093,12 +2093,25 @@ ssize_t libsmraw_handle_read_buffer(
 
 		return( -1 );
 	}
-	/* Bail out early for requests to read empty buffers
-	 */
-	if( buffer_size == 0 )
+	if( internal_handle->io_handle->media_size == 0 )
 	{
 		return( 0 );
 	}
+#if defined( HAVE_LIBSMRAW_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_grab_for_write(
+	     internal_handle->read_write_lock,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to grab read/write lock for writing.",
+		 function );
+
+		return( -1 );
+	}
+#endif
 	if( libfdata_stream_get_offset(
 	     internal_handle->segments_stream,
 	     &current_offset,
@@ -2111,7 +2124,7 @@ ssize_t libsmraw_handle_read_buffer(
 		 "%s: unable to retrieve current offset from segments stream.",
 		 function );
 
-		return( -1 );
+		goto on_error;
 	}
 	if( current_offset < 0 )
 	{
@@ -2122,41 +2135,64 @@ ssize_t libsmraw_handle_read_buffer(
 		 "%s: invalid current offset value out of bounds.",
 		 function );
 
-		return( -1 );
+		goto on_error;
 	}
-	if( internal_handle->io_handle->media_size > 0 )
+	/* Bail out early for requests to read beyond the media size
+	 */
+	if( (size64_t) current_offset >= internal_handle->io_handle->media_size )
 	{
-		/* Bail out early for requests to read beyond the media size
-		 */
-		if( (size64_t) current_offset >= internal_handle->io_handle->media_size )
+		buffer_size = 0;
+	}
+	if( ( (size64_t) current_offset + buffer_size ) >= internal_handle->io_handle->media_size )
+	{
+		buffer_size = (size_t) ( internal_handle->io_handle->media_size - (size64_t) current_offset );
+	}
+	if( buffer_size > 0 )
+	{
+		read_count = libfdata_stream_read_buffer(
+		              internal_handle->segments_stream,
+		              (intptr_t *) internal_handle->file_io_pool,
+		              (uint8_t *) buffer,
+		              buffer_size,
+		              0,
+		              error );
+
+		if( read_count < 0 )
 		{
-			return( 0 );
-		}
-		if( ( (size64_t) current_offset + buffer_size ) >= internal_handle->io_handle->media_size )
-		{
-			buffer_size = (size_t) ( internal_handle->io_handle->media_size - (size64_t) current_offset );
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_IO,
+			 LIBCERROR_IO_ERROR_READ_FAILED,
+			 "%s: unable to read buffer from segments stream.",
+			 function );
+
+			goto on_error;
 		}
 	}
-	read_count = libfdata_stream_read_buffer(
-	              internal_handle->segments_stream,
-	              (intptr_t *) internal_handle->file_io_pool,
-	              (uint8_t *) buffer,
-	              buffer_size,
-	              0,
-	              error );
-
-	if( read_count != (ssize_t) buffer_size )
+#if defined( HAVE_LIBSMRAW_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_release_for_write(
+	     internal_handle->read_write_lock,
+	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
-		 LIBCERROR_ERROR_DOMAIN_IO,
-		 LIBCERROR_IO_ERROR_READ_FAILED,
-		 "%s: unable to read buffer from segments stream.",
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to release read/write lock for writing.",
 		 function );
 
 		return( -1 );
 	}
+#endif
 	return( read_count );
+
+on_error:
+#if defined( HAVE_LIBSMRAW_MULTI_THREAD_SUPPORT )
+	libcthreads_read_write_lock_release_for_write(
+	  internal_handle->read_write_lock,
+	  NULL );
+#endif
+	return( -1 );
 }
 
 /* Reads (media) data at a specific offset
@@ -2193,7 +2229,7 @@ ssize_t libsmraw_handle_read_buffer_at_offset(
 	              buffer_size,
 	              error );
 
-	if( read_count != (ssize_t) buffer_size )
+	if( read_count < 0 )
 	{
 		libcerror_error_set(
 		 error,
@@ -2324,7 +2360,7 @@ ssize_t libsmraw_handle_write_buffer(
 	               0,
 	               error );
 
-	if( write_count != (ssize_t) buffer_size )
+	if( write_count < 0 )
 	{
 		libcerror_error_set(
 		 error,
@@ -2372,7 +2408,7 @@ ssize_t libsmraw_handle_write_buffer_at_offset(
 	               buffer_size,
 	               error );
 
-	if( write_count != (ssize_t) buffer_size )
+	if( write_count < 0 )
 	{
 		libcerror_error_set(
 		 error,
@@ -3225,8 +3261,10 @@ int libsmraw_handle_get_file_io_handle(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve segment index from segments stream.",
-		 function );
+		 "%s: unable to retrieve segment index at offset: %" PRIi64 " (0x%08" PRIx64 ") from segments stream.",
+		 function,
+		 current_offset,
+		 current_offset );
 
 		return( -1 );
 	}
@@ -3240,9 +3278,10 @@ int libsmraw_handle_get_file_io_handle(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve file IO handle for pool entry: %d at offset: %" PRIi64 ".",
+		 "%s: unable to retrieve file IO handle for pool entry: %d at offset: %" PRIi64 " (0x%08" PRIx64 ").",
 		 function,
 		 segment_index,
+		 current_offset,
 		 current_offset );
 
 		return( -1 );
