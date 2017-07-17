@@ -63,6 +63,7 @@ smraw_test_error_LDADD = \
 smraw_test_handle_SOURCES = \
 	smraw_test_getopt.c smraw_test_getopt.h \
 	smraw_test_handle.c \
+	smraw_test_libbfio.h \
 	smraw_test_libcerror.h \
 	smraw_test_libclocale.h \
 	smraw_test_libcnotify.h \

@@ -19,8 +19,8 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _EWFTOOLS_LIBHMAC_H )
-#define _EWFTOOLS_LIBHMAC_H
+#if !defined( _SMRAW_TEST_LIBHMAC_H )
+#define _SMRAW_TEST_LIBHMAC_H
 
 #include <common.h>
 
@@ -33,7 +33,7 @@
 #include <libhmac_support.h>
 #include <libhmac_types.h>
 
-#elif defined( HAVE_LIBHMAC_H )
+#else
 #include <libhmac.h>
 
 #endif
