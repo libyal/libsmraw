@@ -24,7 +24,10 @@
 
 #include <common.h>
 
+/* Define HAVE_LOCAL_LIBHMAC for local use of libhmac
+ */
 #if defined( HAVE_LOCAL_LIBHMAC )
+
 #include <libhmac_definitions.h>
 #include <libhmac_md5.h>
 #include <libhmac_sha1.h>
@@ -34,9 +37,17 @@
 #include <libhmac_types.h>
 
 #else
+
+/* If libtool DLL support is enabled set LIBHMAC_DLL_IMPORT
+ * before including libhmac.h
+ */
+#if defined( _WIN32 ) && defined( DLL_IMPORT )
+#define LIBHMAC_DLL_IMPORT
+#endif
+
 #include <libhmac.h>
 
-#endif
+#endif /* defined( HAVE_LOCAL_LIBHMAC ) */
 
-#endif
+#endif /* _SMRAW_TEST_LIBHMAC_H */
 

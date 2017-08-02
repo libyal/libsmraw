@@ -2710,11 +2710,11 @@ int main(
 
 		/* TODO: add tests for libsmraw_handle_open_file_io_pool */
 
-#if defined( __GNUC__ )
+#if defined( __GNUC__ ) && !defined( LIBSMRAW_DLL_IMPORT )
 
 		/* TODO: add tests for libsmraw_handle_read_information_file */
 
-#endif /* defined( __GNUC__ ) */
+#endif /* defined( __GNUC__ ) && !defined( LIBSMRAW_DLL_IMPORT ) */
 
 		SMRAW_TEST_RUN_WITH_ARGS(
 		 "libsmraw_handle_read_buffer",

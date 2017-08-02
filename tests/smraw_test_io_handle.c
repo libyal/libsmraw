@@ -35,7 +35,7 @@
 
 #include "../libsmraw/libsmraw_io_handle.h"
 
-#if defined( __GNUC__ )
+#if defined( __GNUC__ ) && !defined( LIBSMRAW_DLL_IMPORT )
 
 /* Tests the libsmraw_io_handle_initialize function
  * Returns 1 if successful or 0 if not
@@ -639,7 +639,7 @@ on_error:
 	return( 0 );
 }
 
-#endif /* defined( __GNUC__ ) */
+#endif /* defined( __GNUC__ ) && !defined( LIBSMRAW_DLL_IMPORT ) */
 
 /* The main program
  */
@@ -656,7 +656,7 @@ int main(
 	SMRAW_TEST_UNREFERENCED_PARAMETER( argc )
 	SMRAW_TEST_UNREFERENCED_PARAMETER( argv )
 
-#if defined( __GNUC__ )
+#if defined( __GNUC__ ) && !defined( LIBSMRAW_DLL_IMPORT )
 
 	SMRAW_TEST_RUN(
 	 "libsmraw_io_handle_initialize",
@@ -698,7 +698,7 @@ int main(
 
 	/* TODO: add tests for libsmraw_io_handle_set_maximum_segment_size */
 
-#endif /* defined( __GNUC__ ) */
+#endif /* defined( __GNUC__ ) && !defined( LIBSMRAW_DLL_IMPORT ) */
 
 	return( EXIT_SUCCESS );
 
