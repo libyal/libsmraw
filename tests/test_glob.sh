@@ -1,19 +1,11 @@
 #!/bin/bash
 # Library glob testing script
 #
-# Version: 20161109
+# Version: 20170802
 
 EXIT_SUCCESS=0;
 EXIT_FAILURE=1;
 EXIT_IGNORE=77;
-
-TEST_PREFIX=`dirname ${PWD}`;
-TEST_PREFIX=`basename ${TEST_PREFIX} | sed 's/^lib\([^-]*\)/\1/'`;
-
-TEST_PROFILE="lib${TEST_PREFIX}";
-
-TEST_TOOL_DIRECTORY=".";
-TEST_TOOL="${TEST_PREFIX}_test_glob";
 
 seq()
 {
@@ -125,11 +117,11 @@ then
 	exit ${EXIT_IGNORE};
 fi
 
-TEST_EXECUTABLE="${TEST_TOOL_DIRECTORY}/${TEST_TOOL}";
+TEST_EXECUTABLE="./smraw_test_glob";
 
 if ! test -x "${TEST_EXECUTABLE}";
 then
-	TEST_EXECUTABLE="${TEST_TOOL_DIRECTORY}/${TEST_TOOL}.exe";
+	TEST_EXECUTABLE="./smraw_test_glob.exe";
 fi
 
 if ! test -x "${TEST_EXECUTABLE}";

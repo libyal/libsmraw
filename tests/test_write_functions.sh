@@ -1,20 +1,14 @@
 #!/bin/bash
 # Library API write functions testing script
 #
-# Version: 20161108
+# Version: 20170802
 
 EXIT_SUCCESS=0;
 EXIT_FAILURE=1;
 EXIT_IGNORE=77;
 
-TEST_PREFIX=`dirname ${PWD}`;
-TEST_PREFIX=`basename ${TEST_PREFIX} | sed 's/^lib\([^-]*\)/\1/'`;
-
-TEST_PROFILE="lib${TEST_PREFIX}";
 TEST_FUNCTIONS="write";
 OPTION_SETS="";
-
-TEST_TOOL_DIRECTORY=".";
 
 test_api_write_function()
 { 
@@ -22,13 +16,11 @@ test_api_write_function()
 	shift 1;
 	local ARGUMENTS=$@;
 
-	local TEST_TOOL="${TEST_PREFIX}_test_${TEST_FUNCTION}";
-
-	local TEST_EXECUTABLE="${TEST_TOOL_DIRECTORY}/${TEST_TOOL}";
+	local TEST_EXECUTABLE="./smraw_test_${TEST_FUNCTION}";
 
 	if ! test -x "${TEST_EXECUTABLE}";
 	then
-		TEST_EXECUTABLE="${TEST_TOOL_DIRECTORY}/${TEST_TOOL}.exe";
+		TEST_EXECUTABLE="./smraw_test_${TEST_FUNCTION}.exe";
 	fi
 
 	if ! test -x "${TEST_EXECUTABLE}";
@@ -37,7 +29,7 @@ test_api_write_function()
 
 		return ${EXIT_FAILURE};
 	fi
-	TEST_DESCRIPTION="Testing write function: lib${TEST_PREFIX}_${TEST_FUNCTION}";
+	TEST_DESCRIPTION="Testing write function: libsmraw_${TEST_FUNCTION}";
 
 	local TMPDIR="tmp$$";
 
