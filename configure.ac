@@ -203,6 +203,7 @@ dnl Have configure make distribution specific files
 AC_CONFIG_FILES([common/types.h])
 AC_CONFIG_FILES([dpkg/changelog])
 AC_CONFIG_FILES([libsmraw/libsmraw.rc])
+AC_CONFIG_FILES([smraw.net/smraw.net.rc])
 AC_CONFIG_FILES([libsmraw.pc])
 AC_CONFIG_FILES([libsmraw.spec])
 dnl Have configure write its configuration

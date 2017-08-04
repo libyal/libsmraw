@@ -120,6 +120,7 @@ stamp-h[1-9]
 /libsmraw/libsmraw.rc
 /libsmraw/libsmraw_definitions.h
 /pysmraw-python[23]/*.[ch]
+/smraw.net/smraw.net.rc
 /smrawtools/smrawmount
 /smrawtools/smrawverify
 /tests/input
