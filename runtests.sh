@@ -180,7 +180,7 @@ fi
 
 HAVE_ENABLE_PYTHON=$?;
 
-PYTHON_CONFIG=`whereis python-config | sed 's/^.*: //' 2> /dev/null`;
+PYTHON_CONFIG=`whereis python-config | sed 's/^.*:[ ]*//' 2> /dev/null`;
 
 if test ${HAVE_ENABLE_PYTHON} -eq 0 && test -n "${PYTHON_CONFIG}";
 then
