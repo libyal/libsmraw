@@ -676,13 +676,13 @@ int smraw_test_handle_initialize(
 	 result,
 	 1 );
 
-        SMRAW_TEST_ASSERT_IS_NOT_NULL(
-         "handle",
-         handle );
+	SMRAW_TEST_ASSERT_IS_NOT_NULL(
+	 "handle",
+	 handle );
 
-        SMRAW_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
+	SMRAW_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
 
 	result = libsmraw_handle_free(
 	          &handle,
@@ -693,13 +693,13 @@ int smraw_test_handle_initialize(
 	 result,
 	 1 );
 
-        SMRAW_TEST_ASSERT_IS_NULL(
-         "handle",
-         handle );
+	SMRAW_TEST_ASSERT_IS_NULL(
+	 "handle",
+	 handle );
 
-        SMRAW_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
+	SMRAW_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
 
 	/* Test error cases
 	 */
@@ -712,9 +712,9 @@ int smraw_test_handle_initialize(
 	 result,
 	 -1 );
 
-        SMRAW_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
+	SMRAW_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
 
 	libcerror_error_free(
 	 &error );
@@ -730,9 +730,9 @@ int smraw_test_handle_initialize(
 	 result,
 	 -1 );
 
-        SMRAW_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
+	SMRAW_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
 
 	libcerror_error_free(
 	 &error );
@@ -864,9 +864,9 @@ int smraw_test_handle_free(
 	 result,
 	 -1 );
 
-        SMRAW_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
+	SMRAW_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
 
 	libcerror_error_free(
 	 &error );
@@ -910,9 +910,9 @@ int smraw_test_handle_open(
 	 result,
 	 1 );
 
-        SMRAW_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
+	SMRAW_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
 
 	narrow_source_length = narrow_string_length(
 	                        narrow_source );
@@ -929,18 +929,18 @@ int smraw_test_handle_open(
 	 result,
 	 1 );
 
-        SMRAW_TEST_ASSERT_IS_NOT_NULL(
-         "filenames",
-         filenames );
+	SMRAW_TEST_ASSERT_IS_NOT_NULL(
+	 "filenames",
+	 filenames );
 
-        SMRAW_TEST_ASSERT_GREATER_THAN_INT(
-         "number_of_filenames",
-         number_of_filenames,
+	SMRAW_TEST_ASSERT_GREATER_THAN_INT(
+	 "number_of_filenames",
+	 number_of_filenames,
 	 0 );
 
-        SMRAW_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
+	SMRAW_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
 
 	result = libsmraw_handle_initialize(
 	          &handle,
@@ -951,13 +951,13 @@ int smraw_test_handle_open(
 	 result,
 	 1 );
 
-        SMRAW_TEST_ASSERT_IS_NOT_NULL(
-         "handle",
-         handle );
+	SMRAW_TEST_ASSERT_IS_NOT_NULL(
+	 "handle",
+	 handle );
 
-        SMRAW_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
+	SMRAW_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
 
 	/* Test open
 	 */
@@ -973,9 +973,9 @@ int smraw_test_handle_open(
 	 result,
 	 1 );
 
-        SMRAW_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
+	SMRAW_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
 
 	/* Clean up
 	 */
@@ -988,9 +988,9 @@ int smraw_test_handle_open(
 	 result,
 	 0 );
 
-        SMRAW_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
+	SMRAW_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
 
 	result = libsmraw_handle_free(
 	          &handle,
@@ -1001,13 +1001,13 @@ int smraw_test_handle_open(
 	 result,
 	 1 );
 
-        SMRAW_TEST_ASSERT_IS_NULL(
-         "handle",
-         handle );
+	SMRAW_TEST_ASSERT_IS_NULL(
+	 "handle",
+	 handle );
 
-        SMRAW_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
+	SMRAW_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
 
 	result = libsmraw_glob_free(
 	          filenames,
@@ -1019,9 +1019,9 @@ int smraw_test_handle_open(
 	 result,
 	 1 );
 
-        SMRAW_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
+	SMRAW_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
 
 	return( 1 );
 
@@ -1079,9 +1079,9 @@ SMRAW_TEST_FPRINT_ERROR( error );
 	 result,
 	 1 );
 
-        SMRAW_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
+	SMRAW_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
 
 	wide_source_length = wide_string_length(
 	                      wide_source );
@@ -1098,18 +1098,18 @@ SMRAW_TEST_FPRINT_ERROR( error );
 	 result,
 	 1 );
 
-        SMRAW_TEST_ASSERT_IS_NOT_NULL(
-         "filenames",
-         filenames );
+	SMRAW_TEST_ASSERT_IS_NOT_NULL(
+	 "filenames",
+	 filenames );
 
-        SMRAW_TEST_ASSERT_GREATER_THAN_INT(
-         "number_of_filenames",
-         number_of_filenames,
+	SMRAW_TEST_ASSERT_GREATER_THAN_INT(
+	 "number_of_filenames",
+	 number_of_filenames,
 	 0 );
 
-        SMRAW_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
+	SMRAW_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
 
 	result = libsmraw_handle_initialize(
 	          &handle,
@@ -1120,13 +1120,13 @@ SMRAW_TEST_FPRINT_ERROR( error );
 	 result,
 	 1 );
 
-        SMRAW_TEST_ASSERT_IS_NOT_NULL(
-         "handle",
-         handle );
+	SMRAW_TEST_ASSERT_IS_NOT_NULL(
+	 "handle",
+	 handle );
 
-        SMRAW_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
+	SMRAW_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
 
 	/* Test open
 	 */
@@ -1142,9 +1142,9 @@ SMRAW_TEST_FPRINT_ERROR( error );
 	 result,
 	 1 );
 
-        SMRAW_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
+	SMRAW_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
 
 	/* Clean up
 	 */
@@ -1157,9 +1157,9 @@ SMRAW_TEST_FPRINT_ERROR( error );
 	 result,
 	 0 );
 
-        SMRAW_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
+	SMRAW_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
 
 	result = libsmraw_handle_free(
 	          &handle,
@@ -1170,13 +1170,13 @@ SMRAW_TEST_FPRINT_ERROR( error );
 	 result,
 	 1 );
 
-        SMRAW_TEST_ASSERT_IS_NULL(
-         "handle",
-         handle );
+	SMRAW_TEST_ASSERT_IS_NULL(
+	 "handle",
+	 handle );
 
-        SMRAW_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
+	SMRAW_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
 
 	result = libsmraw_glob_wide_free(
 	          filenames,
@@ -1188,9 +1188,9 @@ SMRAW_TEST_FPRINT_ERROR( error );
 	 result,
 	 1 );
 
-        SMRAW_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
+	SMRAW_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
 
 	return( 1 );
 
@@ -1238,9 +1238,9 @@ int smraw_test_handle_close(
 	 result,
 	 -1 );
 
-        SMRAW_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
+	SMRAW_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
 
 	libcerror_error_free(
 	 &error );
@@ -1295,13 +1295,13 @@ int smraw_test_handle_open_close(
 	 result,
 	 1 );
 
-        SMRAW_TEST_ASSERT_IS_NOT_NULL(
-         "filenames",
-         filenames );
+	SMRAW_TEST_ASSERT_IS_NOT_NULL(
+	 "filenames",
+	 filenames );
 
-        SMRAW_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
+	SMRAW_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
 
 	result = libsmraw_handle_initialize(
 	          &handle,
@@ -1312,13 +1312,13 @@ int smraw_test_handle_open_close(
 	 result,
 	 1 );
 
-        SMRAW_TEST_ASSERT_IS_NOT_NULL(
-         "handle",
-         handle );
+	SMRAW_TEST_ASSERT_IS_NOT_NULL(
+	 "handle",
+	 handle );
 
-        SMRAW_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
+	SMRAW_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
 
 	/* Test open and close
 	 */
@@ -1343,9 +1343,9 @@ int smraw_test_handle_open_close(
 	 result,
 	 1 );
 
-        SMRAW_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
+	SMRAW_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
 
 	result = libsmraw_handle_close(
 	          handle,
@@ -1356,9 +1356,9 @@ int smraw_test_handle_open_close(
 	 result,
 	 0 );
 
-        SMRAW_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
+	SMRAW_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
 
 	/* Test open and close a second time to validate clean up on close
 	 */
@@ -1383,9 +1383,9 @@ int smraw_test_handle_open_close(
 	 result,
 	 1 );
 
-        SMRAW_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
+	SMRAW_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
 
 	result = libsmraw_handle_close(
 	          handle,
@@ -1396,9 +1396,9 @@ int smraw_test_handle_open_close(
 	 result,
 	 0 );
 
-        SMRAW_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
+	SMRAW_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
 
 	/* Clean up
 	 */
@@ -1411,13 +1411,13 @@ int smraw_test_handle_open_close(
 	 result,
 	 1 );
 
-        SMRAW_TEST_ASSERT_IS_NULL(
-         "handle",
-         handle );
+	SMRAW_TEST_ASSERT_IS_NULL(
+	 "handle",
+	 handle );
 
-        SMRAW_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
+	SMRAW_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
 
 #if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
 	result = libsmraw_glob_wide_free(
@@ -1437,9 +1437,9 @@ int smraw_test_handle_open_close(
 	 result,
 	 1 );
 
-        SMRAW_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
+	SMRAW_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
 
 	return( 1 );
 
@@ -1492,9 +1492,9 @@ int smraw_test_handle_signal_abort(
 	 result,
 	 1 );
 
-        SMRAW_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
+	SMRAW_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
 
 	/* Test error cases
 	 */
@@ -1507,9 +1507,9 @@ int smraw_test_handle_signal_abort(
 	 result,
 	 -1 );
 
-        SMRAW_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
+	SMRAW_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
 
 	libcerror_error_free(
 	 &error );
@@ -2474,9 +2474,9 @@ int smraw_test_handle_get_number_of_information_values(
 	 result,
 	 1 );
 
-        SMRAW_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
+	SMRAW_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
 
 	/* Test error cases
 	 */
@@ -2490,9 +2490,9 @@ int smraw_test_handle_get_number_of_information_values(
 	 result,
 	 -1 );
 
-        SMRAW_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
+	SMRAW_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
 
 	libcerror_error_free(
 	 &error );
@@ -2507,9 +2507,9 @@ int smraw_test_handle_get_number_of_information_values(
 	 result,
 	 -1 );
 
-        SMRAW_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
+	SMRAW_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
 
 	libcerror_error_free(
 	 &error );
@@ -2545,9 +2545,9 @@ int smraw_test_handle_get_number_of_integrity_hash_values(
 	 result,
 	 1 );
 
-        SMRAW_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
+	SMRAW_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
 
 	/* Test error cases
 	 */
@@ -2561,9 +2561,9 @@ int smraw_test_handle_get_number_of_integrity_hash_values(
 	 result,
 	 -1 );
 
-        SMRAW_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
+	SMRAW_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
 
 	libcerror_error_free(
 	 &error );
@@ -2578,9 +2578,9 @@ int smraw_test_handle_get_number_of_integrity_hash_values(
 	 result,
 	 -1 );
 
-        SMRAW_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
+	SMRAW_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
 
 	libcerror_error_free(
 	 &error );

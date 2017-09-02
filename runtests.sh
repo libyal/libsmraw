@@ -1,7 +1,7 @@
 #!/bin/bash
 # Script that runs the tests
 #
-# Version: 20170805
+# Version: 20170828
 
 EXIT_SUCCESS=0;
 EXIT_FAILURE=1;
@@ -52,7 +52,7 @@ run_configure_make_check()
 		return ${RESULT};
 	fi
 
-	make check;
+	make check CHECK_WITH_STDERR=1;
 	RESULT=$?;
 
 	if test ${RESULT} -ne ${EXIT_SUCCESS};
@@ -69,6 +69,64 @@ run_configure_make_check()
 	return ${EXIT_SUCCESS};
 }
 
+run_configure_make_check_with_asan()
+{
+	local LDCONFIG=`which ldconfig 2> /dev/null`;
+
+	if test -z ${LDCONFIG} || test ! -x ${LDCONFIG};
+	then
+		return ${EXIT_SUCCESS};
+	fi
+	local LIBASAN=`ldconfig -p | grep libasan | sed 's/^.* => //'`;
+
+	if test -z ${LIBASAN} || test ! -f ${LIBASAN};
+	then
+		return ${EXIT_SUCCESS};
+	fi
+	# Using libasan is platform dependent.
+	if test ${LIBASAN} != "/lib64/libasan.so.4";
+	then
+		return ${EXIT_SUCCESS};
+	fi
+
+	export CPPFLAGS="-DHAVE_ASAN";
+	export CFLAGS="-fno-omit-frame-pointer -fsanitize=address -g";
+	export LDFLAGS="-fsanitize=address -g";
+
+	if test -z ${CC} || test ${CC} != "clang";
+	then
+		LDFLAGS="${LDFLAGS} -lasan";
+	fi
+
+	run_configure_make $@;
+	RESULT=$?;
+
+	export CPPFLAGS=;
+	export CFLAGS=;
+	export LDFLAGS=;
+
+	if test ${RESULT} -ne ${EXIT_SUCCESS};
+	then
+		return ${RESULT};
+	fi
+
+	make check CHECK_WITH_ASAN=1 CHECK_WITH_STDERR=1;
+	RESULT=$?;
+
+	if test ${RESULT} -ne ${EXIT_SUCCESS};
+	then
+		echo "Running: 'make check' failed";
+
+		if test -f tests/test-suite.log;
+		then
+			cat tests/test-suite.log;
+		fi
+
+		return ${RESULT};
+	fi
+	return ${RESULT};
+}
+
 run_configure_make_check_with_coverage()
 {
 	# Disable optimization so we can hook malloc and realloc.
@@ -77,7 +135,7 @@ run_configure_make_check_with_coverage()
 	export LDFLAGS="--coverage";
 
 	# Disable creating a shared library so we can hook memset.
-	run_configure_make_check "--enable-shared=no --enable-wide-character-type";
+	run_configure_make_check $@;
 	RESULT=$?;
 
 	export CPPFLAGS=;
@@ -97,7 +155,7 @@ run_configure_make_check_python()
 		return ${RESULT};
 	fi
 
-	make check SKIP_LIBRARY_TESTS=1 SKIP_TOOLS_TESTS=1;
+	make check CHECK_WITH_STDERR=1 SKIP_LIBRARY_TESTS=1 SKIP_TOOLS_TESTS=1;
 	RESULT=$?;
 
 	if test ${RESULT} -ne ${EXIT_SUCCESS};
@@ -130,6 +188,28 @@ run_setup_py_tests()
 	return ${EXIT_SUCCESS};
 }
 
+CONFIGURE_HELP=`./configure --help`;
+
+echo "${CONFIGURE_HELP}" | grep -- '--enable-wide-character-type' > /dev/null;
+
+HAVE_ENABLE_WIDE_CHARACTER_TYPE=$?;
+
+echo "${CONFIGURE_HELP}" | grep -- '--with-zlib' > /dev/null;
+
+HAVE_WITH_ZLIB=$?;
+
+echo "${CONFIGURE_HELP}" | grep -- '--with-openssl' > /dev/null;
+
+HAVE_WITH_OPENSSL=$?;
+
+echo "${CONFIGURE_HELP}" | grep -- '--enable-python' > /dev/null;
+
+HAVE_ENABLE_PYTHON=$?;
+
+PYTHON_CONFIG=`whereis python-config | sed 's/^.*:[ ]*//' 2> /dev/null`;
+
+# Test "./configure && make && make check" without options.
+
 run_configure_make_check;
 RESULT=$?;
 
@@ -138,12 +218,10 @@ then
 	exit ${EXIT_FAILURE};
 fi
 
-./configure --help | grep -- '--with-zlib' > /dev/null;
-
-HAVE_WITH_ZLIB=$?;
-
 if test ${HAVE_WITH_ZLIB} -eq 0;
 then
+	# Test "./configure && make && make check" with fallback zlib implementation.
+
 	run_configure_make_check "--with-zlib=no";
 	RESULT=$?;
 
@@ -153,12 +231,10 @@ then
 	fi
 fi
 
-./configure --help | grep -- '--with-openssl' > /dev/null;
-
-HAVE_WITH_OPENSSL=$?;
-
 if test ${HAVE_WITH_OPENSSL} -eq 0;
 then
+	# Test "./configure && make && make check" with fallback crypto implementation.
+
 	run_configure_make_check "--with-openssl=no";
 	RESULT=$?;
 
@@ -166,6 +242,8 @@ then
 	then
 		exit ${EXIT_FAILURE};
 	fi
+
+	# Test "./configure && make && make check" with non-EVP openssl implementation.
 
 	run_configure_make_check "--enable-openssl-evp-cipher=no --enable-openssl-evp-md=no";
 	RESULT=$?;
@@ -175,12 +253,6 @@ then
 		exit ${EXIT_FAILURE};
 	fi
 fi
-
-./configure --help | grep -- '--enable-python' > /dev/null;
-
-HAVE_ENABLE_PYTHON=$?;
-
-PYTHON_CONFIG=`whereis python-config | sed 's/^.*:[ ]*//' 2> /dev/null`;
 
 if test ${HAVE_ENABLE_PYTHON} -eq 0 && test -n "${PYTHON_CONFIG}";
 then
@@ -266,7 +338,31 @@ then
 	fi
 fi
 
-run_configure_make_check_with_coverage;
+CONFIGURE_OPTIONS="";
+
+if test ${HAVE_ENABLE_PYTHON} -eq 0 && test -n "${PYTHON_CONFIG}";
+then
+	# Issue with running the python bindings with asan disabled for now.
+	# CONFIGURE_OPTIONS="${CONFIGURE_OPTIONS} --enable-python";
+	CONFIGURE_OPTIONS="${CONFIGURE_OPTIONS}";
+fi
+
+run_configure_make_check_with_asan ${CONFIGURE_OPTIONS};
+RESULT=$?;
+
+if test ${RESULT} -ne ${EXIT_SUCCESS};
+then
+	exit ${EXIT_FAILURE};
+fi
+
+CONFIGURE_OPTIONS="--enable-shared=no";
+
+if test ${HAVE_ENABLE_WIDE_CHARACTER_TYPE};
+then
+	CONFIGURE_OPTIONS="${CONFIGURE_OPTIONS} --enable-wide-character-type";
+fi
+
+run_configure_make_check_with_coverage ${CONFIGURE_OPTIONS};
 RESULT=$?;
 
 if test ${RESULT} -ne ${EXIT_SUCCESS};

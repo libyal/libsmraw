@@ -64,13 +64,13 @@ int smraw_test_information_file_initialize(
 	 result,
 	 1 );
 
-        SMRAW_TEST_ASSERT_IS_NOT_NULL(
-         "information_file",
-         information_file );
+	SMRAW_TEST_ASSERT_IS_NOT_NULL(
+	 "information_file",
+	 information_file );
 
-        SMRAW_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
+	SMRAW_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
 
 	result = libsmraw_information_file_free(
 	          &information_file,
@@ -81,13 +81,13 @@ int smraw_test_information_file_initialize(
 	 result,
 	 1 );
 
-        SMRAW_TEST_ASSERT_IS_NULL(
-         "information_file",
-         information_file );
+	SMRAW_TEST_ASSERT_IS_NULL(
+	 "information_file",
+	 information_file );
 
-        SMRAW_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
+	SMRAW_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
 
 	/* Test error cases
 	 */
@@ -100,9 +100,9 @@ int smraw_test_information_file_initialize(
 	 result,
 	 -1 );
 
-        SMRAW_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
+	SMRAW_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
 
 	libcerror_error_free(
 	 &error );
@@ -118,9 +118,9 @@ int smraw_test_information_file_initialize(
 	 result,
 	 -1 );
 
-        SMRAW_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
+	SMRAW_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
 
 	libcerror_error_free(
 	 &error );
@@ -252,9 +252,9 @@ int smraw_test_information_file_free(
 	 result,
 	 -1 );
 
-        SMRAW_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
+	SMRAW_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
 
 	libcerror_error_free(
 	 &error );
@@ -295,9 +295,9 @@ int smraw_test_information_file_open(
 	 result,
 	 1 );
 
-        SMRAW_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
+	SMRAW_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
 
 	result = libsmraw_information_file_initialize(
 	          &information_file,
@@ -308,13 +308,13 @@ int smraw_test_information_file_open(
 	 result,
 	 1 );
 
-        SMRAW_TEST_ASSERT_IS_NOT_NULL(
-         "information_file",
-         information_file );
+	SMRAW_TEST_ASSERT_IS_NOT_NULL(
+	 "information_file",
+	 information_file );
 
-        SMRAW_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
+	SMRAW_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
 
 	/* Test open
 	 */
@@ -329,9 +329,9 @@ int smraw_test_information_file_open(
 	 result,
 	 1 );
 
-        SMRAW_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
+	SMRAW_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
 
 	/* Test error cases
 	 */
@@ -346,9 +346,9 @@ int smraw_test_information_file_open(
 	 result,
 	 -1 );
 
-        SMRAW_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
+	SMRAW_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
 
 	libcerror_error_free(
 	 &error );
@@ -364,13 +364,13 @@ int smraw_test_information_file_open(
 	 result,
 	 1 );
 
-        SMRAW_TEST_ASSERT_IS_NULL(
-         "information_file",
-         information_file );
+	SMRAW_TEST_ASSERT_IS_NULL(
+	 "information_file",
+	 information_file );
 
-        SMRAW_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
+	SMRAW_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
 
 	return( 1 );
 
@@ -409,9 +409,9 @@ int smraw_test_information_file_close(
 	 result,
 	 -1 );
 
-        SMRAW_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
+	SMRAW_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
 
 	libcerror_error_free(
 	 &error );
