@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9,00"
-	Name="smraw_test_handle"
-	ProjectGUID="{DC1AA39E-98E9-4884-AECE-C556606E2D3F}"
-	RootNamespace="smraw_test_handle"
+	Name="smraw_test_io_handle"
+	ProjectGUID="{04CB16E9-20A7-41CD-ADCF-15A72E980119}"
+	RootNamespace="smraw_test_io_handle"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="131072"
 	>
@@ -176,15 +176,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\..\tests\smraw_test_functions.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\tests\smraw_test_getopt.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\tests\smraw_test_handle.c"
+				RelativePath="..\..\tests\smraw_test_io_handle.c"
 				>
 			</File>
 			<File
@@ -198,35 +190,11 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath="..\..\tests\smraw_test_functions.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\tests\smraw_test_getopt.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\tests\smraw_test_libbfio.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\tests\smraw_test_libcerror.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\tests\smraw_test_libclocale.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\tests\smraw_test_libcnotify.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\tests\smraw_test_libsmraw.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\tests\smraw_test_libuna.h"
 				>
 			</File>
 			<File

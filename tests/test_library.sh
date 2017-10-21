@@ -7,7 +7,7 @@ EXIT_SUCCESS=0;
 EXIT_FAILURE=1;
 EXIT_IGNORE=77;
 
-LIBRARY_TESTS="error notify support";
+LIBRARY_TESTS="error information_file io_handle notify support";
 LIBRARY_TESTS_WITH_INPUT="handle";
 OPTION_SETS="";
 

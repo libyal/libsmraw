@@ -11,6 +11,9 @@ AM_CPPFLAGS = \
 	@LIBCFILE_CPPFLAGS@ \
 	@LIBCPATH_CPPFLAGS@ \
 	@LIBBFIO_CPPFLAGS@ \
+	@LIBFCACHE_CPPFLAGS@ \
+	@LIBFDATA_CPPFLAGS@ \
+	@LIBFVALUE_CPPFLAGS@ \
 	@LIBHMAC_CPPFLAGS@ \
 	@LIBCRYPTO_CPPFLAGS@ \
 	@PTHREAD_CPPFLAGS@ \
@@ -22,8 +25,8 @@ TESTS_PYSMRAW = \
 endif
 
 TESTS = \
-	test_glob.sh \
 	test_library.sh \
+	test_glob.sh \
 	test_write_functions.sh \
 	test_smrawverify.sh \
 	$(TESTS_PYSMRAW)
@@ -44,8 +47,10 @@ EXTRA_DIST = \
 
 check_PROGRAMS = \
 	smraw_test_error \
-	smraw_test_handle \
 	smraw_test_glob \
+	smraw_test_handle \
+	smraw_test_information_file \
+	smraw_test_io_handle \
 	smraw_test_notify \
 	smraw_test_read_loop \
 	smraw_test_support \
@@ -60,27 +65,6 @@ smraw_test_error_SOURCES = \
 smraw_test_error_LDADD = \
 	../libsmraw/libsmraw.la
 
-smraw_test_handle_SOURCES = \
-	smraw_test_getopt.c smraw_test_getopt.h \
-	smraw_test_handle.c \
-	smraw_test_libbfio.h \
-	smraw_test_libcerror.h \
-	smraw_test_libclocale.h \
-	smraw_test_libcnotify.h \
-	smraw_test_libsmraw.h \
-	smraw_test_libuna.h \
-	smraw_test_memory.c smraw_test_memory.h \
-	smraw_test_unused.h
-
-smraw_test_handle_LDADD = \
-	@LIBUNA_LIBADD@ \
-	@LIBCNOTIFY_LIBADD@ \
-	@LIBCLOCALE_LIBADD@ \
-	@LIBCDATA_LIBADD@ \
-	../libsmraw/libsmraw.la \
-	@LIBCERROR_LIBADD@ \
-	@PTHREAD_LIBADD@
-
 smraw_test_glob_SOURCES = \
 	smraw_test_glob.c \
 	smraw_test_libsmraw.h \
@@ -91,6 +75,61 @@ smraw_test_glob_LDADD = \
 	@LIBCTHREADS_LIBADD@ \
 	@LIBCERROR_LIBADD@
 	@PTHREAD_LIBADD@
+
+smraw_test_handle_SOURCES = \
+	smraw_test_functions.c smraw_test_functions.h \
+	smraw_test_getopt.c smraw_test_getopt.h \
+	smraw_test_handle.c \
+	smraw_test_libbfio.h \
+	smraw_test_libcerror.h \
+	smraw_test_libclocale.h \
+	smraw_test_libcnotify.h \
+	smraw_test_libsmraw.h \
+	smraw_test_libuna.h \
+	smraw_test_macros.h \
+	smraw_test_memory.c smraw_test_memory.h \
+	smraw_test_unused.h
+
+smraw_test_handle_LDADD = \
+	@LIBBFIO_LIBADD@ \
+	@LIBCPATH_LIBADD@ \
+	@LIBCFILE_LIBADD@ \
+	@LIBUNA_LIBADD@ \
+	@LIBCSPLIT_LIBADD@ \
+	@LIBCNOTIFY_LIBADD@ \
+	@LIBCLOCALE_LIBADD@ \
+	@LIBCDATA_LIBADD@ \
+	../libsmraw/libsmraw.la \
+	@LIBCTHREADS_LIBADD@ \
+	@LIBCERROR_LIBADD@ \
+	@PTHREAD_LIBADD@
+
+smraw_test_information_file_SOURCES = \
+	smraw_test_functions.c smraw_test_functions.h \
+	smraw_test_information_file.c \
+	smraw_test_libcerror.h \
+	smraw_test_libsmraw.h \
+	smraw_test_macros.h \
+	smraw_test_memory.c smraw_test_memory.h \
+	smraw_test_unused.h
+
+smraw_test_information_file_LDADD = \
+	@LIBUNA_LIBADD@ \
+	@LIBCLOCALE_LIBADD@ \
+	../libsmraw/libsmraw.la \
+	@LIBCERROR_LIBADD@
+
+smraw_test_io_handle_SOURCES = \
+	smraw_test_io_handle.c \
+	smraw_test_libcerror.h \
+	smraw_test_libsmraw.h \
+	smraw_test_macros.h \
+	smraw_test_memory.c smraw_test_memory.h \
+	smraw_test_unused.h
+
+smraw_test_io_handle_LDADD = \
+	../libsmraw/libsmraw.la \
+	@LIBCERROR_LIBADD@
 
 smraw_test_notify_SOURCES = \
 	smraw_test_libsmraw.h \
@@ -135,6 +174,7 @@ smraw_test_write_LDADD = \
 	@LIBHMAC_LIBADD@ \
 	@LIBCRYPTO_LIBADD@ \
 	@LIBCPATH_LIBADD@ \
+	@LIBCSPLIT_LIBADD@ \
 	../libsmraw/libsmraw.la \
 	@LIBCTHREADS_LIBADD@ \
 	@LIBCERROR_LIBADD@

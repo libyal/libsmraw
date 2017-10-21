@@ -27,6 +27,7 @@
 #include <types.h>
 #include <wide_string.h>
 
+#include "libsmraw_definitions.h"
 #include "libsmraw_information_file.h"
 #include "libsmraw_libcerror.h"
 #include "libsmraw_libfvalue.h"
@@ -224,10 +225,12 @@ int libsmraw_information_file_set_name(
  */
 int libsmraw_information_file_open(
      libsmraw_information_file_t *information_file,
-     const system_character_t *mode,
+     const system_character_t *filename,
+     int access_flags,
      libcerror_error_t **error )
 {
-	static char *function = "libsmraw_information_file_open";
+	const system_character_t *mode = NULL;
+	static char *function          = "libsmraw_information_file_open";
 
 	if( information_file == NULL )
 	{
@@ -240,13 +243,13 @@ int libsmraw_information_file_open(
 
 		return( -1 );
 	}
-	if( information_file->name == NULL )
+	if( filename == NULL )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid information file - missing name.",
+		 "%s: invalid filename.",
 		 function );
 
 		return( -1 );
@@ -262,24 +265,33 @@ int libsmraw_information_file_open(
 
 		return( -1 );
 	}
-	if( mode == NULL )
+	if( ( ( access_flags & LIBSMRAW_ACCESS_FLAG_READ ) == 0 )
+	 && ( ( access_flags & LIBSMRAW_ACCESS_FLAG_WRITE ) == 0 ) )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid mode.",
+		 LIBCERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
+		 "%s: unsupported access flags.",
 		 function );
 
 		return( -1 );
 	}
+	if( ( access_flags & LIBSMRAW_ACCESS_FLAG_WRITE ) != 0 )
+	{
+		mode = FILE_STREAM_OPEN_WRITE;
+	}
+	else
+	{
+		mode = FILE_STREAM_OPEN_READ;
+	}
 #if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 	information_file->file_stream = file_stream_open_wide(
-	                                 information_file->name,
+	                                 filename,
 	                                 mode );
 #else
 	information_file->file_stream = file_stream_open(
-	                                 information_file->name,
+	                                 filename,
 	                                 mode );
 #endif
 
@@ -291,7 +303,7 @@ int libsmraw_information_file_open(
 		 LIBCERROR_IO_ERROR_OPEN_FAILED,
 		 "%s: unable to open: %" PRIs_SYSTEM ".",
 		 function,
-		 information_file->name );
+		 filename );
 
 		return( -1 );
 	}

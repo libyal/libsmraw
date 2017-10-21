@@ -270,6 +270,104 @@ on_error:
 	return( 0 );
 }
 
+/* Tests the libsmraw_io_handle_clear function
+ * Returns 1 if successful or 0 if not
+ */
+int smraw_test_io_handle_clear(
+     void )
+{
+	libcerror_error_t *error        = NULL;
+	libsmraw_io_handle_t *io_handle = NULL;
+	int result                      = 0;
+
+	/* Initialize test
+	 */
+	result = libsmraw_io_handle_initialize(
+	          &io_handle,
+	          &error );
+
+	SMRAW_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SMRAW_TEST_ASSERT_IS_NOT_NULL(
+	 "io_handle",
+	 io_handle );
+
+	SMRAW_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test regular cases
+	 */
+	result = libsmraw_io_handle_clear(
+	          io_handle,
+	          &error );
+
+	SMRAW_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SMRAW_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test error cases
+	 */
+	result = libsmraw_io_handle_clear(
+	          NULL,
+	          &error );
+
+	SMRAW_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SMRAW_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	/* Clean up
+	 */
+	result = libsmraw_io_handle_free(
+	          &io_handle,
+	          &error );
+
+	SMRAW_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SMRAW_TEST_ASSERT_IS_NULL(
+	 "io_handle",
+	 io_handle );
+
+	SMRAW_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	if( io_handle != NULL )
+	{
+		libsmraw_io_handle_free(
+		 &io_handle,
+		 NULL );
+	}
+	return( 0 );
+}
+
 /* Tests the libsmraw_io_handle_get_basename_size function
  * Returns 1 if successful or 0 if not
  */
@@ -393,6 +491,8 @@ on_error:
 	return( 0 );
 }
 
+#if defined( HAVE_WIDE_CHARACTER_TYPE )
+
 /* Tests the libsmraw_io_handle_get_basename_size_wide function
  * Returns 1 if successful or 0 if not
  */
@@ -515,6 +615,8 @@ on_error:
 	}
 	return( 0 );
 }
+
+#endif /* defined( HAVE_WIDE_CHARACTER_TYPE ) */
 
 /* Tests the libsmraw_io_handle_get_maximum_segment_size function
  * Returns 1 if successful or 0 if not
@@ -666,7 +768,9 @@ int main(
 	 "libsmraw_io_handle_free",
 	 smraw_test_io_handle_free );
 
-	/* TODO: add tests for libsmraw_io_handle_clear */
+	SMRAW_TEST_RUN(
+	 "libsmraw_io_handle_clear",
+	 smraw_test_io_handle_clear );
 
 	/* TODO: add tests for libsmraw_io_handle_create_segment */
 
@@ -676,6 +780,8 @@ int main(
 
 	/* TODO: add tests for libsmraw_io_handle_seek_segment_offset */
 
+#if defined( TODO )
+
 	SMRAW_TEST_RUN(
 	 "libsmraw_io_handle_get_basename_size",
 	 smraw_test_io_handle_get_basename_size );
@@ -684,6 +790,8 @@ int main(
 
 	/* TODO: add tests for libsmraw_io_handle_set_basename */
 
+#if defined( HAVE_WIDE_CHARACTER_TYPE )
+
 	SMRAW_TEST_RUN(
 	 "libsmraw_io_handle_get_basename_size_wide",
 	 smraw_test_io_handle_get_basename_size_wide );
@@ -691,6 +799,10 @@ int main(
 	/* TODO: add tests for libsmraw_io_handle_get_basename_wide */
 
 	/* TODO: add tests for libsmraw_io_handle_set_basename_wide */
+
+#endif /* defined( HAVE_WIDE_CHARACTER_TYPE ) */
+
+#endif /* defined( TODO ) */
 
 	SMRAW_TEST_RUN(
 	 "libsmraw_io_handle_get_maximum_segment_size",

@@ -20,6 +20,8 @@ MSVSCPP_FILES = \
 	smraw_test_error/smraw_test_error.vcproj \
 	smraw_test_glob/smraw_test_glob.vcproj \
 	smraw_test_handle/smraw_test_handle.vcproj \
+	smraw_test_information_file/smraw_test_information_file.vcproj \
+	smraw_test_io_handle/smraw_test_io_handle.vcproj \
 	smraw_test_notify/smraw_test_notify.vcproj \
 	smraw_test_read_loop/smraw_test_read_loop.vcproj \
 	smraw_test_support/smraw_test_support.vcproj \

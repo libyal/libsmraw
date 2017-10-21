@@ -6,7 +6,7 @@ $ExitSuccess = 0
 $ExitFailure = 1
 $ExitIgnore = 77
 
-$LibraryTests = "error notify support"
+$LibraryTests = "error information_file io_handle notify support"
 $LibraryTestsWithInput = "handle"
 
 Function GetTestToolDirectory

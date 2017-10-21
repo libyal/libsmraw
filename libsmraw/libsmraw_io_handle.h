@@ -133,6 +133,7 @@ int libsmraw_io_handle_set_basename(
      libcerror_error_t **error );
 
 #if defined( HAVE_WIDE_CHARACTER_TYPE )
+
 int libsmraw_io_handle_get_basename_size_wide(
      libsmraw_io_handle_t *io_handle,
      size_t *basename_size,
@@ -149,7 +150,8 @@ int libsmraw_io_handle_set_basename_wide(
      const wchar_t *basename,
      size_t basename_length,
      libcerror_error_t **error );
-#endif
+
+#endif /* defined( HAVE_WIDE_CHARACTER_TYPE ) */
 
 int libsmraw_io_handle_get_maximum_segment_size(
      libsmraw_io_handle_t *io_handle,

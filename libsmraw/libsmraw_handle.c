@@ -20,7 +20,6 @@
  */
 
 #include <common.h>
-#include <file_stream.h>
 #include <memory.h>
 #include <narrow_string.h>
 #include <system_string.h>
@@ -1778,7 +1777,8 @@ int libsmraw_handle_read_information_file(
 	{
 		if( libsmraw_information_file_open(
 		     internal_handle->information_file,
-		     _SYSTEM_STRING( FILE_STREAM_OPEN_READ ),
+		     internal_handle->information_file->name,
+		     LIBSMRAW_OPEN_READ,
 		     error ) != 1 )
 		{
 			libcerror_error_set(
@@ -1904,7 +1904,8 @@ int libsmraw_handle_close(
 	{
 		if( libsmraw_information_file_open(
 		     internal_handle->information_file,
-		     _SYSTEM_STRING( FILE_STREAM_OPEN_WRITE ),
+		     internal_handle->information_file->name,
+		     LIBSMRAW_OPEN_WRITE,
 		     error ) != 1 )
 		{
 			libcerror_error_set(
@@ -2093,6 +2094,28 @@ ssize_t libsmraw_handle_read_buffer(
 
 		return( -1 );
 	}
+	if( buffer == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid buffer.",
+		 function );
+
+		return( -1 );
+	}
+	if( buffer_size > (size_t) SSIZE_MAX )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
+		 "%s: invalid buffer size value exceeds maximum.",
+		 function );
+
+		return( -1 );
+	}
 	if( internal_handle->io_handle->media_size == 0 )
 	{
 		return( 0 );
@@ -2143,7 +2166,7 @@ ssize_t libsmraw_handle_read_buffer(
 	{
 		buffer_size = 0;
 	}
-	if( ( (size64_t) current_offset + buffer_size ) >= internal_handle->io_handle->media_size )
+	else if( ( (size64_t) current_offset + buffer_size ) >= internal_handle->io_handle->media_size )
 	{
 		buffer_size = (size_t) ( internal_handle->io_handle->media_size - (size64_t) current_offset );
 	}

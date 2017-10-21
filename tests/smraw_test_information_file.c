@@ -27,6 +27,7 @@
 #include <stdlib.h>
 #endif
 
+#include "smraw_test_functions.h"
 #include "smraw_test_libcerror.h"
 #include "smraw_test_libsmraw.h"
 #include "smraw_test_macros.h"
@@ -35,7 +36,7 @@
 
 #include "../libsmraw/libsmraw_information_file.h"
 
-#if defined( __GNUC__ ) && !defined( _SMRAW_DLL_IMPORT )
+#if defined( __GNUC__ ) && !defined( LIBSMRAW_DLL_IMPORT )
 
 /* Tests the libsmraw_information_file_initialize function
  * Returns 1 if successful or 0 if not
@@ -284,7 +285,7 @@ int smraw_test_information_file_open(
 
 	/* Initialize test
 	 */
-	result = smraw_test_information_file_get_narrow_source(
+	result = smraw_test_get_narrow_source(
 	          source,
 	          narrow_source,
 	          256,
@@ -427,7 +428,7 @@ on_error:
 	return( 0 );
 }
 
-#endif /* defined( __GNUC__ ) && !defined( _SMRAW_DLL_IMPORT ) */
+#endif /* defined( __GNUC__ ) && !defined( LIBSMRAW_DLL_IMPORT ) */
 
 /* The main program
  */
@@ -444,7 +445,7 @@ int main(
 	SMRAW_TEST_UNREFERENCED_PARAMETER( argc )
 	SMRAW_TEST_UNREFERENCED_PARAMETER( argv )
 
-#if defined( __GNUC__ ) && !defined( _SMRAW_DLL_IMPORT )
+#if defined( __GNUC__ ) && !defined( LIBSMRAW_DLL_IMPORT )
 
 	SMRAW_TEST_RUN(
 	 "libsmraw_information_file_initialize",
@@ -460,7 +461,7 @@ int main(
 
 	/* TODO: add tests for libsmraw_information_file_write_section */
 
-#endif /* defined( __GNUC__ ) && !defined( _SMRAW_DLL_IMPORT ) */
+#endif /* defined( __GNUC__ ) && !defined( LIBSMRAW_DLL_IMPORT ) */
 
 	return( EXIT_SUCCESS );
 
