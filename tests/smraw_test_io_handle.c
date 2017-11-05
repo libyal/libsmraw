@@ -332,6 +332,36 @@ int smraw_test_io_handle_clear(
 	libcerror_error_free(
 	 &error );
 
+#if defined( HAVE_SMRAW_TEST_MEMORY )
+
+	/* Test libsmraw_io_handle_clear with memset failing
+	 */
+	smraw_test_memset_attempts_before_fail = 0;
+
+	result = libsmraw_io_handle_clear(
+	          io_handle,
+	          &error );
+
+	if( smraw_test_memset_attempts_before_fail != -1 )
+	{
+		smraw_test_memset_attempts_before_fail = -1;
+	}
+	else
+	{
+		SMRAW_TEST_ASSERT_EQUAL_INT(
+		 "result",
+		 result,
+		 -1 );
+
+		SMRAW_TEST_ASSERT_IS_NOT_NULL(
+		 "error",
+		 error );
+
+		libcerror_error_free(
+		 &error );
+	}
+#endif /* defined( HAVE_SMRAW_TEST_MEMORY ) */
+
 	/* Clean up
 	 */
 	result = libsmraw_io_handle_free(
