@@ -1,7 +1,7 @@
 #!/bin/bash
 # Library glob testing script
 #
-# Version: 20170802
+# Version: 20171204
 
 EXIT_SUCCESS=0;
 EXIT_FAILURE=1;
@@ -35,13 +35,19 @@ test_glob()
 	rm -rf ${TMPDIR};
 	mkdir ${TMPDIR};
 
+	if test "${OSTYPE}" = "msys";
+	then
+		TEST_PATH="${TMPDIR}\\${BASENAME}";
+	else
+		TEST_PATH="${TMPDIR}/${BASENAME}";
+	fi
 	local FILENAMES=`echo ${FILENAMES} | sed "s?^?${TMPDIR}/?" | sed "s? ? ${TMPDIR}/?g"`;
 
 	echo ${FILENAMES} > ${TMPDIR}/input;
 
 	touch ${FILENAMES};
 
-	run_test_with_arguments "" "${TEST_EXECUTABLE}" "${TMPDIR}/${BASENAME}" > "${TMPDIR}/output";
+	run_test_with_arguments "" "${TEST_EXECUTABLE}" "${TEST_PATH}" > "${TMPDIR}/output";
 	local RESULT=$?;
 
 	if test ${RESULT} -eq ${EXIT_SUCCESS};
@@ -82,13 +88,19 @@ test_glob_sequence()
 	rm -rf ${TMPDIR};
 	mkdir ${TMPDIR};
 
+	if test "${OSTYPE}" = "msys";
+	then
+		TEST_PATH="${TMPDIR}\\${BASENAME}";
+	else
+		TEST_PATH="${TMPDIR}/${BASENAME}";
+	fi
 	local FILENAMES=`echo ${FILENAMES} | sed "s?^?${TMPDIR}/?" | sed "s? ? ${TMPDIR}/?g"`;
 
 	echo ${FILENAMES} > ${TMPDIR}/input;
 
 	touch ${FILENAMES};
 
-	run_test_with_arguments "" "${TEST_EXECUTABLE}" "${TMPDIR}/${BASENAME}" > "${TMPDIR}/output";
+	run_test_with_arguments "" "${TEST_EXECUTABLE}" "${TEST_PATH}" > "${TMPDIR}/output";
 	local RESULT=$?;
 
 	if test ${RESULT} -eq ${EXIT_SUCCESS};
