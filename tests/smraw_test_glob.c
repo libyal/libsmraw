@@ -1,7 +1,7 @@
 /*
  * Storage media (SM) RAW library glob testing program
  *
- * Copyright (C) 2010-2017, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (C) 2010-2018, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -45,6 +45,7 @@ int main( int argc, char * const argv[] )
 	char **filenames        = NULL;
 #endif
 	libsmraw_error_t *error = NULL;
+	size_t string_length    = 0;
 	int number_of_filenames = 0;
 	int filename_iterator   = 0;
 
@@ -57,18 +58,22 @@ int main( int argc, char * const argv[] )
 		return( EXIT_FAILURE );
 	}
 #if defined( HAVE_WIDE_SYSTEM_CHARACTER )
+	string_length = wide_string_length(
+	                 argv[ 1 ] );
+
 	if( libsmraw_glob_wide(
 	     argv[ 1 ],
-	     wide_string_length(
-	      argv[ 1 ] ),
+	     string_length,
 	     &filenames,
 	     &number_of_filenames,
 	     &error ) != 1 )
 #else
+	string_length = narrow_string_length(
+	                 argv[ 1 ] );
+
 	if( libsmraw_glob(
 	     argv[ 1 ],
-	     narrow_string_length(
-	      argv[ 1 ] ),
+	     string_length,
 	     &filenames,
 	     &number_of_filenames,
 	     &error ) != 1 )
