@@ -107,17 +107,28 @@ smraw_test_handle_LDADD = \
 smraw_test_information_file_SOURCES = \
 	smraw_test_functions.c smraw_test_functions.h \
 	smraw_test_information_file.c \
+	smraw_test_libbfio.h \
 	smraw_test_libcerror.h \
+	smraw_test_libclocale.h \
 	smraw_test_libsmraw.h \
+	smraw_test_libuna.h \
 	smraw_test_macros.h \
 	smraw_test_memory.c smraw_test_memory.h \
 	smraw_test_unused.h
 
 smraw_test_information_file_LDADD = \
+	@LIBBFIO_LIBADD@ \
+	@LIBCPATH_LIBADD@ \
+	@LIBCFILE_LIBADD@ \
 	@LIBUNA_LIBADD@ \
+	@LIBCSPLIT_LIBADD@ \
+	@LIBCNOTIFY_LIBADD@ \
 	@LIBCLOCALE_LIBADD@ \
+	@LIBCDATA_LIBADD@ \
 	../libsmraw/libsmraw.la \
-	@LIBCERROR_LIBADD@
+	@LIBCTHREADS_LIBADD@ \
+	@LIBCERROR_LIBADD@ \
+	@PTHREAD_LIBADD@
 
 smraw_test_io_handle_SOURCES = \
 	smraw_test_io_handle.c \
@@ -132,13 +143,15 @@ smraw_test_io_handle_LDADD = \
 	@LIBCERROR_LIBADD@
 
 smraw_test_notify_SOURCES = \
+	smraw_test_libcerror.h \
 	smraw_test_libsmraw.h \
 	smraw_test_macros.h \
 	smraw_test_notify.c \
 	smraw_test_unused.h
 
 smraw_test_notify_LDADD = \
-	../libsmraw/libsmraw.la
+	../libsmraw/libsmraw.la \
+	@LIBCERROR_LIBADD@
 
 smraw_test_read_loop_SOURCES = \
 	smraw_test_libcerror.h \
@@ -156,6 +169,7 @@ smraw_test_support_SOURCES = \
 	smraw_test_libcerror.h \
 	smraw_test_libsmraw.h \
 	smraw_test_macros.h \
+	smraw_test_memory.c smraw_test_memory.h \
 	smraw_test_support.c \
 	smraw_test_unused.h
 

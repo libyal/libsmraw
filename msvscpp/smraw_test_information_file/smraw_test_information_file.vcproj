@@ -198,11 +198,23 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\tests\smraw_test_libbfio.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\tests\smraw_test_libcerror.h"
 				>
 			</File>
 			<File
+				RelativePath="..\..\tests\smraw_test_libclocale.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\tests\smraw_test_libsmraw.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\tests\smraw_test_libuna.h"
 				>
 			</File>
 			<File
