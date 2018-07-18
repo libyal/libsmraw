@@ -37,8 +37,11 @@
 
 #include <libsmraw/extern.h>
 
+#define LIBSMRAW_EXTERN_VARIABLE	LIBSMRAW_EXTERN
+
 #else
-#define LIBSMRAW_EXTERN	/* extern */
+#define LIBSMRAW_EXTERN		/* extern */
+#define LIBSMRAW_EXTERN_VARIABLE	extern
 
 #endif /* !defined( HAVE_LOCAL_LIBSMRAW ) */
 

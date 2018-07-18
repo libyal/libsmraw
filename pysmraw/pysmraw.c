@@ -572,7 +572,7 @@ PyMODINIT_FUNC initpysmraw(
 		goto on_error;
 	}
 	Py_IncRef(
-	 (PyObject * ) &pysmraw_handle_type_object );
+	 (PyObject *) &pysmraw_handle_type_object );
 
 	handle_type_object = &pysmraw_handle_type_object;
 
