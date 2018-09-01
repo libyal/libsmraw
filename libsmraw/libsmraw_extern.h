@@ -28,13 +28,6 @@
  */
 #if !defined( HAVE_LOCAL_LIBSMRAW )
 
-/* If libtool DLL support is enabled set LIBSMRAW_DLL_EXPORT
- * before including libsmraw/extern.h
- */
-#if defined( _WIN32 ) && defined( DLL_EXPORT )
-#define LIBSMRAW_DLL_EXPORT
-#endif
-
 #include <libsmraw/extern.h>
 
 #define LIBSMRAW_EXTERN_VARIABLE	LIBSMRAW_EXTERN
