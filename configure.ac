@@ -2,7 +2,7 @@ AC_PREREQ( 2.59 )
 
 AC_INIT(
  [libsmraw],
- [20180901],
+ [20181016],
  [joachim.metz@gmail.com])
 
 AC_CONFIG_SRCDIR(
@@ -163,9 +163,6 @@ AS_IF(
  [AC_SUBST(
   [libsmraw_spec_requires],
   [Requires:])
- AC_SUBST(
-  [libsmraw_spec_build_requires],
-  [BuildRequires:])
  ])
 
 AS_IF(
