@@ -10,42 +10,44 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 @libsmraw_spec_requires@ @ax_libbfio_spec_requires@ @ax_libcdata_spec_requires@ @ax_libcerror_spec_requires@ @ax_libcfile_spec_requires@ @ax_libclocale_spec_requires@ @ax_libcnotify_spec_requires@ @ax_libcpath_spec_requires@ @ax_libcsplit_spec_requires@ @ax_libcthreads_spec_requires@ @ax_libfcache_spec_requires@ @ax_libfdata_spec_requires@ @ax_libfvalue_spec_requires@ @ax_libuna_spec_requires@
 BuildRequires: gcc @ax_libbfio_spec_build_requires@ @ax_libcdata_spec_build_requires@ @ax_libcerror_spec_build_requires@ @ax_libcfile_spec_build_requires@ @ax_libclocale_spec_build_requires@ @ax_libcnotify_spec_build_requires@ @ax_libcpath_spec_build_requires@ @ax_libcsplit_spec_build_requires@ @ax_libcthreads_spec_build_requires@ @ax_libfcache_spec_build_requires@ @ax_libfdata_spec_build_requires@ @ax_libfvalue_spec_build_requires@ @ax_libuna_spec_build_requires@
 
-%description
+%description -n libsmraw
 Library to access the storage media (SM) (split) RAW format
 
-%package devel
+%package -n libsmraw-devel
 Summary: Header files and libraries for developing applications for libsmraw
 Group: Development/Libraries
 Requires: libsmraw = %{version}-%{release}
 
-%description devel
+%description -n libsmraw-devel
 Header files and libraries for developing applications for libsmraw.
 
-%package python
+%package -n libsmraw-python2
+Obsoletes: libsmraw-python < %{version}
+Provides: libsmraw-python = %{version}
 Summary: Python 2 bindings for libsmraw
 Group: System Environment/Libraries
-Requires: libsmraw = %{version}-%{release} python
-BuildRequires: python-devel
+Requires: libsmraw = %{version}-%{release} python2
+BuildRequires: python2-devel
 
-%description python
+%description -n libsmraw-python2
 Python 2 bindings for libsmraw
 
-%package python3
+%package -n libsmraw-python3
 Summary: Python 3 bindings for libsmraw
 Group: System Environment/Libraries
 Requires: libsmraw = %{version}-%{release} python3
 BuildRequires: python3-devel
 
-%description python3
+%description -n libsmraw-python3
 Python 3 bindings for libsmraw
 
-%package tools
+%package -n libsmraw-tools
 Summary: Several tools for reading and writing storage media (SM) (split) RAW files
 Group: Applications/System
 Requires: libsmraw = %{version}-%{release} @ax_libcrypto_spec_requires@ @ax_libfuse_spec_requires@ @ax_libhmac_spec_requires@
 @libsmraw_spec_tools_build_requires@ @ax_libcrypto_spec_build_requires@ @ax_libfuse_spec_build_requires@ @ax_libhmac_spec_build_requires@
 
-%description tools
+%description -n libsmraw-tools
 Several tools for reading and writing storage media (SM) (split) RAW files
 
 %prep
@@ -66,13 +68,13 @@ rm -rf %{buildroot}
 
 %postun -p /sbin/ldconfig
 
-%files
+%files -n libsmraw
 %defattr(644,root,root,755)
 %license COPYING
 %doc AUTHORS README
 %attr(755,root,root) %{_libdir}/*.so.*
 
-%files devel
+%files -n libsmraw-devel
 %defattr(644,root,root,755)
 %license COPYING
 %doc AUTHORS README ChangeLog
@@ -83,7 +85,7 @@ rm -rf %{buildroot}
 %{_includedir}/*
 %{_mandir}/man3/*
 
-%files python
+%files -n libsmraw-python2
 %defattr(644,root,root,755)
 %license COPYING
 %doc AUTHORS README
@@ -91,7 +93,7 @@ rm -rf %{buildroot}
 %{_libdir}/python2*/site-packages/*.la
 %{_libdir}/python2*/site-packages/*.so
 
-%files python3
+%files -n libsmraw-python3
 %defattr(644,root,root,755)
 %license COPYING
 %doc AUTHORS README
@@ -99,7 +101,7 @@ rm -rf %{buildroot}
 %{_libdir}/python3*/site-packages/*.la
 %{_libdir}/python3*/site-packages/*.so
 
-%files tools
+%files -n libsmraw-tools
 %defattr(644,root,root,755)
 %license COPYING
 %doc AUTHORS README
