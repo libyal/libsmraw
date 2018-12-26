@@ -26,6 +26,8 @@
 #include <file_stream.h>
 #include <types.h>
 
+#include "mount_file_entry.h"
+#include "mount_file_system.h"
 #include "smrawtools_libcerror.h"
 #include "smrawtools_libsmraw.h"
 
@@ -37,9 +39,9 @@ typedef struct mount_handle mount_handle_t;
 
 struct mount_handle
 {
-	/* The libsmraw input handle
+	/* The file system
 	 */
-	libsmraw_handle_t *input_handle;
+	mount_file_system_t *file_system;
 
 	/* The notification output stream
 	 */
@@ -58,7 +60,13 @@ int mount_handle_signal_abort(
      mount_handle_t *mount_handle,
      libcerror_error_t **error );
 
-int mount_handle_open_input(
+int mount_handle_set_path_prefix(
+     mount_handle_t *mount_handle,
+     const system_character_t *path_prefix,
+     size_t path_prefix_size,
+     libcerror_error_t **error );
+
+int mount_handle_open(
      mount_handle_t *mount_handle,
      system_character_t * const * filenames,
      int number_of_filenames,
@@ -68,26 +76,10 @@ int mount_handle_close(
      mount_handle_t *mount_handle,
      libcerror_error_t **error );
 
-ssize_t mount_handle_read_buffer(
-         mount_handle_t *mount_handle,
-         uint8_t *buffer,
-         size_t size,
-         libcerror_error_t **error );
-
-off64_t mount_handle_seek_offset(
-         mount_handle_t *mount_handle,
-         off64_t offset,
-         int whence,
-         libcerror_error_t **error );
-
-int mount_handle_get_number_of_input_handles(
+int mount_handle_get_file_entry_by_path(
      mount_handle_t *mount_handle,
-     int *number_of_input_handles,
-     libcerror_error_t **error );
-
-int mount_handle_get_size(
-     mount_handle_t *mount_handle,
-     size64_t *size,
+     const system_character_t *path,
+     mount_file_entry_t **file_entry,
      libcerror_error_t **error );
 
 #if defined( __cplusplus )

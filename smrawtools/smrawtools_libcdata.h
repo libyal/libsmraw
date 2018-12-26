@@ -1,5 +1,5 @@
 /*
- * Output functions
+ * The libcdata header wrapper
  *
  * Copyright (C) 2010-2018, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -19,37 +19,36 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _SMRAWTOOLS_OUTPUT_H )
-#define _SMRAWTOOLS_OUTPUT_H
+#if !defined( _SMRAWTOOLS_LIBCDATA_H )
+#define _SMRAWTOOLS_LIBCDATA_H
 
 #include <common.h>
-#include <file_stream.h>
-#include <types.h>
 
-#include "smrawtools_libcerror.h"
+/* Define HAVE_LOCAL_LIBCDATA for local use of libcdata
+ */
+#if defined( HAVE_LOCAL_LIBCDATA )
 
-#if defined( __cplusplus )
-extern "C" {
+#include <libcdata_array.h>
+#include <libcdata_btree.h>
+#include <libcdata_definitions.h>
+#include <libcdata_list.h>
+#include <libcdata_list_element.h>
+#include <libcdata_range_list.h>
+#include <libcdata_tree_node.h>
+#include <libcdata_types.h>
+
+#else
+
+/* If libtool DLL support is enabled set LIBCDATA_DLL_IMPORT
+ * before including libcdata.h
+ */
+#if defined( _WIN32 ) && defined( DLL_IMPORT )
+#define LIBCDATA_DLL_IMPORT
 #endif
 
-int smrawtools_output_initialize(
-     int stdio_mode,
-     libcerror_error_t **error );
+#include <libcdata.h>
 
-void smrawtools_output_copyright_fprint(
-      FILE *stream );
+#endif /* defined( HAVE_LOCAL_LIBCDATA ) */
 
-void smrawtools_output_version_fprint(
-      FILE *stream,
-      const system_character_t *program );
-
-void smrawtools_output_version_detailed_fprint(
-      FILE *stream,
-      const system_character_t *program );
-
-#if defined( __cplusplus )
-}
-#endif
-
-#endif /* !defined( _SMRAWTOOLS_OUTPUT_H ) */
+#endif /* !defined( _SMRAWTOOLS_LIBCDATA_H ) */
 

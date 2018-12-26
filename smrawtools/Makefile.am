@@ -25,6 +25,10 @@ bin_PROGRAMS = \
 	smrawverify
 
 smrawmount_SOURCES = \
+	mount_dokan.c mount_dokan.h \
+	mount_file_entry.c mount_file_entry.h \
+	mount_file_system.c mount_file_system.h \
+	mount_fuse.c mount_fuse.h \
 	mount_handle.c mount_handle.h \
 	smrawmount.c \
 	smrawtools_find.h \
@@ -32,12 +36,11 @@ smrawmount_SOURCES = \
 	smrawtools_glob.c smrawtools_glob.h \
 	smrawtools_i18n.h \
 	smrawtools_libbfio.h \
+	smrawtools_libcdata.h \
 	smrawtools_libcerror.h \
 	smrawtools_libclocale.h \
 	smrawtools_libcnotify.h \
-	smrawtools_libfvalue.h \
 	smrawtools_libsmraw.h \
-	smrawtools_libuna.h \
 	smrawtools_output.c smrawtools_output.h \
 	smrawtools_signal.c smrawtools_signal.h \
 	smrawtools_unused.h
@@ -46,6 +49,7 @@ smrawmount_LDADD = \
 	@LIBFUSE_LIBADD@ \
 	@LIBCNOTIFY_LIBADD@ \
 	@LIBCLOCALE_LIBADD@ \
+	@LIBCDATA_LIBADD@ \
 	../libsmraw/libsmraw.la \
 	@LIBCERROR_LIBADD@ \
 	@LIBINTL@

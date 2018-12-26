@@ -97,7 +97,7 @@ int smrawtools_output_initialize(
 
 /* Prints the executable version information
  */
-void smrawoutput_copyright_fprint(
+void smrawtools_output_copyright_fprint(
       FILE *stream )
 {
 	if( stream == NULL )
@@ -129,7 +129,7 @@ void smrawoutput_copyright_fprint(
 
 /* Prints the version information to a stream
  */
-void smrawoutput_version_fprint(
+void smrawtools_output_version_fprint(
       FILE *stream,
       const system_character_t *program )
 {
@@ -150,7 +150,7 @@ void smrawoutput_version_fprint(
 
 /* Prints the detailed version information to a stream
  */
-void smrawoutput_version_detailed_fprint(
+void smrawtools_output_version_detailed_fprint(
       FILE *stream,
       const system_character_t *program )
 {
