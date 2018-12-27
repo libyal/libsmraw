@@ -9,6 +9,8 @@ Homepage: https://github.com/libyal/libsmraw
 Package: libsmraw
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
+Conflicts: libsmraw1
+Replaces: libsmraw1
 Suggests: libsmraw-dbg
 Description: Library to access the storage media (SM) (split) RAW format
  libsmraw is a library to access the storage media (SM) (split) RAW format.
@@ -31,6 +33,8 @@ Package: libsmraw-tools
 Section: utils
 Architecture: any
 Depends: libsmraw (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
+Conflicts: libsmraw-utils
+Replaces: libsmraw-utils
 Description: Several tools for reading and writing storage media (SM) (split) RAW files
  Several tools for reading and writing storage media (SM) (split) RAW files.
 
@@ -45,6 +49,8 @@ Package: libsmraw-python
 Section: python
 Architecture: any
 Depends: libsmraw (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
+Conflicts: python-libsmraw
+Replaces: python-libsmraw
 Suggests: libsmraw-python-dbg
 Description: Python 2 bindings for libsmraw
  Python 2 bindings for libsmraw.
@@ -60,6 +66,8 @@ Package: libsmraw-python3
 Section: python
 Architecture: any
 Depends: libsmraw (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
+Conflicts: python3-libsmraw
+Replaces: python3-libsmraw
 Suggests: libsmraw-python3-dbg
 Description: Python 3 bindings for libsmraw
  Python 3 bindings for libsmraw.

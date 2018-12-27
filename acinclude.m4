@@ -147,13 +147,13 @@ AC_DEFUN([AX_SMRAWTOOLS_CHECK_LOCAL],
   AS_IF(
    [test "x$ac_cv_enable_winapi" = xno],
    [AC_HEADER_TIME
-   AC_CHECK_FUNCS([getegid geteuid getuid time])
+   AC_CHECK_FUNCS([clock_gettime getegid geteuid time])
    ])
 
   dnl Date and time functions used in smrawtools/process_status.c
   AX_SMRAWTOOLS_CHECK_FUNC_CTIME
  
-  AC_CHECK_FUNCS([gmtime gmtime_r time])
+  AC_CHECK_FUNCS([gmtime gmtime_r])
 
   AS_IF(
    [test "x$ac_cv_func_gmtime" != xyes && test "x$ac_cv_func_gmtime_r" != xyes],
