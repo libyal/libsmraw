@@ -40,6 +40,7 @@ smrawmount_SOURCES = \
 	smrawtools_libcerror.h \
 	smrawtools_libclocale.h \
 	smrawtools_libcnotify.h \
+	smrawtools_libcpath.h \
 	smrawtools_libsmraw.h \
 	smrawtools_output.c smrawtools_output.h \
 	smrawtools_signal.c smrawtools_signal.h \
@@ -47,9 +48,11 @@ smrawmount_SOURCES = \
 
 smrawmount_LDADD = \
 	@LIBFUSE_LIBADD@ \
+	@LIBCPATH_LIBADD@ \
+	@LIBCSPLIT_LIBADD@ \
+	@LIBUNA_LIBADD@ \
 	@LIBCNOTIFY_LIBADD@ \
 	@LIBCLOCALE_LIBADD@ \
-	@LIBCDATA_LIBADD@ \
 	../libsmraw/libsmraw.la \
 	@LIBCERROR_LIBADD@ \
 	@LIBINTL@

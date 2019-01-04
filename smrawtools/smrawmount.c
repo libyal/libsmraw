@@ -25,12 +25,14 @@
 #include <system_string.h>
 #include <types.h>
 
-#if defined( HAVE_STDLIB_H ) || defined( WINAPI )
-#include <stdlib.h>
-#endif
+#include <stdio.h>
 
 #if defined( HAVE_IO_H ) || defined( WINAPI )
 #include <io.h>
+#endif
+
+#if defined( HAVE_STDLIB_H ) || defined( WINAPI )
+#include <stdlib.h>
 #endif
 
 #if defined( HAVE_UNISTD_H )
@@ -83,7 +85,7 @@ void smrawmount_signal_handler(
       smrawtools_signal_t signal SMRAWTOOLS_ATTRIBUTE_UNUSED )
 {
 	libcerror_error_t *error = NULL;
-	static char *function   = "smrawmount_signal_handler";
+	static char *function    = "smrawmount_signal_handler";
 
 	SMRAWTOOLS_UNREFERENCED_PARAMETER( signal )
 
@@ -164,7 +166,7 @@ int main( int argc, char * const argv[] )
 	 1 );
 
 	if( libclocale_initialize(
-             "smrawtools",
+	     "smrawtools",
 	     &error ) != 1 )
 	{
 		fprintf(
@@ -173,9 +175,9 @@ int main( int argc, char * const argv[] )
 
 		goto on_error;
 	}
-        if( smrawtools_output_initialize(
-             _IONBF,
-             &error ) != 1 )
+	if( smrawtools_output_initialize(
+	     _IONBF,
+	     &error ) != 1 )
 	{
 		fprintf(
 		 stderr,
@@ -233,7 +235,7 @@ int main( int argc, char * const argv[] )
 	{
 		fprintf(
 		 stderr,
-		 "Missing SMRAW image file(s).\n" );
+		 "Missing source image(s).\n" );
 
 		usage_fprint(
 		 stdout );
@@ -339,10 +341,22 @@ int main( int argc, char * const argv[] )
 	{
 		fprintf(
 		 stderr,
-		 "Unable to open source image.\n" );
+		 "Unable to open source image(s)\n" );
 
 		goto on_error;
 	}
+#if !defined( HAVE_GLOB_H )
+	if( smrawtools_glob_free(
+	     &glob,
+	     &error ) != 1 )
+	{
+		fprintf(
+		 stderr,
+		 "Unable to free glob.\n" );
+
+		goto on_error;
+	}
+#endif
 #if defined( HAVE_LIBFUSE ) || defined( HAVE_LIBOSXFUSE )
 	if( option_extended_options != NULL )
 	{
@@ -417,7 +431,7 @@ int main( int argc, char * const argv[] )
 	                          &smrawmount_fuse_operations,
 	                          sizeof( struct fuse_operations ),
 	                          smrawmount_mount_handle );
-	
+
 	if( smrawmount_fuse_handle == NULL )
 	{
 		fprintf(
@@ -613,7 +627,8 @@ int main( int argc, char * const argv[] )
 	 "No sub system to mount SMRAW format.\n" );
 
 	return( EXIT_FAILURE );
-#endif
+
+#endif /* defined( HAVE_LIBFUSE ) || defined( HAVE_LIBOSXFUSE ) */
 
 on_error:
 	if( error != NULL )
@@ -638,6 +653,14 @@ on_error:
 		 &smrawmount_mount_handle,
 		 NULL );
 	}
+#if !defined( HAVE_GLOB_H )
+	if( glob != NULL )
+	{
+		smrawtools_glob_free(
+		 &glob,
+		 NULL );
+	}
+#endif
 	return( EXIT_FAILURE );
 }
 

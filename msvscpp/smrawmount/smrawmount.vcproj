@@ -280,6 +280,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\smrawtools\smrawtools_libcpath.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\smrawtools\smrawtools_libsmraw.h"
 				>
 			</File>
