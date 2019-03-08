@@ -26,6 +26,7 @@ endif
 
 TESTS = \
 	test_library.sh \
+	test_manpage.sh \
 	test_glob.sh \
 	test_write_functions.sh \
 	test_smrawverify.sh \
@@ -37,6 +38,7 @@ check_SCRIPTS = \
 	pysmraw_test_support.py \
 	test_glob.sh \
 	test_library.sh \
+	test_manpage.sh \
 	test_python_module.sh \
 	test_runner.sh \
 	test_smrawverify.sh \
