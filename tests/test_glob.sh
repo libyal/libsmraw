@@ -1,7 +1,7 @@
 #!/bin/bash
 # Library glob testing script
 #
-# Version: 20171204
+# Version: 20190309
 
 EXIT_SUCCESS=0;
 EXIT_FAILURE=1;
@@ -38,11 +38,11 @@ test_glob()
 	if test "${OSTYPE}" = "msys";
 	then
 		TEST_PATH="${TMPDIR}\\${BASENAME}";
+		FILENAMES=`echo ${FILENAMES} | sed "s?^?${TMPDIR}\\\\\\\\?" | sed "s? ? ${TMPDIR}\\\\\\\\?g"`;
 	else
 		TEST_PATH="${TMPDIR}/${BASENAME}";
+		FILENAMES=`echo ${FILENAMES} | sed "s?^?${TMPDIR}/?" | sed "s? ? ${TMPDIR}/?g"`;
 	fi
-	local FILENAMES=`echo ${FILENAMES} | sed "s?^?${TMPDIR}/?" | sed "s? ? ${TMPDIR}/?g"`;
-
 	echo ${FILENAMES} > ${TMPDIR}/input;
 
 	touch ${FILENAMES};
@@ -91,11 +91,11 @@ test_glob_sequence()
 	if test "${OSTYPE}" = "msys";
 	then
 		TEST_PATH="${TMPDIR}\\${BASENAME}";
+		FILENAMES=`echo ${FILENAMES} | sed "s?^?${TMPDIR}\\\\\\\\?" | sed "s? ? ${TMPDIR}\\\\\\\\?g"`;
 	else
 		TEST_PATH="${TMPDIR}/${BASENAME}";
+		FILENAMES=`echo ${FILENAMES} | sed "s?^?${TMPDIR}/?" | sed "s? ? ${TMPDIR}/?g"`;
 	fi
-	local FILENAMES=`echo ${FILENAMES} | sed "s?^?${TMPDIR}/?" | sed "s? ? ${TMPDIR}/?g"`;
-
 	echo ${FILENAMES} > ${TMPDIR}/input;
 
 	touch ${FILENAMES};
