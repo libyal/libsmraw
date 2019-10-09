@@ -26,7 +26,6 @@ endif
 
 TESTS = \
 	test_library.sh \
-	test_manpage.sh \
 	test_glob.sh \
 	test_write_functions.sh \
 	test_smrawverify.sh \
