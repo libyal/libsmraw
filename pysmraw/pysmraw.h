@@ -1,5 +1,5 @@
 /*
- * Python bindings for libsmraw (pysmraw)
+ * Python bindings module for libsmraw (pysmraw)
  *
  * Copyright (C) 2010-2019, Joachim Metz <joachim.metz@gmail.com>
  *

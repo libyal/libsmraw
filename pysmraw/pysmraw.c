@@ -24,7 +24,7 @@
 #include <types.h>
 #include <wide_string.h>
 
-#if defined( HAVE_STDLIB_H )
+#if defined( HAVE_STDLIB_H ) || defined( HAVE_WINAPI )
 #include <stdlib.h>
 #endif
 
@@ -525,9 +525,8 @@ PyMODINIT_FUNC initpysmraw(
                 void )
 #endif
 {
-	PyObject *module                 = NULL;
-	PyTypeObject *handle_type_object = NULL;
-	PyGILState_STATE gil_state       = 0;
+	PyObject *module           = NULL;
+	PyGILState_STATE gil_state = 0;
 
 #if defined( HAVE_DEBUG_OUTPUT )
 	libsmraw_notify_set_stream(
@@ -574,12 +573,10 @@ PyMODINIT_FUNC initpysmraw(
 	Py_IncRef(
 	 (PyObject *) &pysmraw_handle_type_object );
 
-	handle_type_object = &pysmraw_handle_type_object;
-
 	PyModule_AddObject(
 	 module,
 	 "handle",
-	 (PyObject *) handle_type_object );
+	 (PyObject *) &pysmraw_handle_type_object );
 
 	PyGILState_Release(
 	 gil_state );

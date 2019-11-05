@@ -1900,6 +1900,17 @@ int libsmraw_handle_close(
 	}
 	internal_handle = (libsmraw_internal_handle_t *) handle;
 
+	if( internal_handle->file_io_pool == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid handle - missing file IO pool.",
+		 function );
+
+		return( -1 );
+	}
 	if( internal_handle->write_information_on_close != 0 )
 	{
 		if( libsmraw_information_file_open(
@@ -1963,49 +1974,33 @@ int libsmraw_handle_close(
 			result = -1;
 		}
 	}
-	if( libfdata_stream_free(
-	     &( internal_handle->segments_stream ),
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-		 "%s: unable to free segments stream.",
-		 function );
-
-		result = -1;
-	}
 	if( internal_handle->file_io_pool_created_in_library != 0 )
 	{
-		if( internal_handle->file_io_pool != NULL )
+		if( libbfio_pool_close_all(
+		     internal_handle->file_io_pool,
+		     error ) != 0 )
 		{
-			if( libbfio_pool_close_all(
-			     internal_handle->file_io_pool,
-			     error ) != 0 )
-			{
-				libcerror_error_set(
-				 error,
-				 LIBCERROR_ERROR_DOMAIN_IO,
-				 LIBCERROR_IO_ERROR_GENERIC,
-				 "%s: unable close file IO pool.",
-				 function );
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_IO,
+			 LIBCERROR_IO_ERROR_GENERIC,
+			 "%s: unable close file IO pool.",
+			 function );
 
-				result = -1;
-			}
-			if( libbfio_pool_free(
-			     &( internal_handle->file_io_pool ),
-			     error ) != 1 )
-			{
-				libcerror_error_set(
-				 error,
-				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-				 "%s: unable to free file IO pool.",
-				 function );
+			result = -1;
+		}
+		if( libbfio_pool_free(
+		     &( internal_handle->file_io_pool ),
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+			 "%s: unable to free file IO pool.",
+			 function );
 
-				result = -1;
-			}
+			result = -1;
 		}
 		internal_handle->file_io_pool_created_in_library = 0;
 	}
@@ -2022,6 +2017,19 @@ int libsmraw_handle_close(
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
 		 "%s: unable to clear IO handle.",
+		 function );
+
+		result = -1;
+	}
+	if( libfdata_stream_free(
+	     &( internal_handle->segments_stream ),
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+		 "%s: unable to free segments stream.",
 		 function );
 
 		result = -1;

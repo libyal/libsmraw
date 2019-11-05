@@ -114,6 +114,8 @@ int smraw_test_information_file_initialize(
 	          &information_file,
 	          &error );
 
+	information_file = NULL;
+
 	SMRAW_TEST_ASSERT_EQUAL_INT(
 	 "result",
 	 result,
@@ -125,8 +127,6 @@ int smraw_test_information_file_initialize(
 
 	libcerror_error_free(
 	 &error );
-
-	information_file = NULL;
 
 #if defined( HAVE_SMRAW_TEST_MEMORY )
 

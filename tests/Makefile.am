@@ -33,7 +33,6 @@ TESTS = \
 
 check_SCRIPTS = \
 	pysmraw_test_handle.py \
-	pysmraw_test_read.py \
 	pysmraw_test_support.py \
 	test_glob.sh \
 	test_library.sh \

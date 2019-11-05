@@ -25,7 +25,7 @@
 #include <types.h>
 #include <wide_string.h>
 
-#if defined( HAVE_STDLIB_H )
+#if defined( HAVE_STDLIB_H ) || defined( HAVE_WINAPI )
 #include <stdlib.h>
 #endif
 
@@ -491,7 +491,7 @@ PyObject *pysmraw_handle_signal_abort(
 	{
 		PyErr_Format(
 		 PyExc_TypeError,
-		 "%s: invalid pysmraw handle.",
+		 "%s: invalid handle.",
 		 function );
 
 		return( NULL );
@@ -559,7 +559,7 @@ PyObject *pysmraw_handle_open(
 	{
 		PyErr_Format(
 		 PyExc_TypeError,
-		 "%s: invalid pysmraw handle.",
+		 "%s: invalid handle.",
 		 function );
 
 		return( NULL );
@@ -1043,6 +1043,16 @@ PyObject *pysmraw_handle_open_file_objects(
 
 		return( NULL );
 	}
+	if( pysmraw_handle->file_io_pool != NULL )
+	{
+		pysmraw_error_raise(
+		 error,
+		 PyExc_IOError,
+		 "%s: invalid handle - file IO pool already set.",
+		 function );
+
+		goto on_error;
+	}
 	if( pysmraw_file_objects_pool_initialize(
 	     &( pysmraw_handle->file_io_pool ),
 	     file_objects,
@@ -1115,7 +1125,7 @@ PyObject *pysmraw_handle_close(
 	{
 		PyErr_Format(
 		 PyExc_TypeError,
-		 "%s: invalid pysmraw handle.",
+		 "%s: invalid handle.",
 		 function );
 
 		return( NULL );
@@ -1179,19 +1189,21 @@ PyObject *pysmraw_handle_read_buffer(
            PyObject *arguments,
            PyObject *keywords )
 {
-	libcerror_error_t *error    = NULL;
+	PyObject *integer_object    = NULL;
 	PyObject *string_object     = NULL;
+	libcerror_error_t *error    = NULL;
+	char *buffer                = NULL;
 	static char *function       = "pysmraw_handle_read_buffer";
 	static char *keyword_list[] = { "size", NULL };
-	char *buffer                = NULL;
 	ssize_t read_count          = 0;
-	int read_size               = -1;
+	int64_t read_size           = 0;
+	int result                  = 0;
 
 	if( pysmraw_handle == NULL )
 	{
 		PyErr_Format(
-		 PyExc_TypeError,
-		 "%s: invalid pysmraw handle.",
+		 PyExc_ValueError,
+		 "%s: invalid handle.",
 		 function );
 
 		return( NULL );
@@ -1199,24 +1211,130 @@ PyObject *pysmraw_handle_read_buffer(
 	if( PyArg_ParseTupleAndKeywords(
 	     arguments,
 	     keywords,
-	     "|i",
+	     "|O",
 	     keyword_list,
-	     &read_size ) == 0 )
+	     &integer_object ) == 0 )
 	{
 		return( NULL );
+	}
+	if( integer_object == NULL )
+	{
+		result = 0;
+	}
+	else
+	{
+		result = PyObject_IsInstance(
+		          integer_object,
+		          (PyObject *) &PyLong_Type );
+
+		if( result == -1 )
+		{
+			pysmraw_error_fetch_and_raise(
+			 PyExc_RuntimeError,
+			 "%s: unable to determine if integer object is of type long.",
+			 function );
+
+			return( NULL );
+		}
+#if PY_MAJOR_VERSION < 3
+		else if( result == 0 )
+		{
+			PyErr_Clear();
+
+			result = PyObject_IsInstance(
+			          integer_object,
+			          (PyObject *) &PyInt_Type );
+
+			if( result == -1 )
+			{
+				pysmraw_error_fetch_and_raise(
+				 PyExc_RuntimeError,
+				 "%s: unable to determine if integer object is of type int.",
+				 function );
+
+				return( NULL );
+			}
+		}
+#endif
+	}
+	if( result != 0 )
+	{
+		if( pysmraw_integer_signed_copy_to_64bit(
+		     integer_object,
+		     &read_size,
+		     &error ) != 1 )
+		{
+			pysmraw_error_raise(
+			 error,
+			 PyExc_IOError,
+			 "%s: unable to convert integer object into read size.",
+			 function );
+
+			libcerror_error_free(
+			 &error );
+
+			return( NULL );
+		}
+	}
+	else if( ( integer_object == NULL )
+	      || ( integer_object == Py_None ) )
+	{
+		Py_BEGIN_ALLOW_THREADS
+
+		result = libsmraw_handle_get_media_size(
+		          pysmraw_handle->handle,
+		          (size64_t *) &read_size,
+		          &error );
+
+		Py_END_ALLOW_THREADS
+
+		if( result != 1 )
+		{
+			pysmraw_error_raise(
+			 error,
+			 PyExc_IOError,
+			 "%s: unable to retrieve media size.",
+			 function );
+
+			libcerror_error_free(
+			 &error );
+
+			return( NULL );
+		}
+	}
+	else
+	{
+		PyErr_Format(
+		 PyExc_TypeError,
+		 "%s: unsupported integer object type.",
+		 function );
+
+		return( NULL );
+	}
+	if( read_size == 0 )
+	{
+#if PY_MAJOR_VERSION >= 3
+		string_object = PyBytes_FromString(
+		                 "" );
+#else
+		string_object = PyString_FromString(
+		                 "" );
+#endif
+		return( string_object );
 	}
 	if( read_size < 0 )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid argument read size value less than zero.",
+		 "%s: invalid read size value less than zero.",
 		 function );
 
 		return( NULL );
 	}
 	/* Make sure the data fits into a memory buffer
 	 */
-	if( read_size > INT_MAX )
+	if( ( read_size > (int64_t) INT_MAX )
+	 || ( read_size > (int64_t) SSIZE_MAX ) )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
@@ -1228,14 +1346,16 @@ PyObject *pysmraw_handle_read_buffer(
 #if PY_MAJOR_VERSION >= 3
 	string_object = PyBytes_FromStringAndSize(
 	                 NULL,
-	                 read_size );
+	                 (Py_ssize_t) read_size );
 
 	buffer = PyBytes_AsString(
 	          string_object );
 #else
+	/* Note that a size of 0 is not supported
+	 */
 	string_object = PyString_FromStringAndSize(
 	                 NULL,
-	                 read_size );
+	                 (Py_ssize_t) read_size );
 
 	buffer = PyString_AsString(
 	          string_object );
@@ -1250,7 +1370,7 @@ PyObject *pysmraw_handle_read_buffer(
 
 	Py_END_ALLOW_THREADS
 
-	if( read_count <= -1 )
+	if( read_count == -1 )
 	{
 		pysmraw_error_raise(
 		 error,
@@ -1294,20 +1414,22 @@ PyObject *pysmraw_handle_read_buffer_at_offset(
            PyObject *arguments,
            PyObject *keywords )
 {
-	libcerror_error_t *error    = NULL;
+	PyObject *integer_object    = NULL;
 	PyObject *string_object     = NULL;
+	libcerror_error_t *error    = NULL;
+	char *buffer                = NULL;
 	static char *function       = "pysmraw_handle_read_buffer_at_offset";
 	static char *keyword_list[] = { "size", "offset", NULL };
-	char *buffer                = NULL;
-	off64_t read_offset         = 0;
 	ssize_t read_count          = 0;
-	int read_size               = 0;
+	off64_t read_offset         = 0;
+	int64_t read_size           = 0;
+	int result                  = 0;
 
 	if( pysmraw_handle == NULL )
 	{
 		PyErr_Format(
-		 PyExc_TypeError,
-		 "%s: invalid pysmraw handle.",
+		 PyExc_ValueError,
+		 "%s: invalid handle.",
 		 function );
 
 		return( NULL );
@@ -1315,25 +1437,98 @@ PyObject *pysmraw_handle_read_buffer_at_offset(
 	if( PyArg_ParseTupleAndKeywords(
 	     arguments,
 	     keywords,
-	     "i|L",
+	     "OL",
 	     keyword_list,
-	     &read_size,
+	     &integer_object,
 	     &read_offset ) == 0 )
 	{
 		return( NULL );
+	}
+	result = PyObject_IsInstance(
+	          integer_object,
+	          (PyObject *) &PyLong_Type );
+
+	if( result == -1 )
+	{
+		pysmraw_error_fetch_and_raise(
+		 PyExc_RuntimeError,
+		 "%s: unable to determine if integer object is of type long.",
+		 function );
+
+		return( NULL );
+	}
+#if PY_MAJOR_VERSION < 3
+	else if( result == 0 )
+	{
+		PyErr_Clear();
+
+		result = PyObject_IsInstance(
+		          integer_object,
+		          (PyObject *) &PyInt_Type );
+
+		if( result == -1 )
+		{
+			pysmraw_error_fetch_and_raise(
+			 PyExc_RuntimeError,
+			 "%s: unable to determine if integer object is of type int.",
+			 function );
+
+			return( NULL );
+		}
+	}
+#endif
+	if( result != 0 )
+	{
+		if( pysmraw_integer_signed_copy_to_64bit(
+		     integer_object,
+		     &read_size,
+		     &error ) != 1 )
+		{
+			pysmraw_error_raise(
+			 error,
+			 PyExc_IOError,
+			 "%s: unable to convert integer object into read size.",
+			 function );
+
+			libcerror_error_free(
+			 &error );
+
+			return( NULL );
+		}
+	}
+	else
+	{
+		PyErr_Format(
+		 PyExc_TypeError,
+		 "%s: unsupported integer object type.",
+		 function );
+
+		return( NULL );
+	}
+	if( read_size == 0 )
+	{
+#if PY_MAJOR_VERSION >= 3
+		string_object = PyBytes_FromString(
+		                 "" );
+#else
+		string_object = PyString_FromString(
+		                 "" );
+#endif
+		return( string_object );
 	}
 	if( read_size < 0 )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid argument read size value less than zero.",
+		 "%s: invalid read size value less than zero.",
 		 function );
 
 		return( NULL );
 	}
 	/* Make sure the data fits into a memory buffer
 	 */
-	if( read_size > INT_MAX )
+	if( ( read_size > (int64_t) INT_MAX )
+	 || ( read_size > (int64_t) SSIZE_MAX ) )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
@@ -1346,7 +1541,7 @@ PyObject *pysmraw_handle_read_buffer_at_offset(
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid argument read offset value less than zero.",
+		 "%s: invalid read offset value less than zero.",
 		 function );
 
 		return( NULL );
@@ -1354,14 +1549,16 @@ PyObject *pysmraw_handle_read_buffer_at_offset(
 #if PY_MAJOR_VERSION >= 3
 	string_object = PyBytes_FromStringAndSize(
 	                 NULL,
-	                 read_size );
+	                 (Py_ssize_t) read_size );
 
 	buffer = PyBytes_AsString(
 	          string_object );
 #else
+	/* Note that a size of 0 is not supported
+	 */
 	string_object = PyString_FromStringAndSize(
 	                 NULL,
-	                 read_size );
+	                 (Py_ssize_t) read_size );
 
 	buffer = PyString_AsString(
 	          string_object );
@@ -1377,7 +1574,7 @@ PyObject *pysmraw_handle_read_buffer_at_offset(
 
 	Py_END_ALLOW_THREADS
 
-	if( read_count <= -1 )
+	if( read_count == -1 )
 	{
 		pysmraw_error_raise(
 		 error,
@@ -1433,7 +1630,7 @@ PyObject *pysmraw_handle_write_buffer(
 	{
 		PyErr_Format(
 		 PyExc_TypeError,
-		 "%s: invalid pysmraw handle.",
+		 "%s: invalid handle.",
 		 function );
 
 		return( NULL );
@@ -1520,7 +1717,7 @@ PyObject *pysmraw_handle_write_buffer_at_offset(
 	{
 		PyErr_Format(
 		 PyExc_TypeError,
-		 "%s: invalid pysmraw handle.",
+		 "%s: invalid handle.",
 		 function );
 
 		return( NULL );
@@ -1615,7 +1812,7 @@ PyObject *pysmraw_handle_seek_offset(
 	{
 		PyErr_Format(
 		 PyExc_TypeError,
-		 "%s: invalid pysmraw handle.",
+		 "%s: invalid handle.",
 		 function );
 
 		return( NULL );
