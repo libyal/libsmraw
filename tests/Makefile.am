@@ -52,7 +52,6 @@ check_PROGRAMS = \
 	smraw_test_information_file \
 	smraw_test_io_handle \
 	smraw_test_notify \
-	smraw_test_read_loop \
 	smraw_test_support \
 	smraw_test_write
 
@@ -152,18 +151,6 @@ smraw_test_notify_SOURCES = \
 smraw_test_notify_LDADD = \
 	../libsmraw/libsmraw.la \
 	@LIBCERROR_LIBADD@
-
-smraw_test_read_loop_SOURCES = \
-	smraw_test_libcerror.h \
-	smraw_test_libsmraw.h \
-	smraw_test_read_loop.c \
-	smraw_test_unused.h
-
-smraw_test_read_loop_LDADD = \
-	@LIBCTHREADS_LIBADD@ \
-	../libsmraw/libsmraw.la \
-	@LIBCERROR_LIBADD@
-	@PTHREAD_LIBADD@
 
 smraw_test_support_SOURCES = \
 	smraw_test_libcerror.h \

@@ -48,16 +48,6 @@ int smraw_test_get_wide_source(
 
 #endif /* defined( HAVE_WIDE_CHARACTER_TYPE ) */
 
-int smraw_test_open_file_io_handle(
-     libbfio_handle_t **file_io_handle,
-     uint8_t *data,
-     size_t data_size,
-     libcerror_error_t **error );
-
-int smraw_test_close_file_io_handle(
-     libbfio_handle_t **file_io_handle,
-     libcerror_error_t **error );
-
 #if defined( __cplusplus )
 }
 #endif

@@ -20,6 +20,7 @@
 # along with this software.  If not, see <http://www.gnu.org/licenses/>.
 
 import argparse
+import random
 import os
 import sys
 import unittest
@@ -136,29 +137,62 @@ class HandleTypeTests(unittest.TestCase):
 
     media_size = smraw_handle.get_media_size()
 
+    # Test read without maximum size.
+    smraw_handle.seek_offset(0, os.SEEK_SET)
+
+    data = smraw_handle.read_buffer()
+
+    self.assertIsNotNone(data)
+    self.assertEqual(len(data), media_size)
+
     # Test read with maximum size.
+    smraw_handle.seek_offset(0, os.SEEK_SET)
+
     data = smraw_handle.read_buffer(size=4096)
 
     self.assertIsNotNone(data)
     self.assertEqual(len(data), min(media_size, 4096))
 
-    # Test read with maximum size beyond file size.
-    if media_size > 16:
-      smraw_handle.seek_offset(-16, os.SEEK_END)
+    if media_size > 8:
+      smraw_handle.seek_offset(-8, os.SEEK_END)
 
+      # Read buffer on media_size boundary.
       data = smraw_handle.read_buffer(size=4096)
 
       self.assertIsNotNone(data)
-      self.assertEqual(len(data), 16)
+      self.assertEqual(len(data), 8)
 
-    # Test read without maximum size.
-    if media_size < 4096:
-      smraw_handle.seek_offset(0, os.SEEK_SET)
-
-      data = smraw_handle.read_buffer()
+      # Read buffer beyond media_size boundary.
+      data = smraw_handle.read_buffer(size=4096)
 
       self.assertIsNotNone(data)
-      self.assertEqual(len(data), media_size)
+      self.assertEqual(len(data), 0)
+
+    # Stress test read buffer.
+    smraw_handle.seek_offset(0, os.SEEK_SET)
+
+    remaining_media_size = media_size
+
+    for _ in range(1024):
+      read_size = int(random.random() * 4096)
+
+      data = smraw_handle.read_buffer(size=read_size)
+
+      self.assertIsNotNone(data)
+
+      data_size = len(data)
+
+      if read_size > remaining_media_size:
+        read_size = remaining_media_size
+
+      self.assertEqual(data_size, read_size)
+
+      remaining_media_size -= data_size
+
+      if not remaining_media_size:
+        smraw_handle.seek_offset(0, os.SEEK_SET)
+
+        remaining_media_size = media_size
 
     with self.assertRaises(ValueError):
       smraw_handle.read_buffer(size=-1)
@@ -208,12 +242,43 @@ class HandleTypeTests(unittest.TestCase):
     self.assertIsNotNone(data)
     self.assertEqual(len(data), min(media_size, 4096))
 
-    # Test read beyond file size.
-    if media_size > 16:
-      data = smraw_handle.read_buffer_at_offset(4096, media_size - 16)
+    if media_size > 8:
+      # Read buffer on media_size boundary.
+      data = smraw_handle.read_buffer_at_offset(4096, media_size - 8)
 
       self.assertIsNotNone(data)
-      self.assertEqual(len(data), 16)
+      self.assertEqual(len(data), 8)
+
+      # Read buffer beyond media_size boundary.
+      data = smraw_handle.read_buffer_at_offset(4096, media_size + 8)
+
+      self.assertIsNotNone(data)
+      self.assertEqual(len(data), 0)
+
+    # Stress test read buffer.
+    for _ in range(1024):
+      random_number = random.random()
+
+      media_offset = int(random_number * media_size)
+      read_size = int(random_number * 4096)
+
+      data = smraw_handle.read_buffer_at_offset(read_size, media_offset)
+
+      self.assertIsNotNone(data)
+
+      remaining_media_size = media_size - media_offset
+
+      data_size = len(data)
+
+      if read_size > remaining_media_size:
+        read_size = remaining_media_size
+
+      self.assertEqual(data_size, read_size)
+
+      remaining_media_size -= data_size
+
+      if not remaining_media_size:
+        smraw_handle.seek_offset(0, os.SEEK_SET)
 
     with self.assertRaises(ValueError):
       smraw_handle.read_buffer_at_offset(-1, 0)

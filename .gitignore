@@ -134,7 +134,6 @@ stamp-h[1-9]
 /tests/smraw_test_information_file
 /tests/smraw_test_io_handle
 /tests/smraw_test_notify
-/tests/smraw_test_read_loop
 /tests/smraw_test_support
 /tests/smraw_test_write
 /tests/tmp*

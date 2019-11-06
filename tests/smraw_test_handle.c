@@ -30,6 +30,15 @@
 #include <stdlib.h>
 #endif
 
+#if defined( TIME_WITH_SYS_TIME )
+#include <sys/time.h>
+#include <time.h>
+#elif defined( HAVE_SYS_TIME_H )
+#include <sys/time.h>
+#else
+#include <time.h>
+#endif
+
 #include "smraw_test_functions.h"
 #include "smraw_test_getopt.h"
 #include "smraw_test_libbfio.h"
@@ -37,9 +46,18 @@
 #include "smraw_test_libsmraw.h"
 #include "smraw_test_macros.h"
 #include "smraw_test_memory.h"
-#include "smraw_test_unused.h"
 
 #include "../libsmraw/libsmraw_handle.h"
+
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER ) && SIZEOF_WCHAR_T != 2 && SIZEOF_WCHAR_T != 4
+#error Unsupported size of wchar_t
+#endif
+
+/* Define to make smraw_test_handle generate verbose output
+#define SMRAW_TEST_HANDLE_VERBOSE
+ */
+
+#define SMRAW_TEST_HANDLE_READ_BUFFER_SIZE	4096
 
 #if !defined( LIBSMRAW_HAVE_BFIO )
 
@@ -51,14 +69,6 @@ int libsmraw_handle_open_file_io_pool(
      libsmraw_error_t **error );
 
 #endif /* !defined( LIBSMRAW_HAVE_BFIO ) */
-
-#if defined( HAVE_WIDE_SYSTEM_CHARACTER ) && SIZEOF_WCHAR_T != 2 && SIZEOF_WCHAR_T != 4
-#error Unsupported size of wchar_t
-#endif
-
-/* Define to make smraw_test_handle generate verbose output
-#define SMRAW_TEST_HANDLE_VERBOSE
- */
 
 /* Creates and opens a source handle
  * Returns 1 if successful or -1 on error
@@ -1413,13 +1423,23 @@ on_error:
 int smraw_test_handle_read_buffer(
      libsmraw_handle_t *handle )
 {
-	uint8_t buffer[ 16 ];
+	uint8_t buffer[ SMRAW_TEST_HANDLE_READ_BUFFER_SIZE ];
 
-	libcerror_error_t *error = NULL;
-	size64_t media_size      = 0;
-	ssize_t read_count       = 0;
-	off64_t offset           = 0;
-	int result               = 0;
+	libcerror_error_t *error      = NULL;
+	time_t timestamp              = 0;
+	size64_t media_size           = 0;
+	size64_t remaining_media_size = 0;
+	size_t read_size              = 0;
+	ssize_t read_count            = 0;
+	off64_t offset                = 0;
+	int number_of_tests           = 1024;
+	int random_number             = 0;
+	int result                    = 0;
+	int test_number               = 0;
+
+#if defined( SMRAW_TEST_HANDLE_VERBOSE )
+	off64_t media_offset          = 0;
+#endif
 
 	/* Determine size
 	 */
@@ -1456,23 +1476,29 @@ int smraw_test_handle_read_buffer(
 
 	/* Test regular cases
 	 */
-	if( media_size > 16 )
+	read_size = SMRAW_TEST_HANDLE_READ_BUFFER_SIZE;
+
+	if( media_size < SMRAW_TEST_HANDLE_READ_BUFFER_SIZE )
 	{
-		read_count = libsmraw_handle_read_buffer(
-		              handle,
-		              buffer,
-		              16,
-		              &error );
+		read_size = (size_t) media_size;
+	}
+	read_count = libsmraw_handle_read_buffer(
+	              handle,
+	              buffer,
+	              SMRAW_TEST_HANDLE_READ_BUFFER_SIZE,
+	              &error );
 
-		SMRAW_TEST_ASSERT_EQUAL_SSIZE(
-		 "read_count",
-		 read_count,
-		 (ssize_t) 16 );
+	SMRAW_TEST_ASSERT_EQUAL_SSIZE(
+	 "read_count",
+	 read_count,
+	 (ssize_t) read_size );
 
-		SMRAW_TEST_ASSERT_IS_NULL(
-		 "error",
-		 error );
+	SMRAW_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
 
+	if( media_size > 8 )
+	{
 		/* Set offset to media_size - 8
 		 */
 		offset = libsmraw_handle_seek_offset(
@@ -1495,7 +1521,7 @@ int smraw_test_handle_read_buffer(
 		read_count = libsmraw_handle_read_buffer(
 		              handle,
 		              buffer,
-		              16,
+		              SMRAW_TEST_HANDLE_READ_BUFFER_SIZE,
 		              &error );
 
 		SMRAW_TEST_ASSERT_EQUAL_SSIZE(
@@ -1512,7 +1538,7 @@ int smraw_test_handle_read_buffer(
 		read_count = libsmraw_handle_read_buffer(
 		              handle,
 		              buffer,
-		              16,
+		              SMRAW_TEST_HANDLE_READ_BUFFER_SIZE,
 		              &error );
 
 		SMRAW_TEST_ASSERT_EQUAL_SSIZE(
@@ -1523,30 +1549,108 @@ int smraw_test_handle_read_buffer(
 		SMRAW_TEST_ASSERT_IS_NULL(
 		 "error",
 		 error );
+	}
+	/* Stress test read buffer
+	 */
+	timestamp = time(
+	             NULL );
 
-		/* Reset offset to 0
-		 */
-		offset = libsmraw_handle_seek_offset(
-		          handle,
-		          0,
-		          SEEK_SET,
-		          &error );
+	srand(
+	 (unsigned int) timestamp );
 
-		SMRAW_TEST_ASSERT_EQUAL_INT64(
-		 "offset",
-		 offset,
-		 (int64_t) 0 );
+	offset = libsmraw_handle_seek_offset(
+	          handle,
+	          0,
+	          SEEK_SET,
+	          &error );
+
+	SMRAW_TEST_ASSERT_EQUAL_INT64(
+	 "offset",
+	 offset,
+	 (int64_t) 0 );
+
+	SMRAW_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	remaining_media_size = media_size;
+
+	for( test_number = 0;
+	     test_number < number_of_tests;
+	     test_number++ )
+	{
+		random_number = rand();
+
+		SMRAW_TEST_ASSERT_GREATER_THAN_INT(
+		 "random_number",
+		 random_number,
+		 -1 );
+
+		read_size = (size_t) random_number % SMRAW_TEST_HANDLE_READ_BUFFER_SIZE;
+
+#if defined( SMRAW_TEST_HANDLE_VERBOSE )
+		fprintf(
+		 stdout,
+		 "libsmraw_handle_read_buffer: at offset: %" PRIi64 " (0x%08" PRIx64 ") of size: %" PRIzd "\n",
+		 media_offset,
+		 media_offset,
+		 read_size );
+#endif
+		read_count = libsmraw_handle_read_buffer(
+		              handle,
+		              buffer,
+		              read_size,
+		              &error );
+
+		if( read_size > remaining_media_size )
+		{
+			read_size = (size_t) remaining_media_size;
+		}
+		SMRAW_TEST_ASSERT_EQUAL_SSIZE(
+		 "read_count",
+		 read_count,
+		 (ssize_t) read_size );
 
 		SMRAW_TEST_ASSERT_IS_NULL(
 		 "error",
 		 error );
+
+		remaining_media_size -= read_count;
+
+#if defined( SMRAW_TEST_HANDLE_VERBOSE )
+		media_offset += read_count;
+#endif
+
+		if( remaining_media_size == 0 )
+		{
+			offset = libsmraw_handle_seek_offset(
+			          handle,
+			          0,
+			          SEEK_SET,
+			          &error );
+
+			SMRAW_TEST_ASSERT_EQUAL_INT64(
+			 "offset",
+			 offset,
+			 (int64_t) 0 );
+
+			SMRAW_TEST_ASSERT_IS_NULL(
+			 "error",
+			 error );
+
+			remaining_media_size = media_size;
+
+#if defined( SMRAW_TEST_HANDLE_VERBOSE )
+			media_offset = 0;
+#endif
+		}
 	}
 	/* Test error cases
 	 */
 	read_count = libsmraw_handle_read_buffer(
 	              NULL,
 	              buffer,
-	              16,
+	              SMRAW_TEST_HANDLE_READ_BUFFER_SIZE,
 	              &error );
 
 	SMRAW_TEST_ASSERT_EQUAL_SSIZE(
@@ -1564,7 +1668,7 @@ int smraw_test_handle_read_buffer(
 	read_count = libsmraw_handle_read_buffer(
 	              handle,
 	              NULL,
-	              16,
+	              SMRAW_TEST_HANDLE_READ_BUFFER_SIZE,
 	              &error );
 
 	SMRAW_TEST_ASSERT_EQUAL_SSIZE(
@@ -1614,12 +1718,20 @@ on_error:
 int smraw_test_handle_read_buffer_at_offset(
      libsmraw_handle_t *handle )
 {
-	uint8_t buffer[ 16 ];
+	uint8_t buffer[ SMRAW_TEST_HANDLE_READ_BUFFER_SIZE ];
 
-	libcerror_error_t *error = NULL;
-	size64_t media_size      = 0;
-	ssize_t read_count       = 0;
-	int result               = 0;
+	libcerror_error_t *error      = NULL;
+	time_t timestamp              = 0;
+	size64_t media_size           = 0;
+	size64_t remaining_media_size = 0;
+	size_t read_size              = 0;
+	ssize_t read_count            = 0;
+	off64_t media_offset          = 0;
+	off64_t offset                = 0;
+	int number_of_tests           = 1024;
+	int random_number             = 0;
+	int result                    = 0;
+	int test_number               = 0;
 
 	/* Determine size
 	 */
@@ -1639,30 +1751,36 @@ int smraw_test_handle_read_buffer_at_offset(
 
 	/* Test regular cases
 	 */
-	if( media_size > 16 )
+	read_size = SMRAW_TEST_HANDLE_READ_BUFFER_SIZE;
+
+	if( media_size < SMRAW_TEST_HANDLE_READ_BUFFER_SIZE )
 	{
-		read_count = libsmraw_handle_read_buffer_at_offset(
-		              handle,
-		              buffer,
-		              16,
-		              0,
-		              &error );
+		read_size = (size_t) media_size;
+	}
+	read_count = libsmraw_handle_read_buffer_at_offset(
+	              handle,
+	              buffer,
+	              SMRAW_TEST_HANDLE_READ_BUFFER_SIZE,
+	              0,
+	              &error );
 
-		SMRAW_TEST_ASSERT_EQUAL_SSIZE(
-		 "read_count",
-		 read_count,
-		 (ssize_t) 16 );
+	SMRAW_TEST_ASSERT_EQUAL_SSIZE(
+	 "read_count",
+	 read_count,
+	 (ssize_t) read_size );
 
-		SMRAW_TEST_ASSERT_IS_NULL(
-		 "error",
-		 error );
+	SMRAW_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
 
+	if( media_size > 8 )
+	{
 		/* Read buffer on media_size boundary
 		 */
 		read_count = libsmraw_handle_read_buffer_at_offset(
 		              handle,
 		              buffer,
-		              16,
+		              SMRAW_TEST_HANDLE_READ_BUFFER_SIZE,
 		              media_size - 8,
 		              &error );
 
@@ -1680,7 +1798,7 @@ int smraw_test_handle_read_buffer_at_offset(
 		read_count = libsmraw_handle_read_buffer_at_offset(
 		              handle,
 		              buffer,
-		              16,
+		              SMRAW_TEST_HANDLE_READ_BUFFER_SIZE,
 		              media_size + 8,
 		              &error );
 
@@ -1693,12 +1811,89 @@ int smraw_test_handle_read_buffer_at_offset(
 		 "error",
 		 error );
 	}
+	/* Stress test read buffer
+	 */
+	timestamp = time(
+	             NULL );
+
+	srand(
+	 (unsigned int) timestamp );
+
+	for( test_number = 0;
+	     test_number < number_of_tests;
+	     test_number++ )
+	{
+		random_number = rand();
+
+		SMRAW_TEST_ASSERT_GREATER_THAN_INT(
+		 "random_number",
+		 random_number,
+		 -1 );
+
+		if( media_size > 0 )
+		{
+			media_offset = (off64_t) random_number % media_size;
+		}
+		read_size = (size_t) random_number % SMRAW_TEST_HANDLE_READ_BUFFER_SIZE;
+
+#if defined( SMRAW_TEST_HANDLE_VERBOSE )
+		fprintf(
+		 stdout,
+		 "libsmraw_handle_read_buffer_at_offset: at offset: %" PRIi64 " (0x%08" PRIx64 ") of size: %" PRIzd "\n",
+		 media_offset,
+		 media_offset,
+		 read_size );
+#endif
+		read_count = libsmraw_handle_read_buffer_at_offset(
+		              handle,
+		              buffer,
+		              read_size,
+		              media_offset,
+		              &error );
+
+		remaining_media_size = media_size - media_offset;
+
+		if( read_size > remaining_media_size )
+		{
+			read_size = (size_t) remaining_media_size;
+		}
+		SMRAW_TEST_ASSERT_EQUAL_SSIZE(
+		 "read_count",
+		 read_count,
+		 (ssize_t) read_size );
+
+		SMRAW_TEST_ASSERT_IS_NULL(
+		 "error",
+		 error );
+
+		remaining_media_size -= read_count;
+
+		if( remaining_media_size == 0 )
+		{
+			offset = libsmraw_handle_seek_offset(
+			          handle,
+			          0,
+			          SEEK_SET,
+			          &error );
+
+			SMRAW_TEST_ASSERT_EQUAL_INT64(
+			 "offset",
+			 offset,
+			 (int64_t) 0 );
+
+			SMRAW_TEST_ASSERT_IS_NULL(
+			 "error",
+			 error );
+
+			remaining_media_size = media_size;
+		}
+	}
 	/* Test error cases
 	 */
 	read_count = libsmraw_handle_read_buffer_at_offset(
 	              NULL,
 	              buffer,
-	              16,
+	              SMRAW_TEST_HANDLE_READ_BUFFER_SIZE,
 	              0,
 	              &error );
 
@@ -1717,7 +1912,7 @@ int smraw_test_handle_read_buffer_at_offset(
 	read_count = libsmraw_handle_read_buffer_at_offset(
 	              handle,
 	              NULL,
-	              16,
+	              SMRAW_TEST_HANDLE_READ_BUFFER_SIZE,
 	              0,
 	              &error );
 
@@ -1755,7 +1950,7 @@ int smraw_test_handle_read_buffer_at_offset(
 	read_count = libsmraw_handle_read_buffer_at_offset(
 	              handle,
 	              buffer,
-	              16,
+	              SMRAW_TEST_HANDLE_READ_BUFFER_SIZE,
 	              -1,
 	              &error );
 
@@ -1963,7 +2158,6 @@ int smraw_test_handle_get_offset(
 {
 	libcerror_error_t *error = NULL;
 	off64_t offset           = 0;
-	int offset_is_set        = 0;
 	int result               = 0;
 
 	/* Test regular cases
@@ -1973,16 +2167,14 @@ int smraw_test_handle_get_offset(
 	          &offset,
 	          &error );
 
-	SMRAW_TEST_ASSERT_NOT_EQUAL_INT(
+	SMRAW_TEST_ASSERT_EQUAL_INT(
 	 "result",
 	 result,
-	 -1 );
+	 1 );
 
 	SMRAW_TEST_ASSERT_IS_NULL(
 	 "error",
 	 error );
-
-	offset_is_set = result;
 
 	/* Test error cases
 	 */
@@ -2003,25 +2195,23 @@ int smraw_test_handle_get_offset(
 	libcerror_error_free(
 	 &error );
 
-	if( offset_is_set != 0 )
-	{
-		result = libsmraw_handle_get_offset(
-		          handle,
-		          NULL,
-		          &error );
+	result = libsmraw_handle_get_offset(
+	          handle,
+	          NULL,
+	          &error );
 
-		SMRAW_TEST_ASSERT_EQUAL_INT(
-		 "result",
-		 result,
-		 -1 );
+	SMRAW_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
 
-		SMRAW_TEST_ASSERT_IS_NOT_NULL(
-		 "error",
-		 error );
+	SMRAW_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
 
-		libcerror_error_free(
-		 &error );
-	}
+	libcerror_error_free(
+	 &error );
+
 	return( 1 );
 
 on_error:
@@ -2281,10 +2471,9 @@ on_error:
 int smraw_test_handle_get_maximum_segment_size(
      libsmraw_handle_t *handle )
 {
-	libcerror_error_t *error        = NULL;
-	size64_t maximum_segment_size   = 0;
-	int maximum_segment_size_is_set = 0;
-	int result                      = 0;
+	libcerror_error_t *error      = NULL;
+	size64_t maximum_segment_size = 0;
+	int result                    = 0;
 
 	/* Test regular cases
 	 */
@@ -2293,16 +2482,14 @@ int smraw_test_handle_get_maximum_segment_size(
 	          &maximum_segment_size,
 	          &error );
 
-	SMRAW_TEST_ASSERT_NOT_EQUAL_INT(
+	SMRAW_TEST_ASSERT_EQUAL_INT(
 	 "result",
 	 result,
-	 -1 );
+	 1 );
 
 	SMRAW_TEST_ASSERT_IS_NULL(
 	 "error",
 	 error );
-
-	maximum_segment_size_is_set = result;
 
 	/* Test error cases
 	 */
@@ -2323,25 +2510,23 @@ int smraw_test_handle_get_maximum_segment_size(
 	libcerror_error_free(
 	 &error );
 
-	if( maximum_segment_size_is_set != 0 )
-	{
-		result = libsmraw_handle_get_maximum_segment_size(
-		          handle,
-		          NULL,
-		          &error );
+	result = libsmraw_handle_get_maximum_segment_size(
+	          handle,
+	          NULL,
+	          &error );
 
-		SMRAW_TEST_ASSERT_EQUAL_INT(
-		 "result",
-		 result,
-		 -1 );
+	SMRAW_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
 
-		SMRAW_TEST_ASSERT_IS_NOT_NULL(
-		 "error",
-		 error );
+	SMRAW_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
 
-		libcerror_error_free(
-		 &error );
-	}
+	libcerror_error_free(
+	 &error );
+
 	return( 1 );
 
 on_error:
@@ -2363,7 +2548,6 @@ int smraw_test_handle_get_filename_size(
 	size64_t media_size      = 0;
 	size_t filename_size     = 0;
 	off64_t offset           = 0;
-	int filename_size_is_set = 0;
 	int result               = 0;
 
 	/* Determine size
@@ -2412,16 +2596,14 @@ int smraw_test_handle_get_filename_size(
 	          &filename_size,
 	          &error );
 
-	SMRAW_TEST_ASSERT_NOT_EQUAL_INT(
+	SMRAW_TEST_ASSERT_EQUAL_INT(
 	 "result",
 	 result,
-	 -1 );
+	 1 );
 
 	SMRAW_TEST_ASSERT_IS_NULL(
 	 "error",
 	 error );
-
-	filename_size_is_set = result;
 
 	/* Test error cases
 	 */
@@ -2442,25 +2624,23 @@ int smraw_test_handle_get_filename_size(
 	libcerror_error_free(
 	 &error );
 
-	if( filename_size_is_set != 0 )
-	{
-		result = libsmraw_handle_get_filename_size(
-		          handle,
-		          NULL,
-		          &error );
+	result = libsmraw_handle_get_filename_size(
+	          handle,
+	          NULL,
+	          &error );
 
-		SMRAW_TEST_ASSERT_EQUAL_INT(
-		 "result",
-		 result,
-		 -1 );
+	SMRAW_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
 
-		SMRAW_TEST_ASSERT_IS_NOT_NULL(
-		 "error",
-		 error );
+	SMRAW_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
 
-		libcerror_error_free(
-		 &error );
-	}
+	libcerror_error_free(
+	 &error );
+
 	return( 1 );
 
 on_error:
@@ -2480,12 +2660,11 @@ on_error:
 int smraw_test_handle_get_filename_size_wide(
      libsmraw_handle_t *handle )
 {
-	libcerror_error_t *error      = NULL;
-	size64_t media_size           = 0;
-	size_t filename_size_wide     = 0;
-	off64_t offset                = 0;
-	int filename_size_wide_is_set = 0;
-	int result                    = 0;
+	libcerror_error_t *error  = NULL;
+	size64_t media_size       = 0;
+	size_t filename_size_wide = 0;
+	off64_t offset            = 0;
+	int result                = 0;
 
 	/* Determine size
 	 */
@@ -2533,16 +2712,14 @@ int smraw_test_handle_get_filename_size_wide(
 	          &filename_size_wide,
 	          &error );
 
-	SMRAW_TEST_ASSERT_NOT_EQUAL_INT(
+	SMRAW_TEST_ASSERT_EQUAL_INT(
 	 "result",
 	 result,
-	 -1 );
+	 1 );
 
 	SMRAW_TEST_ASSERT_IS_NULL(
 	 "error",
 	 error );
-
-	filename_size_wide_is_set = result;
 
 	/* Test error cases
 	 */
@@ -2563,25 +2740,23 @@ int smraw_test_handle_get_filename_size_wide(
 	libcerror_error_free(
 	 &error );
 
-	if( filename_size_wide_is_set != 0 )
-	{
-		result = libsmraw_handle_get_filename_size_wide(
-		          handle,
-		          NULL,
-		          &error );
+	result = libsmraw_handle_get_filename_size_wide(
+	          handle,
+	          NULL,
+	          &error );
 
-		SMRAW_TEST_ASSERT_EQUAL_INT(
-		 "result",
-		 result,
-		 -1 );
+	SMRAW_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
 
-		SMRAW_TEST_ASSERT_IS_NOT_NULL(
-		 "error",
-		 error );
+	SMRAW_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
 
-		libcerror_error_free(
-		 &error );
-	}
+	libcerror_error_free(
+	 &error );
+
 	return( 1 );
 
 on_error:
@@ -2615,10 +2790,10 @@ int smraw_test_handle_get_file_io_handle(
 	          &file_io_handle,
 	          &error );
 
-	SMRAW_TEST_ASSERT_NOT_EQUAL_INT(
+	SMRAW_TEST_ASSERT_EQUAL_INT(
 	 "result",
 	 result,
-	 -1 );
+	 1 );
 
 	SMRAW_TEST_ASSERT_IS_NULL(
 	 "error",
@@ -2685,7 +2860,6 @@ int smraw_test_handle_get_media_size(
 {
 	libcerror_error_t *error = NULL;
 	size64_t media_size      = 0;
-	int media_size_is_set    = 0;
 	int result               = 0;
 
 	/* Test regular cases
@@ -2695,16 +2869,14 @@ int smraw_test_handle_get_media_size(
 	          &media_size,
 	          &error );
 
-	SMRAW_TEST_ASSERT_NOT_EQUAL_INT(
+	SMRAW_TEST_ASSERT_EQUAL_INT(
 	 "result",
 	 result,
-	 -1 );
+	 1 );
 
 	SMRAW_TEST_ASSERT_IS_NULL(
 	 "error",
 	 error );
-
-	media_size_is_set = result;
 
 	/* Test error cases
 	 */
@@ -2725,25 +2897,23 @@ int smraw_test_handle_get_media_size(
 	libcerror_error_free(
 	 &error );
 
-	if( media_size_is_set != 0 )
-	{
-		result = libsmraw_handle_get_media_size(
-		          handle,
-		          NULL,
-		          &error );
+	result = libsmraw_handle_get_media_size(
+	          handle,
+	          NULL,
+	          &error );
 
-		SMRAW_TEST_ASSERT_EQUAL_INT(
-		 "result",
-		 result,
-		 -1 );
+	SMRAW_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
 
-		SMRAW_TEST_ASSERT_IS_NOT_NULL(
-		 "error",
-		 error );
+	SMRAW_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
 
-		libcerror_error_free(
-		 &error );
-	}
+	libcerror_error_free(
+	 &error );
+
 	return( 1 );
 
 on_error:
@@ -2761,10 +2931,9 @@ on_error:
 int smraw_test_handle_get_bytes_per_sector(
      libsmraw_handle_t *handle )
 {
-	libcerror_error_t *error    = NULL;
-	uint32_t bytes_per_sector   = 0;
-	int bytes_per_sector_is_set = 0;
-	int result                  = 0;
+	libcerror_error_t *error  = NULL;
+	uint32_t bytes_per_sector = 0;
+	int result                = 0;
 
 	/* Test regular cases
 	 */
@@ -2773,16 +2942,14 @@ int smraw_test_handle_get_bytes_per_sector(
 	          &bytes_per_sector,
 	          &error );
 
-	SMRAW_TEST_ASSERT_NOT_EQUAL_INT(
+	SMRAW_TEST_ASSERT_EQUAL_INT(
 	 "result",
 	 result,
-	 -1 );
+	 1 );
 
 	SMRAW_TEST_ASSERT_IS_NULL(
 	 "error",
 	 error );
-
-	bytes_per_sector_is_set = result;
 
 	/* Test error cases
 	 */
@@ -2803,25 +2970,23 @@ int smraw_test_handle_get_bytes_per_sector(
 	libcerror_error_free(
 	 &error );
 
-	if( bytes_per_sector_is_set != 0 )
-	{
-		result = libsmraw_handle_get_bytes_per_sector(
-		          handle,
-		          NULL,
-		          &error );
+	result = libsmraw_handle_get_bytes_per_sector(
+	          handle,
+	          NULL,
+	          &error );
 
-		SMRAW_TEST_ASSERT_EQUAL_INT(
-		 "result",
-		 result,
-		 -1 );
+	SMRAW_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
 
-		SMRAW_TEST_ASSERT_IS_NOT_NULL(
-		 "error",
-		 error );
+	SMRAW_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
 
-		libcerror_error_free(
-		 &error );
-	}
+	libcerror_error_free(
+	 &error );
+
 	return( 1 );
 
 on_error:
@@ -2841,7 +3006,6 @@ int smraw_test_handle_get_media_type(
 {
 	libcerror_error_t *error = NULL;
 	uint8_t media_type       = 0;
-	int media_type_is_set    = 0;
 	int result               = 0;
 
 	/* Test regular cases
@@ -2851,16 +3015,14 @@ int smraw_test_handle_get_media_type(
 	          &media_type,
 	          &error );
 
-	SMRAW_TEST_ASSERT_NOT_EQUAL_INT(
+	SMRAW_TEST_ASSERT_EQUAL_INT(
 	 "result",
 	 result,
-	 -1 );
+	 1 );
 
 	SMRAW_TEST_ASSERT_IS_NULL(
 	 "error",
 	 error );
-
-	media_type_is_set = result;
 
 	/* Test error cases
 	 */
@@ -2881,25 +3043,23 @@ int smraw_test_handle_get_media_type(
 	libcerror_error_free(
 	 &error );
 
-	if( media_type_is_set != 0 )
-	{
-		result = libsmraw_handle_get_media_type(
-		          handle,
-		          NULL,
-		          &error );
+	result = libsmraw_handle_get_media_type(
+	          handle,
+	          NULL,
+	          &error );
 
-		SMRAW_TEST_ASSERT_EQUAL_INT(
-		 "result",
-		 result,
-		 -1 );
+	SMRAW_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
 
-		SMRAW_TEST_ASSERT_IS_NOT_NULL(
-		 "error",
-		 error );
+	SMRAW_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
 
-		libcerror_error_free(
-		 &error );
-	}
+	libcerror_error_free(
+	 &error );
+
 	return( 1 );
 
 on_error:
@@ -2919,7 +3079,6 @@ int smraw_test_handle_get_media_flags(
 {
 	libcerror_error_t *error = NULL;
 	uint8_t media_flags      = 0;
-	int media_flags_is_set   = 0;
 	int result               = 0;
 
 	/* Test regular cases
@@ -2929,16 +3088,14 @@ int smraw_test_handle_get_media_flags(
 	          &media_flags,
 	          &error );
 
-	SMRAW_TEST_ASSERT_NOT_EQUAL_INT(
+	SMRAW_TEST_ASSERT_EQUAL_INT(
 	 "result",
 	 result,
-	 -1 );
+	 1 );
 
 	SMRAW_TEST_ASSERT_IS_NULL(
 	 "error",
 	 error );
-
-	media_flags_is_set = result;
 
 	/* Test error cases
 	 */
@@ -2959,25 +3116,23 @@ int smraw_test_handle_get_media_flags(
 	libcerror_error_free(
 	 &error );
 
-	if( media_flags_is_set != 0 )
-	{
-		result = libsmraw_handle_get_media_flags(
-		          handle,
-		          NULL,
-		          &error );
+	result = libsmraw_handle_get_media_flags(
+	          handle,
+	          NULL,
+	          &error );
 
-		SMRAW_TEST_ASSERT_EQUAL_INT(
-		 "result",
-		 result,
-		 -1 );
+	SMRAW_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
 
-		SMRAW_TEST_ASSERT_IS_NOT_NULL(
-		 "error",
-		 error );
+	SMRAW_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
 
-		libcerror_error_free(
-		 &error );
-	}
+	libcerror_error_free(
+	 &error );
+
 	return( 1 );
 
 on_error:
@@ -2995,10 +3150,9 @@ on_error:
 int smraw_test_handle_get_number_of_information_values(
      libsmraw_handle_t *handle )
 {
-	libcerror_error_t *error                = NULL;
-	int number_of_information_values        = 0;
-	int number_of_information_values_is_set = 0;
-	int result                              = 0;
+	libcerror_error_t *error         = NULL;
+	int number_of_information_values = 0;
+	int result                       = 0;
 
 	/* Test regular cases
 	 */
@@ -3007,16 +3161,14 @@ int smraw_test_handle_get_number_of_information_values(
 	          &number_of_information_values,
 	          &error );
 
-	SMRAW_TEST_ASSERT_NOT_EQUAL_INT(
+	SMRAW_TEST_ASSERT_EQUAL_INT(
 	 "result",
 	 result,
-	 -1 );
+	 1 );
 
 	SMRAW_TEST_ASSERT_IS_NULL(
 	 "error",
 	 error );
-
-	number_of_information_values_is_set = result;
 
 	/* Test error cases
 	 */
@@ -3037,25 +3189,23 @@ int smraw_test_handle_get_number_of_information_values(
 	libcerror_error_free(
 	 &error );
 
-	if( number_of_information_values_is_set != 0 )
-	{
-		result = libsmraw_handle_get_number_of_information_values(
-		          handle,
-		          NULL,
-		          &error );
+	result = libsmraw_handle_get_number_of_information_values(
+	          handle,
+	          NULL,
+	          &error );
 
-		SMRAW_TEST_ASSERT_EQUAL_INT(
-		 "result",
-		 result,
-		 -1 );
+	SMRAW_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
 
-		SMRAW_TEST_ASSERT_IS_NOT_NULL(
-		 "error",
-		 error );
+	SMRAW_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
 
-		libcerror_error_free(
-		 &error );
-	}
+	libcerror_error_free(
+	 &error );
+
 	return( 1 );
 
 on_error:
@@ -3073,10 +3223,9 @@ on_error:
 int smraw_test_handle_get_number_of_integrity_hash_values(
      libsmraw_handle_t *handle )
 {
-	libcerror_error_t *error                   = NULL;
-	int number_of_integrity_hash_values        = 0;
-	int number_of_integrity_hash_values_is_set = 0;
-	int result                                 = 0;
+	libcerror_error_t *error            = NULL;
+	int number_of_integrity_hash_values = 0;
+	int result                          = 0;
 
 	/* Test regular cases
 	 */
@@ -3085,16 +3234,14 @@ int smraw_test_handle_get_number_of_integrity_hash_values(
 	          &number_of_integrity_hash_values,
 	          &error );
 
-	SMRAW_TEST_ASSERT_NOT_EQUAL_INT(
+	SMRAW_TEST_ASSERT_EQUAL_INT(
 	 "result",
 	 result,
-	 -1 );
+	 1 );
 
 	SMRAW_TEST_ASSERT_IS_NULL(
 	 "error",
 	 error );
-
-	number_of_integrity_hash_values_is_set = result;
 
 	/* Test error cases
 	 */
@@ -3115,25 +3262,23 @@ int smraw_test_handle_get_number_of_integrity_hash_values(
 	libcerror_error_free(
 	 &error );
 
-	if( number_of_integrity_hash_values_is_set != 0 )
-	{
-		result = libsmraw_handle_get_number_of_integrity_hash_values(
-		          handle,
-		          NULL,
-		          &error );
+	result = libsmraw_handle_get_number_of_integrity_hash_values(
+	          handle,
+	          NULL,
+	          &error );
 
-		SMRAW_TEST_ASSERT_EQUAL_INT(
-		 "result",
-		 result,
-		 -1 );
+	SMRAW_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
 
-		SMRAW_TEST_ASSERT_IS_NOT_NULL(
-		 "error",
-		 error );
+	SMRAW_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
 
-		libcerror_error_free(
-		 &error );
-	}
+	libcerror_error_free(
+	 &error );
+
 	return( 1 );
 
 on_error:
