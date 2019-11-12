@@ -17,6 +17,7 @@ MSVSCPP_FILES = \
 	pysmraw/pysmraw.vcproj \
 	smraw.net/smraw.net.vcproj \
 	smraw_test_error/smraw_test_error.vcproj \
+	smraw_test_filename/smraw_test_filename.vcproj \
 	smraw_test_glob/smraw_test_glob.vcproj \
 	smraw_test_handle/smraw_test_handle.vcproj \
 	smraw_test_information_file/smraw_test_information_file.vcproj \

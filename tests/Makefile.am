@@ -47,6 +47,7 @@ EXTRA_DIST = \
 
 check_PROGRAMS = \
 	smraw_test_error \
+	smraw_test_filename \
 	smraw_test_glob \
 	smraw_test_handle \
 	smraw_test_information_file \
@@ -63,6 +64,18 @@ smraw_test_error_SOURCES = \
 
 smraw_test_error_LDADD = \
 	../libsmraw/libsmraw.la
+
+smraw_test_filename_SOURCES = \
+	smraw_test_filename.c \
+	smraw_test_libcerror.h \
+	smraw_test_libsmraw.h \
+	smraw_test_macros.h \
+	smraw_test_memory.c smraw_test_memory.h \
+	smraw_test_unused.h
+
+smraw_test_filename_LDADD = \
+	../libsmraw/libsmraw.la \
+	@LIBCERROR_LIBADD@
 
 smraw_test_glob_SOURCES = \
 	smraw_test_glob.c \

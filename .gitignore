@@ -129,6 +129,7 @@ stamp-h[1-9]
 /tests/*.exe
 /tests/input
 /tests/smraw_test_error
+/tests/smraw_test_filename
 /tests/smraw_test_glob
 /tests/smraw_test_handle
 /tests/smraw_test_information_file

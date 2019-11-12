@@ -6,7 +6,7 @@ $ExitSuccess = 0
 $ExitFailure = 1
 $ExitIgnore = 77
 
-$LibraryTests = "error information_file io_handle notify support"
+$LibraryTests = "error filename information_file io_handle notify support"
 $LibraryTestsWithInput = "handle"
 
 $InputGlob = "*"
