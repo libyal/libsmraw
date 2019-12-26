@@ -1,7 +1,7 @@
 #!/bin/bash
 # Library glob testing script
 #
-# Version: 20190309
+# Version: 20191226
 
 EXIT_SUCCESS=0;
 EXIT_FAILURE=1;
@@ -52,6 +52,10 @@ test_glob()
 
 	if test ${RESULT} -eq ${EXIT_SUCCESS};
 	then
+		if test "${OSTYPE}" = "msys";
+		then
+			sed -i 's/\r\n/\n/' ${TMPDIR}/output;
+		fi
 		if ! cmp -s ${TMPDIR}/input ${TMPDIR}/output;
 		then
 			RESULT=${EXIT_FAILURE};
@@ -105,6 +109,10 @@ test_glob_sequence()
 
 	if test ${RESULT} -eq ${EXIT_SUCCESS};
 	then
+		if test "${OSTYPE}" = "msys";
+		then
+			sed -i 's/\r\n/\n/' ${TMPDIR}/output;
+		fi
 		if ! cmp -s ${TMPDIR}/input ${TMPDIR}/output;
 		then
 			RESULT=${EXIT_FAILURE};
@@ -126,6 +134,15 @@ test_glob_sequence()
 
 if ! test -z ${SKIP_LIBRARY_TESTS};
 then
+	exit ${EXIT_IGNORE};
+fi
+
+OPERATING_SYSTEM=`uname -o 2> /dev/null`;
+
+if test "${OPERATING_SYSTEM}" = "Cygwin" || test "${OPERATING_SYSTEM}" = "Msys";
+then
+	# The glob tests run very slow on Cygwin and Msys.
+
 	exit ${EXIT_IGNORE};
 fi
 
