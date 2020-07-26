@@ -54,14 +54,19 @@ PyMethodDef pysmraw_module_methods[] = {
 	  "Globs filenames according to several split RAW storage media image naming schemas." },
 
 	{ "open",
-	  (PyCFunction) pysmraw_handle_new_open,
+	  (PyCFunction) pysmraw_open_new_handle,
 	  METH_VARARGS | METH_KEYWORDS,
 	  "open(filenames, mode='r') -> Object\n"
 	  "\n"
 	  "Opens file(s) from a sequence (list) of all the segment filenames.\n"
 	  "Use pysmraw.glob() to determine the segment filenames from first." },
 
-/* TODO: open file-like object using pool - list of file objects */
+	{ "open_file_objects",
+	  (PyCFunction) pysmraw_open_new_handle_with_file_objects,
+	  METH_VARARGS | METH_KEYWORDS,
+	  "open_file_objects(file_objects, mode='r') -> Object\n"
+	  "\n"
+          "Opens file(s) from a sequence (list) of file-like objects." },
 
 	/* Sentinel */
 	{ NULL,
@@ -485,6 +490,108 @@ on_error:
 		Py_END_ALLOW_THREADS
 	}
 #endif
+	return( NULL );
+}
+
+/* Creates a new handle object and opens it
+ * Returns a Python object if successful or NULL on error
+ */
+PyObject *pysmraw_open_new_handle(
+           PyObject *self PYSMRAW_ATTRIBUTE_UNUSED,
+           PyObject *arguments,
+           PyObject *keywords )
+{
+	pysmraw_handle_t *pysmraw_handle = NULL;
+	static char *function            = "pysmraw_open_new_handle";
+
+	PYSMRAW_UNREFERENCED_PARAMETER( self )
+
+	/* PyObject_New does not invoke tp_init
+	 */
+	pysmraw_handle = PyObject_New(
+	                  struct pysmraw_handle,
+	                  &pysmraw_handle_type_object );
+
+	if( pysmraw_handle == NULL )
+	{
+		PyErr_Format(
+		 PyExc_MemoryError,
+		 "%s: unable to create handle.",
+		 function );
+
+		goto on_error;
+	}
+	if( pysmraw_handle_init(
+	     pysmraw_handle ) != 0 )
+	{
+		goto on_error;
+	}
+	if( pysmraw_handle_open(
+	     pysmraw_handle,
+	     arguments,
+	     keywords ) == NULL )
+	{
+		goto on_error;
+	}
+	return( (PyObject *) pysmraw_handle );
+
+on_error:
+	if( pysmraw_handle != NULL )
+	{
+		Py_DecRef(
+		 (PyObject *) pysmraw_handle );
+	}
+	return( NULL );
+}
+
+/* Creates a new handle object and opens it using file-like objects
+ * Returns a Python object if successful or NULL on error
+ */
+PyObject *pysmraw_open_new_handle_with_file_objects(
+           PyObject *self PYSMRAW_ATTRIBUTE_UNUSED,
+           PyObject *arguments,
+           PyObject *keywords )
+{
+	pysmraw_handle_t *pysmraw_handle = NULL;
+	static char *function            = "pysmraw_open_new_handle_with_file_objects";
+
+	PYSMRAW_UNREFERENCED_PARAMETER( self )
+
+	/* PyObject_New does not invoke tp_init
+	 */
+	pysmraw_handle = PyObject_New(
+	                  struct pysmraw_handle,
+	                  &pysmraw_handle_type_object );
+
+	if( pysmraw_handle == NULL )
+	{
+		PyErr_Format(
+		 PyExc_MemoryError,
+		 "%s: unable to create handle.",
+		 function );
+
+		goto on_error;
+	}
+	if( pysmraw_handle_init(
+	     pysmraw_handle ) != 0 )
+	{
+		goto on_error;
+	}
+	if( pysmraw_handle_open_file_objects(
+	     pysmraw_handle,
+	     arguments,
+	     keywords ) == NULL )
+	{
+		goto on_error;
+	}
+	return( (PyObject *) pysmraw_handle );
+
+on_error:
+	if( pysmraw_handle != NULL )
+	{
+		Py_DecRef(
+		 (PyObject *) pysmraw_handle );
+	}
 	return( NULL );
 }
 

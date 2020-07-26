@@ -54,19 +54,6 @@ struct pysmraw_handle
 extern PyMethodDef pysmraw_handle_object_methods[];
 extern PyTypeObject pysmraw_handle_type_object;
 
-PyObject *pysmraw_handle_new(
-           void );
-
-PyObject *pysmraw_handle_new_open(
-           PyObject *self,
-           PyObject *arguments,
-           PyObject *keywords );
-
-PyObject *pysmraw_handle_new_open_file_objects(
-           PyObject *self,
-           PyObject *arguments,
-           PyObject *keywords );
-
 int pysmraw_handle_init(
      pysmraw_handle_t *pysmraw_handle );
 
@@ -124,5 +111,5 @@ PyObject *pysmraw_handle_get_offset(
 }
 #endif
 
-#endif
+#endif /* !defined( _PYSMRAW_HANDLE_H ) */
 

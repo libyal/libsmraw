@@ -27,7 +27,6 @@
 #include <stdlib.h>
 #endif
 
-#include "smraw_test_libcerror.h"
 #include "smraw_test_libsmraw.h"
 #include "smraw_test_macros.h"
 #include "smraw_test_unused.h"

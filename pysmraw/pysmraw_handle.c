@@ -276,93 +276,6 @@ PyTypeObject pysmraw_handle_type_object = {
 	0
 };
 
-/* Creates a new pysmraw handle object
- * Returns a Python object if successful or NULL on error
- */
-PyObject *pysmraw_handle_new(
-           void )
-{
-	static char *function            = "pysmraw_handle_new";
-	pysmraw_handle_t *pysmraw_handle = NULL;
-
-	pysmraw_handle = PyObject_New(
-	                  struct pysmraw_handle,
-	                  &pysmraw_handle_type_object );
-
-	if( pysmraw_handle == NULL )
-	{
-		PyErr_Format(
-		 PyExc_MemoryError,
-		 "%s: unable to initialize handle.",
-		 function );
-
-		goto on_error;
-	}
-	if( pysmraw_handle_init(
-	     pysmraw_handle ) != 0 )
-	{
-		PyErr_Format(
-		 PyExc_MemoryError,
-		 "%s: unable to initialize handle.",
-		 function );
-
-		goto on_error;
-	}
-	return( (PyObject *) pysmraw_handle );
-
-on_error:
-	if( pysmraw_handle != NULL )
-	{
-		Py_DecRef(
-		 (PyObject *) pysmraw_handle );
-	}
-	return( NULL );
-}
-
-/* Creates a new handle object and opens it
- * Returns a Python object if successful or NULL on error
- */
-PyObject *pysmraw_handle_new_open(
-           PyObject *self PYSMRAW_ATTRIBUTE_UNUSED,
-           PyObject *arguments,
-           PyObject *keywords )
-{
-	PyObject *pysmraw_handle = NULL;
-
-	PYSMRAW_UNREFERENCED_PARAMETER( self )
-
-	pysmraw_handle = pysmraw_handle_new();
-
-	pysmraw_handle_open(
-	 (pysmraw_handle_t *) pysmraw_handle,
-	 arguments,
-	 keywords );
-
-	return( pysmraw_handle );
-}
-
-/* Creates a new handle object and opens it
- * Returns a Python object if successful or NULL on error
- */
-PyObject *pysmraw_handle_new_open_file_objects(
-           PyObject *self PYSMRAW_ATTRIBUTE_UNUSED,
-           PyObject *arguments,
-           PyObject *keywords )
-{
-	PyObject *pysmraw_handle = NULL;
-
-	PYSMRAW_UNREFERENCED_PARAMETER( self )
-
-	pysmraw_handle = pysmraw_handle_new();
-
-	pysmraw_handle_open_file_objects(
-	 (pysmraw_handle_t *) pysmraw_handle,
-	 arguments,
-	 keywords );
-
-	return( pysmraw_handle );
-}
-
 /* Intializes a handle object
  * Returns 0 if successful or -1 on error
  */
@@ -421,15 +334,6 @@ void pysmraw_handle_free(
 
 		return;
 	}
-	if( pysmraw_handle->handle == NULL )
-	{
-		PyErr_Format(
-		 PyExc_TypeError,
-		 "%s: invalid handle - missing libsmraw handle.",
-		 function );
-
-		return;
-	}
 	ob_type = Py_TYPE(
 	           pysmraw_handle );
 
@@ -451,24 +355,27 @@ void pysmraw_handle_free(
 
 		return;
 	}
-	Py_BEGIN_ALLOW_THREADS
-
-	result = libsmraw_handle_free(
-	          &( pysmraw_handle->handle ),
-	          &error );
-
-	Py_END_ALLOW_THREADS
-
-	if( result != 1 )
+	if( pysmraw_handle->handle != NULL )
 	{
-		pysmraw_error_raise(
-		 error,
-		 PyExc_MemoryError,
-		 "%s: unable to free handle.",
-		 function );
+		Py_BEGIN_ALLOW_THREADS
 
-		libcerror_error_free(
-		 &error );
+		result = libsmraw_handle_free(
+		          &( pysmraw_handle->handle ),
+		          &error );
+
+		Py_END_ALLOW_THREADS
+
+		if( result != 1 )
+		{
+			pysmraw_error_raise(
+			 error,
+			 PyExc_MemoryError,
+			 "%s: unable to free handle.",
+			 function );
+
+			libcerror_error_free(
+			 &error );
+		}
 	}
 	ob_type->tp_free(
 	 (PyObject*) pysmraw_handle );

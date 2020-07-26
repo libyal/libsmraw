@@ -40,6 +40,16 @@ PyObject *pysmraw_glob(
            PyObject *arguments,
            PyObject *keywords );
 
+PyObject *pysmraw_open_new_handle(
+           PyObject *self,
+           PyObject *arguments,
+           PyObject *keywords );
+
+PyObject *pysmraw_open_new_handle_with_file_objects(
+           PyObject *self,
+           PyObject *arguments,
+           PyObject *keywords );
+
 #if PY_MAJOR_VERSION >= 3
 PyMODINIT_FUNC PyInit_pysmraw(
                 void );
