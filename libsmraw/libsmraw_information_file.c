@@ -113,7 +113,6 @@ int libsmraw_information_file_free(
      libcerror_error_t **error )
 {
 	static char *function = "libsmraw_information_file_free";
-	int result            = 1;
 
 	if( information_file == NULL )
 	{
@@ -138,7 +137,7 @@ int libsmraw_information_file_free(
 
 		*information_file = NULL;
 	}
-	return( result );
+	return( 1 );
 }
 
 /* Sets the filename
@@ -356,7 +355,7 @@ int libsmraw_information_file_close(
 	return( 0 );
 }
 
-/* Reas a section with its values from the information file
+/* Reads a section with its values from the information file
  * Returns the 1 if succesful, 0 if no such section or -1 on error
  */
 int libsmraw_information_file_read_section(

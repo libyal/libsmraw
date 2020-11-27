@@ -69,10 +69,7 @@ PyMethodDef pysmraw_module_methods[] = {
           "Opens file(s) from a sequence (list) of file-like objects." },
 
 	/* Sentinel */
-	{ NULL,
-	  NULL,
-	  0,
-	  NULL}
+	{ NULL, NULL, 0, NULL }
 };
 
 /* Retrieves the pysmraw/libsmraw version
@@ -664,8 +661,9 @@ PyMODINIT_FUNC initpysmraw(
 		return;
 #endif
 	}
+#if PY_VERSION_HEX < 0x03070000
 	PyEval_InitThreads();
-
+#endif
 	gil_state = PyGILState_Ensure();
 
 	/* Setup the handle type object
