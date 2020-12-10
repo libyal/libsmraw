@@ -30,7 +30,7 @@
 
 #include <libsmraw/extern.h>
 
-#if defined( __CYGWIN__ )
+#if defined( __CYGWIN__ ) || defined( __MINGW32__ )
 #define LIBSMRAW_EXTERN_VARIABLE	extern
 #else
 #define LIBSMRAW_EXTERN_VARIABLE	LIBSMRAW_EXTERN
