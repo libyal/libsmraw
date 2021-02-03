@@ -26,6 +26,7 @@
 #include <types.h>
 
 #include "libsmraw_extern.h"
+#include "libsmraw_libbfio.h"
 #include "libsmraw_libcerror.h"
 
 #if defined( __cplusplus )
