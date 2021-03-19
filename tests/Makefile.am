@@ -1,3 +1,5 @@
+AUTOMAKE_OPTIONS = subdir-objects
+
 AM_CPPFLAGS = \
 	-I$(top_srcdir)/include \
 	-I$(top_srcdir)/common \
@@ -28,6 +30,7 @@ TESTS = \
 	test_library.sh \
 	test_glob.sh \
 	test_write_functions.sh \
+	test_tools.sh \
 	test_smrawverify.sh \
 	$(TESTS_PYSMRAW)
 
@@ -40,6 +43,7 @@ check_SCRIPTS = \
 	test_python_module.sh \
 	test_runner.sh \
 	test_smrawverify.sh \
+	test_tools.sh \
 	test_write_functions.sh
 
 EXTRA_DIST = \
@@ -54,6 +58,8 @@ check_PROGRAMS = \
 	smraw_test_io_handle \
 	smraw_test_notify \
 	smraw_test_support \
+	smraw_test_tools_output \
+	smraw_test_tools_signal \
 	smraw_test_write
 
 smraw_test_error_SOURCES = \
@@ -174,6 +180,28 @@ smraw_test_support_SOURCES = \
 	smraw_test_unused.h
 
 smraw_test_support_LDADD = \
+	../libsmraw/libsmraw.la \
+	@LIBCERROR_LIBADD@
+
+smraw_test_tools_output_SOURCES = \
+	../smrawtools/smrawtools_output.c ../smrawtools/smrawtools_output.h \
+	smraw_test_libcerror.h \
+	smraw_test_macros.h \
+	smraw_test_tools_output.c \
+	smraw_test_unused.h
+
+smraw_test_tools_output_LDADD = \
+	../libsmraw/libsmraw.la \
+	@LIBCERROR_LIBADD@
+
+smraw_test_tools_signal_SOURCES = \
+	../smrawtools/smrawtools_signal.c ../smrawtools/smrawtools_signal.h \
+	smraw_test_libcerror.h \
+	smraw_test_macros.h \
+	smraw_test_tools_signal.c \
+	smraw_test_unused.h
+
+smraw_test_tools_signal_LDADD = \
 	../libsmraw/libsmraw.la \
 	@LIBCERROR_LIBADD@
 

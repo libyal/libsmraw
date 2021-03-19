@@ -24,6 +24,8 @@ MSVSCPP_FILES = \
 	smraw_test_io_handle/smraw_test_io_handle.vcproj \
 	smraw_test_notify/smraw_test_notify.vcproj \
 	smraw_test_support/smraw_test_support.vcproj \
+	smraw_test_tools_output/smraw_test_tools_output.vcproj \
+	smraw_test_tools_signal/smraw_test_tools_signal.vcproj \
 	smraw_test_write/smraw_test_write.vcproj \
 	smrawmount/smrawmount.vcproj \
 	smrawverify/smrawverify.vcproj \
