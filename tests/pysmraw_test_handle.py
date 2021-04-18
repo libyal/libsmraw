@@ -39,11 +39,12 @@ class HandleTypeTests(unittest.TestCase):
 
   def test_open(self):
     """Tests the open function."""
-    if not unittest.source:
+    test_source = unittest.source
+    if not test_source:
       raise unittest.SkipTest("missing source")
 
     smraw_handle = pysmraw.handle()
-    filenames = pysmraw.glob(unittest.source)
+    filenames = pysmraw.glob(test_source)
 
     smraw_handle.open(filenames)
 
@@ -59,12 +60,13 @@ class HandleTypeTests(unittest.TestCase):
 
   def test_open_file_objects(self):
     """Tests the open_file_objects function."""
-    if not unittest.source:
+    test_source = unittest.source
+    if not test_source:
       raise unittest.SkipTest("missing source")
 
     smraw_handle = pysmraw.handle()
 
-    filenames = pysmraw.glob(unittest.source)
+    filenames = pysmraw.glob(test_source)
     file_objects = []
     for filename in filenames:
       file_object = open(filename, "rb")
@@ -86,7 +88,8 @@ class HandleTypeTests(unittest.TestCase):
 
   def test_close(self):
     """Tests the close function."""
-    if not unittest.source:
+    test_source = unittest.source
+    if not test_source:
       raise unittest.SkipTest("missing source")
 
     smraw_handle = pysmraw.handle()
@@ -96,11 +99,12 @@ class HandleTypeTests(unittest.TestCase):
 
   def test_open_close(self):
     """Tests the open and close functions."""
-    if not unittest.source:
+    test_source = unittest.source
+    if not test_source:
       return
 
     smraw_handle = pysmraw.handle()
-    filenames = pysmraw.glob(unittest.source)
+    filenames = pysmraw.glob(test_source)
 
     # Test open and close.
     smraw_handle.open(filenames)
@@ -110,7 +114,7 @@ class HandleTypeTests(unittest.TestCase):
     smraw_handle.open(filenames)
     smraw_handle.close()
 
-    file_object = open(unittest.source, "rb")
+    file_object = open(test_source, "rb")
 
     # Test open_file_objects and close.
     smraw_handle.open_file_objects([file_object])
@@ -127,11 +131,12 @@ class HandleTypeTests(unittest.TestCase):
 
   def test_read_buffer(self):
     """Tests the read_buffer function."""
-    if not unittest.source:
+    test_source = unittest.source
+    if not test_source:
       raise unittest.SkipTest("missing source")
 
     smraw_handle = pysmraw.handle()
-    filenames = pysmraw.glob(unittest.source)
+    filenames = pysmraw.glob(test_source)
 
     smraw_handle.open(filenames)
 
@@ -205,10 +210,11 @@ class HandleTypeTests(unittest.TestCase):
 
   def test_read_buffer_file_objects(self):
     """Tests the read_buffer function on file-like objects."""
-    if not unittest.source:
+    test_source = unittest.source
+    if not test_source:
       raise unittest.SkipTest("missing source")
 
-    file_object = open(unittest.source, "rb")
+    file_object = open(test_source, "rb")
 
     smraw_handle = pysmraw.handle()
 
@@ -226,11 +232,12 @@ class HandleTypeTests(unittest.TestCase):
 
   def test_read_buffer_at_offset(self):
     """Tests the read_buffer_at_offset function."""
-    if not unittest.source:
+    test_source = unittest.source
+    if not test_source:
       raise unittest.SkipTest("missing source")
 
     smraw_handle = pysmraw.handle()
-    filenames = pysmraw.glob(unittest.source)
+    filenames = pysmraw.glob(test_source)
 
     smraw_handle.open(filenames)
 
@@ -294,11 +301,12 @@ class HandleTypeTests(unittest.TestCase):
 
   def test_seek_offset(self):
     """Tests the seek_offset function."""
-    if not unittest.source:
+    test_source = unittest.source
+    if not test_source:
       raise unittest.SkipTest("missing source")
 
     smraw_handle = pysmraw.handle()
-    filenames = pysmraw.glob(unittest.source)
+    filenames = pysmraw.glob(test_source)
 
     smraw_handle.open(filenames)
 
@@ -354,11 +362,12 @@ class HandleTypeTests(unittest.TestCase):
 
   def test_get_offset(self):
     """Tests the get_offset function and offset property."""
-    if not unittest.source:
+    test_source = unittest.source
+    if not test_source:
       raise unittest.SkipTest("missing source")
 
     smraw_handle = pysmraw.handle()
-    filenames = pysmraw.glob(unittest.source)
+    filenames = pysmraw.glob(test_source)
     smraw_handle.open(filenames)
 
     offset = smraw_handle.get_offset()
@@ -368,11 +377,12 @@ class HandleTypeTests(unittest.TestCase):
 
   def test_get_media_size(self):
     """Tests the get_media_size function and media_size property."""
-    if not unittest.source:
+    test_source = unittest.source
+    if not test_source:
       raise unittest.SkipTest("missing source")
 
     smraw_handle = pysmraw.handle()
-    filenames = pysmraw.glob(unittest.source)
+    filenames = pysmraw.glob(test_source)
     smraw_handle.open(filenames)
 
     media_size = smraw_handle.get_media_size()
