@@ -355,6 +355,15 @@ void pysmraw_handle_free(
 
 		return;
 	}
+	if( pysmraw_handle->file_io_pool != NULL )
+	{
+		if( pysmraw_handle_close(
+		     pysmraw_handle,
+		     NULL ) == NULL )
+		{
+			return;
+		}
+	}
 	if( pysmraw_handle->handle != NULL )
 	{
 		Py_BEGIN_ALLOW_THREADS
