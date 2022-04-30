@@ -38,7 +38,6 @@ DPKG_FILES = \
 	dpkg/rules \
 	dpkg/libsmraw.install \
 	dpkg/libsmraw-dev.install \
-	dpkg/libsmraw-python.install \
 	dpkg/libsmraw-python3.install \
 	dpkg/libsmraw-tools.install \
 	dpkg/source/format
