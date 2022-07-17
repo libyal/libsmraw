@@ -681,7 +681,7 @@ int process_status_stop(
 {
 	system_character_t time_string[ 32 ];
 
-	const system_character_t *status_string = NULL;
+	const system_character_t *status_string = _SYSTEM_STRING( "" );
 	static char *function                   = "process_status_start";
 	time_t seconds_total                    = 0;
 

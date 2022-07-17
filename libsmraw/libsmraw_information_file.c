@@ -537,13 +537,17 @@ int libsmraw_information_file_read_section(
 					}
 					input_string_index++;
 				}
+				if( input_string_index >= 128 )
+				{
+					break;
+				}
 				/* Check if there is a supported value identifier
 				 */
 				if( input_string[ input_string_index ] != '>' )
 				{
 					continue;
 				}
-				/* Make sure the value identifier is terminated by an end of string
+				/* Make sure the value identifier is terminated by an end of string character
 				 */
 				input_string[ input_string_index ] = 0;
 
@@ -564,6 +568,10 @@ int libsmraw_information_file_read_section(
 					value_data_length++;
 
 					input_string_index++;
+				}
+				if( input_string_index >= 128 )
+				{
+					break;
 				}
 				/* Check if there is a supported value
 				 */
