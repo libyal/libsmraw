@@ -24,7 +24,7 @@ BEGIN
       VALUE "FileDescription",		"Managed .Net wrapper library for libsmraw\0"
       VALUE "FileVersion",		"@VERSION@" "\0"
       VALUE "InternalName",		"smraw.net.dll\0"
-      VALUE "LegalCopyright",		"(C) 2010-2022, Joachim Metz <joachim.metz@gmail.com>\0"
+      VALUE "LegalCopyright",		"(C) 2010-2023, Joachim Metz <joachim.metz@gmail.com>\0"
       VALUE "OriginalFilename",		"smraw.net.dll\0"
       VALUE "ProductName",		"smraw.net\0"
       VALUE "ProductVersion",		"@VERSION@" "\0"
