@@ -1,6 +1,6 @@
 dnl Checks for required headers and functions
 dnl
-dnl Version: 20200713
+dnl Version: 20230218
 
 dnl Function to detect if ctime_r or ctime is available
 dnl Also checks how to use ctime_r
@@ -128,7 +128,8 @@ AC_DEFUN([AX_SMRAWTOOLS_CHECK_LOCAL],
   dnl Functions used in smrawtools/smrawmount.c
   AS_IF(
    [test "x$ac_cv_enable_winapi" = xno],
-   [AC_HEADER_TIME
+   [AC_CHECK_HEADERS([sys/time.h])
+
    AC_CHECK_FUNCS([clock_gettime getegid geteuid time])
    ])
 
