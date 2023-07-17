@@ -451,7 +451,6 @@ PyObject *pysmraw_handle_open(
 	PyObject *codepage_string_object = NULL;
 	wchar_t **filenames              = NULL;
 	wchar_t *filename_wide           = NULL;
-	const char *errors               = NULL;
 #else
 	PyObject *utf8_string_object     = NULL;
 	char **filenames                 = NULL;
@@ -669,11 +668,18 @@ PyObject *pysmraw_handle_open(
 		if( is_unicode_string != 0 )
 		{
 #if defined( HAVE_WIDE_SYSTEM_CHARACTER )
+#if PY_MAJOR_VERSION >= 3 && PY_MINOR_VERSION >= 3
+			filename_wide = (wchar_t *) PyUnicode_AsWideCharString(
+			                             string_object,
+			                             &filename_length );
+#else
 			filename_wide = (wchar_t *) PyUnicode_AsUnicode(
 			                             string_object );
 
 			filename_length = PyUnicode_GetSize(
 			                   string_object );
+
+#endif /* PY_MAJOR_VERSION >= 3 && PY_MINOR_VERSION >= 3 */
 #else
 			utf8_string_object = PyUnicode_AsUTF8String(
 			                      string_object );
@@ -682,10 +688,10 @@ PyObject *pysmraw_handle_open(
 			{
 				pysmraw_error_fetch_and_raise(
 				 PyExc_RuntimeError,
-				 "%s: unable to convert unicode string to UTF-8.",
+				 "%s: unable to convert Unicode string to UTF-8.",
 				 function );
 
-				return( NULL );
+				goto on_error;
 			}
 #if PY_MAJOR_VERSION >= 3
 			filename_narrow = PyBytes_AsString(
@@ -723,7 +729,7 @@ PyObject *pysmraw_handle_open(
 						  filename_narrow,
 						  filename_length,
 						  PyUnicode_GetDefaultEncoding(),
-						  errors );
+						  NULL );
 
 			if( codepage_string_object == NULL )
 			{
@@ -735,11 +741,18 @@ PyObject *pysmraw_handle_open(
 
 				goto on_error;
 			}
+#if PY_MAJOR_VERSION >= 3 && PY_MINOR_VERSION >= 3
+			filename_wide = (wchar_t *) PyUnicode_AsWideCharString(
+			                             string_object,
+			                             &filename_length );
+#else
 			filename_wide = (wchar_t *) PyUnicode_AsUnicode(
-			                             codepage_string_object );
+			                             string_object );
 
 			filename_length = PyUnicode_GetSize(
-			                   codepage_string_object );
+			                   string_object );
+
+#endif /* PY_MAJOR_VERSION >= 3 && PY_MINOR_VERSION >= 3 */
 #else
 #if PY_MAJOR_VERSION >= 3
 			filename_narrow = PyBytes_AsString(
@@ -819,6 +832,12 @@ PyObject *pysmraw_handle_open(
 
 			codepage_string_object = NULL;
 		}
+#if PY_MAJOR_VERSION >= 3 && PY_MINOR_VERSION >= 3
+		PyMem_Free(
+		 filename_wide );
+
+		filename_wide = NULL;
+#endif
 #else
 		if( utf8_string_object != NULL )
 		{
@@ -889,6 +908,13 @@ on_error:
 		Py_DecRef(
 		 codepage_string_object );
 	}
+#if PY_MAJOR_VERSION >= 3 && PY_MINOR_VERSION >= 3
+	if( filename_wide != NULL )
+	{
+		PyMem_Free(
+		 filename_wide );
+	}
+#endif
 #else
 	if( utf8_string_object != NULL )
 	{

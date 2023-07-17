@@ -79,7 +79,6 @@ PyObject *pysmraw_get_version(
            PyObject *self PYSMRAW_ATTRIBUTE_UNUSED,
            PyObject *arguments PYSMRAW_ATTRIBUTE_UNUSED )
 {
-	const char *errors           = NULL;
 	const char *version_string   = NULL;
 	size_t version_string_length = 0;
 
@@ -102,7 +101,7 @@ PyObject *pysmraw_get_version(
 	return( PyUnicode_DecodeUTF8(
 	         version_string,
 	         (Py_ssize_t) version_string_length,
-	         errors ) );
+	         NULL ) );
 }
 
 /* Globs filenames according to the storage media (SM) (split) RAW segment file naming schema
@@ -120,7 +119,6 @@ PyObject *pysmraw_glob(
 	PyObject *string_object          = NULL;
 	static char *function            = "pysmraw_glob";
 	static char *keyword_list[]      = { "filename", NULL };
-	const char *errors               = NULL;
 	const char *filename_narrow      = NULL;
 	size_t filename_length           = 0;
 	int filename_index               = 0;
@@ -170,12 +168,17 @@ PyObject *pysmraw_glob(
 		PyErr_Clear();
 
 #if defined( HAVE_WIDE_SYSTEM_CHARACTER )
+#if PY_MAJOR_VERSION >= 3 && PY_MINOR_VERSION >= 3
+		filename_wide = (wchar_t *) PyUnicode_AsWideCharString(
+		                             string_object,
+		                             &filename_length );
+#else
 		filename_wide = (wchar_t *) PyUnicode_AsUnicode(
 		                             string_object );
 
 		filename_length = PyUnicode_GetSize(
 		                   string_object );
-
+#endif
 		Py_BEGIN_ALLOW_THREADS
 
 		result = libsmraw_glob_wide(
@@ -186,6 +189,11 @@ PyObject *pysmraw_glob(
 			  &error );
 
 		Py_END_ALLOW_THREADS
+
+#if PY_MAJOR_VERSION >= 3 && PY_MINOR_VERSION >= 3
+		PyMem_Free(
+		 filename_wide );
+#endif
 #else
 		utf8_string_object = PyUnicode_AsUTF8String(
 		                      string_object );
@@ -264,7 +272,7 @@ PyObject *pysmraw_glob(
 			filename_string_object = PyUnicode_DecodeUTF8(
 			                          filenames_narrow[ filename_index ],
 			                          filename_length,
-			                          errors );
+			                          NULL );
 #endif
 			if( filename_string_object == NULL )
 			{
@@ -396,7 +404,7 @@ PyObject *pysmraw_glob(
 						  filenames_narrow[ filename_index ],
 						  filename_length,
 						  PyUnicode_GetDefaultEncoding(),
-						  errors );
+						  NULL );
 
 			if( filename_string_object == NULL )
 			{

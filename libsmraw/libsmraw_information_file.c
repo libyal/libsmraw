@@ -278,11 +278,11 @@ int libsmraw_information_file_open(
 	}
 	if( ( access_flags & LIBSMRAW_ACCESS_FLAG_WRITE ) != 0 )
 	{
-		mode = FILE_STREAM_OPEN_WRITE;
+		mode = (system_character_t *) FILE_STREAM_OPEN_WRITE;
 	}
 	else
 	{
-		mode = FILE_STREAM_OPEN_READ;
+		mode = (system_character_t *) FILE_STREAM_OPEN_READ;
 	}
 #if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 	information_file->file_stream = file_stream_open_wide(
