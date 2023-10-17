@@ -2,7 +2,7 @@ AC_PREREQ([2.71])
 
 AC_INIT(
  [libsmraw],
- [20230717],
+ [20231017],
  [joachim.metz@gmail.com])
 
 AC_CONFIG_SRCDIR(
@@ -211,6 +211,7 @@ AC_CONFIG_FILES([libsmraw/libsmraw.rc])
 AC_CONFIG_FILES([smraw.net/smraw.net.rc])
 AC_CONFIG_FILES([libsmraw.pc])
 AC_CONFIG_FILES([libsmraw.spec])
+AC_CONFIG_FILES([setup.cfg])
 dnl Generate a source configuration file
 AC_CONFIG_HEADERS([common/config.h])
 

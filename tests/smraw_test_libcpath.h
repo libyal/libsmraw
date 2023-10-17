@@ -42,7 +42,7 @@
 
 #include <libcpath.h>
 
-#endif /* !defined( _SMRAW_TEST_LIBCPATH_H ) */
+#endif /* defined( HAVE_LOCAL_LIBCPATH ) */
 
 #endif /* !defined( _SMRAW_TEST_LIBCPATH_H ) */
 

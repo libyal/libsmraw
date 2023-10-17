@@ -1,6 +1,6 @@
 [metadata]
 name = libsmraw-python
-version = 20231017
+version = @VERSION@
 description = Python bindings module for libsmraw
 long_description = Python bindings module for libsmraw
 author = Joachim Metz
