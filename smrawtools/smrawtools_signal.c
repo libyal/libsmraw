@@ -40,7 +40,7 @@ void (*smrawtools_signal_signal_handler)( smrawtools_signal_t ) = NULL;
 /* Signal handler for Ctrl+C or Ctrl+Break signals
  */
 BOOL WINAPI smrawtools_signal_handler(
-             unsigned long signal )
+             smrawtools_signal_t signal )
 {
 	static char *function = "smrawtools_signal_handler";
 
@@ -112,7 +112,7 @@ int smrawtools_signal_attach(
 	smrawtools_signal_signal_handler = signal_handler;
 
 	if( SetConsoleCtrlHandler(
-	     smrawtools_signal_handler,
+	     (PHANDLER_ROUTINE) smrawtools_signal_handler,
 	     TRUE ) == 0 )
 	{
 		libcerror_error_set(
@@ -179,7 +179,7 @@ int smrawtools_signal_detach(
 	static char *function = "smrawtools_signal_detach";
 
 	if( SetConsoleCtrlHandler(
-	     smrawtools_signal_handler,
+	     (PHANDLER_ROUTINE) smrawtools_signal_handler,
 	     FALSE ) == 0 )
 	{
 		libcerror_error_set(

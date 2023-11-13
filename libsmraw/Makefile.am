@@ -69,11 +69,13 @@ MAINTAINERCLEANFILES = \
 	Makefile.in
 
 distclean: clean
-	/bin/rm -f libsmraw_definitions.h
-	/bin/rm -f libsmraw.rc
-	/bin/rm -f Makefile
+	-rm -f libsmraw_definitions.h
+	-rm -f libsmraw.rc
+	-rm -f Makefile
 
-splint:
+sources-local: $(BUILT_SOURCES)
+
+splint-local:
 	@echo "Running splint on libsmraw ..."
 	-splint -preproc -redef $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(libsmraw_la_SOURCES)
 

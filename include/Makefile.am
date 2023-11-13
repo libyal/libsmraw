@@ -19,9 +19,9 @@ MAINTAINERCLEANFILES = \
 	Makefile.in
 
 distclean: clean
-	/bin/rm -f libsmraw.h
-	/bin/rm -f libsmraw/definitions.h
-	/bin/rm -f libsmraw/features.h
-	/bin/rm -f libsmraw/types.h
-	/bin/rm -f Makefile
+	-rm -f libsmraw.h
+	-rm -f libsmraw/definitions.h
+	-rm -f libsmraw/features.h
+	-rm -f libsmraw/types.h
+	-rm -f Makefile
 
