@@ -21,8 +21,6 @@ SUBDIRS = \
 	smrawtools \
 	smraw.net \
 	pysmraw \
-	pysmraw-python2 \
-	pysmraw-python3 \
 	po \
 	manuals \
 	tests \

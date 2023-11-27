@@ -32,7 +32,7 @@ Header files and libraries for developing applications for libsmraw.
 Summary: Python 3 bindings for libsmraw
 Group: System Environment/Libraries
 Requires: libsmraw = %{version}-%{release} python3
-BuildRequires: python3-devel
+BuildRequires: python3-devel python3-setuptools
 
 %description -n libsmraw-python3
 Python 3 bindings for libsmraw
@@ -50,7 +50,7 @@ Several tools for reading and writing storage media (SM) (split) RAW files
 %setup -q
 
 %build
-%configure --prefix=/usr --libdir=%{_libdir} --mandir=%{_mandir} --enable-python3
+%configure --prefix=/usr --libdir=%{_libdir} --mandir=%{_mandir} --enable-python
 make %{?_smp_mflags}
 
 %install

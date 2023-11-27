@@ -1,6 +1,6 @@
 # Files to ignore by git
 #
-# Version: 20230926
+# Version: 20231119
 
 # Generic auto-generated build files
 *~
@@ -127,7 +127,6 @@ stamp-h[1-9]
 /libsmraw.spec
 /libsmraw/libsmraw.rc
 /libsmraw/libsmraw_definitions.h
-/pysmraw-python[23]/*.[ch]
 /setup.cfg
 /smraw.net/smraw.net.rc
 /smrawtools/*.exe
