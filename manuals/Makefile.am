@@ -6,9 +6,7 @@ EXTRA_DIST = \
 	libsmraw.3 \
 	smrawmount.1
 
-MAINTAINERCLEANFILES = \
+DISTCLEANFILES = \
+	Makefile \
 	Makefile.in
-
-distclean: clean
-	-rm -f Makefile
 

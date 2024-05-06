@@ -134,6 +134,7 @@ stamp-h[1-9]
 /smrawtools/smrawverify
 /tests/*.exe
 /tests/input
+/tests/notify_stream.log
 /tests/smraw_test_error
 /tests/smraw_test_filename
 /tests/smraw_test_glob

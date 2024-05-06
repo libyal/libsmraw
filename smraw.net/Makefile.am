@@ -4,9 +4,7 @@ EXTRA_DIST = \
 	smraw.net.rc \
 	smraw.net.rc.in
 
-MAINTAINERCLEANFILES = \
+DISTCLEANFILES = \
+	Makefile \
 	Makefile.in
-
-distclean: clean
-	-rm -f Makefile
 
