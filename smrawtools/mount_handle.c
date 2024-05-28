@@ -433,6 +433,7 @@ int mount_handle_close(
 	static char *function           = "mount_handle_close";
 	int handle_index                = 0;
 	int number_of_handles           = 0;
+	int result                      = 0;
 
 	if( mount_handle == NULL )
 	{
@@ -457,7 +458,7 @@ int mount_handle_close(
 		 "%s: unable to retrieve number of handles.",
 		 function );
 
-		goto on_error;
+		result = -1;
 	}
 	for( handle_index = number_of_handles - 1;
 	     handle_index > 0;
@@ -477,7 +478,7 @@ int mount_handle_close(
 			 function,
 			 handle_index );
 
-			goto on_error;
+			result = -1;
 		}
 /* TODO remove smraw_handle from file system */
 
@@ -493,7 +494,7 @@ int mount_handle_close(
 			 function,
 			 handle_index );
 
-			goto on_error;
+			result = -1;
 		}
 		if( libsmraw_handle_free(
 		     &smraw_handle,
@@ -507,19 +508,10 @@ int mount_handle_close(
 			 function,
 			 handle_index );
 
-			goto on_error;
+			result = -1;
 		}
 	}
-	return( 0 );
-
-on_error:
-	if( smraw_handle != NULL )
-	{
-		libsmraw_handle_free(
-		 &smraw_handle,
-		 NULL );
-	}
-	return( -1 );
+	return( result );
 }
 
 /* Retrieves a file entry for a specific path

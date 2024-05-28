@@ -1,5 +1,5 @@
 /*
- * Mounts a storage media (split) RAW image file
+ * Mounts a storage media (split) RAW image file.
  *
  * Copyright (C) 2010-2024, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -134,24 +134,32 @@ int main( int argc, char * const argv[] )
 	system_character_t * const *sources         = NULL;
 	libsmraw_error_t *error                     = NULL;
 	system_character_t *mount_point             = NULL;
-	system_character_t *option_extended_options = NULL;
-	const system_character_t *path_prefix       = NULL;
 	system_character_t *program                 = _SYSTEM_STRING( "smrawmount" );
+	system_character_t *option_extended_options = NULL;
 	system_integer_t option                     = 0;
-	size_t path_prefix_size                     = 0;
 	int number_of_sources                       = 0;
 	int result                                  = 0;
 	int verbose                                 = 0;
+	const system_character_t *path_prefix       = NULL;
+	size_t path_prefix_size                     = 0;
 
 #if !defined( HAVE_GLOB_H )
-	smrawtools_glob_t *glob                     = NULL;
+	smrawtools_glob_t *glob = NULL;
 #endif
 
-#if defined( HAVE_LIBFUSE ) || defined( HAVE_LIBOSXFUSE )
+#if defined( HAVE_LIBFUSE ) || defined( HAVE_LIBFUSE3 ) || defined( HAVE_LIBOSXFUSE )
 	struct fuse_operations smrawmount_fuse_operations;
 
+#if defined( HAVE_LIBFUSE3 )
+	/* Need to set this to 1 even if there no arguments, otherwise this causes
+	 * fuse: empty argv passed to fuse_session_new()
+	 */
+	char *fuse_argv[ 2 ]                        = { program, NULL };
+	struct fuse_args smrawmount_fuse_arguments  = FUSE_ARGS_INIT(1, fuse_argv);
+#else
 	struct fuse_args smrawmount_fuse_arguments  = FUSE_ARGS_INIT(0, NULL);
 	struct fuse_chan *smrawmount_fuse_channel   = NULL;
+#endif
 	struct fuse *smrawmount_fuse_handle         = NULL;
 
 #elif defined( HAVE_LIBDOKAN )
@@ -242,6 +250,9 @@ int main( int argc, char * const argv[] )
 
 		return( EXIT_FAILURE );
 	}
+	sources           = &( argv[ optind ] );
+	number_of_sources = argc - optind - 1;
+
 	if( ( optind + 1 ) == argc )
 	{
 		fprintf(
@@ -357,7 +368,7 @@ int main( int argc, char * const argv[] )
 		goto on_error;
 	}
 #endif
-#if defined( HAVE_LIBFUSE ) || defined( HAVE_LIBOSXFUSE )
+#if defined( HAVE_LIBFUSE ) || defined( HAVE_LIBFUSE3 ) || defined( HAVE_LIBOSXFUSE )
 	if( option_extended_options != NULL )
 	{
 		/* This argument is required but ignored
@@ -413,6 +424,34 @@ int main( int argc, char * const argv[] )
 	smrawmount_fuse_operations.getattr    = &mount_fuse_getattr;
 	smrawmount_fuse_operations.destroy    = &mount_fuse_destroy;
 
+#if defined( HAVE_LIBFUSE3 )
+	smrawmount_fuse_handle = fuse_new(
+	                          &smrawmount_fuse_arguments,
+	                          &smrawmount_fuse_operations,
+	                          sizeof( struct fuse_operations ),
+	                          smrawmount_mount_handle );
+
+	if( smrawmount_fuse_handle == NULL )
+	{
+		fprintf(
+		 stderr,
+		 "Unable to create fuse handle.\n" );
+
+		goto on_error;
+	}
+	result = fuse_mount(
+	          smrawmount_fuse_handle,
+	          mount_point );
+
+	if( result != 0 )
+	{
+		fprintf(
+		 stderr,
+		 "Unable to fuse mount file system.\n" );
+
+		goto on_error;
+	}
+#else
 	smrawmount_fuse_channel = fuse_mount(
 	                           mount_point,
 	                           &smrawmount_fuse_arguments );
@@ -440,6 +479,8 @@ int main( int argc, char * const argv[] )
 
 		goto on_error;
 	}
+#endif /* defined( HAVE_LIBFUSE3 ) */
+
 	if( verbose == 0 )
 	{
 		if( fuse_daemonize(
@@ -494,10 +535,14 @@ int main( int argc, char * const argv[] )
 
 		goto on_error;
 	}
-	smrawmount_dokan_options.Version     = DOKAN_VERSION;
-	smrawmount_dokan_options.ThreadCount = 0;
-	smrawmount_dokan_options.MountPoint  = mount_point;
+	smrawmount_dokan_options.Version    = DOKAN_VERSION;
+	smrawmount_dokan_options.MountPoint = mount_point;
 
+#if DOKAN_MINIMUM_COMPATIBLE_VERSION >= 200
+	smrawmount_dokan_options.SingleThread = TRUE;
+#else
+	smrawmount_dokan_options.ThreadCount  = 0;
+#endif
 	if( verbose != 0 )
 	{
 		smrawmount_dokan_options.Options |= DOKAN_OPTION_STDERR;
@@ -567,10 +612,16 @@ int main( int argc, char * const argv[] )
 
 #endif /* ( DOKAN_VERSION >= 600 ) && ( DOKAN_VERSION < 800 ) */
 
+#if DOKAN_MINIMUM_COMPATIBLE_VERSION >= 200
+	DokanInit();
+#endif
 	result = DokanMain(
 	          &smrawmount_dokan_options,
 	          &smrawmount_dokan_operations );
 
+#if DOKAN_MINIMUM_COMPATIBLE_VERSION >= 200
+	DokanShutdown();
+#endif
 	switch( result )
 	{
 		case DOKAN_SUCCESS:
@@ -624,11 +675,11 @@ int main( int argc, char * const argv[] )
 #else
 	fprintf(
 	 stderr,
-	 "No sub system to mount SMRAW format.\n" );
+	 "No sub system to mount  format.\n" );
 
 	return( EXIT_FAILURE );
 
-#endif /* defined( HAVE_LIBFUSE ) || defined( HAVE_LIBOSXFUSE ) */
+#endif /* defined( HAVE_LIBFUSE ) || defined( HAVE_LIBFUSE3 ) || defined( HAVE_LIBOSXFUSE ) */
 
 on_error:
 	if( error != NULL )
@@ -638,7 +689,7 @@ on_error:
 		libcerror_error_free(
 		 &error );
 	}
-#if defined( HAVE_LIBFUSE ) || defined( HAVE_LIBOSXFUSE )
+#if defined( HAVE_LIBFUSE ) || defined( HAVE_LIBFUSE3 ) || defined( HAVE_LIBOSXFUSE )
 	if( smrawmount_fuse_handle != NULL )
 	{
 		fuse_destroy(
