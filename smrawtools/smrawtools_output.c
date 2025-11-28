@@ -1,7 +1,7 @@
 /*
  * Output functions
  *
- * Copyright (C) 2010-2024, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (C) 2010-2025, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -108,7 +108,7 @@ void smrawtools_output_copyright_fprint(
 	 */
 	fprintf(
 	 stream,
-	 _( "Copyright (C) 2010-2024, %s.\n" ),
+	 _( "Copyright (C) 2010-2025, %s.\n" ),
 	 _( "Joachim Metz" ) );
 
 	fprintf(

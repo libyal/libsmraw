@@ -1,7 +1,7 @@
 /*
  * The internal definitions
  *
- * Copyright (C) 2010-2024, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (C) 2010-2025, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -84,7 +84,7 @@ enum LIBSMRAW_MEDIA_FLAGS
 	LIBSMRAW_MEDIA_FLAG_PHYSICAL			= 0x01
 };
 
-#endif
+#endif /* !defined( HAVE_LOCAL_LIBSMRAW ) */
 
 /* The segment file naming schema definitions
  */
@@ -116,5 +116,5 @@ enum LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMAS
 	LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_X_OF_N	= (uint8_t) 'x'
 };
 
-#endif
+#endif /* #if !defined( _LIBSMRAW_DEFINITIONS_H ) */
 

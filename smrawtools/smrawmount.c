@@ -1,7 +1,7 @@
 /*
  * Mounts a storage media (split) RAW image file.
  *
- * Copyright (C) 2010-2024, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (C) 2010-2025, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -134,14 +134,14 @@ int main( int argc, char * const argv[] )
 	system_character_t * const *sources         = NULL;
 	libsmraw_error_t *error                     = NULL;
 	system_character_t *mount_point             = NULL;
-	system_character_t *program                 = _SYSTEM_STRING( "smrawmount" );
 	system_character_t *option_extended_options = NULL;
+	const system_character_t *path_prefix       = NULL;
+	char *program                               = "smrawmount";
 	system_integer_t option                     = 0;
+	size_t path_prefix_size                     = 0;
 	int number_of_sources                       = 0;
 	int result                                  = 0;
 	int verbose                                 = 0;
-	const system_character_t *path_prefix       = NULL;
-	size_t path_prefix_size                     = 0;
 
 #if !defined( HAVE_GLOB_H )
 	smrawtools_glob_t *glob = NULL;
@@ -371,6 +371,11 @@ int main( int argc, char * const argv[] )
 #if defined( HAVE_LIBFUSE ) || defined( HAVE_LIBFUSE3 ) || defined( HAVE_LIBOSXFUSE )
 	if( option_extended_options != NULL )
 	{
+#if defined( HAVE_LIBFUSE3 )
+		// fuse_opt_add_arg: Assertion `!args->argv || args->allocated' failed.
+		smrawmount_fuse_arguments.argc = 0;
+		smrawmount_fuse_arguments.argv = NULL;
+#endif
 		/* This argument is required but ignored
 		 */
 		if( fuse_opt_add_arg(
