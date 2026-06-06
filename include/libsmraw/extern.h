@@ -31,14 +31,17 @@
  */
 #if defined( LIBSMRAW_DLL_EXPORT )
 #define LIBSMRAW_EXTERN __declspec(dllexport)
+#define LIBSMRAW_EXTERN_VARIABLE extern __declspec(dllexport)
 
 #elif defined( LIBSMRAW_DLL_IMPORT )
-#define LIBSMRAW_EXTERN extern __declspec(dllimport)
+#define LIBSMRAW_EXTERN __declspec(dllimport)
+#define LIBSMRAW_EXTERN_VARIABLE extern __declspec(dllimport)
 
 #else
 #define LIBSMRAW_EXTERN extern
+#define LIBSMRAW_EXTERN_VARIABLE extern
 
-#endif
+#endif /* defined( LIBSMRAW_DLL_EXPORT ) */
 
 #endif /* !defined( _LIBSMRAW_EXTERN_H ) */
 

@@ -497,8 +497,7 @@ int libsmraw_information_file_read_section(
 			       section_identifier_length ) == 0 )
 			 && ( input_string[ input_string_index + section_identifier_length + 2 ] == '>' ) )
 			{
-				in_section = 0;
-				result     = 1;
+				result = 1;
 
 				break;
 			}

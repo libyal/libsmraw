@@ -1013,6 +1013,17 @@ int libsmraw_glob(
 		if( ( naming_schema == LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_NUMERIC )
 		 || ( naming_schema == LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_X_OF_N ) )
 		{
+			if( identifier == NULL )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+				 "%s: missing identifier.",
+				 function );
+
+				goto on_error;
+			}
 			segment_file_identifier = (int) ( identifier[ identifier_length - 1 ] - '0' );
 
 			if( identifier_length == 1 )
@@ -1086,6 +1097,17 @@ int libsmraw_glob(
 			}
 			else if( naming_schema == LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_SPLIT )
 			{
+				if( identifier == NULL )
+				{
+					libcerror_error_set(
+					 error,
+					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+					 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+					 "%s: missing identifier.",
+					 function );
+
+					goto on_error;
+				}
 				for( identifier_index = 0;
 				     identifier_index < identifier_length;
 				     identifier_index++ )
@@ -2143,6 +2165,17 @@ int libsmraw_glob_wide(
 		if( ( naming_schema == LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_NUMERIC )
 		 || ( naming_schema == LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_X_OF_N ) )
 		{
+			if( identifier == NULL )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+				 "%s: missing identifier.",
+				 function );
+
+				goto on_error;
+			}
 			segment_file_identifier = (int) ( identifier[ identifier_length - 1 ] - (wchar_t) '0' );
 
 			if( identifier_length == 1 )
@@ -2216,6 +2249,17 @@ int libsmraw_glob_wide(
 			}
 			else if( naming_schema == LIBSMRAW_SEGMENT_FILE_NAMING_SCHEMA_SPLIT )
 			{
+				if( identifier == NULL )
+				{
+					libcerror_error_set(
+					 error,
+					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+					 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+					 "%s: missing identifier.",
+					 function );
+
+					goto on_error;
+				}
 				for( identifier_index = 0;
 				     identifier_index < identifier_length;
 				     identifier_index++ )

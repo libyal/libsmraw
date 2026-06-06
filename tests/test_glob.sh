@@ -23,7 +23,7 @@ seq()
 }
 
 test_glob()
-{ 
+{
 	local BASENAME=$1;
 	local SCHEMA=$2;
 	local FILENAMES=$3;
@@ -76,7 +76,7 @@ test_glob()
 }
 
 test_glob_sequence()
-{ 
+{
 	local BASENAME=$1;
 	local SCHEMA=$2;
 	local FILENAME=$3;

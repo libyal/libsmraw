@@ -21,6 +21,10 @@ AM_CPPFLAGS = \
 	@PTHREAD_CPPFLAGS@ \
 	@LIBSMRAW_DLL_IMPORT@
 
+AM_TESTS_ENVIRONMENT = \
+	export PYTHON="@PYTHON@"; \
+	export TESTS_USE_WINAPI="@TESTS_USE_WINAPI@";
+
 if HAVE_PYTHON_TESTS
 TESTS_PYSMRAW = \
 	test_python_module.sh
@@ -192,7 +196,8 @@ smraw_test_tools_output_SOURCES = \
 
 smraw_test_tools_output_LDADD = \
 	../libsmraw/libsmraw.la \
-	@LIBCERROR_LIBADD@
+	@LIBCERROR_LIBADD@ \
+	@LIBINTL@
 
 smraw_test_tools_signal_SOURCES = \
 	../smrawtools/smrawtools_signal.c ../smrawtools/smrawtools_signal.h \
@@ -216,7 +221,9 @@ smraw_test_write_LDADD = \
 	@LIBHMAC_LIBADD@ \
 	@LIBCRYPTO_LIBADD@ \
 	@LIBCPATH_LIBADD@ \
+	@LIBUNA_LIBADD@ \
 	@LIBCSPLIT_LIBADD@ \
+	@LIBCLOCALE_LIBADD@ \
 	../libsmraw/libsmraw.la \
 	@LIBCTHREADS_LIBADD@ \
 	@LIBCERROR_LIBADD@

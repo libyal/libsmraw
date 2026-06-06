@@ -11,7 +11,7 @@ TEST_FUNCTIONS="write";
 OPTION_SETS="";
 
 test_api_write_function()
-{ 
+{
 	local TEST_FUNCTION=$1;
 	shift 1;
 	local ARGUMENTS=$@;

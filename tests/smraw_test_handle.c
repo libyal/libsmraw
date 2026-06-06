@@ -1881,8 +1881,6 @@ int smraw_test_handle_read_buffer_at_offset(
 			SMRAW_TEST_ASSERT_IS_NULL(
 			 "error",
 			 error );
-
-			remaining_media_size = media_size;
 		}
 	}
 	/* Test error cases

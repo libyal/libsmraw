@@ -908,13 +908,13 @@ int libsmraw_io_handle_set_basename(
 #if SIZEOF_WCHAR_T == 4
 		result = libuna_utf32_string_size_from_utf8(
 		          (libuna_utf8_character_t *) basename,
-		          basename_length + 1,
+		          basename_length,
 		          &( io_handle->basename_size ),
 		          error );
 #elif SIZEOF_WCHAR_T == 2
 		result = libuna_utf16_string_size_from_utf8(
 		          (libuna_utf8_character_t *) basename,
-		          basename_length + 1,
+		          basename_length,
 		          &( io_handle->basename_size ),
 		          error );
 #else
@@ -926,14 +926,14 @@ int libsmraw_io_handle_set_basename(
 #if SIZEOF_WCHAR_T == 4
 		result = libuna_utf32_string_size_from_byte_stream(
 		          (uint8_t *) basename,
-		          basename_length + 1,
+		          basename_length,
 		          libclocale_codepage,
 		          &( io_handle->basename_size ),
 		          error );
 #elif SIZEOF_WCHAR_T == 2
 		result = libuna_utf16_string_size_from_byte_stream(
 		          (uint8_t *) basename,
-		          basename_length + 1,
+		          basename_length,
 		          libclocale_codepage,
 		          &( io_handle->basename_size ),
 		          error );
@@ -977,14 +977,14 @@ int libsmraw_io_handle_set_basename(
 		          (libuna_utf32_character_t *) io_handle->basename,
 		          io_handle->basename_size,
 		          (libuna_utf8_character_t *) basename,
-		          basename_length + 1,
+		          basename_length,
 		          error );
 #elif SIZEOF_WCHAR_T == 2
 		result = libuna_utf16_string_copy_from_utf8(
 		          (libuna_utf16_character_t *) io_handle->basename,
 		          io_handle->basename_size,
 		          (libuna_utf8_character_t *) basename,
-		          basename_length + 1,
+		          basename_length,
 		          error );
 #else
 #error Unsupported size of wchar_t
@@ -997,7 +997,7 @@ int libsmraw_io_handle_set_basename(
 		          (libuna_utf32_character_t *) io_handle->basename,
 		          io_handle->basename_size,
 		          (uint8_t *) basename,
-		          basename_length + 1,
+		          basename_length,
 		          libclocale_codepage,
 		          error );
 #elif SIZEOF_WCHAR_T == 2
@@ -1005,7 +1005,7 @@ int libsmraw_io_handle_set_basename(
 		          (libuna_utf16_character_t *) io_handle->basename,
 		          io_handle->basename_size,
 		          (uint8_t *) basename,
-		          basename_length + 1,
+		          basename_length,
 		          libclocale_codepage,
 		          error );
 #else
@@ -1424,13 +1424,13 @@ int libsmraw_io_handle_set_basename_wide(
 #if SIZEOF_WCHAR_T == 4
 		result = libuna_utf8_string_size_from_utf32(
 		          (libuna_utf32_character_t *) basename,
-		          basename_length + 1,
+		          basename_length,
 		          &( io_handle->basename_size ),
 		          error );
 #elif SIZEOF_WCHAR_T == 2
 		result = libuna_utf8_string_size_from_utf16(
 		          (libuna_utf16_character_t *) basename,
-		          basename_length + 1,
+		          basename_length,
 		          &( io_handle->basename_size ),
 		          error );
 #else
@@ -1442,14 +1442,14 @@ int libsmraw_io_handle_set_basename_wide(
 #if SIZEOF_WCHAR_T == 4
 		result = libuna_byte_stream_size_from_utf32(
 		          (libuna_utf32_character_t *) basename,
-		          basename_length + 1,
+		          basename_length,
 		          libclocale_codepage,
 		          &( io_handle->basename_size ),
 		          error );
 #elif SIZEOF_WCHAR_T == 2
 		result = libuna_byte_stream_size_from_utf16(
 		          (libuna_utf16_character_t *) basename,
-		          basename_length + 1,
+		          basename_length,
 		          libclocale_codepage,
 		          &( io_handle->basename_size ),
 		          error );
@@ -1514,14 +1514,14 @@ int libsmraw_io_handle_set_basename_wide(
 		          (libuna_utf8_character_t *) io_handle->basename,
 		          io_handle->basename_size,
 		          (libuna_utf32_character_t *) basename,
-		          basename_length + 1,
+		          basename_length,
 		          error );
 #elif SIZEOF_WCHAR_T == 2
 		result = libuna_utf8_string_copy_from_utf16(
 		          (libuna_utf8_character_t *) io_handle->basename,
 		          io_handle->basename_size,
 		          (libuna_utf16_character_t *) basename,
-		          basename_length + 1,
+		          basename_length,
 		          error );
 #else
 #error Unsupported size of wchar_t
@@ -1535,7 +1535,7 @@ int libsmraw_io_handle_set_basename_wide(
 		          io_handle->basename_size,
 		          libclocale_codepage,
 		          (libuna_utf32_character_t *) basename,
-		          basename_length + 1,
+		          basename_length,
 		          error );
 #elif SIZEOF_WCHAR_T == 2
 		result = libuna_byte_stream_copy_from_utf16(
@@ -1543,7 +1543,7 @@ int libsmraw_io_handle_set_basename_wide(
 		          io_handle->basename_size,
 		          libclocale_codepage,
 		          (libuna_utf16_character_t *) basename,
-		          basename_length + 1,
+		          basename_length,
 		          error );
 #else
 #error Unsupported size of wchar_t
