@@ -90,6 +90,7 @@ smraw_test_filename_LDADD = \
 smraw_test_glob_SOURCES = \
 	smraw_test_glob.c \
 	smraw_test_libsmraw.h \
+	smraw_test_macros.h \
 	smraw_test_unused.h
 
 smraw_test_glob_LDADD = \

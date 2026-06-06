@@ -202,8 +202,10 @@ int libsmraw_glob_exists_segment_file(
      size_t *segment_filename_size,
      libcerror_error_t **error )
 {
-	static char *function = "libsmraw_glob_exists_segment_file";
-	int result            = 0;
+	static char *function             = "libsmraw_glob_exists_segment_file";
+	char *safe_segment_filename       = NULL;
+	size_t safe_segment_filename_size = 0;
+	int result                        = 0;
 
 	if( file_io_handle == NULL )
 	{
@@ -275,16 +277,16 @@ int libsmraw_glob_exists_segment_file(
 	/* The segment filename consists of the prefix, an end of string character
 	 * and (if provided) the suffix
 	 */
-	*segment_filename_size = prefix_length + 1;
+	safe_segment_filename_size = prefix_length + 1;
 
 	if( suffix != NULL )
 	{
-		*segment_filename_size += suffix_length;
+		safe_segment_filename_size += suffix_length;
 	}
-	*segment_filename = (char *) memory_allocate(
-	                              sizeof( char ) * *segment_filename_size );
+	safe_segment_filename = narrow_string_allocate(
+	                         safe_segment_filename_size );
 
-	if( *segment_filename == NULL )
+	if( safe_segment_filename == NULL )
 	{
 		libcerror_error_set(
 		 error,
@@ -296,7 +298,7 @@ int libsmraw_glob_exists_segment_file(
 		goto on_error;
 	}
 	if( narrow_string_copy(
-	     *segment_filename,
+	     safe_segment_filename,
 	     prefix,
 	     prefix_length ) == NULL )
 	{
@@ -309,12 +311,12 @@ int libsmraw_glob_exists_segment_file(
 
 		goto on_error;
 	}
-	( *segment_filename )[ prefix_length ] = 0;
+	safe_segment_filename[ prefix_length ] = 0;
 
 	if( suffix != NULL )
 	{
 		if( narrow_string_copy(
-		     &( ( *segment_filename )[ prefix_length ] ),
+		     &( safe_segment_filename[ prefix_length ] ),
 		     suffix,
 		     suffix_length ) == NULL )
 		{
@@ -327,12 +329,12 @@ int libsmraw_glob_exists_segment_file(
 
 			goto on_error;
 		}
-		( *segment_filename )[ prefix_length + suffix_length ] = 0;
+		safe_segment_filename[ prefix_length + suffix_length ] = 0;
 	}
 	if( libbfio_file_set_name(
 	     file_io_handle,
-	     *segment_filename,
-	     *segment_filename_size - 1,
+	     safe_segment_filename,
+	     safe_segment_filename_size - 1,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
@@ -356,22 +358,21 @@ int libsmraw_glob_exists_segment_file(
 		 LIBCERROR_IO_ERROR_GENERIC,
 		 "%s: unable to determine if file: %s exists.",
 		 function,
-		 *segment_filename );
+		 safe_segment_filename );
 
 		goto on_error;
 	}
+	*segment_filename      = safe_segment_filename;
+	*segment_filename_size = safe_segment_filename_size;
+
 	return( result );
 
 on_error:
-	if( *segment_filename != NULL )
+	if( safe_segment_filename != NULL )
 	{
 		memory_free(
-		 *segment_filename );
-
-		*segment_filename = NULL;
+		 safe_segment_filename );
 	}
-	*segment_filename_size = 0;
-
 	return( -1 );
 }
 
@@ -1365,8 +1366,10 @@ int libsmraw_glob_wide_exists_segment_file(
      size_t *segment_filename_size,
      libcerror_error_t **error )
 {
-	static char *function = "libsmraw_glob_wide_exists_segment_file";
-	int result            = 0;
+	static char *function             = "libsmraw_glob_wide_exists_segment_file";
+	wchar_t *safe_segment_filename    = NULL;
+	size_t safe_segment_filename_size = 0;
+	int result                        = 0;
 
 	if( file_io_handle == NULL )
 	{
@@ -1438,16 +1441,16 @@ int libsmraw_glob_wide_exists_segment_file(
 	/* The segment filename consists of the prefix, an end of string character
 	 * and (if provided) the suffix
 	 */
-	*segment_filename_size = prefix_length + 1;
+	safe_segment_filename_size = prefix_length + 1;
 
 	if( suffix != NULL )
 	{
-		*segment_filename_size += suffix_length;
+		safe_segment_filename_size += suffix_length;
 	}
-	*segment_filename = (wchar_t *) memory_allocate(
-	                                 sizeof( wchar_t ) * *segment_filename_size );
+	safe_segment_filename = wide_string_allocate(
+	                         safe_segment_filename_size );
 
-	if( *segment_filename == NULL )
+	if( safe_segment_filename == NULL )
 	{
 		libcerror_error_set(
 		 error,
@@ -1459,7 +1462,7 @@ int libsmraw_glob_wide_exists_segment_file(
 		goto on_error;
 	}
 	if( wide_string_copy(
-	     *segment_filename,
+	     safe_segment_filename,
 	     prefix,
 	     prefix_length ) == NULL )
 	{
@@ -1472,12 +1475,12 @@ int libsmraw_glob_wide_exists_segment_file(
 
 		goto on_error;
 	}
-	( *segment_filename )[ prefix_length ] = 0;
+	safe_segment_filename[ prefix_length ] = 0;
 
 	if( suffix != NULL )
 	{
 		if( wide_string_copy(
-		     &( ( *segment_filename )[ prefix_length ] ),
+		     &( safe_segment_filename[ prefix_length ] ),
 		     suffix,
 		     suffix_length ) == NULL )
 		{
@@ -1490,12 +1493,12 @@ int libsmraw_glob_wide_exists_segment_file(
 
 			goto on_error;
 		}
-		( *segment_filename )[ prefix_length + suffix_length ] = 0;
+		safe_segment_filename[ prefix_length + suffix_length ] = 0;
 	}
 	if( libbfio_file_set_name_wide(
 	     file_io_handle,
-	     *segment_filename,
-	     *segment_filename_size - 1,
+	     safe_segment_filename,
+	     safe_segment_filename_size - 1,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
@@ -1519,22 +1522,21 @@ int libsmraw_glob_wide_exists_segment_file(
 		 LIBCERROR_IO_ERROR_GENERIC,
 		 "%s: unable to determine if file: %ls exists.",
 		 function,
-		 *segment_filename );
+		 safe_segment_filename );
 
 		goto on_error;
 	}
+	*segment_filename      = safe_segment_filename;
+	*segment_filename_size = safe_segment_filename_size;
+
 	return( result );
 
 on_error:
-	if( *segment_filename != NULL )
+	if( safe_segment_filename != NULL )
 	{
 		memory_free(
-		 *segment_filename );
-
-		*segment_filename = NULL;
+		 safe_segment_filename );
 	}
-	*segment_filename_size = 0;
-
 	return( -1 );
 }
 

@@ -30,6 +30,7 @@
 #endif
 
 #include "smraw_test_libsmraw.h"
+#include "smraw_test_macros.h"
 
 /* The main program
  */
@@ -40,116 +41,126 @@ int main( int argc, char * const argv[] )
 #endif
 {
 #if defined( HAVE_WIDE_SYSTEM_CHARACTER )
-	wchar_t **filenames     = NULL;
+	wchar_t **filenames       = NULL;
+	wchar_t *glob_string      = NULL;
 #else
-	char **filenames        = NULL;
+	char **filenames          = NULL;
+	char *glob_string         = NULL;
 #endif
-	libsmraw_error_t *error = NULL;
-	size_t string_length    = 0;
-	int number_of_filenames = 0;
-	int filename_iterator   = 0;
+	libsmraw_error_t *error   = NULL;
+	size_t glob_string_length = 0;
+	int filename_index        = 0;
+	int number_of_filenames   = 0;
+	int result                = 0;
 
 	if( argc < 2 )
 	{
 		fprintf(
 		 stderr,
-		 "Missing filename(s).\n" );
+		 "Missing glob.\n" );
 
 		return( EXIT_FAILURE );
 	}
+	glob_string = argv[ 1 ];
+
+	SMRAW_TEST_ASSERT_IS_NOT_NULL(
+	 "glob_string",
+	 glob_string );
+
 #if defined( HAVE_WIDE_SYSTEM_CHARACTER )
-	string_length = wide_string_length(
-	                 argv[ 1 ] );
+	glob_string_length = wide_string_length(
+	                      glob_string );
 
-	if( libsmraw_glob_wide(
-	     argv[ 1 ],
-	     string_length,
-	     &filenames,
-	     &number_of_filenames,
-	     &error ) != 1 )
+	result = libsmraw_glob_wide(
+	          glob_string,
+	          glob_string_length,
+	          &filenames,
+	          &number_of_filenames,
+	          &error );
 #else
-	string_length = narrow_string_length(
-	                 argv[ 1 ] );
+	glob_string_length = narrow_string_length(
+	                      argv[ 1 ] );
 
-	if( libsmraw_glob(
-	     argv[ 1 ],
-	     string_length,
-	     &filenames,
-	     &number_of_filenames,
-	     &error ) != 1 )
+	result = libsmraw_glob(
+	          glob_string,
+	          glob_string_length,
+	          &filenames,
+	          &number_of_filenames,
+	          &error );
 #endif
-	{
-		fprintf(
-		 stderr,
-		 "Unable to glob filenames.\n" );
+	SMRAW_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
 
-		goto on_error;
-	}
-	if( number_of_filenames < 0 )
-	{
-		fprintf(
-		 stderr,
-		 "Invalid number of filenames.\n" );
+	SMRAW_TEST_ASSERT_IS_NOT_NULL(
+	 "filenames",
+	 filenames );
 
-		goto on_error;
-	}
-	else if( number_of_filenames == 0 )
-	{
-		fprintf(
-		 stderr,
-		 "Missing filenames.\n" );
+	SMRAW_TEST_ASSERT_GREATER_THAN_INT(
+	 "number_of_filenames",
+	 number_of_filenames,
+	 0 );
 
-		goto on_error;
-	}
-	for( filename_iterator = 0;
-	     filename_iterator < number_of_filenames;
-	     filename_iterator++ )
+	SMRAW_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	for( filename_index = 0;
+	     filename_index < number_of_filenames;
+	     filename_index++ )
 	{
 #if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 		fprintf(
 		 stdout,
-		 "%ls",
-		 filenames[ filename_iterator ] );
+		 "%ls\n",
+		 filenames[ filename_index ] );
 #else
 		fprintf(
 		 stdout,
-		 "%s",
-		 filenames[ filename_iterator ] );
+		 "%s\n",
+		 filenames[ filename_index ] );
 #endif
-		if( filename_iterator == ( number_of_filenames - 1 ) )
-		{
-			fprintf(
-			 stdout,
-			 "\n" );
-		}
-		else
-		{
-			fprintf(
-			 stdout,
-			 " " );
-		}
 	}
 #if defined( HAVE_WIDE_SYSTEM_CHARACTER )
-	if( libsmraw_glob_wide_free(
-	     filenames,
-	     number_of_filenames,
-	     &error ) != 1 )
+	result = libsmraw_glob_wide_free(
+	          filenames,
+	          number_of_filenames,
+	          &error );
 #else
-	if( libsmraw_glob_free(
-	     filenames,
-	     number_of_filenames,
-	     &error ) != 1 )
+	result = libsmraw_glob_free(
+	          filenames,
+	          number_of_filenames,
+	          &error );
 #endif
-	{
-		fprintf(
-		 stderr,
-		 "Unable to free glob.\n" );
+	SMRAW_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
 
-		goto on_error;
-	}
+	filenames = NULL;
+
+	SMRAW_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
 	return( EXIT_SUCCESS );
 
 on_error:
+	if( filenames != NULL )
+	{
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
+		libsmraw_glob_wide_free(
+		 filenames,
+		 number_of_filenames,
+		 NULL );
+#else
+		libsmraw_glob_free(
+		 filenames,
+		 number_of_filenames,
+		 NULL );
+#endif
+	}
 	if( error != NULL )
 	{
 		libsmraw_error_backtrace_fprint(
