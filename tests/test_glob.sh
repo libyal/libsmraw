@@ -7,20 +7,23 @@ EXIT_SUCCESS=0;
 EXIT_FAILURE=1;
 EXIT_IGNORE=77;
 
-seq()
-{
-	local VALUE=$1;
-	local SEQUENCE="";
+if ! command -v seq >/dev/null 2>&1;
+then
+	seq()
+	{
+		local VALUE=$1;
+		local SEQUENCE="";
 
-	while test ${VALUE} -le $2;
-	do
-		SEQUENCE="${SEQUENCE} ${VALUE}";
+		while test ${VALUE} -le $2;
+		do
+			SEQUENCE="${SEQUENCE} ${VALUE}";
 
-		VALUE=`expr ${VALUE} + 1`;
-	done
+			VALUE=`expr ${VALUE} + 1`;
+		done
 
-	echo ${SEQUENCE};
-}
+		echo ${SEQUENCE};
+	}
+fi
 
 test_generate_test_files()
 {
@@ -102,14 +105,14 @@ test_compare()
 		cygwin*|msys*)
 			if test ${TESTS_USE_WINAPI} = "yes" || test "${MSYSTEM}" = "MINGW32" || test "${MSYSTEM}" = "MINGW64";
 			then
-		 		sed -i'~' 's/\r$//' ${OUTPUT};
+				sed -i'~' 's/\r$//' ${OUTPUT};
 			fi
 			;;
 
 		linux-gnu*)
 			if test ${TESTS_USE_WINAPI} = "yes" || ${OBJDUMP} -f "${TEST_EXECUTABLE}" 2>&1 | grep -q "pei-";
 			then
-		 		sed -i'~' 's/\r$//' ${OUTPUT};
+				sed -i'~' 's/\r$//' ${OUTPUT};
 			fi
 			;;
 
