@@ -31,12 +31,121 @@
 #include <stdlib.h>
 #endif
 
+#include "smraw_test_getopt.h"
 #include "smraw_test_libcerror.h"
-#include "smraw_test_libcpath.h"
-#include "smraw_test_libhmac.h"
 #include "smraw_test_libsmraw.h"
 
 #define SMRAW_TEST_BUFFER_SIZE	4096
+
+/* Copies a string of a decimal value to a 64-bit value
+ * Returns 1 if successful or -1 on error
+ */
+int smraw_test_system_string_decimal_copy_to_64_bit(
+     const system_character_t *string,
+     size_t string_size,
+     uint64_t *value_64bit,
+     libcerror_error_t **error )
+{
+	static char *function              = "smraw_test_system_string_decimal_copy_to_64_bit";
+	size_t string_index                = 0;
+	system_character_t character_value = 0;
+	uint8_t maximum_string_index       = 20;
+	int8_t sign                        = 1;
+
+	if( string == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid string.",
+		 function );
+
+		return( -1 );
+	}
+	if( string_size > (size_t) SSIZE_MAX )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
+		 "%s: invalid string size value exceeds maximum.",
+		 function );
+
+		return( -1 );
+	}
+	if( value_64bit == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid value 64-bit.",
+		 function );
+
+		return( -1 );
+	}
+	*value_64bit = 0;
+
+	if( string[ string_index ] == (system_character_t) '-' )
+	{
+		string_index++;
+		maximum_string_index++;
+
+		sign = -1;
+	}
+	else if( string[ string_index ] == (system_character_t) '+' )
+	{
+		string_index++;
+		maximum_string_index++;
+	}
+	while( string_index < string_size )
+	{
+		if( string[ string_index ] == 0 )
+		{
+			break;
+		}
+		if( string_index > (size_t) maximum_string_index )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+			 LIBCERROR_ARGUMENT_ERROR_VALUE_TOO_LARGE,
+			 "%s: string too large.",
+			 function );
+
+			return( -1 );
+		}
+		*value_64bit *= 10;
+
+		if( ( string[ string_index ] >= (system_character_t) '0' )
+		 && ( string[ string_index ] <= (system_character_t) '9' ) )
+		{
+			character_value = (system_character_t) ( string[ string_index ] - (system_character_t) '0' );
+		}
+		else
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_UNSUPPORTED_VALUE,
+			 "%s: unsupported character value: %" PRIc_SYSTEM " at index: %d.",
+			 function,
+			 string[ string_index ],
+			 string_index );
+
+			return( -1 );
+		}
+		*value_64bit += character_value;
+
+		string_index++;
+	}
+	if( sign == -1 )
+	{
+		*value_64bit *= (uint64_t) -1;
+	}
+	return( 1 );
+}
 
 int smraw_test_write(
      const system_character_t *filename,
@@ -44,36 +153,14 @@ int smraw_test_write(
      size_t maximum_segment_size,
      libcerror_error_t **error )
 {
-	uint8_t md5_hash[ LIBHMAC_MD5_HASH_SIZE ];
+	libsmraw_handle_t *handle = NULL;
+	uint8_t *buffer           = NULL;
+	static char *function     = "smraw_test_write";
+	size_t write_size         = 0;
+	ssize_t write_count       = 0;
+	int result                = 1;
+	int sector_iterator       = 0;
 
-	libhmac_md5_context_t *md5_context = NULL;
-	libsmraw_handle_t *handle          = NULL;
-	uint8_t *buffer                    = NULL;
-	static char *function              = "smraw_test_write";
-	size_t write_size                  = 0;
-	ssize_t write_count                = 0;
-	int result                         = 1;
-	int sector_iterator                = 0;
-
-	fprintf(
-	 stdout,
-	 "Testing writing media size: %" PRIzd ", with maximum segment size: %" PRIzd "\t",
-	 media_size,
-	 maximum_segment_size );
-
-	if( libhmac_md5_initialize(
-	     &md5_context,
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-		 "%s: unable to initialize MD5 context.",
-		 function );
-
-		goto on_error;
-	}
 	if( libsmraw_handle_initialize(
 	     &handle,
 	     error ) != 1 )
@@ -177,21 +264,6 @@ int smraw_test_write(
 
 			goto on_error;
 		}
-		if( libhmac_md5_update(
-		     md5_context,
-		     buffer,
-		     write_size,
-		     error ) != 1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-			 "%s: unable update MD5 context.",
-			 function );
-
-			goto on_error;
-		}
 		write_count = libsmraw_handle_write_buffer(
 		               handle,
 		               buffer,
@@ -238,21 +310,6 @@ int smraw_test_write(
 
 			goto on_error;
 		}
-		if( libhmac_md5_update(
-		     md5_context,
-		     buffer,
-		     write_size,
-		     error ) != 1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-			 "%s: unable update MD5 context.",
-			 function );
-
-			goto on_error;
-		}
 		write_count = libsmraw_handle_write_buffer(
 		               handle,
 		               buffer,
@@ -278,34 +335,6 @@ int smraw_test_write(
 		{
 			media_size -= write_count;
 		}
-	}
-	if( libhmac_md5_finalize(
-	     md5_context,
-	     md5_hash,
-	     LIBHMAC_MD5_HASH_SIZE,
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-		 "%s: unable to finalize MD5 context.",
-		 function );
-
-		goto on_error;
-	}
-	if( libhmac_md5_free(
-	     &md5_context,
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-		 "%s: unable to free MD5 context.",
-		 function );
-
-		goto on_error;
 	}
 	memory_free(
 	 buffer );
@@ -340,31 +369,9 @@ int smraw_test_write(
 
 		goto on_error;
 	}
-	if( result != 0 )
-	{
-		fprintf(
-		 stdout,
-		 "(PASS)" );
-	}
-	else
-	{
-		fprintf(
-		 stdout,
-		 "(FAIL)" );
-	}
-	fprintf(
-	 stdout,
-	 "\n" );
-
 	return( result );
 
 on_error:
-	if( md5_context != NULL )
-	{
-		libhmac_md5_free(
-		 &md5_context,
-		 NULL );
-	}
 	if( buffer != NULL )
 	{
 		memory_free(
@@ -390,50 +397,90 @@ int wmain( int argc, wchar_t * const argv[] )
 int main( int argc, char * const argv[] )
 #endif
 {
-	libsmraw_error_t *error      = NULL;
-	system_character_t *filename = NULL;
-	size_t filename_size         = 0;
+	libsmraw_error_t *error                         = NULL;
+	system_character_t *option_media_size           = NULL;
+	system_character_t *option_maximum_segment_size = NULL;
+	system_integer_t option                         = 0;
+	size64_t maximum_segment_size                   = 0;
+	size64_t media_size                             = 0;
+	size_t string_length                            = 0;
 
-	if( argc < 2 )
+	while( ( option = smraw_test_getopt(
+	                   argc,
+	                   argv,
+	                   _SYSTEM_STRING( "B:S:" ) ) ) != (system_integer_t) -1 )
+	{
+		switch( option )
+		{
+			case (system_integer_t) '?':
+			default:
+				fprintf(
+				 stderr,
+				 "Invalid argument: %" PRIs_SYSTEM ".\n",
+				 argv[ optind - 1 ] );
+
+				return( EXIT_FAILURE );
+
+			case (system_integer_t) 'B':
+				option_media_size = optarg;
+
+				break;
+
+			case (system_integer_t) 'S':
+				option_maximum_segment_size = optarg;
+
+				break;
+		}
+	}
+	if( ( optind == argc )
+	 || ( argv[ optind ] == NULL ) )
 	{
 		fprintf(
 		 stderr,
-		 "Missing test path.\n" );
+		 "Missing storage media image filename.\n" );
 
 		return( EXIT_FAILURE );
 	}
-#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
-	if( libcpath_path_join_wide(
-	     &filename,
-	     &filename_size,
-	     argv[ 1 ],
-	     system_string_length(
-	      argv[ 1 ] ),
-	     _SYSTEM_STRING( "test1" ),
-	     5,
-	     &error ) != 1 )
-#else
-	if( libcpath_path_join(
-	     &filename,
-	     &filename_size,
-	     argv[ 1 ],
-	     system_string_length(
-	      argv[ 1 ] ),
-	     _SYSTEM_STRING( "test1" ),
-	     5,
-	     &error ) != 1 )
-#endif
+	if( option_maximum_segment_size != NULL )
 	{
-		fprintf(
-		 stderr,
-		 "Unable to create filename.\n" );
+		string_length = system_string_length(
+				 option_maximum_segment_size );
 
-		goto on_error;
+		if( smraw_test_system_string_decimal_copy_to_64_bit(
+		     option_maximum_segment_size,
+		     string_length + 1,
+		     &maximum_segment_size,
+		     &error ) != 1 )
+		{
+			fprintf(
+			 stderr,
+			 "Unsupported maximum segment size.\n" );
+
+			goto on_error;
+		}
+	}
+	if( option_media_size != NULL )
+	{
+		string_length = system_string_length(
+				 option_media_size );
+
+		if( smraw_test_system_string_decimal_copy_to_64_bit(
+		     option_media_size,
+		     string_length + 1,
+		     &media_size,
+		     &error ) != 1 )
+		{
+			fprintf(
+			 stderr,
+			 "Unsupported media size.\n" );
+
+			goto on_error;
+		}
 	}
 	if( smraw_test_write(
-	     filename,
-	     0,
-	     0,
+	     argv[ optind ],
+	     media_size,
+	     maximum_segment_size,
 	     &error ) != 1 )
 	{
 		fprintf(
@@ -442,146 +489,6 @@ int main( int argc, char * const argv[] )
 
 		goto on_error;
 	}
-	memory_free(
-	 filename );
-
-	filename = NULL;
-
-#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
-	if( libcpath_path_join_wide(
-	     &filename,
-	     &filename_size,
-	     argv[ 1 ],
-	     system_string_length(
-	      argv[ 1 ] ),
-	     _SYSTEM_STRING( "test2" ),
-	     5,
-	     &error ) != 1 )
-#else
-	if( libcpath_path_join(
-	     &filename,
-	     &filename_size,
-	     argv[ 1 ],
-	     system_string_length(
-	      argv[ 1 ] ),
-	     _SYSTEM_STRING( "test2" ),
-	     5,
-	     &error ) != 1 )
-#endif
-	{
-		fprintf(
-		 stderr,
-		 "Unable to create filename.\n" );
-
-		goto on_error;
-	}
-	if( smraw_test_write(
-	     filename,
-	     0,
-	     10000,
-	     &error ) != 1 )
-	{
-		fprintf(
-		 stderr,
-		 "Unable to test write.\n" );
-
-		goto on_error;
-	}
-	memory_free(
-	 filename );
-
-	filename = NULL;
-
-#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
-	if( libcpath_path_join_wide(
-	     &filename,
-	     &filename_size,
-	     argv[ 1 ],
-	     system_string_length(
-	      argv[ 1 ] ),
-	     _SYSTEM_STRING( "test3" ),
-	     5,
-	     &error ) != 1 )
-#else
-	if( libcpath_path_join(
-	     &filename,
-	     &filename_size,
-	     argv[ 1 ],
-	     system_string_length(
-	      argv[ 1 ] ),
-	     _SYSTEM_STRING( "test3" ),
-	     5,
-	     &error ) != 1 )
-#endif
-	{
-		fprintf(
-		 stderr,
-		 "Unable to create filename.\n" );
-
-		goto on_error;
-	}
-	if( smraw_test_write(
-	     filename,
-	     100000,
-	     0,
-	     &error ) != 1 )
-	{
-		fprintf(
-		 stderr,
-		 "Unable to test write.\n" );
-
-		goto on_error;
-	}
-	memory_free(
-	 filename );
-
-	filename = NULL;
-
-#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
-	if( libcpath_path_join_wide(
-	     &filename,
-	     &filename_size,
-	     argv[ 1 ],
-	     system_string_length(
-	      argv[ 1 ] ),
-	     _SYSTEM_STRING( "test4" ),
-	     5,
-	     &error ) != 1 )
-#else
-	if( libcpath_path_join(
-	     &filename,
-	     &filename_size,
-	     argv[ 1 ],
-	     system_string_length(
-	      argv[ 1 ] ),
-	     _SYSTEM_STRING( "test4" ),
-	     5,
-	     &error ) != 1 )
-#endif
-	{
-		fprintf(
-		 stderr,
-		 "Unable to create filename.\n" );
-
-		goto on_error;
-	}
-	if( smraw_test_write(
-	     filename,
-	     100000,
-	     10000,
-	     &error ) != 1 )
-	{
-		fprintf(
-		 stderr,
-		 "Unable to test write.\n" );
-
-		goto on_error;
-	}
-	memory_free(
-	 filename );
-
-	filename = NULL;
-
 	return( EXIT_SUCCESS );
 
 on_error:
@@ -592,11 +499,6 @@ on_error:
 		 stderr );
 		libsmraw_error_free(
 		 &error );
-	}
-	if( filename != NULL )
-	{
-		memory_free(
-		 filename );
 	}
 	return( EXIT_FAILURE );
 }

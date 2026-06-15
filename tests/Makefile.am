@@ -16,42 +16,35 @@ AM_CPPFLAGS = \
 	@LIBFCACHE_CPPFLAGS@ \
 	@LIBFDATA_CPPFLAGS@ \
 	@LIBFVALUE_CPPFLAGS@ \
-	@LIBHMAC_CPPFLAGS@ \
-	@LIBCRYPTO_CPPFLAGS@ \
 	@PTHREAD_CPPFLAGS@ \
 	@LIBSMRAW_DLL_IMPORT@
 
+check_PYTHONdir = $(abs_top_builddir)
+
 AM_TESTS_ENVIRONMENT = \
-	export PYTHON="@PYTHON@"; \
 	export TESTS_USE_WINAPI="@TESTS_USE_WINAPI@";
 
-if HAVE_PYTHON_TESTS
-TESTS_PYSMRAW = \
-	test_python_module.sh
-endif
+BUILT_SOURCES = package.m4
 
 TESTS = \
-	test_library.sh \
-	test_glob.sh \
-	test_write_functions.sh \
-	test_tools.sh \
-	test_smrawverify.sh \
-	$(TESTS_PYSMRAW)
+	$(check_SCRIPTS)
+
+check_AUTOTESTS = \
+	test_library \
+	test_library_write \
+	test_manpages \
+	test_tools
+
+if HAVE_PYTHON_TESTS
+check_AUTOTESTS += test_python_module
+endif
 
 check_SCRIPTS = \
-	pysmraw_test_handle.py \
-	pysmraw_test_support.py \
-	test_glob.sh \
-	test_library.sh \
-	test_manpage.sh \
-	test_python_module.sh \
-	test_runner.sh \
-	test_smrawverify.sh \
-	test_tools.sh \
-	test_write_functions.sh
+	test_glob.sh
 
-EXTRA_DIST = \
-	$(check_SCRIPTS)
+check_PYTHON_SCRIPTS = \
+	pysmraw_test_handle.py \
+	pysmraw_test_support.py
 
 check_PROGRAMS = \
 	smraw_test_error \
@@ -212,27 +205,104 @@ smraw_test_tools_signal_LDADD = \
 	@LIBCERROR_LIBADD@
 
 smraw_test_write_SOURCES = \
+	smraw_test_getopt.c smraw_test_getopt.h \
 	smraw_test_libcpath.h \
-	smraw_test_libhmac.h \
 	smraw_test_libsmraw.h \
 	smraw_test_unused.h \
 	smraw_test_write.c
 
 smraw_test_write_LDADD = \
-	@LIBHMAC_LIBADD@ \
-	@LIBCRYPTO_LIBADD@ \
-	@LIBCPATH_LIBADD@ \
-	@LIBUNA_LIBADD@ \
-	@LIBCSPLIT_LIBADD@ \
-	@LIBCLOCALE_LIBADD@ \
+	@LIBCNOTIFY_LIBADD@ \
 	../libsmraw/libsmraw.la \
-	@LIBCTHREADS_LIBADD@ \
 	@LIBCERROR_LIBADD@
-	@PTHREAD_LIBADD@
-	@LIBDL_LIBADD@
+
+AUTOM4TE = autom4te
+AUTOTEST = $(AUTOM4TE) --language=autotest
+
+SUFFIXES = .at
+
+.at:
+	$(AM_V_GEN)rm -f $@ $@.tmp; \
+	$(AUTOTEST) -I '$(srcdir)' -o $@.tmp $< && \
+	mv $@.tmp $@
+
+atconfig: $(top_builddir)/config.status
+	cd $(top_builddir) && $(SHELL) ./config.status tests/$@
+
+check-build: $(check_PROGRAMS)
+
+check-local: $(check_AUTOTESTS)
+	@fail=0; \
+	for test_suite in $(check_AUTOTESTS); do \
+		$(AM_TESTS_ENVIRONMENT) $(SHELL) "./$$test_suite" $(TESTSUITEFLAGS) || fail=1; \
+		echo ""; \
+	done; \
+	exit $$fail
+
+clean-local:
+	for test_suite in $(check_AUTOTESTS); do \
+		test ! -f "$$test_suite" || $(SHELL) "./$$test_suite" --clean; \
+	done
+
+package.m4: $(top_srcdir)/configure.ac
+	$(AM_V_GEN):; \
+	{ \
+	  echo 'm4_define([AT_PACKAGE_NAME], [$(PACKAGE_NAME)])' ; \
+	  echo 'm4_define([AT_PACKAGE_TARNAME], [$(PACKAGE_TARNAME)])' ; \
+	  echo 'm4_define([AT_PACKAGE_VERSION], [$(PACKAGE_VERSION)])' ; \
+	  echo 'm4_define([AT_PACKAGE_STRING], [$(PACKAGE_STRING)])' ; \
+	  echo 'm4_define([AT_PACKAGE_BUGREPORT], [$(PACKAGE_BUGREPORT)])' ; \
+	} > $@
+
+test_inputs_libsmraw.at: generate_test_inputs.sh
+	$(SHELL) $(srcdir)/generate_test_inputs.sh $(PACKAGE_NAME) libsmraw
+
+test_inputs_pysmraw.at: generate_test_inputs.sh
+	$(SHELL) $(srcdir)/generate_test_inputs.sh $(PACKAGE_NAME) pysmraw
+
+test_inputs_smrawverify.at: generate_test_inputs.sh
+	$(SHELL) $(srcdir)/generate_test_inputs.sh $(PACKAGE_NAME) smrawverify
+
+test_library: \
+	package.m4 \
+	test_inputs_libsmraw.at \
+	test_library.at \
+	test_macros.at
+
+test_manpages: \
+	package.m4 \
+	test_manpages.at
+
+test_python_module: \
+	package.m4 \
+	test_inputs_pysmraw.at \
+	test_python_module.at
+
+test_tools: \
+	package.m4 \
+	test_inputs_smrawverify.at \
+	test_macros.at \
+	test_tools.at
+
+EXTRA_DIST = \
+	$(check_AUTOTESTS:=.at) \
+	$(check_SCRIPTS) \
+	$(check_PYTHON_SCRIPTS) \
+	generate_test_inputs.sh \
+	package.m4 \
+	test_macros.at \
+	test_runner.sh
+
+CLEANFILES = \
+	$(check_AUTOTESTS) \
+	*.exe \
+	*.tmp \
+	notify_stream.log \
+	test_inputs_*.at
 
 DISTCLEANFILES = \
+	*.log \
+	atconfig \
 	Makefile \
-	Makefile.in \
-	notify_stream.log
+	Makefile.in
 
