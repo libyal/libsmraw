@@ -19,15 +19,13 @@ AM_CPPFLAGS = \
 	@PTHREAD_CPPFLAGS@ \
 	@LIBSMRAW_DLL_IMPORT@
 
-check_PYTHONdir = $(abs_top_builddir)
-
 AM_TESTS_ENVIRONMENT = \
 	export TESTS_USE_WINAPI="@TESTS_USE_WINAPI@";
 
 BUILT_SOURCES = package.m4
 
 TESTS = \
-	$(check_SCRIPTS)
+	test_glob.sh
 
 check_AUTOTESTS = \
 	test_library \
@@ -40,9 +38,6 @@ check_AUTOTESTS += test_python_module
 endif
 
 check_SCRIPTS = \
-	test_glob.sh
-
-check_PYTHON_SCRIPTS = \
 	pysmraw_test_handle.py \
 	pysmraw_test_support.py
 
@@ -287,9 +282,9 @@ test_tools: \
 EXTRA_DIST = \
 	$(check_AUTOTESTS:=.at) \
 	$(check_SCRIPTS) \
-	$(check_PYTHON_SCRIPTS) \
 	generate_test_inputs.sh \
 	package.m4 \
+	test_glob.sh \
 	test_macros.at \
 	test_runner.sh
 
