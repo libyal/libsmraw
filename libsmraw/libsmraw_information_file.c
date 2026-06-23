@@ -310,7 +310,7 @@ int libsmraw_information_file_open(
 }
 
 /* Closes the information file
- * Returns the 0 if succesful or -1 on error
+ * Returns the 0 if successful or -1 on error
  */
 int libsmraw_information_file_close(
      libsmraw_information_file_t *information_file,
@@ -356,7 +356,7 @@ int libsmraw_information_file_close(
 }
 
 /* Reads a section with its values from the information file
- * Returns the 1 if succesful, 0 if no such section or -1 on error
+ * Returns the 1 if successful, 0 if no such section or -1 on error
  */
 int libsmraw_information_file_read_section(
      libsmraw_information_file_t *information_file,
@@ -693,7 +693,7 @@ on_error:
 }
 
 /* Write a section with its values to the information file
- * Returns the 1 if succesful or -1 on error
+ * Returns the 1 if successful or -1 on error
  */
 int libsmraw_information_file_write_section(
      libsmraw_information_file_t *information_file,

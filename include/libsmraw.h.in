@@ -281,7 +281,7 @@ int libsmraw_handle_open_file_io_pool(
 #endif /* defined( LIBSMRAW_HAVE_BFIO ) */
 
 /* Closes the handle
- * Returns the 0 if succesful or -1 on error
+ * Returns the 0 if successful or -1 on error
  */
 LIBSMRAW_EXTERN \
 int libsmraw_handle_close(
@@ -508,7 +508,7 @@ int libsmraw_handle_get_file_io_handle(
  * ------------------------------------------------------------------------- */
 
 /* Retrieves the media size
- * Returns the 1 if succesful or -1 on error
+ * Returns the 1 if successful or -1 on error
  */
 LIBSMRAW_EXTERN \
 int libsmraw_handle_get_media_size(
@@ -517,7 +517,7 @@ int libsmraw_handle_get_media_size(
      libsmraw_error_t **error );
 
 /* Sets the media size
- * Returns the 1 if succesful or -1 on error
+ * Returns the 1 if successful or -1 on error
  */
 LIBSMRAW_EXTERN \
 int libsmraw_handle_set_media_size(
@@ -526,7 +526,7 @@ int libsmraw_handle_set_media_size(
      libsmraw_error_t **error );
 
 /* Retrieves the number of bytes per sector
- * Returns the 1 if succesful or -1 on error
+ * Returns the 1 if successful or -1 on error
  */
 LIBSMRAW_EXTERN \
 int libsmraw_handle_get_bytes_per_sector(
@@ -535,7 +535,7 @@ int libsmraw_handle_get_bytes_per_sector(
      libsmraw_error_t **error );
 
 /* Sets the number of bytes per sector
- * Returns the 1 if succesful or -1 on error
+ * Returns the 1 if successful or -1 on error
  */
 LIBSMRAW_EXTERN \
 int libsmraw_handle_set_bytes_per_sector(
@@ -544,7 +544,7 @@ int libsmraw_handle_set_bytes_per_sector(
      libsmraw_error_t **error );
 
 /* Retrieves the media type
- * Returns the 1 if succesful or -1 on error
+ * Returns the 1 if successful or -1 on error
  */
 LIBSMRAW_EXTERN \
 int libsmraw_handle_get_media_type(
@@ -553,7 +553,7 @@ int libsmraw_handle_get_media_type(
      libsmraw_error_t **error );
 
 /* Sets the media type
- * Returns the 1 if succesful or -1 on error
+ * Returns the 1 if successful or -1 on error
  */
 LIBSMRAW_EXTERN \
 int libsmraw_handle_set_media_type(
@@ -562,7 +562,7 @@ int libsmraw_handle_set_media_type(
      libsmraw_error_t **error );
 
 /* Retrieves the media flags
- * Returns the 1 if succesful or -1 on error
+ * Returns the 1 if successful or -1 on error
  */
 LIBSMRAW_EXTERN \
 int libsmraw_handle_get_media_flags(
@@ -571,7 +571,7 @@ int libsmraw_handle_get_media_flags(
      libsmraw_error_t **error );
 
 /* Sets the media flags
- * Returns the 1 if succesful or -1 on error
+ * Returns the 1 if successful or -1 on error
  */
 LIBSMRAW_EXTERN \
 int libsmraw_handle_set_media_flags(
@@ -637,7 +637,7 @@ int libsmraw_handle_get_utf8_information_value(
      libsmraw_error_t **error );
 
 /* Sets an UTF-8 encoded information value for the specific identifier
- * Returns the 1 if succesful or -1 on error
+ * Returns the 1 if successful or -1 on error
  */
 LIBSMRAW_EXTERN \
 int libsmraw_handle_set_utf8_information_value(
@@ -674,7 +674,7 @@ int libsmraw_handle_get_utf16_information_value(
      libsmraw_error_t **error );
 
 /* Sets an UTF-16 encoded information value for the specific identifier
- * Returns the 1 if succesful or -1 on error
+ * Returns the 1 if successful or -1 on error
  */
 LIBSMRAW_EXTERN \
 int libsmraw_handle_set_utf16_information_value(
@@ -743,7 +743,7 @@ int libsmraw_handle_get_utf8_integrity_hash_value(
      libsmraw_error_t **error );
 
 /* Sets an UTF-8 encoded integrity hash value for the specific identifier
- * Returns the 1 if succesful or -1 on error
+ * Returns the 1 if successful or -1 on error
  */
 LIBSMRAW_EXTERN \
 int libsmraw_handle_set_utf8_integrity_hash_value(
@@ -780,7 +780,7 @@ int libsmraw_handle_get_utf16_integrity_hash_value(
      libsmraw_error_t **error );
 
 /* Sets an UTF-16 encoded integrity hash value for the specific identifier
- * Returns the 1 if succesful or -1 on error
+ * Returns the 1 if successful or -1 on error
  */
 LIBSMRAW_EXTERN \
 int libsmraw_handle_set_utf16_integrity_hash_value(

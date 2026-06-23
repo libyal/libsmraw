@@ -545,7 +545,7 @@ off64_t libsmraw_io_handle_seek_segment_offset(
 
 /* Retrieves the segment basename size
  * The segment basename size includes the end of string character
- * Returns 1 if succesful or -1 on error
+ * Returns 1 if successful or -1 on error
  */
 int libsmraw_io_handle_get_basename_size(
      libsmraw_io_handle_t *io_handle,
@@ -649,7 +649,7 @@ int libsmraw_io_handle_get_basename_size(
 
 /* Retrieves the segment basename
  * The segment basename size should include the end of string character
- * Returns 1 if succesful or -1 on error
+ * Returns 1 if successful or -1 on error
  */
 int libsmraw_io_handle_get_basename(
      libsmraw_io_handle_t *io_handle,
@@ -836,7 +836,7 @@ int libsmraw_io_handle_get_basename(
 }
 
 /* Sets the segment basename
- * Returns 1 if succesful or -1 on error
+ * Returns 1 if successful or -1 on error
  */
 int libsmraw_io_handle_set_basename(
      libsmraw_io_handle_t *io_handle,
@@ -1059,7 +1059,7 @@ int libsmraw_io_handle_set_basename(
 
 /* Retrieves the segment basename size
  * The segment basename size includes the end of string character
- * Returns 1 if succesful or -1 on error
+ * Returns 1 if successful or -1 on error
  */
 int libsmraw_io_handle_get_basename_size_wide(
      libsmraw_io_handle_t *io_handle,
@@ -1163,7 +1163,7 @@ int libsmraw_io_handle_get_basename_size_wide(
 
 /* Retrieves the segment basename
  * The segment basename size should include the end of string character
- * Returns 1 if succesful or -1 on error
+ * Returns 1 if successful or -1 on error
  */
 int libsmraw_io_handle_get_basename_wide(
      libsmraw_io_handle_t *io_handle,
@@ -1350,7 +1350,7 @@ int libsmraw_io_handle_get_basename_wide(
 }
 
 /* Sets the segment basename
- * Returns 1 if succesful or -1 on error
+ * Returns 1 if successful or -1 on error
  */
 int libsmraw_io_handle_set_basename_wide(
      libsmraw_io_handle_t *io_handle,

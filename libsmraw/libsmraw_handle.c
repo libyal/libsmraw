@@ -214,7 +214,7 @@ on_error:
 }
 
 /* Frees a handle
- * Returns 1 if succesful or -1 on error
+ * Returns 1 if successful or -1 on error
  */
 int libsmraw_handle_free(
      libsmraw_handle_t **handle,
@@ -1877,7 +1877,7 @@ on_error:
 }
 
 /* Closes a RAW handle
- * Returns the 0 if succesful or -1 on error
+ * Returns the 0 if successful or -1 on error
  */
 int libsmraw_handle_close(
      libsmraw_handle_t *handle,
@@ -2598,7 +2598,7 @@ int libsmraw_handle_set_maximum_number_of_open_handles(
 
 /* Retrieves the segment filename size
  * The segment filename size includes the end of string character
- * Returns 1 if succesful or -1 on error
+ * Returns 1 if successful or -1 on error
  */
 int libsmraw_handle_get_segment_filename_size(
      libsmraw_handle_t *handle,
@@ -2640,7 +2640,7 @@ int libsmraw_handle_get_segment_filename_size(
 
 /* Retrieves the segment filename
  * The segment filename size should include the end of string character
- * Returns 1 if succesful or -1 on error
+ * Returns 1 if successful or -1 on error
  */
 int libsmraw_handle_get_segment_filename(
      libsmraw_handle_t *handle,
@@ -2683,7 +2683,7 @@ int libsmraw_handle_get_segment_filename(
 }
 
 /* Sets the segment filename
- * Returns 1 if succesful or -1 on error
+ * Returns 1 if successful or -1 on error
  */
 int libsmraw_handle_set_segment_filename(
      libsmraw_handle_t *handle,
@@ -2755,7 +2755,7 @@ int libsmraw_handle_set_segment_filename(
 
 /* Retrieves the segment filename size
  * The segment filename size includes the end of string character
- * Returns 1 if succesful or -1 on error
+ * Returns 1 if successful or -1 on error
  */
 int libsmraw_handle_get_segment_filename_size_wide(
      libsmraw_handle_t *handle,
@@ -2797,7 +2797,7 @@ int libsmraw_handle_get_segment_filename_size_wide(
 
 /* Retrieves the segment filename
  * The segment filename size should include the end of string character
- * Returns 1 if succesful or -1 on error
+ * Returns 1 if successful or -1 on error
  */
 int libsmraw_handle_get_segment_filename_wide(
      libsmraw_handle_t *handle,
@@ -2840,7 +2840,7 @@ int libsmraw_handle_get_segment_filename_wide(
 }
 
 /* Sets the segment filename
- * Returns 1 if succesful or -1 on error
+ * Returns 1 if successful or -1 on error
  */
 int libsmraw_handle_set_segment_filename_wide(
      libsmraw_handle_t *handle,
@@ -3321,7 +3321,7 @@ int libsmraw_handle_get_file_io_handle(
 }
 
 /* Retrieves the media size
- * Returns the 1 if succesful or -1 on error
+ * Returns the 1 if successful or -1 on error
  */
 int libsmraw_handle_get_media_size(
      libsmraw_handle_t *handle,
@@ -3413,7 +3413,7 @@ int libsmraw_handle_get_media_size(
 }
 
 /* Sets the media size
- * Returns the 1 if succesful or -1 on error
+ * Returns the 1 if successful or -1 on error
  */
 int libsmraw_handle_set_media_size(
      libsmraw_handle_t *handle,
@@ -3466,7 +3466,7 @@ int libsmraw_handle_set_media_size(
 }
 
 /* Retrieves the bytes per sector
- * Returns the 1 if succesful or -1 on error
+ * Returns the 1 if successful or -1 on error
  */
 int libsmraw_handle_get_bytes_per_sector(
      libsmraw_handle_t *handle,
@@ -3600,7 +3600,7 @@ on_error:
 }
 
 /* Sets the bytes per sector
- * Returns the 1 if succesful or -1 on error
+ * Returns the 1 if successful or -1 on error
  */
 int libsmraw_handle_set_bytes_per_sector(
      libsmraw_handle_t *handle,
@@ -3736,7 +3736,7 @@ int libsmraw_handle_set_bytes_per_sector(
 }
 
 /* Retrieves the media type
- * Returns the 1 if succesful or -1 on error
+ * Returns the 1 if successful or -1 on error
  */
 int libsmraw_handle_get_media_type(
      libsmraw_handle_t *handle,
@@ -3885,7 +3885,7 @@ int libsmraw_handle_get_media_type(
 }
 
 /* Sets the media type
- * Returns the 1 if succesful or -1 on error
+ * Returns the 1 if successful or -1 on error
  */
 int libsmraw_handle_set_media_type(
      libsmraw_handle_t *handle,
@@ -4060,7 +4060,7 @@ int libsmraw_handle_set_media_type(
 }
 
 /* Retrieves the media flags
- * Returns the 1 if succesful or -1 on error
+ * Returns the 1 if successful or -1 on error
  */
 int libsmraw_handle_get_media_flags(
      libsmraw_handle_t *handle,
@@ -4187,7 +4187,7 @@ int libsmraw_handle_get_media_flags(
 }
 
 /* Sets the media flags
- * Returns the 1 if succesful or -1 on error
+ * Returns the 1 if successful or -1 on error
  */
 int libsmraw_handle_set_media_flags(
      libsmraw_handle_t *handle,
@@ -4791,7 +4791,7 @@ int libsmraw_handle_get_utf8_information_value(
 }
 
 /* Sets an UTF-8 encoded information value for the specific identifier
- * Returns the 1 if succesful or -1 on error
+ * Returns the 1 if successful or -1 on error
  */
 int libsmraw_handle_set_utf8_information_value(
      libsmraw_handle_t *handle,
@@ -5129,7 +5129,7 @@ int libsmraw_handle_get_utf16_information_value(
 }
 
 /* Sets an UTF-16 encoded information value for the specific identifier
- * Returns the 1 if succesful or -1 on error
+ * Returns the 1 if successful or -1 on error
  */
 int libsmraw_handle_set_utf16_information_value(
      libsmraw_handle_t *handle,
@@ -5721,7 +5721,7 @@ int libsmraw_handle_get_utf8_integrity_hash_value(
 }
 
 /* Sets an UTF-8 encoded integrity hash value for the specific identifier
- * Returns the 1 if succesful or -1 on error
+ * Returns the 1 if successful or -1 on error
  */
 int libsmraw_handle_set_utf8_integrity_hash_value(
      libsmraw_handle_t *handle,
@@ -6059,7 +6059,7 @@ int libsmraw_handle_get_utf16_integrity_hash_value(
 }
 
 /* Sets an UTF-16 encoded integrity hash value for the specific identifier
- * Returns the 1 if succesful or -1 on error
+ * Returns the 1 if successful or -1 on error
  */
 int libsmraw_handle_set_utf16_integrity_hash_value(
      libsmraw_handle_t *handle,
