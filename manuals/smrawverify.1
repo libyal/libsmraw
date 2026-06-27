@@ -1,41 +1,47 @@
 .Dd June 27, 2026
-.Dt SMRAWMOUNT 1
+.Dt ODRAWVERIFY 1
 .Os
 .Sh NAME
-.Nm smrawmount
-.Nd mounts a storage media (split) RAW image file
+.Nm smrawverify
+.Nd verifies media data stored in a storage media (split) RAW image file
 .Sh SYNOPSIS
-.Nm smrawmount
-.Op Fl X Ar extended_options
+.Nm smrawverify
+.Op Fl d Ar digest_type
+.Op Fl l Ar log_file
+.Op Fl p Ar buffer_size
 .Op Fl hvV
-.Ar sources
-.Ar mount_point
+.Ar source
 .Sh DESCRIPTION
-.Nm smrawmount
-is a utility to mount a storage media (split) RAW image file
+.Nm smrawverify
+is a utility to verify media data stored in a storage media (split) RAW image \
+file
 .Pp
-.Nm smrawmount
+.Nm smrawverify
 is part of the
 .Nm libsmraw
 package.
 .Nm libsmraw
-is a library to access the storage media (SM) (split) RAW format
+is a library to access the storage media (split) RAW image format
 .Pp
-.Ar sources
-one or more storage media (split) RAW image segment files
-.Ar mount_point
-the directory to serve as mount point
+.Ar source
+is the source image.
 .Pp
 The options are as follows:
 .Bl -tag -width Ds
+.It Fl d Ar digest_type
+calculate additional digest (hash) types besides md5, options: sha1, sha256
 .It Fl h
 shows this help
+.It Fl l Ar log_file
+logs verification errors and the digest (hash) to a file
+.It Fl p Ar buffer_size
+specify the process buffer size (default is the 32768)
+.It Fl q
+quiet shows minimal status information
 .It Fl v
-verbose output to stderr, while smrawmount will remain running in the foreground
+verbose output to stderr
 .It Fl V
 print version
-.It Fl X Ar extended_options
-extended options to pass to sub system
 .El
 .Sh ENVIRONMENT
 None
@@ -43,14 +49,16 @@ None
 None
 .Sh EXAMPLES
 .Bd -literal
-# smrawmount image1.raw /mnt/smraw
-smrawmount 20260627
+# smrawverify image1.raw
+smrawverify 20260627
 .sp
 .Ed
 .Sh DIAGNOSTICS
 Errors, verbose and debug output are printed to stderr when verbose output \
 \-v is enabled.
 Verbose and debug output are only printed when enabled at compilation.
+.Sh SEE ALSO
+.Xr smrawmount 1
 .Sh AUTHORS
 .An Joachim Metz <joachim.metz@gmail.com>
 .Sh BUGS

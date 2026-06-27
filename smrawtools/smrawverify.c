@@ -62,35 +62,6 @@
 verification_handle_t *smrawverify_verification_handle = NULL;
 int smrawverify_abort                                  = 0;
 
-/* Prints the executable usage information to the stream
- */
-void usage_fprint(
-      FILE *stream )
-{
-	if( stream == NULL )
-	{
-		return;
-	}
-	fprintf( stream, "Use smrawverify to verify data stored in the storage media (split)\n"
-	                 "RAW image file format.\n\n" );
-
-	fprintf( stream, "Usage: smrawverify [ -d digest_type ] [ -l log_filename ]\n"
-	                 "                   [ -p process_buffer_size ] [ -hqvV ]\n"
-	                 "                   smraw_files\n\n" );
-
-	fprintf( stream, "\tsmraw_files: the first or the entire set of SMRAW segment files\n\n" );
-
-	fprintf( stream, "\t-d:          calculate additional digest (hash) types besides md5,\n"
-	                 "\t             options: sha1, sha256\n" );
-	fprintf( stream, "\t-h:          shows this help\n" );
-	fprintf( stream, "\t-l:          logs verification errors and the digest (hash) to the\n"
-	                 "\t             log_filename\n" );
-	fprintf( stream, "\t-p:          specify the process buffer size (default is the 32768)\n" );
-	fprintf( stream, "\t-q:          quiet shows minimal status information\n" );
-	fprintf( stream, "\t-v:          verbose output to stderr\n" );
-	fprintf( stream, "\t-V:          print version\n" );
-}
-
 /* Signal handler for smrawverify
  */
 void smrawverify_signal_handler(
@@ -143,14 +114,27 @@ int wmain( int argc, wchar_t * const argv[] )
 int main( int argc, char * const argv[] )
 #endif
 {
-	libcerror_error_t *error                           = NULL;
+	const char *description = \
+		"Use smrawverify to verify data stored in the storage media (split) RAW image file format.";
 
-	system_character_t * const *argv_filenames         = NULL;
+	smrawtools_option_t options[ ] = {
+		{ 'd', "digest_type", "calculate additional digest (hash) types besides md5, options: sha1, sha256" },
+		{ 'h', NULL, "shows this help" },
+		{ 'l', "log_file", "logs verification errors and the digest (hash) to a file" },
+		{ 'p', "buffer_size", "specify the process buffer size (default is the 32768)" },
+		{ 'q', NULL, "quiet shows minimal status information" },
+		{ 'v', NULL, "verbose output to stderr, while smrawmount will remain running in the foreground" },
+		{ 'V', NULL, "print version" },
+		{ 0, "image", "one or more storage media (split) RAW image segment files" },
+	};
+	system_character_t options_string[ 32 ];
 
 #if !defined( HAVE_GLOB_H )
 	smrawtools_glob_t *glob                            = NULL;
 #endif
 
+	libcerror_error_t *error                           = NULL;
+	system_character_t * const *argv_filenames         = NULL;
 	log_handle_t *log_handle                           = NULL;
 	system_character_t *log_filename                   = NULL;
 	system_character_t *option_additional_digest_types = NULL;
@@ -161,6 +145,7 @@ int main( int argc, char * const argv[] )
 	uint8_t print_status_information                   = 1;
 	uint8_t verbose                                    = 0;
 	int number_of_filenames                            = 0;
+	int number_of_options                              = (int) ( sizeof( options ) / sizeof( smrawtools_option_t ) );
 	int result                                         = 0;
 
 #if defined( __MINGW32__ ) && defined( HAVE_MINGW_BINMODE )
@@ -198,10 +183,22 @@ int main( int argc, char * const argv[] )
 	 stdout,
 	 program );
 
+	if( smrawtools_getopt_get_options_string(
+	     options,
+	     number_of_options,
+	     options_string,
+	     32 ) != 1 )
+	{
+		fprintf(
+		 stderr,
+		 "Unable to determine options string.\n" );
+
+		goto on_error;
+	}
 	while( ( option = smrawtools_getopt(
 	                   argc,
 	                   argv,
-	                   _SYSTEM_STRING( "d:hl:p:qvV" ) ) ) != (system_integer_t) -1 )
+	                   options_string ) ) != (system_integer_t) -1 )
 	{
 		switch( option )
 		{
@@ -212,8 +209,12 @@ int main( int argc, char * const argv[] )
 				 "Invalid argument: %" PRIs_SYSTEM "\n",
 				 argv[ optind - 1 ] );
 
-				usage_fprint(
-				 stdout );
+				smrawtools_getopt_usage_fprint(
+				 stdout,
+				 program,
+				 description,
+				 options,
+				 number_of_options );
 
 				goto on_error;
 
@@ -223,8 +224,12 @@ int main( int argc, char * const argv[] )
 				break;
 
 			case (system_integer_t) 'h':
-				usage_fprint(
-				 stdout );
+				smrawtools_getopt_usage_fprint(
+				 stdout,
+				 program,
+				 description,
+				 options,
+				 number_of_options );
 
 				return( EXIT_SUCCESS );
 
@@ -261,8 +266,12 @@ int main( int argc, char * const argv[] )
 		 stderr,
 		 "Missing SMRAW image file(s).\n" );
 
-		usage_fprint(
-		 stdout );
+		smrawtools_getopt_usage_fprint(
+		 stdout,
+		 program,
+		 description,
+		 options,
+		 number_of_options );
 
 		goto on_error;
 	}

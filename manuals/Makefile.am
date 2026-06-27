@@ -1,10 +1,10 @@
 man_MANS = \
 	libsmraw.3 \
-	smrawmount.1
+	smrawmount.1 \
+	smrawverify.1
 
 EXTRA_DIST = \
-	libsmraw.3 \
-	smrawmount.1
+	$(man_MANS)
 
 DISTCLEANFILES = \
 	Makefile \

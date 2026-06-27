@@ -97,7 +97,7 @@ If (-Not (Test-Path ${TestExecutablesDirectory}))
 	Exit ${ExitFailure}
 }
 
-$Result = ${ExitIgnore}
+$Result = ${ExitSuccess}
 
 Foreach (${TestName} in ${ToolsTests} -split " ")
 {
@@ -106,11 +106,11 @@ Foreach (${TestName} in ${ToolsTests} -split " ")
 	{
 		Continue
 	}
-	$Result = RunTestBinary ${TestExecutablesDirectory} "smraw_test_tools_${TestName}"
+	$ResultRun = RunTestBinary ${TestExecutablesDirectory} "smraw_test_tools_${TestName}"
 
-	If ((${Result} -ne ${ExitSuccess}) -And (${Result} -ne ${ExitIgnore}))
+	If ((${ResultRun} -ne ${ExitSuccess}) -And (${ResultRun} -ne ${ExitIgnore}))
 	{
-		Break
+		$Result = ${ResultRun}
 	}
 }
 
