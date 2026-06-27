@@ -1,0 +1,592 @@
+m4_include([package.m4])
+m4_include([test_macros.at])
+
+dnl Sets up glob helper functions.
+m4_define([SETUP_GLOB_HELPER_FUNCTIONS],
+  [AT_TEST_HELPER_FN(
+    [test_glob_chr],
+    [value],
+    [chr],
+    [CHR_VALUE=`expr \( \( $[]1 / 64 \) \* 100 \) + \( \( \( $[]1 % 64 \) / 8 \) \* 10 \) + \( $[]1 % 8 \)`
+
+    printf \\${CHR_VALUE}
+    ])
+
+  AT_TEST_HELPER_FN(
+    [generate_test_glob_with_extension_input],
+    [first_extension final_extension],
+    [Generates test input for a glob with extension test],
+    [FIRST_EXTENSION=$[]1
+    LAST_EXTENSION=$[]2
+
+    SEGMENT_INDEX=0
+
+    FILENAMES=""
+
+    case "${FIRST_EXTENSION}" in
+      0|1)
+        if test "${FIRST_EXTENSION}" = "1"; then
+          SEGMENT_INDEX=1
+        fi
+        while true; do
+          CURRENT_EXTENSION="${SEGMENT_INDEX}"
+          FILENAME="PREFIX.${CURRENT_EXTENSION}"
+
+          if test -n "${FILENAMES}"; then
+            FILENAMES="${FILENAMES} ${FILENAME}"
+          else
+            FILENAMES="${FILENAME}"
+          fi
+          echo "${FILENAME}" >> expected_output
+
+          if test "${CURRENT_EXTENSION}" = "${LAST_EXTENSION}"; then
+            break
+          fi
+          SEGMENT_INDEX=`expr ${SEGMENT_INDEX} + 1`
+        done
+        ;;
+
+      00|01)
+        if test "${FIRST_EXTENSION}" = "01"; then
+          SEGMENT_INDEX=1
+        fi
+        while true; do
+          SECOND_DIGIT=`expr ${SEGMENT_INDEX} % 10`
+          FIRST_DIGIT=`expr ${SEGMENT_INDEX} / 10`
+
+          CURRENT_EXTENSION="${FIRST_DIGIT}${SECOND_DIGIT}"
+          FILENAME="PREFIX.${CURRENT_EXTENSION}"
+
+          if test -n "${FILENAMES}"; then
+            FILENAMES="${FILENAMES} ${FILENAME}"
+          else
+            FILENAMES="${FILENAME}"
+          fi
+          echo "${FILENAME}" >> expected_output
+
+          if test "${CURRENT_EXTENSION}" = "${LAST_EXTENSION}"; then
+            break
+          fi
+          SEGMENT_INDEX=`expr ${SEGMENT_INDEX} + 1`
+        done
+        ;;
+
+      000|001)
+        if test "${FIRST_EXTENSION}" = "001"; then
+          SEGMENT_INDEX=1
+        fi
+        while true; do
+          THIRD_DIGIT=`expr ${SEGMENT_INDEX} % 10`
+          SECOND_DIGIT=`expr \( ${SEGMENT_INDEX} / 10 \) % 10`
+          FIRST_DIGIT=`expr ${SEGMENT_INDEX} / 100`
+
+          CURRENT_EXTENSION="${FIRST_DIGIT}${SECOND_DIGIT}${THIRD_DIGIT}"
+          FILENAME="PREFIX.${CURRENT_EXTENSION}"
+
+          if test -n "${FILENAMES}"; then
+            FILENAMES="${FILENAMES} ${FILENAME}"
+          else
+            FILENAMES="${FILENAME}"
+          fi
+          echo "${FILENAME}" >> expected_output
+
+          if test "${CURRENT_EXTENSION}" = "${LAST_EXTENSION}"; then
+            break
+          fi
+          SEGMENT_INDEX=`expr ${SEGMENT_INDEX} + 1`
+        done
+        ;;
+
+      dd|dmg|img|raw)
+        FILENAME="PREFIX.${FIRST_EXTENSION}"
+        echo "${FILENAME}" >> expected_output
+
+        FILENAMES="${FILENAME}"
+        ;;
+
+      *)
+        return 77
+        ;;
+    esac
+
+    touch ${FILENAMES}
+    ])
+
+  AT_TEST_HELPER_FN(
+    [generate_test_glob_with_suffix_input],
+    [first_extension final_extension],
+    [Generates test input for a glob with suffix test],
+    [FIRST_SUFFIX=$[]1
+    LAST_SUFFIX=$[]2
+
+    SEGMENT_INDEX=0
+
+    FILENAMES=""
+
+    case "${FIRST_SUFFIX}" in
+      .1of*)
+        SEGMENT_INDEX=1
+        SUFFIX="${FIRST_SUFFIX#.1of}"
+
+        while true; do
+          CURRENT_SUFFIX=".${SEGMENT_INDEX}of${SUFFIX}"
+          FILENAME="PREFIX${CURRENT_SUFFIX}"
+
+          if test -n "${FILENAMES}"; then
+            FILENAMES="${FILENAMES} ${FILENAME}"
+          else
+            FILENAMES="${FILENAME}"
+          fi
+          echo "${FILENAME}" >> expected_output
+
+          if test "${CURRENT_SUFFIX}" = "${LAST_SUFFIX}"; then
+            break
+          fi
+          SEGMENT_INDEX=`expr ${SEGMENT_INDEX} + 1`
+        done
+        ;;
+
+      .01of*)
+        SEGMENT_INDEX=1
+        SUFFIX="${FIRST_SUFFIX#.01of}"
+
+        while true; do
+          SECOND_DIGIT=`expr ${SEGMENT_INDEX} % 10`
+          FIRST_DIGIT=`expr ${SEGMENT_INDEX} / 10`
+
+          CURRENT_SUFFIX=".${FIRST_DIGIT}${SECOND_DIGIT}of${SUFFIX}"
+          FILENAME="PREFIX${CURRENT_SUFFIX}"
+
+          if test -n "${FILENAMES}"; then
+            FILENAMES="${FILENAMES} ${FILENAME}"
+          else
+            FILENAMES="${FILENAME}"
+          fi
+          echo "${FILENAME}" >> expected_output
+
+          if test "${CURRENT_SUFFIX}" = "${LAST_SUFFIX}"; then
+            break
+          fi
+          SEGMENT_INDEX=`expr ${SEGMENT_INDEX} + 1`
+        done
+        ;;
+
+      0|1)
+        if test "${FIRST_SUFFIX}" = "1"; then
+          SEGMENT_INDEX=1
+        fi
+        while true; do
+          CURRENT_SUFFIX="${SEGMENT_INDEX}"
+          FILENAME="PREFIX${CURRENT_SUFFIX}"
+
+          if test -n "${FILENAMES}"; then
+            FILENAMES="${FILENAMES} ${FILENAME}"
+          else
+            FILENAMES="${FILENAME}"
+          fi
+          echo "${FILENAME}" >> expected_output
+
+          if test "${CURRENT_SUFFIX}" = "${LAST_SUFFIX}"; then
+            break
+          fi
+          SEGMENT_INDEX=`expr ${SEGMENT_INDEX} + 1`
+        done
+        ;;
+
+      00|01)
+        if test "${FIRST_SUFFIX}" = "01"; then
+          SEGMENT_INDEX=1
+        fi
+        while true; do
+          SECOND_DIGIT=`expr ${SEGMENT_INDEX} % 10`
+          FIRST_DIGIT=`expr ${SEGMENT_INDEX} / 10`
+
+          CURRENT_SUFFIX="${FIRST_DIGIT}${SECOND_DIGIT}"
+          FILENAME="PREFIX${CURRENT_SUFFIX}"
+
+          if test -n "${FILENAMES}"; then
+            FILENAMES="${FILENAMES} ${FILENAME}"
+          else
+            FILENAMES="${FILENAME}"
+          fi
+          echo "${FILENAME}" >> expected_output
+
+          if test "${CURRENT_SUFFIX}" = "${LAST_SUFFIX}"; then
+            break
+          fi
+          SEGMENT_INDEX=`expr ${SEGMENT_INDEX} + 1`
+        done
+        ;;
+
+      aa)
+        LETTER_BASE=97
+
+        while true; do
+          LOWER_PART=`expr ${LETTER_BASE} + \( ${SEGMENT_INDEX} % 26 \)`
+          UPPER_PART=`expr ${LETTER_BASE} + \( ${SEGMENT_INDEX} / 26 \)`
+
+          SECOND_LETTER=`ath_fn_test_glob_chr ${LOWER_PART}`
+          FIRST_LETTER=`ath_fn_test_glob_chr ${UPPER_PART}`
+
+          CURRENT_SUFFIX="${FIRST_LETTER}${SECOND_LETTER}"
+          FILENAME="PREFIX${CURRENT_SUFFIX}"
+
+          if test -n "${FILENAMES}"; then
+            FILENAMES="${FILENAMES} ${FILENAME}"
+          else
+            FILENAMES="${FILENAME}"
+          fi
+          echo "${FILENAME}" >> expected_output
+
+          if test "${CURRENT_SUFFIX}" = "${LAST_SUFFIX}"; then
+            break
+          fi
+          SEGMENT_INDEX=`expr ${SEGMENT_INDEX} + 1`
+        done
+        ;;
+
+      000|001)
+        if test "${FIRST_SUFFIX}" = "001"; then
+          SEGMENT_INDEX=1
+        fi
+        while true; do
+          THIRD_DIGIT=`expr ${SEGMENT_INDEX} % 10`
+          SECOND_DIGIT=`expr \( ${SEGMENT_INDEX} / 10 \) % 10`
+          FIRST_DIGIT=`expr ${SEGMENT_INDEX} / 100`
+
+          CURRENT_SUFFIX="${FIRST_DIGIT}${SECOND_DIGIT}${THIRD_DIGIT}"
+          FILENAME="PREFIX${CURRENT_SUFFIX}"
+
+          if test -n "${FILENAMES}"; then
+            FILENAMES="${FILENAMES} ${FILENAME}"
+          else
+            FILENAMES="${FILENAME}"
+          fi
+          echo "${FILENAME}" >> expected_output
+
+          if test "${CURRENT_SUFFIX}" = "${LAST_SUFFIX}"; then
+            break
+          fi
+          SEGMENT_INDEX=`expr ${SEGMENT_INDEX} + 1`
+        done
+        ;;
+
+      001.asb)
+        SEGMENT_INDEX=1
+
+        while true; do
+          THIRD_DIGIT=`expr ${SEGMENT_INDEX} % 10`
+          SECOND_DIGIT=`expr \( ${SEGMENT_INDEX} / 10 \) % 10`
+          FIRST_DIGIT=`expr ${SEGMENT_INDEX} / 100`
+
+          CURRENT_SUFFIX="${FIRST_DIGIT}${SECOND_DIGIT}${THIRD_DIGIT}.asb"
+          FILENAME="PREFIX${CURRENT_SUFFIX}"
+
+          if test -n "${FILENAMES}"; then
+            FILENAMES="${FILENAMES} ${FILENAME}"
+          else
+            FILENAMES="${FILENAME}"
+          fi
+          echo "${FILENAME}" >> expected_output
+
+          if test "${CURRENT_SUFFIX}" = "${LAST_SUFFIX}"; then
+            break
+          fi
+          SEGMENT_INDEX=`expr ${SEGMENT_INDEX} + 1`
+        done
+        ;;
+
+      aaa)
+        LETTER_BASE=97
+
+        while true; do
+          LOWER_PART=`expr ${LETTER_BASE} + \( ${SEGMENT_INDEX} % 26 \)`
+          MIDDLE_PART=`expr ${LETTER_BASE} + \( \( ${SEGMENT_INDEX} / 26 \) % 26 \)`
+          UPPER_PART=`expr ${LETTER_BASE} + \( ${SEGMENT_INDEX} / \( 26 \* 26 \) \)`
+
+          THIRD_LETTER=`ath_fn_test_glob_chr ${LOWER_PART}`
+          SECOND_LETTER=`ath_fn_test_glob_chr ${MIDDLE_PART}`
+          FIRST_LETTER=`ath_fn_test_glob_chr ${UPPER_PART}`
+
+          CURRENT_SUFFIX="${FIRST_LETTER}${SECOND_LETTER}${THIRD_LETTER}"
+          FILENAME="PREFIX${CURRENT_SUFFIX}"
+
+          if test -n "${FILENAMES}"; then
+            FILENAMES="${FILENAMES} ${FILENAME}"
+          else
+            FILENAMES="${FILENAME}"
+          fi
+          echo "${FILENAME}" >> expected_output
+
+          if test "${CURRENT_SUFFIX}" = "${LAST_SUFFIX}"; then
+            break
+          fi
+          SEGMENT_INDEX=`expr ${SEGMENT_INDEX} + 1`
+        done
+        ;;
+
+      -f001.vmdk)
+        SEGMENT_INDEX=1
+
+        while true; do
+          THIRD_DIGIT=`expr ${SEGMENT_INDEX} % 10`
+          SECOND_DIGIT=`expr \( ${SEGMENT_INDEX} / 10 \) % 10`
+          FIRST_DIGIT=`expr ${SEGMENT_INDEX} / 100`
+
+          CURRENT_SUFFIX="-f${FIRST_DIGIT}${SECOND_DIGIT}${THIRD_DIGIT}.vmdk"
+          FILENAME="PREFIX${CURRENT_SUFFIX}"
+
+          if test -n "${FILENAMES}"; then
+            FILENAMES="${FILENAMES} ${FILENAME}"
+          else
+            FILENAMES="${FILENAME}"
+          fi
+          echo "${FILENAME}" >> expected_output
+
+          if test "${CURRENT_SUFFIX}" = "${LAST_SUFFIX}"; then
+            break
+          fi
+          SEGMENT_INDEX=`expr ${SEGMENT_INDEX} + 1`
+        done
+        ;;
+
+      *)
+        return 77
+        ;;
+    esac
+
+    touch ${FILENAMES}
+    ])
+
+  AT_TEST_HELPER_FN(
+    [compare_test_glob_output],
+    [],
+    [Compares the test output with the expected output],
+    [OSTYPE_LOWER=`echo "$OSTYPE" | tr '[A-Z]' '[a-z]'`
+    case "${OSTYPE_LOWER}" in
+      cygwin*|linux-gnu*|msys*)
+        if test "${USE_MINGW}" = "yes" || test "${USE_WINAPI}" = "yes"; then
+          sed -i'~' 's/\r$//' output
+        fi
+        ;;
+    esac
+
+    if ! cmp -s output expected_output; then
+      diff expected_output output
+      return 1
+    fi
+    return 0
+    ])
+
+  AT_TEST_HELPER_FN(
+    [run_test_glob],
+    [filenames],
+    [Generates test input for a glob test],
+    [ath_fn_run_test_binary $[]1 $[]2 > output
+    RESULT=$?
+
+    if test ${RESULT} -eq 0; then
+      ath_fn_compare_test_glob_output
+      RESULT=$?
+    fi
+    return ${RESULT}
+    ])
+  ])
+
+dnl Runs a glob test with an extension
+dnl Arguments:
+dnl   first_extension
+dnl   final_extension
+dnl   glob
+m4_define([RUN_TEST_GLOB_WITH_EXTENSION],
+  [m4_define(
+    [test_binary],
+    [m4_expand(test_prefix[]_test_glob)])dnl
+
+  m4_if(
+    [$1],
+    [$2],
+    [m4_define(
+      [test_description],
+      [test_binary with 'PREFIX.$1'])],
+    [m4_define(
+      [test_description],
+      [test_binary with 'PREFIX.$1 - PREFIX.$2'])])
+
+  AT_SETUP(test_description)
+
+  AT_SKIP_IF(
+    [test -n "${SKIP_LIBRARY_TESTS}"])
+
+  ath_fn_generate_test_glob_with_extension_input "$1" "$2"
+
+  AT_CHECK([ath_fn_run_test_glob test_binary "PREFIX"])
+  AT_CHECK([ath_fn_run_test_glob test_binary "PREFIX.$1"])
+
+  AT_CLEANUP])
+])
+
+dnl Runs a glob test with a suffix
+dnl Arguments:
+dnl   first_extension
+dnl   final_extension
+dnl   glob
+m4_define([RUN_TEST_GLOB_WITH_SUFFIX],
+  [m4_define(
+    [test_binary],
+    [m4_expand(test_prefix[]_test_glob)])dnl
+
+  m4_if(
+    [$1],
+    [$2],
+    [m4_define(
+      [test_description],
+      [test_binary with 'PREFIX$1'])],
+    [m4_define(
+      [test_description],
+      [test_binary with 'PREFIX$1 - PREFIX$2'])])
+
+  AT_SETUP(test_description)
+
+  AT_SKIP_IF(
+    [test -n "${SKIP_LIBRARY_TESTS}"])
+
+  ath_fn_generate_test_glob_with_suffix_input "$1" "$2"
+
+  AT_CHECK([ath_fn_run_test_glob test_binary "PREFIX$1"])
+
+  AT_CLEANUP])
+])
+
+dnl Wrap m4_define to overwrite AT_TESTSUITE_NAME
+m4_define([_M4_DEFINE_HOOK], m4_defn([m4_define]))
+m4_define([m4_define],
+  [m4_if(
+    [$1],
+    [AT_TESTSUITE_NAME],
+    [_M4_DEFINE_HOOK([$1], [Running glob tests])],
+    [_M4_DEFINE_HOOK([$1], [$2])])])
+
+dnl Redefine AS_BOX to remove the "box"
+m4_undefine([AS_BOX])
+m4_define([AS_BOX], [echo "$1"])
+
+AT_INIT([glob])
+AT_COLOR_TESTS
+
+dnl Rewrite AT_SETUP to change the minimum line length
+m4_define([AT_SETUP],
+  m4_unquote(
+    [m4_bpatsubst(
+      m4_dquote(m4_defn([AT_SETUP])),
+      [47],
+      [72])
+    ])
+  )
+
+SETUP_HELPER_FUNCTIONS
+SETUP_GLOB_HELPER_FUNCTIONS
+
+RUN_TEST_GLOB_WITH_EXTENSION(
+ [dd],
+ [dd])
+
+RUN_TEST_GLOB_WITH_EXTENSION(
+ [dmg],
+ [dmg])
+
+RUN_TEST_GLOB_WITH_EXTENSION(
+ [img],
+ [img])
+
+RUN_TEST_GLOB_WITH_EXTENSION(
+ [raw],
+ [raw])
+
+RUN_TEST_GLOB_WITH_EXTENSION(
+ [0],
+ [9])
+
+RUN_TEST_GLOB_WITH_EXTENSION(
+ [1],
+ [9])
+
+RUN_TEST_GLOB_WITH_EXTENSION(
+ [0],
+ [10])
+
+RUN_TEST_GLOB_WITH_EXTENSION(
+ [1],
+ [10])
+
+RUN_TEST_GLOB_WITH_EXTENSION(
+ [00],
+ [10])
+
+RUN_TEST_GLOB_WITH_EXTENSION(
+ [01],
+ [10])
+
+RUN_TEST_GLOB_WITH_EXTENSION(
+ [000],
+ [010])
+
+RUN_TEST_GLOB_WITH_EXTENSION(
+ [001],
+ [010])
+
+RUN_TEST_GLOB_WITH_SUFFIX(
+ [0],
+ [9])
+
+RUN_TEST_GLOB_WITH_SUFFIX(
+ [1],
+ [9])
+
+RUN_TEST_GLOB_WITH_SUFFIX(
+ [00],
+ [10])
+
+RUN_TEST_GLOB_WITH_SUFFIX(
+ [01],
+ [10])
+
+RUN_TEST_GLOB_WITH_SUFFIX(
+ [aa],
+ [aj])
+
+RUN_TEST_GLOB_WITH_SUFFIX(
+ [000],
+ [010])
+
+RUN_TEST_GLOB_WITH_SUFFIX(
+ [001],
+ [010])
+
+RUN_TEST_GLOB_WITH_SUFFIX(
+ [aaa],
+ [aaj])
+
+RUN_TEST_GLOB_WITH_SUFFIX(
+ [001.asb],
+ [010.asb])
+
+RUN_TEST_GLOB_WITH_SUFFIX(
+ [-f001.vmdk],
+ [-f010.vmdk])
+
+RUN_TEST_GLOB_WITH_SUFFIX(
+ [.1of5],
+ [.5of5])
+
+RUN_TEST_GLOB_WITH_SUFFIX(
+ [.1of10],
+ [.10of10])
+
+RUN_TEST_GLOB_WITH_SUFFIX(
+ [.1of192],
+ [.192of192])
+
+RUN_TEST_GLOB_WITH_SUFFIX(
+ [.01of10],
+ [.10of10])

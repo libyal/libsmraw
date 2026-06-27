@@ -122,7 +122,7 @@ int main( int argc, char * const argv[] )
 #if defined( HAVE_LIBFUSE ) || defined( HAVE_LIBFUSE3 ) || defined( HAVE_LIBOSXFUSE )
 		{ 'X', "extended_options", "extended options to pass to sub system" },
 #endif
-		{ 0, "image", "one or more storage media (split) RAW image segment files" },
+		{ 0, "sources", "first or all files of a set of (split) RAW image segment files" },
 		{ 0, "mount_point", "the directory to serve as mount point" },
 	};
 	system_character_t options_string[ 32 ];

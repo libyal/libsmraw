@@ -19,7 +19,7 @@ jobs:
         usesh: true
         mem: 4096
         prepare: |
-          pkg install -y autoconf automake bash curl fusefs-libs gettext git libtool openssl pkgconf
+          pkg install -y autoconf automake curl fusefs-libs gettext git libtool openssl pkgconf
     - name: Download test data
       shell: freebsd {0}
       run: |

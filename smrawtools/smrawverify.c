@@ -125,7 +125,7 @@ int main( int argc, char * const argv[] )
 		{ 'q', NULL, "quiet shows minimal status information" },
 		{ 'v', NULL, "verbose output to stderr, while smrawmount will remain running in the foreground" },
 		{ 'V', NULL, "print version" },
-		{ 0, "image", "one or more storage media (split) RAW image segment files" },
+		{ 0, "image", "first or all files of a set of (split) RAW image segment files" },
 	};
 	system_character_t options_string[ 32 ];
 

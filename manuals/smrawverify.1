@@ -1,5 +1,5 @@
 .Dd June 27, 2026
-.Dt ODRAWVERIFY 1
+.Dt SMRAWVERIFY 1
 .Os
 .Sh NAME
 .Nm smrawverify
@@ -10,7 +10,7 @@
 .Op Fl l Ar log_file
 .Op Fl p Ar buffer_size
 .Op Fl hvV
-.Ar source
+.Ar sources
 .Sh DESCRIPTION
 .Nm smrawverify
 is a utility to verify media data stored in a storage media (split) RAW image \
@@ -23,8 +23,8 @@ package.
 .Nm libsmraw
 is a library to access the storage media (split) RAW image format
 .Pp
-.Ar source
-is the source image.
+.Ar sources
+first or all files of a set of (split) RAW image segment files
 .Pp
 The options are as follows:
 .Bl -tag -width Ds

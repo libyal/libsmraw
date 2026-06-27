@@ -19,17 +19,12 @@ AM_CPPFLAGS = \
 	@PTHREAD_CPPFLAGS@ \
 	@LIBSMRAW_DLL_IMPORT@
 
-AM_TESTS_ENVIRONMENT = \
-	export TESTS_USE_WINAPI="@TESTS_USE_WINAPI@";
-
 BUILT_SOURCES = package.m4
-
-TESTS = \
-	test_glob.sh
 
 check_AUTOTESTS = \
 	test_library \
 	test_library_write \
+	test_glob \
 	test_manpages \
 	test_tools
 
@@ -258,6 +253,11 @@ test_inputs_pysmraw.at: generate_test_inputs.sh
 test_inputs_smrawverify.at: generate_test_inputs.sh
 	$(SHELL) $(srcdir)/generate_test_inputs.sh $(PACKAGE_NAME) smrawverify
 
+test_glob: \
+	package.m4 \
+	test_glob.at \
+	test_macros.at
+
 test_library: \
 	package.m4 \
 	test_inputs_libsmraw.at \
@@ -284,9 +284,7 @@ EXTRA_DIST = \
 	$(check_SCRIPTS) \
 	generate_test_inputs.sh \
 	package.m4 \
-	test_glob.sh \
-	test_macros.at \
-	test_runner.sh
+	test_macros.at
 
 CLEANFILES = \
 	$(check_AUTOTESTS) \
