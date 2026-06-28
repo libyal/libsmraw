@@ -47,10 +47,15 @@ int LLVMFuzzerTestOneInput(
      const uint8_t *data,
      size_t size )
 {
+	uint8_t buffer[ 512 ];
+
 	libbfio_handle_t *file_io_handle = NULL;
 	libbfio_pool_t *file_io_pool     = NULL;
 	libsmraw_handle_t *handle        = NULL;
+	off64_t media_offset             = 0;
+	size64_t media_size              = 0;
 	int entry_index                  = 0;
+	int read_iterator                = 0;
 
 	if( libbfio_memory_range_initialize(
 	     &file_io_handle,
@@ -100,6 +105,32 @@ int LLVMFuzzerTestOneInput(
 	     NULL ) != 1 )
 	{
 		goto on_error_libsmraw;
+	}
+	if( libsmraw_handle_get_media_size(
+	     handle,
+	     &media_size,
+	     NULL ) != 1 )
+	{
+		goto on_error_libsmraw;
+	}
+	for( read_iterator = 0;
+	     read_iterator < 128;
+	     read_iterator++ )
+	{
+		if( media_offset >= media_size )
+		{
+			break;
+		}
+		if( libsmraw_handle_read_buffer_at_offset(
+		     handle,
+		     buffer,
+		     497,
+		     media_offset,
+		     NULL ) == -1 )
+		{
+			goto on_error_libsmraw;
+		}
+		media_offset += 497;
 	}
 	libsmraw_handle_close(
 	 handle,
