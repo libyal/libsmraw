@@ -2,7 +2,7 @@ AC_PREREQ([2.71])
 
 AC_INIT(
   [libsmraw],
-  [20260902],
+  [20260917],
   [https://github.com/libyal/libsmraw/issues])
 
 AC_CONFIG_SRCDIR(
