@@ -1,5 +1,5 @@
 /*
- * OSS-Fuzz target for libsmraw file type
+ * OSS-Fuzz target for libsmraw handle type
  *
  * Copyright (C) 2010-2026, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -21,6 +21,8 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <stdlib.h>
+#include <string.h>
 
 /* Note that some of the OSS-Fuzz engines use C++
  */
@@ -36,26 +38,33 @@ extern "C" {
  */
 LIBSMRAW_EXTERN \
 int libsmraw_handle_open_file_io_pool(
-     libsmraw_handle_t *handle,
-     libbfio_handle_t *file_io_pool,
-     int access_flags,
-     libsmraw_error_t **error );
+      libsmraw_handle_t *handle,
+      libbfio_pool_t *file_io_pool,
+      int access_flags,
+      libsmraw_error_t **error );
 
 #endif /* !defined( LIBSMRAW_HAVE_BFIO ) */
 
 int LLVMFuzzerTestOneInput(
-     const uint8_t *data,
-     size_t size )
+      const uint8_t *data,
+      size_t size )
 {
 	uint8_t buffer[ 512 ];
 
-	libbfio_handle_t *file_io_handle = NULL;
-	libbfio_pool_t *file_io_pool     = NULL;
-	libsmraw_handle_t *handle        = NULL;
-	off64_t media_offset             = 0;
-	size64_t media_size              = 0;
-	int entry_index                  = 0;
-	int read_iterator                = 0;
+	libbfio_handle_t *file_io_handle       = NULL;
+	libbfio_pool_t *file_io_pool           = NULL;
+	libsmraw_handle_t *handle              = NULL;
+	uint8_t *buffer_write                  = NULL;
+	libbfio_handle_t *file_io_handle_write = NULL;
+	libbfio_pool_t *file_io_pool_write     = NULL;
+	libsmraw_handle_t *handle_write        = NULL;
+	off64_t media_offset                   = 0;
+	size64_t media_size                    = 0;
+	ssize_t read_count                     = 0;
+	int entry_index                        = 0;
+	int entry_index_write                  = 0;
+	int read_iterator                      = 0;
+	int write_iterator                     = 0;
 
 	if( libbfio_memory_range_initialize(
 	     &file_io_handle,
@@ -132,16 +141,194 @@ int LLVMFuzzerTestOneInput(
 		}
 		media_offset += 497;
 	}
+	for( read_iterator = 0;
+	     read_iterator < 128;
+	     read_iterator++ )
+	{
+		read_count = libsmraw_handle_read_buffer(
+		           handle,
+		           buffer,
+		           497,
+		           NULL );
+
+		if( read_count == -1 )
+		{
+			goto on_error_libsmraw;
+		}
+		if( read_count == 0 )
+		{
+			break;
+		}
+	}
+	if( libsmraw_handle_seek_offset(
+	     handle,
+	     0,
+	     SEEK_SET,
+	     NULL ) == -1 )
+	{
+		goto on_error_libsmraw;
+	}
+	if( libsmraw_handle_get_offset(
+	     handle,
+	     &media_offset,
+	     NULL ) != 1 )
+	{
+		goto on_error_libsmraw;
+	}
+	if( libsmraw_handle_signal_abort(
+	     handle,
+	     NULL ) != 1 )
+	{
+		goto on_error_libsmraw;
+	}
 	libsmraw_handle_close(
 	 handle,
 	 NULL );
 
-on_error_libsmraw:
+	if( libbfio_memory_range_initialize(
+	     &file_io_handle_write,
+	     NULL ) != 1 )
+	{
+		goto on_error_libbfio;
+	}
+
+	/* Use a copy of the input data so that the fuzzer's input buffer
+	 * is not modified when written data is stored in the file IO handle
+	 */
+	buffer_write = (uint8_t *) calloc( 1, size + 1 );
+
+	if( buffer_write == NULL )
+	{
+		goto on_error_libbfio_write;
+	}
+	memcpy(
+	 buffer_write,
+	 data,
+	 size );
+
+	if( libbfio_memory_range_set(
+	     file_io_handle_write,
+	     buffer_write,
+	     size,
+	     NULL ) != 1 )
+	{
+		goto on_error_libbfio_write;
+	}
+	if( libbfio_pool_initialize(
+	     &file_io_pool_write,
+	     0,
+	     0,
+	     NULL ) != 1 )
+	{
+		goto on_error_libbfio_write;
+	}
+	if( libbfio_pool_append_handle(
+	     file_io_pool_write,
+	     &entry_index_write,
+	     file_io_handle_write,
+	     LIBBFIO_OPEN_READ_WRITE,
+	     NULL ) != 1 )
+	{
+		goto on_error_libbfio_write;
+	}
+	/* The file IO pool takes over management of the file IO handle
+	 */
+	file_io_handle_write = NULL;
+
+	if( libsmraw_handle_initialize(
+	     &handle_write,
+	     NULL ) != 1 )
+	{
+		goto on_error_libsmraw_write;
+	}
+	if( libsmraw_handle_open_file_io_pool(
+	     handle_write,
+	     file_io_pool_write,
+	     LIBSMRAW_OPEN_READ_WRITE,
+	     NULL ) != 1 )
+	{
+		goto on_error_libsmraw_write;
+	}
+	if( libsmraw_handle_get_media_size(
+	     handle_write,
+	     &media_size,
+	     NULL ) != 1 )
+	{
+		goto on_error_libsmraw_write;
+	}
+	media_offset = 0;
+
+	for( write_iterator = 0;
+	     write_iterator < 128;
+	     write_iterator++ )
+	{
+		if( media_offset >= media_size )
+		{
+			break;
+		}
+		if( libsmraw_handle_write_buffer_at_offset(
+		     handle_write,
+		     buffer,
+		     497,
+		     media_offset,
+		     NULL ) == -1 )
+		{
+			goto on_error_libsmraw_write;
+		}
+		media_offset += 497;
+	}
+	if( media_offset > 0 )
+	{
+		read_count = libsmraw_handle_read_buffer_at_offset(
+		              handle_write,
+		              buffer,
+		              497,
+		              0,
+		              NULL );
+
+		if( read_count == -1 )
+		{
+			goto on_error_libsmraw_write;
+		}
+	}
+	libsmraw_handle_close(
+	 handle_write,
+	 NULL );
+
+ on_error_libsmraw_write:
+	libsmraw_handle_free(
+	 &handle_write,
+	 NULL );
+
+ on_error_libsmraw:
 	libsmraw_handle_free(
 	 &handle,
 	 NULL );
 
-on_error_libbfio:
+ on_error_libbfio_write:
+	/* Note that on error the handle still has a reference to file_io_pool
+	 * that will be closed. Therefore the file IO pool and handle need to
+	 * be freed after closing or freeing the handle.
+	 */
+	if( file_io_pool_write != NULL )
+	{
+		libbfio_pool_free(
+		 &file_io_pool_write,
+		 NULL );
+	}
+	if( file_io_handle_write != NULL )
+	{
+		libbfio_handle_free(
+		 &file_io_handle_write,
+		 NULL );
+	}
+	if( buffer_write != NULL )
+	{
+		free(
+		 buffer_write );
+	}
+
+ on_error_libbfio:
 	/* Note that on error the handle still has a reference to file_io_pool
 	 * that will be closed. Therefore the file IO pool and handle need to
 	 * be freed after closing or freeing the handle.
@@ -162,4 +349,3 @@ on_error_libbfio:
 }
 
 } /* extern "C" */
-
